@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css"/>
+		<link src="../../css/layer.css" type="text/javascript" charset="utf-8"></link>
+		<link rel="stylesheet" type="text/css" href="../../css/bootstrap-datetimepicker.css"/>
+		<link rel="stylesheet" type="text/css" href="css/searchLogs.css"/>
+	</head>
+	<style>
+		.top_title{
+			padding-right:20px;
+		}
+		.top_title form{
+			float:right;
+		}
+		.equipmentInfo{
+			padding:0 10px;
+		}
+		#box .form-control{
+			display:block;
+		}
+		.table{
+		    table-layout: fixed;
+		}
+		.searchTimeBox{
+			border: 1px solid #ccc;
+			display: flex;
+			justify-content: center;
+			float:left;
+			/* margin-right:20px; */
+			height:32px;
+			border-left:1px solid #ccc!important;
+		}
+		
+		.searchTimeBox>span{
+			width:20px;
+			text-align: center;
+			display: inline-block;
+			line-height: 30px;
+		}
+		.searchTimeBox>.searchBoxTitle{
+			border:0;
+		}
+		.searchBoxTitle{
+			height:32px;
+			margin-right:1px solid #ccc;
+			line-height:32px;
+			text-align: center;
+			width: 75px;
+			font-size:13px;
+		}
+		
+		.searchConditions{
+			float:right;
+			height:32px;
+			display: flex;
+			font-weight:500;
+			margin-top:5px;
+			justify-content: center;
+		}
+		.searchConditions>div{
+			display: flex;
+			justify-content: left;
+			border:1px solid #ccc;
+			border-left:0;
+		}
+		.searchConditions select,.searchConditions input{
+			width:90px;
+			background:#eee;
+			border-radius:0;
+			border:0;
+			height: 30px;
+			font-size:12px;
+		}
+		.searchConditions input{
+			width:68%;
+		}	
+		.searchTimeBox>input{
+			border: 0;
+			width: 150px;
+			padding-right:0;
+			height:30px;
+			font-size:13px;
+		}
+		.endTimeRemove,.startTimeRemove{				
+			text-align:left;
+			display:inline-block;
+			height:30px;
+			width:15px!important;
+			line-height:30px;
+			cursor:pointer;
+			background:#eee;
+			position:relative;
+			top:0px;
+			font-size:12px;
+		}
+		#searchLogs{
+			border-radius:0;
+		}
+		#removeLogs{
+			margin-right:10px;
+		}
+		.log_filter{
+			margin-left:0;
+		}
+	</style>
+	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
+	<body>
+		<div id="box">
+			<div class="top_title">
+				<span></span>
+				<div class="searchConditions">
+					<div class="searchTimeBox">
+						<div class="searchBoxTitle">时间范围</div>
+						<input type="text" class="time-input form-control" id="startTime" placeholder="起始日期" name="begin_time" readonly class="form_datetime">  
+						<i class="glyphicon glyphicon-remove startTimeRemove"></i>	
+						<span> ~ </span>
+						<input type="text" class="time-input form-control" id="endTime" placeholder="结束日期" name="end_time" readonly class="form_datetime">  		
+						<i class="glyphicon glyphicon-remove endTimeRemove"></i>	
+					</div>
+					<div class="searchLevelBox">
+						<div class="searchBoxTitle">日志级别</div>
+						<select class="form-control searchLevel"></select>
+					</div>
+					<button  class="btn btn-primary" id="searchLogs"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
+				</div>
+				<!-- <form class="form-inline" onsubmit="return false">
+					<div class="form-group">
+						<input type="text" class="form-control searchWords" id="exampleInputName2" placeholder="输入条件检索日志">
+					</div>
+				  <button  class="btn btn-info" id="searchLogs"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
+				</form> -->
+			</div>
+			<div class="equipmentInfo">
+				<!-- <p>设备名称：</p>
+				<p>主机名：</p>
+				<p>类型：</p>
+				<p>IP：</p>
+				<p>进入时间：</p>
+				<p>更新时间：</p>
+				<p>截止时间：</p> -->
+				<div class="tab-content">
+                   <div id="tab-1" class="tab-pane active">
+                       <div class="slimScrollDiv" style="position: relative; width: auto; height: 100%;"><div class="full-height-scroll" style="width: auto; height: 100%;">
+                           <div class="table-responsive">
+                               <table class="table table-hover table-striped" id="device_list">
+	                               	<thead>
+								        <tr>
+								          	<th>资产名称</th>
+								          	<th>主机名</th>
+								          	<th>资产类型</th>
+								          	<th>日志类型</th>
+								          	<th>IP地址</th>
+								          	<th>进入时间</th>
+								          	<th>更新时间</th>
+								          	<th>截止时间</th>
+								          	<th>是否启用</th>
+								        </tr>
+							         </thead>
+                                     <tbody>
+                                         <!--  <tr>   
+                                             <td class="device_name">
+                                             		<span data-id="001">lenovo</span>
+                                             </td>
+                                             <td class="device_hostname">contos6-70-clltest</td>
+                                             <td class="device_type" data-type="1">服务器</td>
+                                             <td class="device_ip">192.168.100.20</td>
+                                             <td class="device_starttime">2017-02-03 18:00:36</td> 
+                                             <td class="device_updatetime">2017-02-03 18:00:36</td>
+                                             <td class="device_endtime">2019-02-03 18:00:00</td>  
+                                             <td class="device_iswork">是</td>                                                        	
+                                         </tr> -->
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div><div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 4px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 365.112px;"></div><div class="slimScrollRail" style="width: 4px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div></div>
+                     </div>
+                               
+                 </div>
+			</div>
+			<!-- <div class="search_input">
+				
+			</div> -->
+			
+			<div class="row result_box">
+				<div class="col-sm-2 box_left">
+					<h5>检索历史</h5>
+					<ul class="history_list">
+					</ul>
+				</div>
+				<div class="col-sm-10 box_right">
+					<div class="r_tools">
+						<div class="log_filter">
+							<form class="form-inline" onsubmit="return false" onkeydown="if(event.keyCode==13)return false;">
+								<button  class="btn btn-default" id="removeLogs">删除</button>
+								<div class="form-group">
+									<input type="text" class="form-control filterWords" value=""  placeholder="输入过滤条件">
+								</div>
+							  <button  class="btn btn-default" id="filterLogs">过滤</button>
+							  <button  class="btn btn-default" id="refreshLogs">刷新</button>
+							</form>
+						</div>
+						<div class="allCountBox">共检索到的日志数量为<b>0</b>条,最大展示<select class="form-control maxShowData"><option value="100000">10万</option><option value="200000">20万</option><option value="500000">50万</option><option value="1000000">100万</option><option value="10000000">1000万</option><option value="100000000">1亿</option></select>条</div>
+						<div id="pageBox">
+							
+						</div>
+						
+						<!--<nav aria-label="Page navigation">
+						  	<ul class="pagination">
+						    	<li>
+						      		<a href="#" aria-label="Previous">
+						        		<span aria-hidden="true">&laquo;</span>
+						      		</a>
+						    	</li>
+						    	<li><a href="#">1</a></li>
+						    	<li>
+						      		<a href="#" aria-label="Next">
+						       	 		<span aria-hidden="true">&raquo;</span>
+						      		</a>
+						    	</li>
+						  	</ul>
+						</nav>-->
+					</div>
+					<div class="r_content">
+						<div class="tab-content">
+		                   <div id="tab-1" class="tab-pane active">
+		                       <div class="slimScrollDiv" style="position: relative; width: auto; height: 100%;"><div class="full-height-scroll" style="width: auto; height: 100%;">
+		                           <div class="table-responsive">
+		                               <table class="table table-hover table-striped" id="logs_list">
+			                               	<thead>
+										        <tr class="con_title">
+										          	<!-- <th width="200">时间</th>
+										          	<th width="100">级别</th>
+										          	<th>日志内容</th>
+										          	<th width="100">操作</th> -->
+										        </tr>
+									         </thead>
+		                                     <tbody>
+		                                        <tr>   
+		                                             <!-- <td class="logs_time">2017.7.18 10:10:10 000</td>
+		                                             <td class="logs_level">123</td>
+		                                             <td class="logs_Mes">
+		                                             	<p>Updates: 1 BaseJdbcLogger.java com.jz.bigdata.business.health.test.book.dao.IBookDao.delete 20167 139 2017-07-19 16:41:17  Written [{"success":"true","message":"操作成功！","state":"1"}] as "application/json;charset=UTF-8" using [org.springframework.http.converter.StringHttpMessageConverter@2e54b031] AbstractMessageConverterMethodProcessor.java org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor 20185 150</p>
+													 </td>
+		                                             <td class="logs_tools">
+		                                             	<i class="glyphicon glyphicon-list-alt"></i>
+		                                             </td>		         -->                                                                                         	
+		                                         </tr>
+		                                     </tbody>
+		                                 </table>
+		                             </div>
+		                         </div><div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 4px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 365.112px;"></div><div class="slimScrollRail" style="width: 4px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div></div>
+		                     </div>
+	                               
+	                 	</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		
+		<script src="../../js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.pagination.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/bootstrap/js/bootstrap-datetimepicker.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/bootstrap/js/bootstrap-datetimepicker.zh-CN.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/laypage.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/highLightText.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/searchLogs.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" >
+			$(function(){
+				var pageSize = 12;//每页显示条数
+				//定义加载数据的类型  0-默认加载  1-精细加载
+				var searchType = '0';
+				var getDeviceObj = sessionStorage.getItem("deviceObj");//获取本地存储的设备值 对象
+				logStatus = true;//ture表明是搜索操作 false表示是过滤操作
+				//将获取的本地sessionstorage字符串转换为obj对象格式
+				var obj = JSON.parse(getDeviceObj);	
+				//取出设备id
+				var id = obj.deviceId;
+				$(".top_title>span").html(obj.deviceName+"日志")
+				var html = '';
+				//定义循化 拼接设备列表信息
+				for(var i in obj){
+					html = '<tr>'  
+                         +      '<td class="device_name">'
+                         +      	'<span data-id="'+obj.deviceId+'">'+obj.deviceName+'</span>'
+                         +       '</td>'
+                         +       '<td class="device_hostname">'+obj.deviceHostname+'</td>'
+                         +       '<td class="device_type">'+obj.deviceType+'</td>'
+                         +       '<td class="device_logType">'+obj.deviceLogType+'</td>'
+                         +       '<td class="device_ip">'+obj.deviceIp+'</td>'
+                         +       '<td class="device_starttime">'+obj.deviceStarttime+'</td>' 
+                         +       '<td class="device_updatetime">'+obj.deviceUpdateTime+'</td>'
+                         +       '<td class="device_endtime">'+obj.deviceEndtime+'</td>'  
+                         +       '<td class="device_iswork">'+obj.deviceIsWorked+'</td>'                                                        	
+                         +   '</tr>'
+				}
+				//将设备列表添加到页面中
+				$("#device_list>tbody").html(html);
+				var url = "../../log/getLogListByEquipment.do";
+				//获取日志
+				//getLogs(url,id,'');
+				getLogs(url,id,"",1,pageSize)
+				//删除本地存储
+				sessionStorage.removeItem('deviceObj');
+				//搜索设备日志点击函数
+				/* $("#searchLogs").click(function(){
+					logStatus = true;
+					//获得搜索关键词
+					var searchWords = $(".searchWords").val();		
+					//var url = "data2.json";
+					//获取数据
+					//getLogs(url,id,searchWords);
+				}) */
+				//检索历史li 绑定点击事件 点击查询
+				$(".history_list").on("click","li",function(){
+					logStatus = true;
+					//获取当前点击的内容
+					var searchWords = $(this).html();
+					//var url = "data2.json";
+					//获取数据
+					//getLogs(url,id,searchWords);
+				})
+				
+				//刷新按钮 点击事件
+				$("#refreshLogs").click(function(){
+					currentPage = 1;
+					firstGet = true;//第一次请求标识
+					getLogs(url,id,"",1,pageSize)
+				})
+				
+				//时间控件
+				$('#startTime').datetimepicker({  
+				    format: 'yyyy-mm-dd hh:ii:ss',//定义时间格式  
+				    autoclose: true,//选择好自动关闭  
+	//			    minView: 2,//只选择到小时  
+				    language: 'zh-CN', //汉化   
+				 });
+				
+				$('#endTime').datetimepicker({  
+				    format: 'yyyy-mm-dd hh:ii:ss',//定义时间格式  
+				    autoclose: true,//选择好自动关闭  
+	//			    minView: 2,//只选择到小时  
+				    language: 'zh-CN', //汉化   
+				 });
+			  
+				//开始时间控件 值改变事件
+			     $('#startTime').datetimepicker().on('changeDate', function(ev){
+			     	
+			    	//删除结束时间控件
+			    	$('#endTime').datetimepicker('remove');
+			    	//获取开始时间
+			  		var startDate = $("#startTime").val();
+			    	//初始化结束时间控件数据
+			  		$("#endTime ").datetimepicker({
+						format: 'yyyy-mm-dd hh:ii:ss',//定义时间格式  
+					    autoclose: true,//选择好自动关闭  
+		//			    minView: 2,//只选择到小时  
+						startDate: startDate,//开始时间
+					    language: 'zh-CN', //汉化
+			   		});
+			  	}); 
+			   //结束时间控件 值改变事件
+			    $('#endTime').datetimepicker().on('changeDate', function(ev){
+			    	//删除开始时间控件
+			    	$('#startTime').datetimepicker('remove');
+			    	//获取结束时间
+			  		var endDate = $("#endTime .form-control").val();
+			    	$('#startTime').datetimepicker({  
+					    format: 'yyyy-mm-dd hh:ii:ss',//定义时间格式  
+					    autoclose: true,//选择好自动关闭  
+		//			    minView: 2,//只选择到小时  
+						endDate:endDate,//结束时间
+					    language: 'zh-CN', //汉化   
+					 });			
+			  	});
+			   
+			   //日志类型  
+			   var typeArr = [
+				   	['<option selected value=""></option>','<option value="emergency">emergency</option>','<option value="alert">alert</option>','<option value="critical">critical</option>','<option value="error">error</option>','<option value="warn">warn</option>','<option value="notice">notice</option>','<option value="info">info</option>','<option value="debug">debug</option>'],
+			   		['<option selected value=""></option>','<option value="error">error</option>','<option value="warn">warn</option>','<option value="info">info</option>','<option value="debug">debug</option>'],
+			   		['<option selected value=""></option>','<option value="error">error</option>']
+				]
+				//获取日志类型
+				var opt = obj.deviceLogType;
+			   //添加日志级别下拉框的内容列表
+				if(opt == 'syslog' || opt == 'winlog'){
+					//往二级下拉框中循环添加内容 
+					for(var i in typeArr[0]){
+						$(".searchLevel").append(typeArr[0][i])
+					}
+				}else if(opt == 'log4j'){
+					//往二级下拉框中循环添加内容 
+					for(var i in typeArr[1]){
+						$(".searchLevel").append(typeArr[1][i])
+					}
+				}else if(opt == 'mysql'){
+					//往二级下拉框中循环添加内容 
+					for(var i in typeArr[1]){
+						$(".searchLevel").append(typeArr[2][i])
+					}
+				}
+			   
+				//日期清除
+				   $(".startTimeRemove").click(function(){
+					   $("#startTime").val("")
+				   })
+				   $(".endTimeRemove").click(function(){
+					   $("#endTime").val("")
+				   })
+				 //带条件的检索 参数对象集合  
+				 var sendObj = {};  
+				//点击检索  查询日志
+				$("#searchLogs").click(function(){
+					currentPage = 1;
+					logStatus = true;			
+					firstGet = true;//第一次请求标识
+					//获得查询条件参数值
+					//获取开始时间
+					sendObj.startTime = $("#startTime").val();
+					//获取结束时间
+					sendObj.endTime = $("#endTime").val();
+					//获取日志级别
+					sendObj.level= $(".searchLevel").val();
+					//资产id
+					sendObj.id = id;
+					sendObj.param = "logdate";
+					sendObj.order = "desc";
+					//查询日志
+					getLogs("../../log/getLogListByEquipment.do","",sendObj,1,pageSize)
+					searchType = '1';
+					historySearch(sendObj)
+				})
+				//检索历史记录函数  obj-检索条件
+				function historySearch(obj){
+					//定义检索条件 用于页面显示
+					var searchCon = '';
+					//循环检验查询条件  不为空则添加
+					for (var i in obj){
+						if(obj[i] != '' && i != "id" && i != "param" && i != "order"&& i != "page"&& i != "size"){
+							searchCon += obj[i]+';';
+						}
+					}
+					//添加到检索历史列表 不为空且不存在
+					if (searchCon != '' && historyArr.indexOf(searchCon) === -1){
+						var searchHtml = '<li title="'+searchCon+'" data-startTime="'+obj.startTime+'" data-endTime="'+obj.endTime+'" data-level="'+obj.level+'">'+searchCon+'<i class="glyphicon glyphicon-remove" title="删除"></i></li>';
+						$(".history_list").prepend(searchHtml);
+						historyArr.push(searchCon);
+					}
+				}
+				
+				//检索历史li 绑定点击事件 点击查询
+				$(".history_list").on("click","li",function(){
+					currentPage = 1;
+					//定义第一次请求
+					firstGet = true;
+					//获取当前点击的内容
+					var searchWords = $(this).text();
+					var ev = arguments.callee.caller.arguments[0] || window.event;
+				    var $this =$(ev.target); 
+				   	if($this[0].nodeName == "LI" ){ 
+				   		logStatus = true;	
+				   		sendObj.startTime = $(this).attr("data-startTime");
+				   		sendObj.endTime = $(this).attr("data-endTime");
+				   		sendObj.level = $(this).attr("data-level");
+				   		//获取数据
+				   		getLogs("../../log/getLogListByEquipment.do","",sendObj,1,pageSize)
+				   	}
+					
+				})
+				
+				//删除按钮（批量）日志  点击事件 函数
+				$("#removeLogs").click(function(){
+					//获取被选择的复选框
+					var checkboxs = $("#logs_list>tbody input[type=checkbox]:checked");
+					var logsId = '';
+					var logsType = $(".device_logType").html();
+					//判断是否又被选中的  没有则提示 有则继续执行删除操作
+					if(checkboxs.length == 0){
+						layer.msg('未选中任何日志',{icon: 5});
+					}else{
+						//循环拼接id值
+						for(var i = 0; i< checkboxs.length;i++){
+							//拼接日志Id
+							logsId += $(checkboxs[i]).parents("tr").attr("data-logid")+',';
+						}	
+						//调用删除函数
+						removeLogs(logsId,logsType)
+					}
+				})
+				//单个日志删除
+				$("#logs_list").on("click",".removeLog",function(){
+					var logId = $(this).parents("tr").attr("data-logid");
+					var logtype = $(".device_logType").html();
+					removeLogs(logId,logtype)
+				})
+	
+				//删除日志
+				function removeLogs(logsId,logsType){
+					currentPage = 1;
+					//参数
+					var obj = {};
+					obj.index = "estest";
+					obj.type = logsType;
+					obj.id = logsId;
+					//询问框
+					layer.confirm('您确定删除日志信息么？', {
+					  btn: ['确定','取消'] //按钮
+					}, function(index){
+						layer.close(index);
+						$.ajax({
+							type:"post",
+							url:"../../log/deleteById.do",
+							data:obj,
+							async:false,
+							success:function(data){
+								if(data == "DELETED"){
+									layer.msg('删除成功',{icon: 1});
+									firstGet = true;//第一次请求标识
+									//加载日志数据列表
+									if(searchType == "0"){//0-默认加载  1-精细加载
+										//查询日志
+										getLogs(url,id,'',1,pageSize)
+									}else if(searchType == "1"){
+										//查询日志
+										getLogs("../../log/getLogListByEquipment.do","",sendObj,1,pageSize)
+									}else{
+										layer.msg('加载数据错误',{icon: 5});
+									}
+								}else{
+									layer.msg('删除失败',{icon: 5});
+								}	
+								
+
+							},
+							error:function(err){
+								layer.msg('删除失败',{icon: 5});
+								console.log(err)
+							}
+						})
+						//关闭弹窗
+						layer.close();
+					}, function(){
+					  layer.close();
+					});
+				}
+			})
+			//数据最大显示下拉框改变事件
+			$(".maxShowData").change(function(){
+				maxShowChange('数据量过大时，细化查询条件提高查询效率')
+			})
+		</script>
+	</body>
+</html>
