@@ -10,7 +10,7 @@ public class ConnectionInfo {
 	public static final String ES_PORT="9300";
 	public static final String ES_PATH="192.168.100.101:9300";
 	
-	//线上测试8
+	//线上测试9
 	
 
 }
