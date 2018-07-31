@@ -30,6 +30,7 @@ public class VerifyLicense {
 		private static String licPath = "";
 		private static String pubPath = "";
 		
+		
 		public void setParam(String propertiesPath) {
 			// 获取参数
 			Properties prop = new Properties();
