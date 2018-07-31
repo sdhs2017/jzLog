@@ -11,7 +11,7 @@ public class ConnectionInfo {
 	public static final String ES_PATH="192.168.100.101:9300";
 
 	
-	//线上测试9
+	//线上测试10
 	
 
 }
