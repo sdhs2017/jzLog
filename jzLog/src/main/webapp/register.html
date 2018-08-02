@@ -28,8 +28,14 @@
 			-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/download.jpg',sizingMethod='scale')";
     		overflow: auto;
     	}
+    	.contentBox{
+			width: 100%;
+		    display: flex;
+		    justify-content: center;
+		}
     	.gray-bg .middle-box{
-    		width:700px!important;
+    		width:100%;
+    		max-width:700px!important;
     		/* margin:0 auto; */
 		    height: auto;
 		    z-index:1000;
@@ -37,12 +43,13 @@
 		   /*  margin: 10% auto 0 auto; */
 		   	box-shadow: 0 5px 30px #2c3d4e;
 		    border-radius: 5px;
-		    position:absolute;
+		    margin-right: 10px;
+		    margin-left: 10px;
+		   /*  position:absolute;
 		    top:100px;
 		    left:50%;
-		    /* background: rgba(255, 255, 255, 0.65); */
 		    margin-left:-350px;
-		    margin-bottom:100px;
+		    margin-bottom:100px; */
     	}
     	.middle-box{
     		max-width:6000px!important;
@@ -121,57 +128,60 @@
 </head>
 <body class="gray-bg">
 	<div class="logoImg"><img src="img/login_cx.png"><!-- <img  src="img/zwya_logo.png"> --></div>
-    <div class="middle-box loginscreen animated fadeInDown">
-    	<h3>用户注册</h3>
-        <div>
-            <form id="loginForm" class="m-t" role="form" onsubmit="return false">
-                <div class="form-group">
-                	<label class="control-label">账号(电话)<span style="color:red">*</span>：</label>
-	      			<input class="form-control name" placeholder="11位有效数字" >                 
-                </div>
-                <div class="form-group">
-                	<label class="control-label">密码<span style="color:red">*</span>：</label>                 
-	      			<input type="password" class="form-control password" maxlength="18" onkeyup="pwStrength(this.value)"  placeholder="6-18位数字、字母、字符" > 
-                </div>
-                <ul class="pass_set">
-				    <li id="strength_L">弱</li>
-				    <li id="strength_M">中</li>
-				    <li id="strength_H">强</li>
-				</ul>
-                <div class="form-group">
-                	<label class="control-label">确认密码<span style="color:red">*</span>：</label>                 
-	      			<input type="password" class="form-control password2" placeholder="确认密码" >  
-                </div>
-                <div class="form-group">
-                	<label class="control-label">姓名<span style="color:red">*</span>：</label>                 
-	      			<input type="text" class="form-control userName" placeholder="姓名"  > 
-                </div>
-                 <div class="form-group">
-                	<label class="control-label">邮箱<span style="color:red">*</span>：</label>                 
-	      			<input type="text" class="form-control email" placeholder="邮箱"  > 
-                </div>
-                <div class="form-group">
-                	<label class="control-label">角色：</label>                 
-	      			<input type="text" class="form-control" value="游客" readonly> 
-                </div>
-                <div class="form-group">
-                	<label class="control-label">年龄：</label>                 
-	      			<input type="text" class="form-control age" placeholder="年龄" >   
-                </div>
-                <div class="form-group" style="height:40px;">
-                	<label class="control-label">性别：</label>                 
-                    <div class="col-sm-12">
-	      				  <input type="radio" name="sex" value="1" checked class="nan">男
-	      				  <input type="radio" name="sex" value="0" class="nv">女
-	    			</div>    
-                </div>
-                
-                <button id="buttonRegister" class="btn btn-primary block full-width m-b">注册</button>
-				<a class="register" href="Login.jsp">已有账号？点击登录</a>
-            </form>
-        </div>
-    </div>
+	<div class="contentBox">
+		 <div class="middle-box loginscreen animated fadeInDown">
+	    	<h3>用户注册</h3>
+	        <div style="padding:0 10px;">
+	            <form id="loginForm" class="m-t" role="form" onsubmit="return false">
+	                <div class="form-group">
+	                	<label class="control-label">账号(电话)<span style="color:red">*</span>：</label>
+		      			<input class="form-control name" placeholder="11位有效数字" >                 
+	                </div>
+	                <div class="form-group">
+	                	<label class="control-label">密码<span style="color:red">*</span>：</label>                 
+		      			<input type="password" class="form-control password" maxlength="18" onkeyup="pwStrength(this.value)"  placeholder="6-18位数字、字母、字符" > 
+	                </div>
+	                <ul class="pass_set">
+					    <li id="strength_L">弱</li>
+					    <li id="strength_M">中</li>
+					    <li id="strength_H">强</li>
+					</ul>
+	                <div class="form-group">
+	                	<label class="control-label">确认密码<span style="color:red">*</span>：</label>                 
+		      			<input type="password" class="form-control password2" placeholder="确认密码" >  
+	                </div>
+	                <div class="form-group">
+	                	<label class="control-label">姓名<span style="color:red">*</span>：</label>                 
+		      			<input type="text" class="form-control userName" placeholder="姓名"  > 
+	                </div>
+	                 <div class="form-group">
+	                	<label class="control-label">邮箱<span style="color:red">*</span>：</label>                 
+		      			<input type="text" class="form-control email" placeholder="邮箱"  > 
+	                </div>
+	                <div class="form-group">
+	                	<label class="control-label">角色：</label>                 
+		      			<input type="text" class="form-control" value="游客" readonly> 
+	                </div>
+	                <div class="form-group">
+	                	<label class="control-label">年龄：</label>                 
+		      			<input type="text" class="form-control age" placeholder="年龄" >   
+	                </div>
+	                <div class="form-group" style="height:40px;">
+	                	<label class="control-label">性别：</label>                 
+	                    <div class="col-sm-12">
+		      				  <input type="radio" name="sex" value="1" checked class="nan">男
+		      				  <input type="radio" name="sex" value="0" class="nv">女
+		    			</div>    
+	                </div>
+	                
+	                <button id="buttonRegister" class="btn btn-primary block full-width m-b">注册</button>
+					<a class="register" href="Login.jsp">已有账号？点击登录</a>
+	            </form>
+	        </div>
+	    </div>
     
+	</div>
+   
     <script src="hplus/js/jquery.min.js?v=2.1.4"></script>
     <script src="hplus/js/jquery.form.js"></script>
     <script src="hplus/js/bootstrap.min.js?v=3.3.5"></script>
