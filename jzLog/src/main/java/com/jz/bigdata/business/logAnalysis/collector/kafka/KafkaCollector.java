@@ -1,6 +1,7 @@
 package com.jz.bigdata.business.logAnalysis.collector.kafka;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class KafkaCollector implements Runnable {
 	
 	private final ConsumerConnector consumer;
 	Map<String, List<KafkaStream<String, String>>> consumerMap;
-	String topic = "all";
+	String topic = "test6";
 	
     private ClientTemplate template;
     private ConfigProperty configProperty;
@@ -147,6 +148,8 @@ public class KafkaCollector implements Runnable {
 	public static final String REGEX = "lineStartRegex";
 //	public static final String DEFAULT_REGEX = "\\s?\\d\\d\\d\\d-\\d\\d-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d";
 	public static final String DEFAULT_REGEX = "^ java.|^   at";
+	
+	Calendar cal = Calendar.getInstance();
 
 	/**
 	 * kafka流对象管理
@@ -231,6 +234,10 @@ public class KafkaCollector implements Runnable {
 				Pattern facility_pattern = Pattern.compile("local3:");
 				Matcher facility_matcher = facility_pattern.matcher(log);
 				Pattern pattern = Pattern.compile(DEFAULT_REGEX);
+				// log4j from logstash
+				Pattern log4j_pattern = Pattern.compile("\"type\":\"log4j\"");
+				Matcher log4j_matcher = log4j_pattern.matcher(log);
+				
 				// 防火墙-包过滤日志信息过滤条件
 				Pattern logtype_pattern = Pattern.compile("logtype=1");
 				Matcher logtype_matcher = logtype_pattern.matcher(log);
@@ -304,6 +311,29 @@ public class KafkaCollector implements Runnable {
 							
 						}
 					}
+				}else if (log4j_matcher.find()) {
+					logType = LogType.LOGTYPE_LOG4J;
+					log4j = new Log4j(log, cal);
+					ipadress = log4j.getIp();
+					if (ipadressSet.contains(ipadress)) {
+						equipment = equipmentMap.get(log4j.getIp()+logType);
+						if (equipment!=null) {
+							log4j.setUserid(equipment.getUserId());
+							log4j.setDeptid(String.valueOf(equipment.getDepartmentId()));
+							log4j.setEquipmentname(equipment.getName());
+							log4j.setEquipmentid(equipment.getId());
+							json = gson.toJson(log4j);
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
+						}else {
+							log4j.setUserid(LogType.LOGTYPE_UNKNOWN);
+							log4j.setDeptid(LogType.LOGTYPE_UNKNOWN);
+							log4j.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+							log4j.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+							json = gson.toJson(log4j);
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
+						}
+					}
+					
 				}else if (logtype_matcher.find()&&dmg_matcher.find()) {
 					logType = LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG;
 					try {
@@ -454,6 +484,8 @@ public class KafkaCollector implements Runnable {
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			System.out.println(e1.getMessage());
+			System.out.println(e1);
 		}
 
 	}
