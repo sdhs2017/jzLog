@@ -79,14 +79,14 @@
 <body>
 	<div id="box">
 		<div class="top_title">
-			资产信息
+			设备列表
 		</div>
-		<div class="propertyNav">
+		<!-- <div class="propertyNav">
 			<a href="device.html">资产管理</a>><a class="secondA" href="javascript:void(0)">资产</a> <a href="device.html">返回上一级</a>
-		</div>
+		</div> -->
 		<!-- table-no-bordered -->
 		<div class="tableCon">
-			<table id="deviceSnmpTable" data-toggle="table"  data-detail-view="true" data-classes="table table-hover " data-pagination="false" style="width:100%；">
+			<table id="deviceSnmpTable" data-toggle="table" data-classes="table table-hover " data-pagination="false" style="width:100%；">
                 <thead>
                     <tr>
                     	<th data-field="name"   data-valign="middle" >资产名称</th><!-- 时间  日志内容 事件类型  -->
@@ -98,7 +98,17 @@
                     	<th  data-valign="middle">状态</th>                 	                	
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                	<!--  <tr>
+                		<td>123</td>
+                		<td>11</td>
+                		<td>4</td>
+                		<td>5</td>
+                		<td>6</td>
+                		<td>+</td>
+                		<td>"&lt;"&gt;</td>
+                	</tr> -->
+                </tbody>
             </table>
            <!--  <div class="eventSearchBottom">
             	<div id="pageBox"></div>
@@ -134,7 +144,7 @@
 					//颜色class
 					var typeColor = '';
 					//接受每一项数据
-					var obj = data[0][i];
+					var obj = filterObj(data[0][i]);
 					//转义状态码
 					if(obj.type == 1){
 						snmpType = "正常";
@@ -164,7 +174,17 @@
 		//页面加载时调用请求
 		getSnmpData();
 		//10秒重新加载
-		setinterval(getSnmpData,10000)
+		setInterval(getSnmpData,10000)
+		
+		//替换数据
+		function filterObj(obj){
+			for(var i in obj){
+				if(obj[i] == undefined || obj[i] == null || obj[i] == ""){
+					obj[i] = '-';
+				}
+			}
+			return obj;
+		}
 	</script>
 </body>
 </html>
