@@ -3,9 +3,13 @@ package com.jz.bigdata.business.logAnalysis.log.entity;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.gson.Gson;
+
 
 /**
  * 
@@ -144,6 +148,8 @@ public class Log4j {
 	public Log4j(){
 		
 	}
+	
+	
 	/**
 	 * 初始化	String2bean
 	 * @param log
@@ -153,7 +159,7 @@ public class Log4j {
 		
 		Pattern facility_pattern = Pattern.compile("local3:");
 		Matcher facility_matcher = facility_pattern.matcher(log);
-		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         
         if (facility_matcher.find()) {
 			String logleft = log.substring(0, log.indexOf(facility_matcher.group(0))+facility_matcher.group(0).length());
@@ -172,7 +178,7 @@ public class Log4j {
 	        Pattern logLevelpattern = Pattern.compile("debug|info|error|warn",Pattern.CASE_INSENSITIVE);
 	        Matcher logLevelmatcher = logLevelpattern.matcher(logright);
 	        
-	        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        
 	        
 	        if(datematcher.find()){ 
 	        	//SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
@@ -212,6 +218,37 @@ public class Log4j {
 			}
 		}
         
+	}
+	
+	/**
+	 * 初始化	String2bean
+	 * @param log
+	 * @throws ParseException 
+	 */
+	public Log4j(String log,Calendar cal) {
+		Gson gson = new Gson();
+		Log4jjson log4jjson = gson.fromJson(log, Log4jjson.class);
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		this.ip = log4jjson.getIp();
+		// 时间处理
+		this.logdate = new Date(log4jjson.getTimestamp());
+		cal.setTimeInMillis(log4jjson.getTimestamp());
+		this.logtime = format.format(cal.getTime());
+		this.logtime_year = String.valueOf(cal.get(Calendar.YEAR));
+		this.logtime_month = String.format("%02d",cal.get(Calendar.MONTH)+1);
+		this.logtime_day = String.format("%02d",cal.get(Calendar.DAY_OF_MONTH));
+		this.logtime_hour = String.format("%02d",cal.get(Calendar.HOUR_OF_DAY));
+		this.logtime_minute = String.format("%02d",cal.get(Calendar.MINUTE));
+		
+		this.operation_level = log4jjson.getPriority();
+		if (log4jjson.getStack_trace()!=null) {
+			this.operation_des = this.logtime+" ["+operation_level+"] "+log4jjson.getLogger_name()+" "+log4jjson.getMessage()+" "+log4jjson.getStack_trace();
+		}else {
+			this.operation_des = this.logtime+" ["+operation_level+"] "+log4jjson.getLogger_name()+" "+log4jjson.getMessage();
+		}
+		
+		
 	}
 	
 	public String toMapping() {
@@ -281,6 +318,89 @@ public class Log4j {
         return es;
     }
 	
+	class Log4jjson{
+		
+		String version;
+		String file;
+		String ip;
+		String logger_name;
+		String message;
+		String method;
+		String path;
+		String priority;
+		String stack_trace;
+		long timestamp;
+		String type;
+		public String getVersion() {
+			return version;
+		}
+		public void setVersion(String version) {
+			this.version = version;
+		}
+		public String getFile() {
+			return file;
+		}
+		public void setFile(String file) {
+			this.file = file;
+		}
+		public String getIp() {
+			return ip;
+		}
+		public void setIp(String ip) {
+			this.ip = ip;
+		}
+		public String getLogger_name() {
+			return logger_name;
+		}
+		public void setLogger_name(String logger_name) {
+			this.logger_name = logger_name;
+		}
+		public String getMessage() {
+			return message;
+		}
+		public void setMessage(String message) {
+			this.message = message;
+		}
+		public String getMethod() {
+			return method;
+		}
+		public void setMethod(String method) {
+			this.method = method;
+		}
+		public String getPath() {
+			return path;
+		}
+		public void setPath(String path) {
+			this.path = path;
+		}
+		public String getPriority() {
+			return priority;
+		}
+		public void setPriority(String priority) {
+			this.priority = priority;
+		}
+		public String getStack_trace() {
+			return stack_trace;
+		}
+		public void setStack_trace(String stack_trace) {
+			this.stack_trace = stack_trace;
+		}
+		public long getTimestamp() {
+			return timestamp;
+		}
+		public void setTimestamp(long timestamp) {
+			this.timestamp = timestamp;
+		}
+		public String getType() {
+			return type;
+		}
+		public void setType(String type) {
+			this.type = type;
+		}
+		
+		
+	}
+	
 	public static void main(String [] args) {
 		System.out.println(new Log4j().toMapping());
 		
@@ -289,3 +409,4 @@ public class Log4j {
 		
 	}
 }
+

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <%@page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %> 
     <%String path = request.getContextPath();%>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <title>宸析日志分析系统</title>
@@ -21,6 +21,14 @@
     <link href="../hplus/css/animate.min.css" rel="stylesheet">
     <link href="../hplus/css/style.css?v=4.0.0" rel="stylesheet">
     <style type="text/css">
+    	html{
+    		min-width:1366px;
+    		overflow:auto;
+    		overflow-y:hidden;		
+    	}
+    	body.canvas-menu .navbar-static-side, body.fixed-sidebar .navbar-static-side{
+    		position:absolute;
+    	}
         .threshold{
         	float:left;
         	margin-left: 195px;
@@ -33,8 +41,20 @@
         #wrapper{
         	position:fixed;
         }
+         #wrapper>nav{
+         	overflow:hidden;
+         	padding-bottom:86px;
+         }
+         #wrapper>nav .slimScrollDiv{
+         	height: 100%!important;
+         }
+          #wrapper>nav .slimScrollDiv .sidebar-collapse{
+          	height: 100%!important;
+          	overflow:auto;
+          }
         #page-wrapper{
         	width: calc(100% - 200px);
+        	min-width:1166px!important;
         }
         .index_top{
         	height:50px;
@@ -42,6 +62,7 @@
         	line-height:45px;
         	background:#2f4050;
         	padding-left:10px;
+        	
         }
         .jxLogo img{
         	width:180px;
@@ -55,6 +76,7 @@
         	padding-top:0;
         	padding-bottom:0;
         	line-height:36px;
+        	min-width:1366px;
         }
         .userLogout{
         	float:right;
@@ -195,6 +217,7 @@
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
 	 <div class="index_top" >
 	 	 <img alt="image" src="../img/index_cx.png" />
+	 	 <!-- <img alt="image" src="../img/jx_logo.png" /> -->
 	 	 <b class="version">V2.0</b>
    		<!--  <img alt="image"  src="../img/zwya_logo.png" />
    		 <b class="version"> NCS-LOG V3.0</b> -->
@@ -615,7 +638,7 @@
     <script src="../js/formCheck.js"></script>
 </body>
 <script>
-//判断是否为手机端
+/* //判断是否为手机端
 var ua = navigator.userAgent;
 var ipad = ua.match(/(iPad).*OS\s([\d_]+)/),
     isIphone = !ipad && ua.match(/(iPhone\sOS)\s([\d_]+)/),
@@ -624,7 +647,7 @@ var ipad = ua.match(/(iPad).*OS\s([\d_]+)/),
 if(isMobile) {
 	//显示左边栏开关
 	$(".navbar-header").css({"display":"block"});
-}
+}  */
 //刷新页面时调用，验证用户信息session
 $(function(){
 	$.ajax({
@@ -971,7 +994,10 @@ function getMenuData(){
   	}
   })
 }
-
+$(window).scroll(function(){//开始监听滚动条
+	var leftVal = ($(document).scrollLeft());
+	$("#wrapper").css("left",-leftVal+'px')
+})
 </script>
 
 </html>
