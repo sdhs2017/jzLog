@@ -102,6 +102,6 @@ public class DepartmentController {
 	@DescribeLog(describe="获取部门树")
 	public String selectAllDepartment(){
 		return departmentService.selectAllDepartment();
-		
+		//李洪连 提交测试
 	}
 }
