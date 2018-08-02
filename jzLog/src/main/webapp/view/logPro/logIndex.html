@@ -383,6 +383,9 @@
 					        	}
 					        	
 				            },
+				            grid: {
+				            	left:'80px'
+				            },
 				            tooltip: {},
 				            legend: {
 						        data:[],
@@ -482,6 +485,43 @@
 		        		myChart01.resize();
 		        		myChart02.resize();
 		            });
+		        	var html1Num2 = 0;
+		        	 myChart01.on('click', function (params) {
+			        		//console.log(params)
+			        		//获取x轴值
+			        		xParam = params.name;
+			        		localStorage.setItem("allDeviceSearchWord",xParam);
+			        		//拼接导航
+			        		var html ='<a href="javascript:;" class="active J_menuTab" data-id="searchLogs'+html1Num2+'">'+xParam+'日志检索<i class="fa fa-times-circle"></i></a>'
+			        		//移除导航菜单选中属性
+			        		$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
+			        		//添加导航菜单
+			        		$('.page-tabs-content', parent.document).click().append(html);
+			        		var iframe = '<iframe class="J_iframe" width="100%" height="100%" src="logPro/searchLogs.html?v=4.0" frameborder="0" data-id="searchLogs'+html1Num2+'" seamless="" style="display: inline;"></iframe>'
+			        		//移除其他页面
+			        		$('#content-main', parent.document).click().children("iframe").hide();
+			        		$('#content-main', parent.document).click().append(iframe);
+			        		html1Num2++;
+						   
+						});
+		        	 myChart02.on('click', function (params) {
+			        		//console.log(params)
+			        		//获取x轴值
+			        		xParam = params.name;
+			        		localStorage.setItem("allDeviceSearchWord",xParam);
+			        		//拼接导航
+			        		var html ='<a href="javascript:;" class="active J_menuTab" data-id="searchLogs'+html1Num2+'">'+xParam+'日志检索<i class="fa fa-times-circle"></i></a>'
+			        		//移除导航菜单选中属性
+			        		$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
+			        		//添加导航菜单
+			        		$('.page-tabs-content', parent.document).click().append(html);
+			        		var iframe = '<iframe class="J_iframe" width="100%" height="100%" src="logPro/searchLogs.html?v=4.0" frameborder="0" data-id="searchLogs'+html1Num2+'" seamless="" style="display: inline;"></iframe>'
+			        		//移除其他页面
+			        		$('#content-main', parent.document).click().children("iframe").hide();
+			        		$('#content-main', parent.document).click().append(iframe);
+			        		html1Num2++;
+						   
+						});
 				},
 				error:function(err){
 					
