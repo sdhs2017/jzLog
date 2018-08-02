@@ -40,7 +40,7 @@ public class KafkaCollector implements Runnable {
 	
 	private final ConsumerConnector consumer;
 	Map<String, List<KafkaStream<String, String>>> consumerMap;
-	String topic = "test6";
+	String topic = "all";
 	
     private ClientTemplate template;
     private ConfigProperty configProperty;
