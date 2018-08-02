@@ -2430,7 +2430,7 @@ video {
 }
 #wrapper {
 	width:100%;
-	overflow-x:hidden;
+	/* overflow-x:hidden; */
 	background-color:#2f4050
 }
 .wrapper {
@@ -5305,7 +5305,7 @@ body.skin-3 {
 }
 }@media (max-width:768px) {
 	body.fixed-sidebar .navbar-static-side {
-	display:none
+	/* display:none */
 }
 body.fixed-sidebar.mini-navbar .navbar-static-side {
 	/* width:70px */
@@ -5343,7 +5343,7 @@ body.fixed-sidebar.mini-navbar .navbar-static-side {
 	display:block
 }
 .content-tabs {
-	display:none
+	/* display:none */
 }
 #content-main {
 	height:calc(100% - 87px)

@@ -79,7 +79,7 @@ $(document).ready(function() {
 }),
 $(window).bind("load resize",
 function() {
-    $(this).width() < 769 && ($("body").addClass("mini-navbar")/*, $(".navbar-static-side").fadeIn()*/)
+  //  $(this).width() < 769 && ($("body").addClass("mini-navbar")/*, $(".navbar-static-side").fadeIn()*/)
 }),
 $(function() {
 	//$("body").addClass("skin-1");//自动加载蓝色主题
