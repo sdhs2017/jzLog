@@ -78,7 +78,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //    		functionService
 //    	    functionService.selectAll(_userList.get(0).getRole());
     	    
-    		System.err.println(request.getRequestURI());
+//    		System.err.println(request.getRequestURI());
 //    		PrintWriter out = response.getWriter();
 //    		response.setCharacterEncoding("utf-8");
 //            out.print("您没有权限");  
@@ -91,10 +91,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         	//session userid不为空且sessionid一致
 //        	System.err.println(session.getAttribute(Constant.SESSION_USERID)!=null);
 //        	System.err.println(session.getId().equals(session.getAttribute(Constant.SESSION_ID)));
-        	System.err.println(session.getAttribute(Constant.SESSION_USERID));
-        	System.err.println(session.getAttribute(Constant.SESSION_ID));
+//        	System.err.println(session.getAttribute(Constant.SESSION_USERID));
+//        	System.err.println(session.getAttribute(Constant.SESSION_ID));
         	if(session.getAttribute(Constant.SESSION_USERID)!=null&&session.getId().equals(session.getAttribute(Constant.SESSION_ID))){
-        		System.err.println(session.getAttribute(Constant.SESSION_USERID));
+//        		System.err.println(session.getAttribute(Constant.SESSION_USERID));
         		Map<String,Map<String,String>> map=GetfunctionMap.map;
 //        		System.out.println(Constant.SESSION_USERROLE);
 //        		System.out.println(session.getAttribute(Constant.SESSION_USERROLE));
