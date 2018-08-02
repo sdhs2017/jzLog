@@ -82,7 +82,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //    		PrintWriter out = response.getWriter();
 //    		response.setCharacterEncoding("utf-8");
 //            out.print("您没有权限");  
-            
+             
     		return true;
     		}
     	}else{
