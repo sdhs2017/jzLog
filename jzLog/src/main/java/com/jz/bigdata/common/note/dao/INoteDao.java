@@ -34,5 +34,8 @@ public interface INoteDao {
 	
 	int dropTableNote();
 	
+	List<Note> selectByPage(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("account")String account,@Param("userName")String userName,@Param("departmentName")String departmentName,@Param("ip")String ip,@Param("startRecord")int startRecord,@Param("pageSize")int pageSize);
+	
+	List<String> countByPage(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("account")String account,@Param("userName")String userName,@Param("departmentName")String departmentName,@Param("ip")String ip);
 	
 }

@@ -1,15 +1,20 @@
 package com.jz.bigdata.common.note.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.jz.bigdata.common.equipment.entity.Equipment;
 import com.jz.bigdata.common.note.dao.INoteDao;
 import com.jz.bigdata.common.note.entity.Note;
 import com.jz.bigdata.common.note.service.INoteService;
+
+import net.sf.json.JSONArray;
 
 /**
  * @author shichengyu
@@ -127,6 +132,43 @@ public class NoteService implements INoteService {
 		}
 		
 		return num;
+	}
+
+
+
+
+	/**
+	 * @param startTime
+	 * @param endTime
+	 * @param account
+	 * @param userName
+	 * @param departmentName
+	 * @param ip
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return
+	 * @description
+	 * 分页查询
+	 */
+	@Override
+	public String selectByPage(String startTime,String endTime,String account,String userName,String departmentName,String ip,int pageIndex,int pageSize) {
+//		获取起始数
+		int startRecord =(pageSize*(pageIndex-1));
+//		获取总数
+		List count=noteDao.countByPage(startTime, endTime, account, userName, departmentName, ip);
+		List listCount=new ArrayList<>();
+//		获取总数集合
+		listCount=(List) count.get(0);
+		
+		Map<String,Object> map =new HashMap<String,Object>();
+//		总数添加到map
+		map.put("count", (listCount.get(0)));
+//		查询所有数据
+		List<Note> listEquipment= noteDao.selectByPage(startTime, endTime, account, userName, departmentName, ip, startRecord, pageSize);
+//		System.err.println(listEquipment.get(0).getCreateTime());
+//		数据添加到map
+		map.put("note", listEquipment);
+		return JSONArray.fromObject(map).toString();
 	}
 
 

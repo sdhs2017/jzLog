@@ -25,5 +25,7 @@ public interface INoteService {
 	int backup();
 	
 	int restore();
+	
+	String selectByPage(String startTime,String endTime,String account,String userName,String departmentName,String ip,int pageIndex,int pageSize);
 
 }

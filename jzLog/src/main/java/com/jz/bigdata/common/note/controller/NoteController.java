@@ -97,4 +97,26 @@ public class NoteController {
 		
 	}
 	
+	
+	@ResponseBody
+	@RequestMapping(value="/selectByPage",produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="分页查询审计日志")
+	public String selectByPage(HttpServletRequest request) {
+		//获取参数
+		String startTime=request.getParameter("startTime");
+		String endTime=request.getParameter("endTime");
+		String account=request.getParameter("account");
+		String userName=request.getParameter("userName");
+		String departmentName=request.getParameter("departmentName");
+		String ip=request.getParameter("ip");
+		//页码数
+		int pageIndex=Integer.parseInt(request.getParameter("pageIndex"));
+		//每页显示的数量
+		int pageSize=Integer.parseInt(request.getParameter("pageSize"));
+		
+		return noteService.selectByPage(startTime, endTime, account, userName, departmentName, ip, pageIndex, pageSize);
+	}
+	
+	
+	
 }
