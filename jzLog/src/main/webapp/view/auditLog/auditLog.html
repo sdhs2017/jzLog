@@ -123,6 +123,25 @@
 		#searchAuditLogs{
 			border-radius:0;
 		}
+		.eventSearchBottom{
+			margin-bottom:50px;
+			height:50px;
+		}
+		.eventSearchBottom>div{
+			float:right;
+		}
+		.allCountBox{
+			float: right;
+		    height: 50px;
+		    line-height: 50px;
+		    font-size: 14px;
+		    margin-right: 10px;
+		    font-weight: 600;
+		}
+		.allCountBox b {
+		    color: #1ab394;
+		    margin: 0 5px;
+		}
 	</style>
 	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 </head>
@@ -168,7 +187,7 @@
 		
 		<!-- table-no-bordered -->
 		<div class="tableCon">
-			<table id="auditLogTable" data-toggle="table" data-classes="table  table-hover " data-pagination="true" style="width:100%">
+			<table id="auditLogTable" data-toggle="table" data-classes="table  table-hover " style="width:100%">
                 <thead>
                     <tr>
                     	<th data-checkbox="true"></th>
@@ -201,9 +220,11 @@
 	<script src="../../js/bootstrap-table/js/bootstrap-table-zh-CN.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript"  charset="utf-8">
 		var pageSize = 15;//每页显示的条数
-		var firstGet = true;//定义第一次请求
-		var allCount = 0;//检索的结果总总数
-		var currentPage = 1;//当前显示的页码
+		var firstGet; //定义第一次请求
+		var allCount;//检索的结果总总数
+		var currentPage;//当前显示的页码
+		//初始化参数
+		paramInitialize();
 		//存放id数组
 		var idArr = [];
 		//存放传递参数对象 并初始化
@@ -222,7 +243,7 @@
 			//清空id数组
 			idArr = [];
 			var sfunc = function(data){
-				var arr = data[0];
+				var arr = data[0].note[0];
 				for(var i in arr){
 					arr[i].time = arr[i].time.split(".")[0];
 				}
@@ -231,17 +252,16 @@
 					var obj = arr[i];
 					idArr.push(obj.id)
 				}
-				console.log(data)
 				//添加到页面
-				//$("#auditLogTable").bootstrapTable("load",arr);	
+				$("#auditLogTable").bootstrapTable("load",arr);	
 				//第一次请求创建分页
 				if(firstGet == true){
 					//获得总条数
-					allCount = data[0].count;
+					allCount = data[0].count.count;
 					//添加总条数到页面中
 					$(".allCountBox>b").html(allCount);
 					//创建分页
-					//createPage("pageBox",$(".maxShowData").val(),pageSize);
+					createPage("pageBox",allCount,pageSize);
 				}
 				
 			}
@@ -250,7 +270,7 @@
 				
 			}
 			//发送请求
-			ajaxPost("../../note/selectAll.do",sendObj,sfunc,efunc);
+			ajaxPost("../../note/selectByPage.do",sendObj,sfunc,efunc);
 		}
 		//页面加载时 获取数据
 		getAuditLogsData(sendObj);
@@ -296,6 +316,8 @@
 				var sfunc = function(data){
 					 if(data.success == "true"){//成功
 						layer.msg(data.message,{icon: 1});
+						//初始化参数
+						paramInitialize();
 						getAuditLogsData(sendObj);
 					}else if(data.success == "false"){//失败
 						layer.msg(data.message,{icon: 5});
@@ -325,6 +347,8 @@
 					var sfunc = function(data){//成功
 						if(data.success == "true"){
 							layer.msg(data.message,{icon: 1});
+							//初始化参数
+							paramInitialize();
 							getAuditLogsData(sendObj);
 						}else if(data.success == "false"){//失败
 							layer.msg(data.message,{icon: 5});
@@ -353,6 +377,8 @@
 				var sfunc = function(data){//成功
 					if(data.success == "true"){
 						layer.msg(data.message,{icon: 1});
+						//初始化参数
+						paramInitialize();
 						getAuditLogsData(sendObj);
 					}else if(data.success == "false"){//失败
 						layer.msg(data.message,{icon: 5});
@@ -392,6 +418,8 @@
 					var sfunc = function(data){//成功
 						if(data.success == "true"){
 							layer.msg(data.message,{icon: 1});
+							//初始化参数
+							paramInitialize();
 							getAuditLogsData(sendObj);
 						}else if(data.success == "false"){//失败
 							layer.msg(data.message,{icon: 5});
@@ -414,11 +442,15 @@
 		//刷新按钮
 		$("#repeat").click(function(){
 			//获取数据
-			getAuditLogsData(sendObj)
+			getAuditLogsData(sendObj);
+			//初始化参数
+			paramInitialize();
 		})
 		
 		//检索按钮
 		$("#searchAuditLogs").click(function(){
+			//初始化参数
+			paramInitialize();
 			//获取参数函数
 			sendObj.ip = $(".searchIp").val();
 			sendObj.userName = $(".searchUserName").val();
@@ -429,7 +461,12 @@
 			//获取数据
 			getAuditLogsData(sendObj);
 		})
-		
+		//初始化参数
+		function paramInitialize(){
+			firstGet = true;//定义第一次请求
+			allCount = 0;//检索的结果总总数
+			currentPage = 1;//当前显示的页码
+		}
 		
 	</script>
 </body>
