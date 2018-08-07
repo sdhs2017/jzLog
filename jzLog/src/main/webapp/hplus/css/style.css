@@ -2441,7 +2441,7 @@ video {
 }
 #page-wrapper {
 	padding:0 15px;
-	position:inherit;
+	/* position:inherit; */
 	margin:0 0 0 200px
 }
 .title-action {
