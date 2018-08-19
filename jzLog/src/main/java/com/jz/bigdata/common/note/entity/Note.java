@@ -23,16 +23,16 @@ public class Note {
 	String userId;   //用户id
 	int departmentId;//部门id		
 	String account;   //用户账号
-	String error;
-	int count;
-	String userName;
+	String error;//错误信息	
+	int count;//总数
+	String userName;//用户姓名
 	String departmentName;
 	
 	String startTime;//起始时间
 	String endTime;//结束时间
 	
-	String ip;
-	String tableName;
+	String ip;//登录ip
+	String tableName;//表名
 	
 	
 	

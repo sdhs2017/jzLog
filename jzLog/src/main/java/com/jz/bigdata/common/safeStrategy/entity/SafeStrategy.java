@@ -8,16 +8,16 @@ public class SafeStrategy {
 	
 	private String id;
 	private String equipmentId;
-	private String event_type;
-	private int number;
-	private String time;
-	private int state;
-	private String safe_strategy_name;
-	private String month;
-	private String day;
-	private String hour;
-	private String minute;
-	private String time_interval;
+	private String event_type;//资产类型
+	private int number;//数量
+	private String time;//时间
+	private int state;//状态
+	private String safe_strategy_name;//安全策略名称
+	private String month;//月
+	private String day;//日
+	private String hour;//小时
+	private String minute;//分钟
+	private String time_interval;//间隔时间
 	
 	public String getTime_interval() {
 		return time_interval;

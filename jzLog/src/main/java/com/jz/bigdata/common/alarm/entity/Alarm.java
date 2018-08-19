@@ -6,8 +6,8 @@ package com.jz.bigdata.common.alarm.entity;
  */
 public class Alarm {
 	private String id;
-	private String event_type;
-	private int emailState;
+	private String event_type;//日志类型
+	private int emailState;//邮箱状态
 	public String getId() {
 		return id;
 	}
