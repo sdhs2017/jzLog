@@ -82,6 +82,12 @@ public class SafeStarategyServiceImpl implements ISafeStrategyService {
 		return safeStarategy.delete(ids);
 	}
 
+	/**
+	 * @param id
+	 * @return
+	 * @description
+	 * 获取安却策略通过id
+	 */
 	@Override
 	public List<SafeStrategy> selectById(String id) {
 		List<SafeStrategy> list =safeStarategy.selectById(id);
@@ -95,6 +101,12 @@ public class SafeStarategyServiceImpl implements ISafeStrategyService {
 		return list;
 	}
 
+	/**
+	 * @param safeStrategy
+	 * @return
+	 * @description
+	 * 获取信息通过资产id类型
+	 */
 	@Override
 	public List<SafeStrategy> selectByequipmentIdEventType(SafeStrategy safeStrategy) {
 		return safeStarategy.selectByequipmentIdEventType(safeStrategy);

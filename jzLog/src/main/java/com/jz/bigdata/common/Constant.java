@@ -13,12 +13,13 @@ public class Constant {
 	public static String SESSION_USERID = "SESSION_USERID";
 //	部门id
 	public static String SESSION_DEPARTMENTID = "SESSION_DEPARTMENTID";
-	
+	//username
 	public static String SESSION_USERNAME = "SESSION_USERNAME";
-	
+	//部门名称
 	public static String SESSION_DEPARTMENTNAME = "SESSION_DEPARTMENTNAME";
-	
+	//账号
 	public static String SESSION_USERACCOUNT = "SESSION_USERACCOUNT";
+	//角色
 	public static String SESSION_USERROLE = "SESSION_USERROLE";
 //	public static String SESSION_DEPARTMENTID = "SESSION_DEPARTMENTID";
 	/**
