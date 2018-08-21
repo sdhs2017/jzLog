@@ -79,7 +79,6 @@ public class FunctionServiceImpl implements IFunctionService {
 			}
 
 		}
-		System.out.println(roleMap.toString());
 		return roleMap;
 	}
 
