@@ -65,7 +65,7 @@
 	</select>
 
 
-
+	<!--   总数 -->
 	<select id="count"    >
 	<!--   <bind name="name" value="'%' + name + '%'" /> -->
 		    select count(1) as count
@@ -179,24 +179,24 @@
 	<delete id="deleteAll" >
 		delete from note 
 	</delete>
-	
+	<!--   备份 -->
 	<update id="backup">
 		CREATE TABLE note_backup SELECT * FROM note;
 	</update>
-	
+	<!--  表是否存在 -->
 	<select id="tableName" resultMap="BaseResultMap" >
 		SELECT table_name as tableName FROM information_schema.`TABLES`  WHERE table_name = 'note_backup'
 		
 	</select>
-	
+	<!--   删除表-->
 	<update id="dropTable" >  
         drop table note_backup
     </update>
-    
+    <!--   删除表-->
     <update id="dropTableNote" >  
         drop table note
     </update>
-    
+    <!--   还原 -->
     <update id="restore">
 		CREATE TABLE note SELECT * FROM note_backup;
 	</update>

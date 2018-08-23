@@ -292,6 +292,7 @@
        		</array>  
    		</property> 
 	</bean>
+	<!-- 部门业务mapper -->
 	<bean id="departmentSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
@@ -303,6 +304,7 @@
        		</array>  
    		</property> 
 	</bean>
+	<!-- 资产业务mapper -->
 	<bean id="equipmentSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
@@ -314,7 +316,7 @@
        		</array>  
    		</property> 
 	</bean>
-	
+	<!-- 审计日志业务mapper -->
 	<bean id="noteSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
@@ -326,7 +328,7 @@
        		</array>  
    		</property> 
 	</bean>
-	
+	<!--权限业务mapper -->
 	<bean id="functionSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
@@ -338,6 +340,7 @@
        		</array>  
    		</property> 
 	</bean>
+	<!-- 报警业务mapper -->
 	<bean id="alarmSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
@@ -349,6 +352,7 @@
        		</array>  
    		</property> 
 	</bean>
+	<!-- 安全审计业务mapper -->
 	<bean id="safeStrategySqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
@@ -360,6 +364,7 @@
        		</array>  
    		</property> 
 	</bean>
+	<!-- 菜单业务mapper -->
 	<bean id="menuSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
@@ -383,6 +388,7 @@
 		<property name="basePackage" value="com.jz.bigdata.business.bi.phoenix" />
 		<property name="sqlSessionFactoryBeanName" value="phoenixSqlSessionFactory"></property>
 	</bean>-->
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.business.health" />
 		<property name="sqlSessionFactoryBeanName" value="healthSqlSessionFactory"></property>
@@ -404,36 +410,37 @@
 		<property name="basePackage" value="com.jz.bigdata.common.users" />
 		<property name="sqlSessionFactoryBeanName" value="logSqlSessionFactory"></property>
 	</bean>
-	
+	<!--部门配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.common.department" />
 		<property name="sqlSessionFactoryBeanName" value="departmentSqlSessionFactory"></property>
 	</bean>
-	
+	<!--资产配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.common.equipment" />
 		<property name="sqlSessionFactoryBeanName" value="equipmentSqlSessionFactory"></property>
 	</bean>
-
+	<!--审计日志配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.common.note" />
 		<property name="sqlSessionFactoryBeanName" value="noteSqlSessionFactory"></property>
 	</bean>
-	
+	<!--权限配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.common.function" />
 		<property name="sqlSessionFactoryBeanName" value="functionSqlSessionFactory"></property>
 	</bean>
+	<!--日志报警配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.common.alarm" />
 		<property name="sqlSessionFactoryBeanName" value="alarmSqlSessionFactory"></property>
 	</bean>
-	
+	<!--安全策略配置 -->
 	 <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.common.safeStrategy" />
 		<property name="sqlSessionFactoryBeanName" value="safeStrategySqlSessionFactory"></property>
 	</bean>
-	
+	<!--菜单配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.common.menu" />
 		<property name="sqlSessionFactoryBeanName" value="menuSqlSessionFactory"></property>

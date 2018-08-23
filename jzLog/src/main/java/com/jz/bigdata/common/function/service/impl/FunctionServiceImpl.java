@@ -26,21 +26,22 @@ public class FunctionServiceImpl implements IFunctionService {
 
 	public Map<String, Map<String, String>> map;
 
+	/**
+	 * @param role
+	 * @return
+	 * @description
+	 * 获取权限通过角色
+	 */
 	@Override
 	public List<Function> selectAllByRole(int role) {
-		List<Function> list = functionDao.selectAllByRole(role);
-		System.out.println(list.get(0).getResource());
-		// Map<String,String> mapFunction= new HashMap<String,String>();
-		// System.out.println(list.get(0));
-		// for(Function function : list) {
-		//// System.out.println(function.get);
-		// mapFunction.put(function.getResource(), function.getDescribes());
-		// }
-		// map.put(String.valueOf(role), mapFunction);
-
 		return functionDao.selectAllByRole(role);
 	}
 
+	/**
+	 * @return
+	 * @description
+	 * 获取所有权限
+	 */
 	@Override
 	public Map<String, List<Function>> selectAll() {
 		List<Function> list = functionDao.selectAll();
@@ -78,7 +79,6 @@ public class FunctionServiceImpl implements IFunctionService {
 			}
 
 		}
-		System.out.println(roleMap.toString());
 		return roleMap;
 	}
 
