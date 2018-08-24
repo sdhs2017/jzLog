@@ -17,7 +17,7 @@ public class JzLogESinit {
 	}
 	
 	public void deleteIndex(String index,ClientTemplate clientTemplate){
-		clientTemplate.deleteByIndex("estest");
+		clientTemplate.deleteByIndex(index);
 	}
 	
 	public List<Map<String, Object>> countGroupBy(String index, String type,String param,ClientTemplate clientTemplate){

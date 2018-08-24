@@ -54,7 +54,7 @@ public class EsTest{
 	
 	@Test
 	public void deleteIndex(){
-		String index = "estest";
+		String index = "eslog-analysis";
 		new JzLogESinit().deleteIndex(index, clientTemplate);
 	}
 	
