@@ -28,17 +28,17 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="K:/eclipseWork/jzLog/src/main/webapp/WEB-INF/lib/truelicense/truelicense-core-1.33.jar">
+	<classpathentry exported="true" kind="lib" path="C:/Users/李洪连/Desktop/licence/truelicense-core-1.33.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="K:/eclipseWork/jzLog/src/main/webapp/WEB-INF/lib/truelicense/truelicense-swing-1.33.jar">
+	<classpathentry exported="true" kind="lib" path="C:/Users/李洪连/Desktop/licence/truelicense-swing-1.33.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="K:/eclipseWork/jzLog/src/main/webapp/WEB-INF/lib/truelicense/truelicense-xml-1.33.jar">
+	<classpathentry exported="true" kind="lib" path="C:/Users/李洪连/Desktop/licence/truelicense-xml-1.33.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
