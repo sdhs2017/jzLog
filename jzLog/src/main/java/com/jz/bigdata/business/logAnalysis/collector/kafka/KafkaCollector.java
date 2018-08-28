@@ -21,6 +21,7 @@ import com.jz.bigdata.business.logAnalysis.log.entity.Mysql;
 import com.jz.bigdata.business.logAnalysis.log.entity.PacketFilteringFirewal;
 import com.jz.bigdata.business.logAnalysis.log.entity.Syslog;
 import com.jz.bigdata.business.logAnalysis.log.entity.Winlog;
+import com.jz.bigdata.business.logAnalysis.log.entity.ZtsSyslog;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.equipment.entity.Equipment;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
@@ -89,6 +90,7 @@ public class KafkaCollector implements Runnable {
 	PacketFilteringFirewal packetFilteringFirewal;
 	Mysql mysql;
 	Syslog syslog;
+	ZtsSyslog ztsSyslog;
 
 	/**
 	 * @param equipment
@@ -256,6 +258,9 @@ public class KafkaCollector implements Runnable {
 				// mysql日志
 				Pattern mysqlpattern = Pattern.compile("timestamp");
 				Matcher mysqlmatcher = mysqlpattern.matcher(log);
+				// 定制化syslog中的业务数据
+				Pattern ztspattern = Pattern.compile("dname=themis");
+				Matcher ztsmatcher = ztspattern.matcher(log);
 				
 				if (facility_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
@@ -364,10 +369,10 @@ public class KafkaCollector implements Runnable {
 						//不在资产ip池里，暂不处理
 					}
 					//es暂无防火墙包过滤日志对应的mapping，暂未入库es
-				}else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
+				}/*else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
 					//防火墙、不包括包过滤日志，暂不处理
 					System.out.println("-------不做处理-------------");
-				}/*else if (mysqlmatcher.find()) {
+				}*//*else if (mysqlmatcher.find()) {
 					logType = LogType.LOGTYPE_MYSQLLOG;
 					mysql = new Mysql(log);
 					ipadress = mysql.getIp();
@@ -425,6 +430,41 @@ public class KafkaCollector implements Runnable {
 						}
 					}else{
 						//不在资产ip池里，暂不处理
+					}
+				}else if (ztsmatcher.find()) {
+					logType = LogType.LOGTYPE_SYSLOG;
+					try {
+						ztsSyslog = new ZtsSyslog(log.trim());
+					} catch (Exception e) {
+						continue;
+					}
+					ipadress = ztsSyslog.getIp();
+					//判断是否在资产ip地址池里
+					if(ipadressSet.contains(ipadress)){
+						//判断是否在已识别资产里————日志类型可识别
+						equipment = equipmentMap.get(ztsSyslog.getIp() +logType);
+						if(null != equipment){
+							if (equipmentLogType.get(equipment.getId()).indexOf(ztsSyslog.getOperation_level().toLowerCase())!=-1) {
+								ztsSyslog.setUserid(equipment.getUserId());
+								ztsSyslog.setDeptid(String.valueOf(equipment.getDepartmentId()));
+								ztsSyslog.setEquipmentid(equipment.getId());
+								ztsSyslog.setEquipmentname(equipment.getName());
+								
+								json = gson.toJson(ztsSyslog);
+								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_SYSLOG, json));
+							}
+						}else{
+							//在资产ip地址池里，但是无法识别日志类型
+							syslog.setUserid(LogType.LOGTYPE_UNKNOWN);
+							syslog.setDeptid(LogType.LOGTYPE_UNKNOWN);
+							syslog.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+							syslog.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+							json = gson.toJson(syslog);
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_UNKNOWN, json));
+						}
+					}else{
+						//不在资产ip池里，暂不处理
+						//TODO
 					}
 				}else {
 					logType = LogType.LOGTYPE_SYSLOG;

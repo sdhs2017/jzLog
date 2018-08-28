@@ -367,4 +367,11 @@
 	</select>
 	
 	
+	
+	<!--  查询总数量 -->
+ 	<select id="count_Number"  >
+<!--   <bind name="name" value="'%' + name + '%'" /> -->
+	    select count(*) as count from equipment 
+	</select>
+	
 </mapper>

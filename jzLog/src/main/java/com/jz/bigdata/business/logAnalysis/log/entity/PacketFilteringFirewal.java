@@ -605,7 +605,7 @@ public final static Map<Integer, String> facility = new HashMap<>();
 		
 		StringBuilder fieldstring = new StringBuilder();
 		
-		String [] fielddata = {"userid","deptid","equipmentid","logtime","ip","hostname","operation_facility","operation_level","process","logtime_year","logtime_month","logtime_day","logtime_hour","logtime_minute","equipmentname","event_type"};
+		String [] fielddata = {"userid","deptid","equipmentid","logtime","ip","hostname","operation_facility","operation_level","process","logtime_year","logtime_month","logtime_day","logtime_hour","logtime_minute","equipmentname","event_type","devid","dname","logtype","mod"};
        Field[] fields = classes.getClass().getDeclaredFields();
        for (int i = 0; i < fields.length; i++) {
             fieldstring.append("\t\t\t\t\"" + fields[i].getName().toLowerCase() + "\": {\n");
@@ -619,7 +619,7 @@ public final static Map<Integer, String> facility = new HashMap<>();
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": "
                        + "true" + "\n");
 			}
-            if (fields[i].getName().equals("operation_des")||fields[i].getName().equals("ip")||fields[i].getName().equals("process")||fields[i].getName().equals("hostname")||fields[i].getName().equals("equipmentname")||fields[i].getName().equals("event_des")) {
+            if (fields[i].getName().equals("operation_des")||fields[i].getName().equals("ip")||fields[i].getName().equals("process")||fields[i].getName().equals("hostname")||fields[i].getName().equals("equipmentname")||fields[i].getName().equals("event_des")||fields[i].getName().equals("dsp_msg")) {
 	           	 fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \""
 	           	 + "index_ansj\"" + "\n");
 	           	 fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \""
@@ -674,8 +674,8 @@ public final static Map<Integer, String> facility = new HashMap<>();
 		}*/
 		
 		
-		PacketFilteringFirewal firewall = new PacketFilteringFirewal(yclog);
-		//System.out.println(new PacketFilteringFirewal().toMapping());
+		//PacketFilteringFirewal firewall = new PacketFilteringFirewal(yclog);
+		System.out.println(new PacketFilteringFirewal().toMapping());
 		
 	}
 

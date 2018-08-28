@@ -6,9 +6,9 @@ package com.jz.bigdata.common.function.entity;
  */
 public class Function {
 	String id;
-	String resource;
-	String describes;
-	int role;
+	String resource;//路径
+	String describes;//描述
+	int role;//角色
 	public String getId() {
 		return id;
 	}

@@ -34,4 +34,6 @@ public interface IEquipmentDao {
 	int upRiskById(@Param("id")String id,@Param("high_risk")int high_risk,@Param("moderate_risk")int moderate_risk,@Param("low_risk")int low_risk);
 	
 	List<Equipment> selectAllEquipmentByRisk();
+	
+	List<Object> count_Number();
 }

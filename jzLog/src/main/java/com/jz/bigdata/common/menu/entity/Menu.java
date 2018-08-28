@@ -12,11 +12,11 @@ import com.jz.bigdata.common.department.entity.Department;
 public class Menu {
 	
 	private int id;
-	private String menuName;
-	private Integer superiorId;
-	private int childId;
-	private String url;
-	private String icon;
+	private String menuName;//菜单名称
+	private Integer superiorId;//上级id
+	private int childId;//子节点
+	private String url;//路径
+	private String icon;//引用
 	
 	private List<Menu> menus;
 	
