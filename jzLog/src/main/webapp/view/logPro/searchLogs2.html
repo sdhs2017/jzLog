@@ -272,7 +272,11 @@
 						</div>
 					</div>
 					<div class="searchConditions sc2" style="max-width: 1221px;position:relative;top:5px;z-index:0;">
-						<div class="searchUserIDBox" style="width:20%;">
+						<div class="searchUserIDBox" style="width:100%;">
+							<div class="searchBoxTitle">用户名</div>
+							<input type="text" class="form-control searchUser" style="width:100%;" placeholder="用户名">
+						</div>
+						<!-- <div class="searchUserIDBox" style="width:20%;">
 							<div class="searchBoxTitle">用户ID</div>
 							<input type="text" class="form-control searchUserID"  placeholder="用户ID">
 						</div>
@@ -291,7 +295,7 @@
 						<div class="searchEmailBox"  style="width:20%;">
 							<div class="searchBoxTitle">Email</div>
 							<input type="text" class="form-control searchEmail"  placeholder="Email">
-						</div>
+						</div> -->
 					</div>
 				</div>
 				<div class="search_right" style="flex:0,0,100px;width:100px;height:34px;position:relative;overflow:hidden;transition:all .5s;">
@@ -447,6 +451,8 @@
 				sendSearchObj.ip= $(".searchIp").val();
 				//获取主机名
 				sendSearchObj.hostname= $(".searchHostname").val();
+				//获得用户名
+				sendSearchObj.user = $(".searchUser").val();
 				//获取日志级别
 				sendSearchObj.operation_level= $(".searchLevel").val();
 				if(sendSearchObj.operation_level == null){
