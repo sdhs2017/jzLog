@@ -46,6 +46,9 @@ public class ConfigProperty {
     
     @Value("#{prop.email_address}")
     private String email_address;
+    
+    @Value("#{prop.number}")
+    private String number;
 
 	public String getHost_user() {
 		return host_user;
@@ -149,6 +152,14 @@ public class ConfigProperty {
 
 	public void setEmail_address(String email_address) {
 		this.email_address = email_address;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 
     

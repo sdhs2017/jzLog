@@ -221,7 +221,7 @@ public class Unknown {
                          + "\t\t{#}\n" 
                  + "\t\t\t\t}"
              +"}";
-		String fieldString =  getClassMapping(new Syslog());
+		String fieldString =  getClassMapping(new Unknown());
 		template = template.replace("{#}",fieldString);
 		return template;
 	}
