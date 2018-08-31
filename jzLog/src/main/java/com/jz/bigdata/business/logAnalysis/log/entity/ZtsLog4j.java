@@ -423,8 +423,7 @@ public class ZtsLog4j {
 			
 			
 			Gson gson = new Gson();
-			String logs=gson.toJson(log);
-			Log4jjson log4jjson = gson.fromJson(logs, Log4jjson.class);
+			Log4jjson log4jjson = gson.fromJson(log.replace("\\", ""),Log4jjson.class);
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			
 			
@@ -439,7 +438,7 @@ public class ZtsLog4j {
 			this.logtime_hour = String.format("%02d", cal.get(Calendar.HOUR_OF_DAY));
 			this.logtime_minute = String.format("%02d", cal.get(Calendar.MINUTE));
 
-			System.err.println(log4jjson.getMessage());
+//			System.err.println(log4jjson.getMessage());
 
 			ZtsUser ztcSyslog = new ZtsUser();
 
@@ -521,7 +520,7 @@ public class ZtsLog4j {
 		String stack_trace;
 		long timestamp;
 		String type;
-		private String message;
+		private ZtsUser message;
 
 		// private String message_
 		public String getVersion() {
@@ -604,11 +603,11 @@ public class ZtsLog4j {
 			this.type = type;
 		}
 
-		public String getMessage() {
+		public ZtsUser getMessage() {
 			return message;
 		}
 
-		public void setMessage(String message) {
+		public void setMessage(ZtsUser message) {
 			this.message = message;
 		}
 
@@ -794,10 +793,12 @@ public class ZtsLog4j {
 
 	public static void main(String[] args) {
 		Calendar cal = Calendar.getInstance();
-		String log = "";
-		log = log.replaceAll("1122",
-				"{\"userName\":\"wangyx03\",\"name\":\"王怡雪\",\"email\":\"wangyx03@zts.com.cn\",\"phoneNo\":\"13954302163\",\"officePhone\":null,\"gender\":\"2\",\"status\":\"1\",\"chgPassFlag\":\"1\",\"orgs\":\"D3774:25\",\"employeeNumber\":\"91F1823868\",\"userMaps\":[{\"id\":90250,\"userId\":17259,\"convertId\":\"91F1823868\",\"appCode\":\"M0001\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":91126,\"userId\":17259,\"convertId\":\"wangyx03\",\"appCode\":\"M0025\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":91127,\"userId\":17259,\"convertId\":\"wangyx03\",\"appCode\":\"M0028\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"}],\"type\":1,\"jobCode\":\"J14146\",\"jobName\":\"项目承揽承做岗\",\"jobStatus\":\"2\",\"jobGroupCode\":null,\"jobGroupName\":null,\"empStatus\":\"1\",\"workPlace\":\"北京\",\"phoneShortNo\":null,\"officeShortNo\":null,\"datasource\":\"HR\",\"partOrgs\":[],\"properties\":[{\"id\":339094,\"userId\":17259,\"userKey\":\"emptype\",\"userValue\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":339096,\"userId\":17259,\"userKey\":\"contract\",\"userValue\":\"是\",\"employeeNumber\":\"91F1823868\"},{\"id\":339092,\"userId\":17259,\"userKey\":\"eid\",\"userValue\":\"19804\",\"employeeNumber\":\"91F1823868\"}],\"_links\":{\"self\":{\"href\":\"http://10.29.181.202:30080/v1/users/17259\"}},\"id\":17259}");
-		// String log="";
+//		String log = "{\"method\":\"getJSON\",\"ip\":\"10.29.172.28\",\"thread\":\"ForkJoinPool-1-worker-0\",\"message\":{\"userName\":\"wangyx03\",\"name\":\"王怡雪\",\"email\":\"wangyx03@zts.com.cn\",\"phoneNo\":\"13954302163\",\"officePhone\":null,\"gender\":\"2\",\"status\":\"1\",\"chgPassFlag\":\"1\",\"orgs\":\"D3774:25\",\"employeeNumber\":\"91F1823868\",\"userMaps\":[{\"id\":90250,\"userId\":17259,\"convertId\":\"91F1823868\",\"appCode\":\"M0001\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":91126,\"userId\":17259,\"convertId\":\"wangyx03\",\"appCode\":\"M0025\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":91127,\"userId\":17259,\"convertId\":\"wangyx03\",\"appCode\":\"M0028\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"}],\"type\":1,\"jobCode\":\"J14146\",\"jobName\":\"项目承揽承做岗\",\"jobStatus\":\"2\",\"jobGroupCode\":null,\"jobGroupName\":null,\"empStatus\":\"1\",\"workPlace\":\"北京\",\"phoneShortNo\":null,\"officeShortNo\":null,\"datasource\":\"HR\",\"partOrgs\":[],\"properties\":[{\"id\":339094,\"userId\":17259,\"userKey\":\"emptype\",\"userValue\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":339096,\"userId\":17259,\"userKey\":\"contract\",\"userValue\":\"是\",\"employeeNumber\":\"91F1823868\"},{\"id\":339092,\"userId\":17259,\"userKey\":\"eid\",\"userValue\":\"19804\",\"employeeNumber\":\"91F1823868\"}],\"_links\":{\"self\":{\"href\":\"http://10.29.181.202:30080/v1/users/17259\"}},\"id\":17259}\",\"priority\":\"DEBUG\",\"type\":\"log4j\",\"tags\":[],\"path\":\"com.foperate.oidc.op.util.RestClientBase\",\"@timestamp\":\"2018-08-23T02:24:48.663Z\",\"file\":\"RestClientBase.java:108\",\"@version\":\"1\",\"host\":\"10.29.172.28:38980\",\"logger_name\":\"com.foperate.oidc.op.util.RestClientBase\",\"class\":\"com.foperate.oidc.op.util.RestClientBase\",\"timestamp\":1534991087323}";
+		
+		 String log="{\"method\":\"getJSON\",\"ip\":\"10.29.172.28\",\"thread\":\"ForkJoinPool-1-worker-0\",\"message\":11223344,\"priority\":\"DEBUG\",\"type\":\"log4j\",\"tags\":[],\"path\":\"com.foperate.oidc.op.util.RestClientBase\",\"@timestamp\":\"2018-08-23T02:24:48.663Z\",\"file\":\"RestClientBase.java:108\",\"@version\":\"1\",\"host\":\"10.29.172.28:38980\",\"logger_name\":\"com.foperate.oidc.op.util.RestClientBase\",\"class\":\"com.foperate.oidc.op.util.RestClientBase\",\"timestamp\":1534991087323}";
+		
+		log =log.replace("11223344", "{\\\"userName\\\":\"wangyx03\",\"name\":\"王怡雪\",\"email\":\"wangyx03@zts.com.cn\",\"phoneNo\":\"13954302163\",\"officePhone\":null,\"gender\":\"2\",\"status\":\"1\",\"chgPassFlag\":\"1\",\"orgs\":\"D3774:25\",\"employeeNumber\":\"91F1823868\",\"userMaps\":[{\"id\":90250,\"userId\":17259,\"convertId\":\"91F1823868\",\"appCode\":\"M0001\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":91126,\"userId\":17259,\"convertId\":\"wangyx03\",\"appCode\":\"M0025\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":91127,\"userId\":17259,\"convertId\":\"wangyx03\",\"appCode\":\"M0028\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"}],\"type\":1,\"jobCode\":\"J14146\",\"jobName\":\"项目承揽承做岗\",\"jobStatus\":\"2\",\"jobGroupCode\":null,\"jobGroupName\":null,\"empStatus\":\"1\",\"workPlace\":\"北京\",\"phoneShortNo\":null,\"officeShortNo\":null,\"datasource\":\"HR\",\"partOrgs\":[],\"properties\":[{\"id\":339094,\"userId\":17259,\"userKey\":\"emptype\",\"userValue\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":339096,\"userId\":17259,\"userKey\":\"contract\",\"userValue\":\"是\",\"employeeNumber\":\"91F1823868\"},{\"id\":339092,\"userId\":17259,\"userKey\":\"eid\",\"userValue\":\"19804\",\"employeeNumber\":\"91F1823868\"}],\"_links\":{\"self\":{\"href\":\"http://10.29.181.202:30080/v1/users/17259\"}},\"id\":17259}");
+		System.out.println(log);
 		ZtsLog4j ztsLog4j = new ZtsLog4j(log, cal);
 		System.out.println(ztsLog4j.get_links());
 		System.out.println(ztsLog4j.getUserMaps());
