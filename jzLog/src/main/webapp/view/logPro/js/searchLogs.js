@@ -83,9 +83,11 @@
 			}
     		
     	};
+    	//中泰代码 将object对象转换成字符串
+    	var ztObj = {};
+    	ztObj.ztData = JSON.stringify(param);
 	    //获取数据并通过回调函数进行数据加载。
-	    ajaxPost(url,param,sFunc); 
-		
+	    ajaxPost(url,ztObj,sFunc); 		
 	}
 	//最大显示数据改变事件函数 html-数值改变 提示标语
 	function maxShowChange(html){
@@ -446,6 +448,9 @@
 					if(obj.operation_des == undefined){
 						obj.operation_des = "-"
 					}
+					if(obj.user == undefined){
+						obj.user = "-"
+					}
 					//替换风险状态
 					/*var level = '';
 					if(obj.operation_level == "INFO"){
@@ -462,6 +467,7 @@
 					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_type">'+obj.type+'</td>'
+					         +       '<td class="logs_user">'+obj.user+'</td>'
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'
@@ -537,6 +543,8 @@
 		var logsTime = $(this).parent().siblings('.logs_time').html();
 		//获取ip
 		var logsIp = $(this).parent().siblings('.logs_ip').html();
+		//获取用户名
+		var userName = $(this).parent().siblings('.logs_user').html();
 		//获取hostname
 		var logsLevel = $(this).parent().siblings('.logs_level').html();
 		//获取日志内容信息
@@ -663,6 +671,10 @@
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">日志类型:</div>'
 					+			'<div class="col-xs-9 layCen">'+logType+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">用户名:</div>'
+					+			'<div class="col-xs-9 layCen">'+userName+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">资产名称:</div>'
