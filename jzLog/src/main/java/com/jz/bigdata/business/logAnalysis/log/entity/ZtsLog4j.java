@@ -594,11 +594,11 @@ public class ZtsLog4j {
            	 fieldstring.append("\t\t\t\t\t\t,\"index\": \""
                         + "false\"" + "\n");
 			}
-            if (!fields[i].getName().equals("operation_des")&&!fields[i].getName().equals("id")&&!fields[i].getName().equals("logdate")) {
+            if (fields[i].getName().equals("userid")||fields[i].getName().equals("deptid")||fields[i].getName().equals("equipmentid")||fields[i].getName().equals("equipmentname")||fields[i].getName().equals("logtime")||fields[i].getName().equals("logtime_minute")||fields[i].getName().equals("logtime_hour")||fields[i].getName().equals("logtime_day")||fields[i].getName().equals("logtime_month")||fields[i].getName().equals("logtime_year")||fields[i].getName().equals("operation_level")||fields[i].getName().equals("ip")||fields[i].getName().equals("phoneNo")||fields[i].getName().equals("jobCode")||fields[i].getName().equals("jobName")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": "
                        + "true" + "\n");
 			}
-            if (fields[i].getName().equals("operation_des")||fields[i].getName().equals("ip")||fields[i].getName().equals("equipmentname")) {
+            if (fields[i].getName().equals("operation_des")||fields[i].getName().equals("ip")||fields[i].getName().equals("equipmentname")||fields[i].getName().equals("userMaps")||fields[i].getName().equals("properties")||fields[i].getName().equals("name")||fields[i].getName().equals("userName")||fields[i].getName().equals("phoneNo")||fields[i].getName().equals("jobName")||fields[i].getName().equals("jobCode")||fields[i].getName().equals("orgs")||fields[i].getName().equals("email")||fields[i].getName().equals("employeeNumber")||fields[i].getName().equals("datasource")) {
            	 fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \""
            	 + "index_ansj\"" + "\n");
            	 fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \""
