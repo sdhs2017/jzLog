@@ -418,6 +418,7 @@ public class ZtsLog4j {
 	 * @throws ParseException
 	 */
 	public ZtsLog4j(String log, Calendar cal) {
+		System.out.println("fafs");
 
 		if (log.indexOf("userName") > 0 && log.indexOf("userMaps") > 0) {
 			Gson gson = new Gson();
@@ -517,7 +518,7 @@ public class ZtsLog4j {
 		String stack_trace;
 		long timestamp;
 		String type;
-		private ZtsUser message;
+		private String message;
 
 		// private String message_
 		public String getVersion() {
@@ -600,11 +601,11 @@ public class ZtsLog4j {
 			this.type = type;
 		}
 
-		public ZtsUser getMessage() {
+		public String getMessage() {
 			return message;
 		}
 
-		public void setMessage(ZtsUser message) {
+		public void setMessage(String message) {
 			this.message = message;
 		}
 
@@ -790,9 +791,7 @@ public class ZtsLog4j {
 
 	public static void main(String[] args) {
 		Calendar cal = Calendar.getInstance();
-		String log = "{\"method\":\"getJSON\",\"ip\":\"10.29.172.28\",\"thread\":\"ForkJoinPool-1-worker-1\",\"message\":"
-				+ "1122"
-				+ ",\"priority\":\"DEBUG\",\"type\":\"log4j\",\"tags\":[],\"path\":\"com.foperate.oidc.op.util.RestClientBase\",\"@timestamp\":\"2018-08-23T02:26:55.371Z\",\"file\":\"RestClientBase.java:108\",\"@version\":\"1\",\"host\":\"10.29.172.28:38980\",\"logger_name\":\"com.foperate.oidc.op.util.RestClientBase\",\"class\":\"com.foperate.oidc.op.util.RestClientBase\",\"timestamp\":1534991214055}";
+		String log = "";
 		log = log.replaceAll("1122",
 				"{\"userName\":\"wangyx03\",\"name\":\"王怡雪\",\"email\":\"wangyx03@zts.com.cn\",\"phoneNo\":\"13954302163\",\"officePhone\":null,\"gender\":\"2\",\"status\":\"1\",\"chgPassFlag\":\"1\",\"orgs\":\"D3774:25\",\"employeeNumber\":\"91F1823868\",\"userMaps\":[{\"id\":90250,\"userId\":17259,\"convertId\":\"91F1823868\",\"appCode\":\"M0001\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":91126,\"userId\":17259,\"convertId\":\"wangyx03\",\"appCode\":\"M0025\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":91127,\"userId\":17259,\"convertId\":\"wangyx03\",\"appCode\":\"M0028\",\"status\":\"1\",\"employeeNumber\":\"91F1823868\"}],\"type\":1,\"jobCode\":\"J14146\",\"jobName\":\"项目承揽承做岗\",\"jobStatus\":\"2\",\"jobGroupCode\":null,\"jobGroupName\":null,\"empStatus\":\"1\",\"workPlace\":\"北京\",\"phoneShortNo\":null,\"officeShortNo\":null,\"datasource\":\"HR\",\"partOrgs\":[],\"properties\":[{\"id\":339094,\"userId\":17259,\"userKey\":\"emptype\",\"userValue\":\"1\",\"employeeNumber\":\"91F1823868\"},{\"id\":339096,\"userId\":17259,\"userKey\":\"contract\",\"userValue\":\"是\",\"employeeNumber\":\"91F1823868\"},{\"id\":339092,\"userId\":17259,\"userKey\":\"eid\",\"userValue\":\"19804\",\"employeeNumber\":\"91F1823868\"}],\"_links\":{\"self\":{\"href\":\"http://10.29.181.202:30080/v1/users/17259\"}},\"id\":17259}");
 		// String log="";
