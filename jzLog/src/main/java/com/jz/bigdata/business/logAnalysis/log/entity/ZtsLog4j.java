@@ -418,13 +418,16 @@ public class ZtsLog4j {
 	 * @throws ParseException
 	 */
 	public ZtsLog4j(String log, Calendar cal) {
-		System.out.println("fafs");
 
 		if (log.indexOf("userName") > 0 && log.indexOf("userMaps") > 0) {
+			
+			
 			Gson gson = new Gson();
-			Log4jjson log4jjson = gson.fromJson(log, Log4jjson.class);
+			String logs=gson.toJson(log);
+			Log4jjson log4jjson = gson.fromJson(logs, Log4jjson.class);
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+			
+			
 			this.ip = log4jjson.getIp();
 			// 时间处理
 			this.logdate = new Date(log4jjson.getTimestamp());
