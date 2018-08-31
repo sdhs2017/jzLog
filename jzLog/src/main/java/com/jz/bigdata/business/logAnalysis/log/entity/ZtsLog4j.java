@@ -478,13 +478,13 @@ public class ZtsLog4j {
 		}else{
 			
 			Gson gson = new Gson();
-			Log4jjson log4jjson = gson.fromJson(log, Log4jjson2.class);
+			Log4jjson2 log4jjson2 = gson.fromJson(log, Log4jjson2.class);
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-			this.ip = log4jjson.getIp();
+			this.ip = log4jjson2.getIp();
 			// 时间处理
-			this.logdate = new Date(log4jjson.getTimestamp());
-			cal.setTimeInMillis(log4jjson.getTimestamp());
+			this.logdate = new Date(log4jjson2.getTimestamp());
+			cal.setTimeInMillis(log4jjson2.getTimestamp());
 			this.logtime = format.format(cal.getTime());
 			this.logtime_year = String.valueOf(cal.get(Calendar.YEAR));
 			this.logtime_month = String.format("%02d", cal.get(Calendar.MONTH) + 1);
@@ -492,13 +492,13 @@ public class ZtsLog4j {
 			this.logtime_hour = String.format("%02d", cal.get(Calendar.HOUR_OF_DAY));
 			this.logtime_minute = String.format("%02d", cal.get(Calendar.MINUTE));
 			
-			this.operation_level = log4jjson.getPriority();
-			if (log4jjson.getStack_trace() != null) {
-				this.operation_des = this.logtime + " [" + operation_level + "] " + log4jjson.getLogger_name() + " "
-						+ log4jjson.getMessage() + " " + log4jjson.getStack_trace();
+			this.operation_level = log4jjson2.getPriority();
+			if (log4jjson2.getStack_trace() != null) {
+				this.operation_des = this.logtime + " [" + operation_level + "] " + log4jjson2.getLogger_name() + " "
+						+ log4jjson2.getMessage() + " " + log4jjson2.getStack_trace();
 			} else {
-				this.operation_des = this.logtime + " [" + operation_level + "] " + log4jjson.getLogger_name() + " "
-						+ log4jjson.getMessage();
+				this.operation_des = this.logtime + " [" + operation_level + "] " + log4jjson2.getLogger_name() + " "
+						+ log4jjson2.getMessage();
 			}
 		}
 
