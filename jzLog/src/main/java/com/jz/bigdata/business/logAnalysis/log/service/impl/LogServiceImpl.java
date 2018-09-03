@@ -399,8 +399,8 @@ public class LogServiceImpl implements IlogService {
 		}
 		
 		// "多个匹配"  匹配的列进行归纳,包括设备id，设备ip，日志类型，日志内容
-		content = content.trim();
 		if(content!=null&&!content.equals("")) {
+			content = content.trim();
 			QueryBuilder multiMatchQueryBuilder;
 			if (content.contains(" ")&&content.length()>10) {
 				//String length  = (content.split(" ").length)+"";
