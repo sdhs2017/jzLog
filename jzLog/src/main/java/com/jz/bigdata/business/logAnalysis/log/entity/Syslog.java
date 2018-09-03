@@ -127,6 +127,10 @@ public class Syslog {
 	 * 事件描述
 	 */
 	String event_des;
+	/**
+	 * 是否为业务日志
+	 */
+	Boolean is_business;
 	
 	
 	public String getId() {
@@ -424,6 +428,8 @@ public class Syslog {
 			
 		}
 		
+		this.is_business = false;
+		
 		if (shutdownmatcher.find()) {
 			this.event_type="poweroff";
 			this.event_des="主机关机";
@@ -551,6 +557,9 @@ public class Syslog {
        case "Integer":
            es = "integer\"";
            break;
+       case "Boolean":
+    	   es ="boolean\"";
+    	   break;
        default:
        	if (name.equals("id")) {
        		es = "keyword\"";
@@ -564,9 +573,9 @@ public class Syslog {
    }
 	
 	public static void main(String [] args) throws IOException {
-		//System.out.println(new Syslog().toMapping());
+		System.out.println(new Syslog().toMapping());
 		
-		String log1 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 #015";
+		/*String log1 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 #015";
 		String log2 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 systemd: Started Delayed Shutdown Service.";
 		String log3 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 systemd-shutdownd: Shutting down at Fri 2018-02-09 16:27:09 CST (poweroff)...";
 		String log4 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 systemd-shutdownd: Creating /run/nologin, blocking further logins...";
@@ -582,7 +591,7 @@ public class Syslog {
 			Syslog syslog = new Syslog(log);
 			json = gson.toJson(syslog);
 			System.out.println(json);
-		}
+		}*/
 		/*Gson gson = new GsonBuilder()
 				 .setDateFormat("yyyy-MM-dd HH:mm:ss")  
 				 .create(); 

@@ -51,7 +51,7 @@ import com.jz.bigdata.util.Sendmail;
 import net.sf.json.JSONArray;
 
 @Controller
-@RequestMapping("/log")
+//@RequestMapping("/log")
 public class LogController {
 
 	@Resource(name="logService")
@@ -154,7 +154,7 @@ public class LogController {
 			return JSONArray.fromObject(map).toString();
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println(e.getMessage());
 			map.put("state", false);
 			map.put("msg", "数据结构初始化失败！");
 			return JSONArray.fromObject(map).toString();

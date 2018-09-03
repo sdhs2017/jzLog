@@ -23,7 +23,6 @@ import com.jz.bigdata.common.users.dao.IUsersDao;
 import com.jz.bigdata.common.users.entity.User;
 import com.jz.bigdata.util.BASE64Util;
 import com.jz.bigdata.util.ConfigProperty;
-import com.jz.bigdata.util.EncrypDES;
 import com.jz.bigdata.util.Uuid;
 
 import net.sf.json.JSONArray;

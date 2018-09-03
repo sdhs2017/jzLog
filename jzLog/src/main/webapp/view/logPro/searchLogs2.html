@@ -188,17 +188,18 @@
 			.log_filter{
 				margin-left:0;
 			}
-			
 		</style>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 	</head>
+	<!-- 中泰证券 -->
 	<body>
 		<div id="box">
 			<div class="top_title">
 				日志检索		
 			</div>
 			
-			<div class="search_input">
+			<!-- 普通查询条件 -->
+			<!-- <div class="search_input">
 				<div class="searchConditions">
 					<div class="searchTimeBox">
 						<div class="searchBoxTitle">时间范围</div>
@@ -232,6 +233,74 @@
 						<input type="text" class="form-control searchHostname"  placeholder="资产名称">
 					</div>
 					<button  class="btn btn-primary" id="searchLogs"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
+				</div>
+			</div> -->
+			<!-- 中泰证券查询条件 -->
+			<div class="search_input" style="display:flex;max-width:1286px;">
+				<div class="search_left" style="flex:1;height:34px;border-left: 2px solid #4781bb;overflow:hidden;transition:all .5s;">
+					<div class="searchConditions" style="margin-bottom:0;">
+						<div class="searchTimeBox">
+							<div class="searchBoxTitle">时间范围</div>
+							<input type="text" class="time-input form-control" id="startTime" placeholder="起始日期" name="begin_time" readonly class="form_datetime">  
+							<i class="glyphicon glyphicon-remove startTimeRemove"></i>	
+							<span> ~ </span>
+							<input type="text" class="time-input form-control" id="endTime" placeholder="结束日期" name="end_time" readonly class="form_datetime">  		
+							<i class="glyphicon glyphicon-remove endTimeRemove"></i>	
+						</div>
+						<div class="searchTypeBox">
+							<div class="searchBoxTitle">日志类型</div>
+							<select class="form-control searchType">
+			 					<option	selected value=""></option>
+								<option  value="syslog">syslog</option>
+								<option value="winlog">winlog</option>
+								<option value="log4j">log4j</option>
+								<option value="mysql">mysql</option>
+								<option value="packetfilteringfirewall_log">packetfilteringfirewall_log</option>
+							</select>
+						</div>
+						<div class="searchLevelBox">
+							<div class="searchBoxTitle">日志级别</div>
+							<select class="form-control searchLevel"></select>
+						</div>
+						<div class="searchIpBox">
+							<div class="searchBoxTitle">IP地址</div>
+							<input type="text" class="form-control searchIp"  placeholder="IP地址">
+						</div>
+						<div class="searchIpBox">
+							<div class="searchBoxTitle">资产名称</div>
+							<input type="text" class="form-control searchHostname"  placeholder="资产名称">
+						</div>
+					</div>
+					<div class="searchConditions sc2" style="max-width: 1221px;position:relative;top:5px;z-index:0;">
+						<div class="searchUserIDBox" style="width:100%;">
+							<div class="searchBoxTitle">用户名</div>
+							<input type="text" class="form-control searchUser" style="width:100%;" placeholder="用户名">
+						</div>
+						<!-- <div class="searchUserIDBox" style="width:20%;">
+							<div class="searchBoxTitle">用户ID</div>
+							<input type="text" class="form-control searchUserID"  placeholder="用户ID">
+						</div>
+						<div class="searchLoginNameBox"  style="width:20%;">
+							<div class="searchBoxTitle">登录名</div>
+							<input type="text" class="form-control searchLoginName"  placeholder="登录名">
+						</div>
+						<div class="searchNameBox"  style="width:20%;">
+							<div class="searchBoxTitle">姓名</div>
+							<input type="text" class="form-control searchName"  placeholder="姓名">
+						</div>
+						<div class="searchPhoneBox"  style="width:20%;">
+							<div class="searchBoxTitle">手机号</div>
+							<input type="text" class="form-control searchPhone"  placeholder="手机号">
+						</div>
+						<div class="searchEmailBox"  style="width:20%;">
+							<div class="searchBoxTitle">Email</div>
+							<input type="text" class="form-control searchEmail"  placeholder="Email">
+						</div> -->
+					</div>
+				</div>
+				<div class="search_right" style="flex:0,0,100px;width:100px;height:34px;position:relative;overflow:hidden;transition:all .5s;">
+					<button  class="btn btn-primary" id="searchLogs" style="height:34px;transition:all .5s;"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
+					<span class="moreConditions" style="cursor: pointer;text-decoration: underline;vertical-align: bottom;margin-left: 5px;">更多</span>
 				</div>
 			</div>
 			
@@ -286,6 +355,7 @@
 										          	<th width="200">时间</th>
 										          	<th width="100">级别</th>
 										          	<th width="100">日志类型</th>
+										          	<th width="100">用户名</th>
 										          	<th width="120">资产名称</th>
 										          	<th width="125">IP</th>
 										          	<th>日志内容</th>
@@ -330,6 +400,33 @@
 		<script src="js/highLightText.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/searchLogs.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
+			//更多查询条件点击按钮
+			$(".moreConditions").click(function(){
+				//改变高度
+				if($(this).html() == '更多'){
+					$(".search_left").css("height","73px");
+					$(".search_right").css("height","73px");
+					$("#searchLogs").css("height","73px");
+					$(this).html("收起");
+				}else{
+					$(".search_left").css("height","34px");
+					$(".search_right").css("height","34px");
+					$("#searchLogs").css("height","34px");
+					$(this).html("更多");
+				}	
+			})
+			//obj -》 str
+			//JSON.stringify(obj)
+			//循环删除对象中值为空的属性
+			/* function deleteEmptyVal(obj){
+				var str = '';
+				for (var i in obj) {
+					if(obj[i] == ''){
+						delete obj[i]
+					}
+				}
+			} */
+			
 			var pageSize = 12;
 			var url = "../../log/getLogListByBlend.do";
 			var sendSearchObj = {};//查询日志 参数集合
@@ -348,13 +445,15 @@
 				logStatus = true;
 				//获得查询条件参数值
 				//获取开始时间
-				sendSearchObj.startTime = $("#startTime").val();
+				sendSearchObj.starttime = $("#startTime").val();
 				//获取结束时间
-				sendSearchObj.endTime = $("#endTime").val();
+				sendSearchObj.endtime = $("#endTime").val();
 				//获取ip地址
 				sendSearchObj.ip= $(".searchIp").val();
 				//获取主机名
 				sendSearchObj.hostname= $(".searchHostname").val();
+				//获得用户名
+				sendSearchObj.user = $(".searchUser").val();
 				//获取日志级别
 				sendSearchObj.operation_level= $(".searchLevel").val();
 				if(sendSearchObj.operation_level == null){
