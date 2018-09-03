@@ -28,17 +28,17 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="K:/eclipseWork/jzLog/src/main/webapp/WEB-INF/lib/truelicense/truelicense-core-1.33.jar">
+	<classpathentry kind="lib" path="D:/Computer_Science/Java/maven/maven_test/de/schlichtherle/truelicense/truelicense-core/1.33/truelicense-core-1.33.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="K:/eclipseWork/jzLog/src/main/webapp/WEB-INF/lib/truelicense/truelicense-swing-1.33.jar">
+	<classpathentry kind="lib" path="D:/Computer_Science/Java/maven/maven_test/de/schlichtherle/truelicense/truelicense-swing/1.33/truelicense-swing-1.33.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="K:/eclipseWork/jzLog/src/main/webapp/WEB-INF/lib/truelicense/truelicense-xml-1.33.jar">
+	<classpathentry kind="lib" path="D:/Computer_Science/Java/maven/maven_test/de/schlichtherle/truelicense/truelicense-xml/1.33/truelicense-xml-1.33.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
