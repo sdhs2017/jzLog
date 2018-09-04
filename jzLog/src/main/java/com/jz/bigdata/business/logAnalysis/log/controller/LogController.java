@@ -3,12 +3,14 @@ package com.jz.bigdata.business.logAnalysis.log.controller;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +27,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jz.bigdata.business.logAnalysis.log.LogType;
@@ -44,6 +49,7 @@ import com.jz.bigdata.common.safeStrategy.entity.SafeStrategy;
 import com.jz.bigdata.common.safeStrategy.service.ISafeStrategyService;
 import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
+import com.jz.bigdata.util.BaseController;
 import com.jz.bigdata.util.ConfigProperty;
 import com.jz.bigdata.util.DescribeLog;
 import com.jz.bigdata.util.Sendmail;
@@ -52,7 +58,7 @@ import net.sf.json.JSONArray;
 
 @Controller
 //@RequestMapping("/log")
-public class LogController {
+public class LogController extends BaseController{
 
 	@Resource(name="logService")
 	private IlogService logService;
@@ -445,10 +451,21 @@ public class LogController {
 	@DescribeLog(describe="查询日志数据")
 	public String getLogListByContent(HttpServletRequest request,HttpSession session) {
 		
-		String keyWords = request.getParameter("words");
+		String ztData = request.getParameter("ztData");
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
-		String page = request.getParameter("page");
-		String size = request.getParameter("size");
+		
+		Map<String, String> mapper = toMap(ztData);
+		Object wordso = mapper.get("words");
+		Object pageo = mapper.get("page");
+		Object sizeo = mapper.get("size");
+		String keyWords = null;
+		if (wordso!=null) {
+			keyWords = wordso.toString();
+		}
+		
+		
+		String page = pageo.toString();
+		String size = sizeo.toString();
 		System.err.println("-----------关键词：	"+keyWords);
 		
 		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG};
@@ -485,49 +502,37 @@ public class LogController {
 	 * @param requestt
 	 * @author jiyourui
 	 * @return 
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
+	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value="/getLogListByBlend",produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="组合查询日志数据")
-	public String getLogListByBlend(HttpServletRequest request,HttpSession session) {
+	public String getLogListByBlend(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
 		// receive parameter
-		
-		String type = request.getParameter("type");
-		String starttime = request.getParameter("startTime");
-		String endtime = request.getParameter("endTime");
-		String ip = request.getParameter("ip");
-		String hostname = request.getParameter("hostname");
-		String operation_level = request.getParameter("operation_level");
-		String event_level = request.getParameter("event_level");
-		String page = request.getParameter("page");
-		String size = request.getParameter("size");
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
+		String ztData = request.getParameter("ztData");
+		System.out.println(ztData);
 		
+		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> map = new HashMap<String, String>();
-		if (starttime!=null&&!starttime.equals("")) {
-			map.put("starttime", starttime);
-		}
-		if (endtime!=null&&!endtime.equals("")) {
-			map.put("endtime", endtime);
-		}
-		if (ip!=null&&!ip.equals("")) {
-			map.put("ip", ip);
-		}
-		if (hostname!=null&&!hostname.equals("")) {
-			map.put("hostname", hostname);
-		}
-		if (operation_level!=null&&!operation_level.equals("")) {
-			map.put("operation_level", operation_level);
-		}
-		if (event_level!=null&&!event_level.equals("")) {
-			map.put("event_level", event_level);
-		}
+		
+		map = removeMapEmptyValue(mapper.readValue(ztData, Map.class));
+		System.out.println(map);
+		Object pageo = map.get("page");
+		Object sizeo = map.get("size");
+		
+		String page = pageo.toString();
+		String size = sizeo.toString();
+		
 		
 		ArrayList<String> arrayList = new ArrayList<>();
 		List<Map<String, Object>> list =null;
 		
-		if (type!=null&&!type.equals("")) {
-			arrayList.add(type);
+		if (map.get("type")!=null&&!map.get("type").equals("")) {
+			arrayList.add(map.get("type"));
 			String [] types = arrayList.toArray(new String[arrayList.size()]);
 			if (userrole.equals("1")) {
 				list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,size);
@@ -552,6 +557,39 @@ public class LogController {
 		return replace;
 	}
 	
+	/*public static Map<String, String> mapRemoveWithNullByRecursion(Map<String, String> map){
+		Set<Entry<String, String>> set = map.entrySet();
+		Iterator<Entry<String, String>> it = set.iterator();
+		Map<String, Object> map2 = new HashMap<String, Object>();
+		while(it.hasNext()){
+			Entry<String, String> en = it.next();
+			if(!(en.getValue() instanceof String){
+				if(null == en.getValue() || "".equals(en.getValue())){
+					it.remove();
+				}
+			}else{
+				map2 = (Map) en.getValue();
+				mapRemoveWithNullByRecursion(map2);
+			}
+		}
+		return map;
+	}*/
+	
+	public static Map<String,String> removeMapEmptyValue(Map<String,String> paramMap){
+		Set<String> set = paramMap.keySet();
+		Iterator<String> it = set.iterator();
+		List<String> listKey = new ArrayList<String>();
+		while (it.hasNext()) {
+		  String str = it.next();
+		  if(paramMap.get(str)==null || "".equals(paramMap.get(str))){
+			  listKey.add(str) ;
+		  }
+		}
+		for (String key : listKey) {
+		    paramMap.remove(key);
+		}
+		return paramMap;
+	}
 	
 	/**
 	 * 组合查询日志事件
