@@ -456,31 +456,31 @@ public class ZtsLog4j {
 
 			ztcSyslog = ztcSyslog.ZtsUsers(teString);
 			this._links = String.valueOf(gson.toJson(ztcSyslog.get_links()));
-			this.chgPassFlag = String.valueOf(ztcSyslog.getChgPassFlag());
-			this.datasource = String.valueOf(ztcSyslog.getDatasource());
-			this.email = String.valueOf(ztcSyslog.getEmail());
-			this.empStatus = String.valueOf(ztcSyslog.getEmpStatus());
-			this.employeeNumber = String.valueOf(ztcSyslog.getEmployeeNumber());
-			this.gender = String.valueOf(ztcSyslog.getGender());
+			this.chgPassFlag = ztcSyslog.getChgPassFlag();
+			this.datasource = ztcSyslog.getDatasource();
+			this.email = ztcSyslog.getEmail();
+			this.empStatus = ztcSyslog.getEmpStatus();
+			this.employeeNumber = ztcSyslog.getEmployeeNumber();
+			this.gender = ztcSyslog.getGender();
 			this.jobCode = String.valueOf(ztcSyslog.getJobCode());
 			this.jobName = String.valueOf(ztcSyslog.getJobName());
-			this.jobStatus = String.valueOf(ztcSyslog.getJobStatus());
-			this.name = String.valueOf(ztcSyslog.getName());
-			this.orgs = String.valueOf(ztcSyslog.getOrgs());
-			this.phoneNo = String.valueOf(ztcSyslog.getPhoneNo());
+			this.jobStatus = ztcSyslog.getJobStatus();
+			this.name = ztcSyslog.getName();
+			this.orgs = ztcSyslog.getOrgs();
+			this.phoneNo = ztcSyslog.getPhoneNo();
 			this.properties = String.valueOf(gson.toJson(ztcSyslog.getProperties()));
-			this.status = String.valueOf(ztcSyslog.getStatus());
-			this.type = String.valueOf(ztcSyslog.getType());
-			this.userName = String.valueOf(ztcSyslog.getUserName());
-			this.workPlace = String.valueOf(ztcSyslog.getWorkPlace());
-			this.officePhone = String.valueOf(ztcSyslog.getOfficePhone());
-			this.jobGroupCode = String.valueOf(ztcSyslog.getJobGroupCode());
+			this.status = ztcSyslog.getStatus();
+			this.type = ztcSyslog.getType();
+			this.userName = ztcSyslog.getUserName();
+			this.workPlace = ztcSyslog.getWorkPlace();
+			this.officePhone = ztcSyslog.getOfficePhone();
+			this.jobGroupCode = ztcSyslog.getJobGroupCode();
 
-			this.jobGroupName = String.valueOf(ztcSyslog.getJobGroupName());
-			this.phoneShortNo = String.valueOf(ztcSyslog.getPhoneShortNo());
-			this.officeShortNo = String.valueOf(ztcSyslog.getOfficeShortNo());
+			this.jobGroupName = ztcSyslog.getJobGroupName();
+			this.phoneShortNo = ztcSyslog.getPhoneShortNo();
+			this.officeShortNo = ztcSyslog.getOfficeShortNo();
 			this.userMaps = String.valueOf(gson.toJson(ztcSyslog.getUserMaps()));
-			this.uid = String.valueOf(ztcSyslog.getUid());
+			this.uid = ztcSyslog.getUid();
 			this.user=ztcSyslog.getName();
 
 			this.operation_level = log4jjson.getPriority();
@@ -767,7 +767,7 @@ public class ZtsLog4j {
 					|| fields[i].getName().equals("userName") || fields[i].getName().equals("phoneNo")
 					|| fields[i].getName().equals("jobName") || fields[i].getName().equals("jobCode")
 					|| fields[i].getName().equals("orgs") || fields[i].getName().equals("email")
-					|| fields[i].getName().equals("employeeNumber") || fields[i].getName().equals("datasource")|| fields[i].getName().equals("user")) {
+					|| fields[i].getName().equals("employeeNumber") || fields[i].getName().equals("datasource")) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");
 			}
