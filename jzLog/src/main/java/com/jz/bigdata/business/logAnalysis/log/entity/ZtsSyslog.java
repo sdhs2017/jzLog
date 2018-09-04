@@ -110,6 +110,18 @@ public class ZtsSyslog extends BaseEntity{
 	 */
 	String operation_des;
 	/**
+	 * 事件级别
+	 *//*
+	Integer event_level;
+	*//**
+	 * 事件类型
+	 *//*
+	String event_type;
+	*//**
+	 * 事件描述
+	 *//*
+	String event_des;*/
+	/**
 	 * 业务数据
 	 */
 	String devid;
