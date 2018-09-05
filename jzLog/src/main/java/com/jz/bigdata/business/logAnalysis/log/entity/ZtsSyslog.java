@@ -110,6 +110,18 @@ public class ZtsSyslog extends BaseEntity{
 	 */
 	String operation_des;
 	/**
+	 * 事件级别
+	 *//*
+	Integer event_level;
+	*//**
+	 * 事件类型
+	 *//*
+	String event_type;
+	*//**
+	 * 事件描述
+	 *//*
+	String event_des;*/
+	/**
 	 * 业务数据
 	 */
 	String devid;
@@ -662,10 +674,10 @@ public class ZtsSyslog extends BaseEntity{
 	
 	
 	public static void main(String []args) {
-		String log = "<134> 2018-08-16 18:21:24 10.29.16.48 10.29.16.48 root: devid=3 date=\"2018/08/16 10:33:06\" dname=themis logtype=1 pri=6 mod=webui event=\"管理员[administrator]执行命令，设置日志服务器。\" dsp_msg=\"管理员[administrator]执行命令，设置日志服务器。\" from=\"10.29.172.70\" user=\"administrator\" act=\"配置\" cmd=\"logserver set ip 10.29.172.120 port 514 protocol udp 2>&1;\"";
+		/*String log = "<134> 2018-08-16 18:21:24 10.29.16.48 10.29.16.48 root: devid=3 date=\"2018/08/16 10:33:06\" dname=themis logtype=1 pri=6 mod=webui event=\"管理员[administrator]执行命令，设置日志服务器。\" dsp_msg=\"管理员[administrator]执行命令，设置日志服务器。\" from=\"10.29.172.70\" user=\"administrator\" act=\"配置\" cmd=\"logserver set ip 10.29.172.120 port 514 protocol udp 2>&1;\"";
 		ZtsSyslog ztcSyslog = new ZtsSyslog(log);
-		System.out.println(ztcSyslog.act);
-		//System.out.println(new ZtsSyslog().toMapping());
+		System.out.println(ztcSyslog.act);*/
+		System.out.println(new ZtsSyslog().toMapping());
 	}
 }
 
