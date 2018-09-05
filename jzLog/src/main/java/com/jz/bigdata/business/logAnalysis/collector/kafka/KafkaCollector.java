@@ -21,6 +21,7 @@ import com.jz.bigdata.business.logAnalysis.log.entity.Mysql;
 import com.jz.bigdata.business.logAnalysis.log.entity.PacketFilteringFirewal;
 import com.jz.bigdata.business.logAnalysis.log.entity.Syslog;
 import com.jz.bigdata.business.logAnalysis.log.entity.Winlog;
+import com.jz.bigdata.business.logAnalysis.log.entity.ZtsLog4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.ZtsSyslog;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.equipment.entity.Equipment;
@@ -91,6 +92,7 @@ public class KafkaCollector implements Runnable {
 	Mysql mysql;
 	Syslog syslog;
 	ZtsSyslog ztsSyslog;
+	ZtsLog4j ztsLog4j;
 
 	/**
 	 * @param equipment
@@ -316,7 +318,7 @@ public class KafkaCollector implements Runnable {
 							
 						}
 					}
-				}else if (log4j_matcher.find()) {
+				}/*else if (log4j_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
 					log4j = new Log4j(log, cal);
 					ipadress = log4j.getIp();
@@ -369,7 +371,7 @@ public class KafkaCollector implements Runnable {
 						//不在资产ip池里，暂不处理
 					}
 					//es暂无防火墙包过滤日志对应的mapping，暂未入库es
-				}/*else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
+				}*//*else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
 					//防火墙、不包括包过滤日志，暂不处理
 					System.out.println("-------不做处理-------------");
 				}*//*else if (mysqlmatcher.find()) {
@@ -397,7 +399,7 @@ public class KafkaCollector implements Runnable {
 						//不在资产ip池里，暂不处理
 					}
 				}*/
-				else if(win2003matcher.find()||win2008matcher.find()){
+				/*else if(win2003matcher.find()||win2008matcher.find()){
 					//windows、evtsys组件收集日志
 					logType = LogType.LOGTYPE_WINLOG;
 					try {
@@ -431,7 +433,38 @@ public class KafkaCollector implements Runnable {
 					}else{
 						//不在资产ip池里，暂不处理
 					}
-				}else if (ztsmatcher.find()) {
+				}*/
+				else if (log4j_matcher.find()) {
+					logType = LogType.LOGTYPE_LOG4J;
+					System.out.println(log);
+					try {
+						ztsLog4j = new ZtsLog4j(log, cal);
+					} catch (Exception e) {
+						continue;
+					}
+					
+					ipadress = ztsLog4j.getIp();
+					if (ipadressSet.contains(ipadress)) {
+						equipment = equipmentMap.get(ztsLog4j.getIp()+logType);
+						if (equipment!=null) {
+							ztsLog4j.setUserid(equipment.getUserId());
+							ztsLog4j.setDeptid(String.valueOf(equipment.getDepartmentId()));
+							ztsLog4j.setEquipmentname(equipment.getName());
+							ztsLog4j.setEquipmentid(equipment.getId());
+							json = gson.toJson(ztsLog4j);
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
+						}else {
+							ztsLog4j.setUserid(LogType.LOGTYPE_UNKNOWN);
+							ztsLog4j.setDeptid(LogType.LOGTYPE_UNKNOWN);
+							ztsLog4j.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+							ztsLog4j.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+							json = gson.toJson(ztsLog4j);
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
+						}
+					}
+					
+				}
+				else if (ztsmatcher.find()) {
 					logType = LogType.LOGTYPE_SYSLOG;
 					try {
 						ztsSyslog = new ZtsSyslog(log.trim());
