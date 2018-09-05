@@ -686,10 +686,18 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 		highlightBuilder.postTags("</span>");
 		highlightBuilder.fragmentSize(500);
 		searchRequestBuilder.highlighter(highlightBuilder);
+		SearchHit [] searchHits =null;
+		try {
+			SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+			searchHits = searchResponse.getHits().getHits();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			
+		}
 		
-		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		
-		SearchHit [] searchHits = searchResponse.getHits().getHits();
+		
 		return searchHits;
 	}
 	
