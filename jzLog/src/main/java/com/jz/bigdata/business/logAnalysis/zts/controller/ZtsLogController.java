@@ -51,10 +51,7 @@ public class ZtsLogController extends LogController{
 	public String createIndexAndMapping(HttpServletRequest request) {
 		Map<String, Object> map= new HashMap<>();
 		try {
-			//ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_WINLOG, new Winlog().toMapping());
-			//ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_LOG4J, new Log4j().toMapping());
-			//ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_UNKNOWN, new Unknown().toMapping());
-			// 定制业务
+			// zts定制业务
 			ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_SYSLOG, new ZtsSyslog().toMapping());
 			ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_LOG4J, new ZtsLog4j().toMapping());
 			
