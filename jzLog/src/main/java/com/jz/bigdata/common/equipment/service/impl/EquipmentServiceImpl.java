@@ -199,7 +199,9 @@ public class EquipmentServiceImpl implements IEquipmentService {
 				logType = LogType.LOGTYPE_MYSQLLOG;
 			} else if (6 == e.getLogType()) {
 				logType = LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG;
-			} else {
+			} else if (7 == e.getLogType()) {
+				logType = LogType.LOGTYPE_APPLOG;
+			}else {
 				logType = LogType.LOGTYPE_SYSLOG;
 			}
 			map.put(list.get(i).getIp() + logType, list.get(i));

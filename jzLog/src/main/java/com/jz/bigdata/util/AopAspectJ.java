@@ -308,6 +308,7 @@ public class AopAspectJ {
 		// 获取request
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
 				.getRequest();
+		//获取ip
 		String ip = AopAspectJ.getIpAddr(request);
 		// 获取session
 		HttpSession session = request.getSession();
