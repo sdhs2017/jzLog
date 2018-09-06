@@ -24,6 +24,7 @@ import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.Syslog;
 import com.jz.bigdata.business.logAnalysis.log.entity.Unknown;
 import com.jz.bigdata.business.logAnalysis.log.entity.Winlog;
+import com.jz.bigdata.business.logAnalysis.log.entity.ZtsApp;
 import com.jz.bigdata.business.logAnalysis.log.entity.ZtsLog4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.ZtsSyslog;
 import com.jz.bigdata.business.logAnalysis.zts.service.impl.ZtsLogServiceImpl;
@@ -55,9 +56,10 @@ public class ZtsLogController extends LogController{
 			//ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_LOG4J, new Log4j().toMapping());
 			//ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_UNKNOWN, new Unknown().toMapping());
 			// 定制业务
-			ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_SYSLOG, new ZtsSyslog().toMapping());
-			ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_LOG4J, new ZtsLog4j().toMapping());
+//			ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_SYSLOG, new ZtsSyslog().toMapping());
+//			ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_LOG4J, new ZtsLog4j().toMapping());
 			
+			ztsLogService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APPLOG, new ZtsApp().toMapping());
 			map.put("state", true);
 			map.put("msg", "数据结构初始化成功！");
 			logger.info(map);

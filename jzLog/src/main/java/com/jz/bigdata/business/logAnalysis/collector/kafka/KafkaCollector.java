@@ -21,6 +21,7 @@ import com.jz.bigdata.business.logAnalysis.log.entity.Mysql;
 import com.jz.bigdata.business.logAnalysis.log.entity.PacketFilteringFirewal;
 import com.jz.bigdata.business.logAnalysis.log.entity.Syslog;
 import com.jz.bigdata.business.logAnalysis.log.entity.Winlog;
+import com.jz.bigdata.business.logAnalysis.log.entity.ZtsApp;
 import com.jz.bigdata.business.logAnalysis.log.entity.ZtsLog4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.ZtsSyslog;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
@@ -93,6 +94,7 @@ public class KafkaCollector implements Runnable {
 	Syslog syslog;
 	ZtsSyslog ztsSyslog;
 	ZtsLog4j ztsLog4j;
+	ZtsApp ztsapp;
 
 	/**
 	 * @param equipment
@@ -241,6 +243,11 @@ public class KafkaCollector implements Runnable {
 				// log4j from logstash
 				Pattern log4j_pattern = Pattern.compile("\"type\":\"log4j\"");
 				Matcher log4j_matcher = log4j_pattern.matcher(log);
+				
+				//c#日志
+				Pattern c_pattern = Pattern.compile("\"type\":\"c#\"");
+				Matcher c_matcher = c_pattern.matcher(log);
+//				"type":"c#"
 				
 				// 防火墙-包过滤日志信息过滤条件
 				Pattern logtype_pattern = Pattern.compile("logtype=1");
@@ -499,6 +506,35 @@ public class KafkaCollector implements Runnable {
 						//不在资产ip池里，暂不处理
 						//TODO
 					}
+				}else if(c_matcher.find()){
+					logType = LogType.LOGTYPE_APPLOG;
+					System.out.println(log);
+					try {
+						ztsapp = new ZtsApp(log);
+					} catch (Exception e) {
+						continue;
+					}
+					
+					ipadress = ztsapp.getIp();
+					if (ipadressSet.contains(ipadress)) {
+						equipment = equipmentMap.get(ztsapp.getIp()+logType);
+						if (equipment!=null) {
+							ztsapp.setUserid(equipment.getUserId());
+							ztsapp.setDeptid(String.valueOf(equipment.getDepartmentId()));
+							ztsapp.setEquipmentname(equipment.getName());
+							ztsapp.setEquipmentid(equipment.getId());
+							json = gson.toJson(ztsapp);
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_APPLOG, json));
+						}else {
+							ztsapp.setUserid(LogType.LOGTYPE_UNKNOWN);
+							ztsapp.setDeptid(LogType.LOGTYPE_UNKNOWN);
+							ztsapp.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+							ztsapp.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+							json = gson.toJson(ztsapp);
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_APPLOG, json));
+						}
+					}
+					
 				}else {
 					logType = LogType.LOGTYPE_SYSLOG;
 					try {
