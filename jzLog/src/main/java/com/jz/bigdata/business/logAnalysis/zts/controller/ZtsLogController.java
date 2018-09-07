@@ -35,7 +35,7 @@ import com.jz.bigdata.util.DescribeLog;
 import net.sf.json.JSONArray;
 
 @Controller
-@RequestMapping("/log")
+//@RequestMapping("/log")
 public class ZtsLogController extends LogController{
 	
 	private static Logger logger = Logger.getLogger(ZtsLogController.class);
