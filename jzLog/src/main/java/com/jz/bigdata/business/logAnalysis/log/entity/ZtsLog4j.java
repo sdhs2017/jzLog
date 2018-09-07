@@ -429,6 +429,7 @@ public class ZtsLog4j {
 	 */
 	public ZtsLog4j(String log, Calendar cal) {
 
+		//判断是否存在业务数据
 		if (log.indexOf("userName") > 0 && log.indexOf("userMaps") > 0) {
 			
 			

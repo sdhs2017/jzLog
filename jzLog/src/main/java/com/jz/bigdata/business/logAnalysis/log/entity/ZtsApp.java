@@ -61,6 +61,19 @@ public class ZtsApp {
 	private String hostname;
 	private String name;
 
+	private JsonServer jsonServer;
+	private String serverid;
+	private String servername;
+	private String mac;
+	private String vdiId;
+	private String enable;
+	private String comment;
+	private String serverip;
+	private String port;
+	private String userTag;
+	private String state;
+	private String loadInfo;
+	private String groupId;
 	public String getId() {
 		return id;
 	}
@@ -236,6 +249,115 @@ public class ZtsApp {
 
 	public void setName(String name) {
 		this.name = name;
+		
+	}
+
+
+	public String getServerid() {
+		return serverid;
+	}
+
+	public void setServerid(String serverid) {
+		this.serverid = serverid;
+	}
+
+	public String getServername() {
+		return servername;
+	}
+
+	public void setServername(String servername) {
+		this.servername = servername;
+	}
+
+	public String getMac() {
+		return mac;
+	}
+
+	public void setMac(String mac) {
+		this.mac = mac;
+	}
+
+	public String getVdiId() {
+		return vdiId;
+	}
+
+	public void setVdiId(String vdiId) {
+		this.vdiId = vdiId;
+	}
+
+	public String getEnable() {
+		return enable;
+	}
+
+	public void setEnable(String enable) {
+		this.enable = enable;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public String getServerip() {
+		return serverip;
+	}
+
+	public void setServerip(String serverip) {
+		this.serverip = serverip;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public String getUserTag() {
+		return userTag;
+	}
+
+	public void setUserTag(String userTag) {
+		this.userTag = userTag;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getLoadInfo() {
+		return loadInfo;
+	}
+
+	public void setLoadInfo(String loadInfo) {
+		this.loadInfo = loadInfo;
+	}
+
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+		
+		
+	}
+
+
+	public JsonServer getJsonServer() {
+		return jsonServer;
+	}
+
+	public void setJsonServer(JsonServer jsonServer) {
+		this.jsonServer = jsonServer;
 	}
 
 
@@ -258,6 +380,7 @@ public class ZtsApp {
 		public void setName(String name) {
 			this.name = name;
 		}
+		
 	}
 
 	class Fields {
@@ -282,6 +405,96 @@ public class ZtsApp {
 
 		
 	}
+	
+	class JsonServer{
+		private String id;
+		private String name;
+		private String mac;
+		private String vdiId;
+		private String enable;
+		private String comment;
+		private String ip;
+		private String port;
+		private String userTag;
+		private String state;
+		private String loadInfo;
+		private String groupId;
+		public String getId() {
+			return id;
+		}
+		public void setId(String id) {
+			this.id = id;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getMac() {
+			return mac;
+		}
+		public void setMac(String mac) {
+			this.mac = mac;
+		}
+		public String getVdiId() {
+			return vdiId;
+		}
+		public void setVdiId(String vdiId) {
+			this.vdiId = vdiId;
+		}
+		public String getEnable() {
+			return enable;
+		}
+		public void setEnable(String enable) {
+			this.enable = enable;
+		}
+		public String getComment() {
+			return comment;
+		}
+		public void setComment(String comment) {
+			this.comment = comment;
+		}
+		public String getIp() {
+			return ip;
+		}
+		public void setIp(String ip) {
+			this.ip = ip;
+		}
+		public String getPort() {
+			return port;
+		}
+		public void setPort(String port) {
+			this.port = port;
+		}
+		public String getUserTag() {
+			return userTag;
+		}
+		public void setUserTag(String userTag) {
+			this.userTag = userTag;
+		}
+		public String getState() {
+			return state;
+		}
+		public void setState(String state) {
+			this.state = state;
+		}
+		public String getLoadInfo() {
+			return loadInfo;
+		}
+		public void setLoadInfo(String loadInfo) {
+			this.loadInfo = loadInfo;
+		}
+		public String getGroupId() {
+			return groupId;
+		}
+		public void setGroupId(String groupId) {
+			this.groupId = groupId;
+		}
+		
+		
+		
+	}
 
 	public ZtsApp() {
 
@@ -289,23 +502,25 @@ public class ZtsApp {
 
 	public ZtsApp(String log) {
 
-		System.out.println(log);
+//		System.out.println(log);
 		Gson gson = new Gson();
 //		log =log.replaceAll("\", "\\\\");
 		ZtsApp ztsApp = gson.fromJson(log, ZtsApp.class);
-	
-
+		
 		this.ip = ztsApp.getFields().getIp();
 		this.hostname=ztsApp.getBeat().getHostname();
 		this.name=ztsApp.getBeat().getName();
 		this.host=ztsApp.getHost();
 		this.source=ztsApp.getSource();
-		System.err.println(ztsApp.getHost());
-
+		
 		Pattern date_pattern = Pattern
 				.compile("[0-9]{4}[/][0-9]{1,2}[/][0-9]{1,2}[ ][0-9]{1,2}[:][0-9]{1,2}[:][0-9]{1,2}");
 		Matcher date_matcher = date_pattern.matcher(ztsApp.getMessage());
-
+		
+		Pattern jsonserver_pattern = Pattern
+				.compile("jsonServer");
+		Matcher jsonserver_matcher = jsonserver_pattern.matcher(ztsApp.getMessage());
+		//是否存在时间
 		if (date_matcher.find()) {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			// 获取 时间
@@ -313,7 +528,6 @@ public class ZtsApp {
 			try {
 				this.logdate = format.parse(this.logtime);
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			String[] tmp = this.logtime.split(" ");
@@ -324,13 +538,31 @@ public class ZtsApp {
 			this.logtime_day = date[2];
 			this.logtime_hour = time[0];
 			this.logtime_minute = time[1];
-			System.out.println(logdate + "   " + logtime);
-			System.out.println(date.length + "   " + logtime_year + "   " + logtime_month + "    " + logtime_day
-					+ "    " + logtime_hour + "   " + logtime_minute);
-			System.out.println(ztsApp.getMessage().indexOf(logtime));
 			this.operation_des = ztsApp.getMessage();
-			System.out.println(operation_des);
 		}
+		//是否存在jsonserver关键字
+		if(jsonserver_matcher.find()){
+//			System.out.println(ztsApp.getJsonServer().getIp());
+			String jsonserver=ztsApp.getMessage().replace("=", ":");
+			int c=jsonserver.indexOf("jsonServer");
+			jsonserver=jsonserver.substring(c+11);
+			JsonServer jsServer=gson.fromJson(jsonserver, JsonServer.class);
+			this.serverid =jsServer.getId();
+			
+			this.servername=jsServer.getName();
+			this.mac=jsServer.getMac();
+			this.vdiId=jsServer.getVdiId();
+			this.enable=jsServer.getEnable();
+			this.comment=jsServer.getComment();
+			this.serverip=jsServer.getIp();
+			this.port=jsServer.getPort();
+			this.userTag=jsServer.getUserTag();
+			this.state=jsServer.getState();
+			this.loadInfo=jsServer.getLoadInfo();
+			this.groupId=jsServer.getGroupId();
+		}
+			
+		
 
 	}
 
@@ -359,12 +591,16 @@ public class ZtsApp {
 					|| fields[i].getName().equals("logtime_hour") || fields[i].getName().equals("logtime_day")
 					|| fields[i].getName().equals("logtime_month") || fields[i].getName().equals("logtime_year")
 					|| fields[i].getName().equals("operation_level") || fields[i].getName().equals("ip")
-					|| fields[i].getName().equals("host")|| fields[i].getName().equals("hostname")) {
+					|| fields[i].getName().equals("host")|| fields[i].getName().equals("hostname")|| fields[i].getName().equals("servername")
+					|| fields[i].getName().equals("serverid")|| fields[i].getName().equals("serverip")
+					|| fields[i].getName().equals("vdiId")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": " + "true" + "\n");
 			}
 			if (fields[i].getName().equals("operation_des") || fields[i].getName().equals("equipmentname")
 					|| fields[i].getName().equals("host") || fields[i].getName().equals("hostname")
-					|| fields[i].getName().equals("name")|| fields[i].getName().equals("ip")) {
+					|| fields[i].getName().equals("name")|| fields[i].getName().equals("ip")
+					|| fields[i].getName().equals("servername")|| fields[i].getName().equals("serverip")
+					|| fields[i].getName().equals("vdiId")) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");
 			}
@@ -417,6 +653,6 @@ public class ZtsApp {
 		System.out.println(ztsApp.getSource());
 		System.out.println(ztsApp.getIp());
 		System.out.println(ztsApp.getOperation_des());
-		// System.out.println(ztsApp.toMapping());
+		 System.out.println(ztsApp.toMapping());
 	}
 }
