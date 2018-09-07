@@ -424,15 +424,13 @@
 					firstGet = true;//第一次请求标识
 					//获得查询条件参数值
 					//获取开始时间
-					sendObj.startTime = $("#startTime").val();
+					sendObj.starttime = $("#startTime").val();
 					//获取结束时间
-					sendObj.endTime = $("#endTime").val();
+					sendObj.endtime = $("#endTime").val();
 					//获取日志级别
 					sendObj.level= $(".searchLevel").val();
 					//资产id
 					sendObj.id = id;
-					sendObj.param = "logdate";
-					sendObj.order = "desc";
 					//查询日志
 					getLogs("../../log/getLogListByEquipment.do","",sendObj,1,pageSize)
 					searchType = '1';
