@@ -57,7 +57,7 @@ import com.jz.bigdata.util.Sendmail;
 import net.sf.json.JSONArray;
 
 @Controller
-//@RequestMapping("/log")
+@RequestMapping("/log")
 public class LogController extends BaseController{
 
 	@Resource(name="logService")
