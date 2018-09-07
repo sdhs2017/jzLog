@@ -431,8 +431,6 @@
 					sendObj.operation_level= $(".searchLevel").val();
 					//资产id
 					sendObj.id = id;
-					sendObj.param = "logdate";
-					sendObj.order = "desc";
 					//查询日志
 					getLogs("../../log/getLogListByEquipment.do","",sendObj,1,pageSize)
 					searchType = '1';
