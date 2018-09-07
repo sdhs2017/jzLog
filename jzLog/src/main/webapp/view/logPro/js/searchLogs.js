@@ -16,8 +16,8 @@
 		var param = {};
 		if(id != ''){//单个设备日志
 			param.id = id;
-			param.param = "logdate";
-			param.order = "desc";
+			/*param.param = "logdate";
+			param.order = "desc";*/
 		}	
 		
 		//判断是精确查询还是模糊查询 
