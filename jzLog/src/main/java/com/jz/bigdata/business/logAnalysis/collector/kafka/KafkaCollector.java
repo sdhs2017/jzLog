@@ -30,7 +30,6 @@ import com.jz.bigdata.common.equipment.service.IEquipmentService;
 import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.ConfigProperty;
-import com.jz.bigdata.util.Sendmail;
 
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
@@ -244,11 +243,6 @@ public class KafkaCollector implements Runnable {
 				Pattern log4j_pattern = Pattern.compile("\"type\":\"log4j\"");
 				Matcher log4j_matcher = log4j_pattern.matcher(log);
 				
-				//c#日志
-				Pattern c_pattern = Pattern.compile("\"type\":\"c#\"");
-				Matcher c_matcher = c_pattern.matcher(log);
-//				"type":"c#"
-				
 				// 防火墙-包过滤日志信息过滤条件
 				Pattern logtype_pattern = Pattern.compile("logtype=1");
 				Matcher logtype_matcher = logtype_pattern.matcher(log);
@@ -267,9 +261,6 @@ public class KafkaCollector implements Runnable {
 				// mysql日志
 				Pattern mysqlpattern = Pattern.compile("timestamp");
 				Matcher mysqlmatcher = mysqlpattern.matcher(log);
-				// 定制化syslog中的业务数据
-				Pattern ztspattern = Pattern.compile("dname=themis");
-				Matcher ztsmatcher = ztspattern.matcher(log);
 				
 				if (facility_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
@@ -290,6 +281,7 @@ public class KafkaCollector implements Runnable {
 								try {
 									log4j = new Log4j(builder.toString());
 								} catch (Exception e) {
+									e.printStackTrace();
 									continue;
 								}
 								
@@ -325,9 +317,14 @@ public class KafkaCollector implements Runnable {
 							
 						}
 					}
-				}/*else if (log4j_matcher.find()) {
+				}else if (log4j_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
-					log4j = new Log4j(log, cal);
+					try {
+						log4j = new Log4j(log, cal);
+					}catch (Exception e) {
+						e.printStackTrace();
+						continue;
+					}
 					ipadress = log4j.getIp();
 					if (ipadressSet.contains(ipadress)) {
 						equipment = equipmentMap.get(log4j.getIp()+logType);
@@ -353,6 +350,7 @@ public class KafkaCollector implements Runnable {
 					try {
 						packetFilteringFirewal = new PacketFilteringFirewal(log);
 					} catch (Exception e) {
+						e.printStackTrace();
 						continue;
 					}
 					
@@ -378,7 +376,7 @@ public class KafkaCollector implements Runnable {
 						//不在资产ip池里，暂不处理
 					}
 					//es暂无防火墙包过滤日志对应的mapping，暂未入库es
-				}*//*else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
+				}/*else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
 					//防火墙、不包括包过滤日志，暂不处理
 					System.out.println("-------不做处理-------------");
 				}*//*else if (mysqlmatcher.find()) {
@@ -406,12 +404,13 @@ public class KafkaCollector implements Runnable {
 						//不在资产ip池里，暂不处理
 					}
 				}*/
-				/*else if(win2003matcher.find()||win2008matcher.find()){
+				else if(win2003matcher.find()||win2008matcher.find()){
 					//windows、evtsys组件收集日志
 					logType = LogType.LOGTYPE_WINLOG;
 					try {
 						winlog = new Winlog(log);
 					} catch (Exception e) {
+						e.printStackTrace();
 						continue;
 					}
 					
@@ -440,106 +439,12 @@ public class KafkaCollector implements Runnable {
 					}else{
 						//不在资产ip池里，暂不处理
 					}
-				}*/
-				else if (log4j_matcher.find()) {
-					logType = LogType.LOGTYPE_LOG4J;
-					System.out.println(log);
-					try {
-						ztsLog4j = new ZtsLog4j(log, cal);
-					} catch (Exception e) {
-						continue;
-					}
-					
-					ipadress = ztsLog4j.getIp();
-					if (ipadressSet.contains(ipadress)) {
-						equipment = equipmentMap.get(ztsLog4j.getIp()+logType);
-						if (equipment!=null) {
-							ztsLog4j.setUserid(equipment.getUserId());
-							ztsLog4j.setDeptid(String.valueOf(equipment.getDepartmentId()));
-							ztsLog4j.setEquipmentname(equipment.getName());
-							ztsLog4j.setEquipmentid(equipment.getId());
-							json = gson.toJson(ztsLog4j);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
-						}else {
-							ztsLog4j.setUserid(LogType.LOGTYPE_UNKNOWN);
-							ztsLog4j.setDeptid(LogType.LOGTYPE_UNKNOWN);
-							ztsLog4j.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
-							ztsLog4j.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
-							json = gson.toJson(ztsLog4j);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
-						}
-					}
-					
-				}
-				else if (ztsmatcher.find()) {
-					logType = LogType.LOGTYPE_SYSLOG;
-					try {
-						ztsSyslog = new ZtsSyslog(log.trim());
-					} catch (Exception e) {
-						continue;
-					}
-					ipadress = ztsSyslog.getIp();
-					//判断是否在资产ip地址池里
-					if(ipadressSet.contains(ipadress)){
-						//判断是否在已识别资产里————日志类型可识别
-						equipment = equipmentMap.get(ztsSyslog.getIp() +logType);
-						if(null != equipment){
-							if (equipmentLogType.get(equipment.getId()).indexOf(ztsSyslog.getOperation_level().toLowerCase())!=-1) {
-								ztsSyslog.setUserid(equipment.getUserId());
-								ztsSyslog.setDeptid(String.valueOf(equipment.getDepartmentId()));
-								ztsSyslog.setEquipmentid(equipment.getId());
-								ztsSyslog.setEquipmentname(equipment.getName());
-								
-								json = gson.toJson(ztsSyslog);
-								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_SYSLOG, json));
-							}
-						}else{
-							//在资产ip地址池里，但是无法识别日志类型
-							syslog.setUserid(LogType.LOGTYPE_UNKNOWN);
-							syslog.setDeptid(LogType.LOGTYPE_UNKNOWN);
-							syslog.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
-							syslog.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
-							json = gson.toJson(syslog);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_UNKNOWN, json));
-						}
-					}else{
-						//不在资产ip池里，暂不处理
-						//TODO
-					}
-				}else if(c_matcher.find()){
-					logType = LogType.LOGTYPE_APPLOG;
-					System.out.println(log);
-					try {
-						ztsapp = new ZtsApp(log);
-					} catch (Exception e) {
-						continue;
-					}
-					
-					ipadress = ztsapp.getIp();
-					if (ipadressSet.contains(ipadress)) {
-						equipment = equipmentMap.get(ztsapp.getIp()+logType);
-						if (equipment!=null) {
-							ztsapp.setUserid(equipment.getUserId());
-							ztsapp.setDeptid(String.valueOf(equipment.getDepartmentId()));
-							ztsapp.setEquipmentname(equipment.getName());
-							ztsapp.setEquipmentid(equipment.getId());
-							json = gson.toJson(ztsapp);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_APPLOG, json));
-						}else {
-							ztsapp.setUserid(LogType.LOGTYPE_UNKNOWN);
-							ztsapp.setDeptid(LogType.LOGTYPE_UNKNOWN);
-							ztsapp.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
-							ztsapp.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
-							json = gson.toJson(ztsapp);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_APPLOG, json));
-						}
-					}
-					
 				}else {
 					logType = LogType.LOGTYPE_SYSLOG;
 					try {
 						syslog = new Syslog(log);
 					} catch (Exception e) {
+						e.printStackTrace();
 						continue;
 					}
 					
