@@ -620,7 +620,7 @@
 		//获取计算机名
 		var logsHostName = $(this).parent().siblings('.logs_hostName').html();
 		//获取资产名称  log4j
-		var equipmentName = $(this).parents("tr").attr("data-equipmentname");
+		var equipmentName = $(this).parent().siblings('.property_name').html();
 		//获取日志模块
 		var logsIp = $(this).parent().siblings('.logs_ip').html();
 		if(logType == "winlog"){
@@ -686,7 +686,7 @@
 					+			'<div class="col-xs-9 layCen">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
-		}else if(logType == "log4j" || logType == "syslog" || logType == "mysql"){
+		}else if(logType == "log4j" || logType == "syslog" || logType == "mysql" || logType == "applog" || logType == "packetfilteringfirewall_log"){
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:50px">'
