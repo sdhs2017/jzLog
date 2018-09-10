@@ -376,17 +376,50 @@ public class LogController extends BaseController{
 	 * @param requestt
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value="/getLogListByEquipment.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="条件获取设备日志数据")
 	public String getLogListByEquipment(HttpServletRequest request,Equipment equipment) {
-		equipment=equipmentService.selectOneEquipment(equipment);
-		String starttime = request.getParameter("startTime");
-		String endtime = request.getParameter("endTime");
-		String level = request.getParameter("level");
-		String page = request.getParameter("page");
-		String size = request.getParameter("size");
+
+		String ztData = request.getParameter("ztData");
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, String> map = new HashMap<String, String>();
 		
+		try {
+			map = removeMapEmptyValue(mapper.readValue(ztData, Map.class));
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		equipment.setId(map.get("id"));
+		equipment=equipmentService.selectOneEquipment(equipment);
+		
+		String starttime = "";
+		String endtime = "";
+		if (map.get("starttime")!=null) {
+			Object start = map.get("starttime");
+			starttime = start.toString();
+			map.remove("starttime");
+		}
+		if (map.get("endtime")!=null) {
+			Object end = map.get("endtime");
+			endtime = end.toString();
+			map.remove("endtime");
+		}
+		
+		Object pageObject = map.get("page");
+		String page = pageObject.toString();
+		map.remove("page");
+		Object sizeObject = map.get("size");
+		String size = sizeObject.toString();
+		map.remove("size");
 		
 		String type = null;
 		
@@ -409,17 +442,8 @@ public class LogController extends BaseController{
 		
 		String equipmentId = equipment.getId();
 		
-		Map<String, String> map = new HashMap<>();
 		map.put("equipmentid", equipmentId);
-		if (level!=null&&!level.equals("")) {
-			map.put("operation_level", level);
-		}
-		if (starttime==null) {
-			starttime = "";
-		}
-		if (endtime==null) {
-			endtime = "";
-		}
+		map.remove("id");
 		ArrayList<String> arrayList = new ArrayList<>();
 		arrayList.add(type);
 		String [] types = null;
