@@ -355,6 +355,8 @@ function jointDeviceList(data){
 	 		logType = "mysql";
 	 	}else if(obj.logType == 6){
 	 		logType = "packetfilteringfirewall_log";
+	 	}else if(obj.logType == 7){
+	 		logType = "applog";
 	 	}	 	
 	 	//设备类型
 	 	var typeArr2 = ["网络","安全","主机","应用"]
