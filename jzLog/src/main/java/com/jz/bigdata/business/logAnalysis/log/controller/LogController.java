@@ -505,7 +505,7 @@ public class LogController extends BaseController{
 			}
 			
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 
 		Map<String, Object> map = new HashMap<>();
