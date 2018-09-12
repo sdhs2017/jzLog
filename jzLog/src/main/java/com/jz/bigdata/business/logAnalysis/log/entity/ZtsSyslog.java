@@ -133,6 +133,7 @@ public class ZtsSyslog extends BaseEntity{
 	String act;
 	String result;
 	String user;
+	String operating_user;
 	String dsp_msg;
 	String from;
 	String fwlog;
@@ -310,6 +311,12 @@ public class ZtsSyslog extends BaseEntity{
 	public void setUser(String user) {
 		this.user = user;
 	}
+	public String getOperating_user() {
+		return operating_user;
+	}
+	public void setOperating_user(String operating_user) {
+		this.operating_user = operating_user;
+	}
 	public String getDsp_msg() {
 		return dsp_msg;
 	}
@@ -431,7 +438,12 @@ public class ZtsSyslog extends BaseEntity{
 				this.cmd = ztcBusiness.getCmd().replaceAll(",", " ");
 			}
 			this.from = ztcBusiness.getFrom();
-			this.user = ztcBusiness.getUser();
+			this.operating_user = ztcBusiness.getUser();
+			if (this.operating_user.equals("root")) {
+				this.user = this.dsp_msg.substring(this.dsp_msg.indexOf("[")+1, this.dsp_msg.indexOf("]"));
+			}else {
+				this.user = ztcBusiness.getUser();
+			}
 			this.fwlog = ztcBusiness.getFwlog();
 			
 			if (ztcBusiness.getDate()!=null) {
@@ -469,9 +481,16 @@ public class ZtsSyslog extends BaseEntity{
 			this.dsp_msg = ztcBusiness.getDsp_msg();
 			this.event = ztcBusiness.getEvent();
 			this.act = ztcBusiness.getAct();
-			this.cmd = ztcBusiness.getCmd().replaceAll(",", " ");
+			if (ztcBusiness.getCmd()!=null) {
+				this.cmd = ztcBusiness.getCmd().replaceAll(",", " ");
+			}
 			this.from = ztcBusiness.getFrom();
-			this.user = ztcBusiness.getUser();
+			this.operating_user = ztcBusiness.getUser();
+			if (this.operating_user.equals("root")) {
+				this.user = this.dsp_msg.substring(this.dsp_msg.indexOf("[")+1, this.dsp_msg.indexOf("]"));
+			}else {
+				this.user = ztcBusiness.getUser();
+			}
 			
 			if (ztcBusiness.getDate()!=null) {
 				try {
@@ -677,7 +696,10 @@ public class ZtsSyslog extends BaseEntity{
 		/*String log = "<134> 2018-08-16 18:21:24 10.29.16.48 10.29.16.48 root: devid=3 date=\"2018/08/16 10:33:06\" dname=themis logtype=1 pri=6 mod=webui event=\"管理员[administrator]执行命令，设置日志服务器。\" dsp_msg=\"管理员[administrator]执行命令，设置日志服务器。\" from=\"10.29.172.70\" user=\"administrator\" act=\"配置\" cmd=\"logserver set ip 10.29.172.120 port 514 protocol udp 2>&1;\"";
 		ZtsSyslog ztcSyslog = new ZtsSyslog(log);
 		System.out.println(ztcSyslog.act);*/
-		System.out.println(new ZtsSyslog().toMapping());
+		String log = "<158> 2018-08-16 18:21:50 10.29.16.48 10.29.16.48 [4231]: devid=0 date=\"2018/08/16 10:33:33\" dname=themis logtype=4 pri=6 mod=AUTHCENTER act=登录 result=0 user=root dsp_msg=\"用户 [fangzk] 登录 成功!\" fwlog=0";
+		ZtsSyslog ztcSyslog = new ZtsSyslog(log);
+		System.out.println(ztcSyslog.operating_user+","+ztcSyslog.user);
+		//System.out.println(new ZtsSyslog().toMapping());
 	}
 }
 
