@@ -116,6 +116,7 @@ a:hover{
 	border-left:1px solid #ccc ;
 	border-bottom:1px solid #e7eaec;
 	background:#fff;
+	margin-bottom:30px!important;
 }
 .result_box>div{
 	height: 100%;
@@ -323,7 +324,7 @@ a:hover{
 	padding-bottom: 10px;
 }
 .layer_box>div{
-	min-height:50px;
+	min-height:40px;
 	border-bottom: 1px solid #e7eaec;
 	padding: 5px 10px 5px 15px;
 }
@@ -339,7 +340,7 @@ a:hover{
 	border-left: 1px solid #e7eaec;
 	/*border-right: 1px solid #e7eaec;*/
 	word-wrap :break-word;
-	min-height:50px;
+	min-height:40px;
 }
 .layer_box .row div:last-child>i:hover{
 	color: #1ab394;

@@ -1,5 +1,6 @@
 
 	var logsArr  = [];//数组 用于存放获取来的logs
+	var logDetailArr = [];//用于查看日志详情
 	var pageCount = 0;//总页数
 	var pageTotle = 12;//每一页显示的条数
 	var historyArr = [];//用于存放检索历史数组
@@ -52,6 +53,8 @@
     		showLogs(data[0].list);   
     		//将当页的数据保存在本地 用于过滤
     		filterArr = data[0].list;
+    		//储存日志
+    		logDetailArr = data[0].list;
 			//判断是否是第一次请求
 			if(firstGet == true){
 				//获得总条数
@@ -319,6 +322,8 @@
 			logListTittle += '<th width="35"><input type="checkbox" id="theadCheck" onclick="theadCheck()"></th>'
 				  		  +	 '<th width="200">时间</th>'
 						  +	 '<th width="85">级别</th>'
+						  +	 '<th width="100">用户名</th>'
+						  +	 '<th width="100">用户ID</th>'
 						  +	 '<th width="125">IP</th>'
 						  +	 '<th>日志内容</th>'
 						  +	 '<th width="60">操作</th>'
@@ -327,6 +332,7 @@
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
 			if(logsArr != ''){
 				logLists = '';
+				var logDesArrIndex = 0;
 				for(var i in logsArr){
 					var obj =  filterObj(logsArr[i]);		
 					//替换风险状态
@@ -336,20 +342,25 @@
 					}else if(obj.operation_level == "ERROR"){
 						level = '<span class="label label-danger">ERROR</span>'
 					}	*/
-					
+					if(obj.user_id == undefined){
+						obj.user_id = '-'
+					}
 					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'" data-equipmentName="'+obj.equipmentname+'">'
 							 +		 '<td> <input type="checkbox"></td>'
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
+					         +       '<td class="logs_level">'+obj.user+'</td>'
+					         +       '<td class="logs_level">'+obj.user_id+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
 		 
 				}
+				logDesArrIndex++;
 			}
 			
 			 //添加 日志列表到页面中    
@@ -531,7 +542,7 @@
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
@@ -565,7 +576,6 @@
 			}
 		})
 	    
-	    
 	}
 	var htmlNum2 = 0;
 	//点击查看设备详情
@@ -592,8 +602,11 @@
 	
 	//查看详情 点击事件
 	$("#logs_list").on("click",".more",function(){
+		var logIndex = ($(this).parent().attr("data-index"));
 		//获取日志类型
-		var logType = $(".device_logType").html();
+		var logType1 = $(".device_logType").html();//单个设备日志类型
+		//日志类型
+		var logType = $(this).parent().siblings('.logs_type').html();//搜索页面中的日志类型
 		/*if(logType == undefined){//logType ！= undefined 单个设备的日志
 			logType = $(this).parent().siblings('.logs_type').html();
 		}*/
@@ -623,7 +636,7 @@
 		var equipmentName = $(this).parent().siblings('.property_name').html();
 		//获取日志模块
 		var logsIp = $(this).parent().siblings('.logs_ip').html();
-		if(logType == "winlog"){
+		if(logType == "winlog" || logType1 == "winlog"){
 			//获得日志来源
 			var logsSource = $(this).parent().attr("data-logSource");
 			if(logsSource == "undefined"){
@@ -661,23 +674,23 @@
 			}
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">时间:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsTime+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">事件ID:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsEventId+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">级别:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsLevel+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">IP:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsIp+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">计算机名:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsHostName+'</div>'
 					+		'</div>'
@@ -686,22 +699,22 @@
 					+			'<div class="col-xs-9 layCen">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
-		}else if(logType == "log4j" || logType == "syslog" || logType == "mysql" || logType == "applog" || logType == "packetfilteringfirewall_log"){
+		}else if(logType == "log4j" || logType == "mysql" || logType == "applog" || logType == "packetfilteringfirewall_log" || logType1 == "log4j" || logType1 == "mysql" || logType1 == "applog" || logType1 == "packetfilteringfirewall_log"){
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">时间:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsTime+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">级别:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsLevel+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">资产名称:</div>'
 					+			'<div class="col-xs-9 layCen">'+equipmentName+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">IP:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsIp+'</div>'
 					+		'</div>'
@@ -710,9 +723,71 @@
 					+			'<div class="col-xs-9 layCen">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
+		}else if(logType == "syslog" || logType1 == "syslog"){
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">级别:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_level+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">日志类型:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].type+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">用户名:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].user+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">资产名称:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">日志内容:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_des+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">dname:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dname+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">logtype:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtype+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">pri:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].pri+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">mod:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].mod+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">act:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].act+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">result:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].result+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">dsp_msg:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dsp_msg+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">fwlog:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].fwlog+'</div>'
+					+		'</div>'
+					+	'</div>'	
 		}else{
-			//日志类型
-			var logType = $(this).parent().siblings('.logs_type').html();
 			//资产名称
 			var propertyName = $(this).parent().siblings('.property_name').html();
 			//日志内容
@@ -720,27 +795,27 @@
 			var logsCon = logDesArr[index];
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">时间:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsTime+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">级别:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsLevel+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">日志类型:</div>'
 					+			'<div class="col-xs-9 layCen">'+logType+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">用户名:</div>'
 					+			'<div class="col-xs-9 layCen">'+userName+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">资产名称:</div>'
 					+			'<div class="col-xs-9 layCen">'+propertyName+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">IP:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsIp+'</div>'
 					+		'</div>'
@@ -755,7 +830,7 @@
 			layer.open({
 		 		type: 1,
 		 		title:"详细日志",//标题
-				area: ['820px', 'auto'], //宽高
+				area: ['720px', 'auto'], //宽高
 		 		content: html
 			});
 		
@@ -804,7 +879,8 @@
 					arr2[i][n] = String(arr2[i][n]).replace(filterWords,'<span>'+filterWords+'</span>'); 
 				}	
 			}
-	    }	    
+	    }	  
+	    logDetailArr = arr2;
 		//添加到页面中
     	showLogs(arr2);
     
