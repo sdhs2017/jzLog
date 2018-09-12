@@ -189,6 +189,8 @@
 			logListTittle += '<th width="35"><input type="checkbox" id="theadCheck"></th>'
 						  +	 '<th width="200">时间</th>'
 						  +	 '<th width="85">级别</th>'
+						  +	 '<th width="100">用户名</th>'
+						  +	 '<th width="100">用户ID</th>'
 						  +	 '<th width="125">IP</th>'
 						  +	 '<th>日志内容</th>'
 						  +	 '<th width="60">操作</th>'
@@ -197,6 +199,7 @@
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
 			if(logsArr != ''){
 				logLists = '';
+				var logDesArrIndex = '';
 				for(var i in logsArr){
 					var obj =  filterObj(logsArr[i]);		
 					//替换风险状态
@@ -210,14 +213,17 @@
 							 +		 '<td> <input type="checkbox"></td>'
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
+					         +       '<td class="logs_user">'+obj.user+'</td>'
+					         +       '<td class="logs_userID">'+obj.uid+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
-		 
+					         
+					logDesArrIndex++;
 				}
 			}
 			
@@ -349,8 +355,8 @@
 							 +		 '<td> <input type="checkbox"></td>'
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
-					         +       '<td class="logs_level">'+obj.user+'</td>'
-					         +       '<td class="logs_level">'+obj.user_id+'</td>'
+					         +       '<td class="logs_user">'+obj.user+'</td>'
+					         +       '<td class="logs_userID">'+obj.user_id+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
 					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
@@ -358,9 +364,10 @@
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
-		 
+					         
+					 logDesArrIndex++;
 				}
-				logDesArrIndex++;
+				
 			}
 			
 			 //添加 日志列表到页面中    
@@ -522,6 +529,9 @@
 					if(obj.user == undefined){
 						obj.user = "-"
 					}
+					if(obj.uid == undefined){
+						obj.uid = "-"
+					}
 					//替换风险状态
 					/*var level = '';
 					if(obj.operation_level == "INFO"){
@@ -539,6 +549,7 @@
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_type">'+obj.type+'</td>'
 					         +       '<td class="logs_user">'+obj.user+'</td>'
+					         +       '<td class="logs_userID">'+obj.uid+'</td>'
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'
@@ -699,7 +710,7 @@
 					+			'<div class="col-xs-9 layCen">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
-		}else if(logType == "log4j" || logType == "mysql" || logType == "applog" || logType == "packetfilteringfirewall_log" || logType1 == "log4j" || logType1 == "mysql" || logType1 == "applog" || logType1 == "packetfilteringfirewall_log"){
+		}else if(logType1 == "mysql" || logType == "applog" || logType == "packetfilteringfirewall_log" || logType1 == "mysql" || logType1 == "applog" || logType1 == "packetfilteringfirewall_log"){
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:40px">'
@@ -724,6 +735,34 @@
 					+		'</div>'
 					+	'</div>'	
 		}else if(logType == "syslog" || logType1 == "syslog"){
+			//判断值是否为空 
+			if(logDetailArr[logIndex].user == undefined){
+				logDetailArr[logIndex].user = '-';
+			}
+			if(logDetailArr[logIndex].dname == undefined){
+				logDetailArr[logIndex].dname = '-';
+			}
+			if(logDetailArr[logIndex].logtype == undefined){
+				logDetailArr[logIndex].logtype = '-';
+			}
+			if(logDetailArr[logIndex].pri == undefined){
+				logDetailArr[logIndex].pri = '-';
+			}
+			if(logDetailArr[logIndex].mod == undefined){
+				logDetailArr[logIndex].mod = '-';
+			}
+			if(logDetailArr[logIndex].act == undefined){
+				logDetailArr[logIndex].act = '-';
+			}
+			if(logDetailArr[logIndex].result == undefined){
+				logDetailArr[logIndex].result = '-';
+			}
+			if(logDetailArr[logIndex].dsp_msg == undefined){
+				logDetailArr[logIndex].dsp_msg = '-';
+			}
+			if(logDetailArr[logIndex].fwlog == undefined){
+				logDetailArr[logIndex].fwlog = '-';
+			}
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:40px">'
@@ -741,6 +780,10 @@
 					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">用户名:</div>'
 					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].user+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">用户ID:</div>'
+					+			'<div class="col-xs-9 layCen">-</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:40px">'
 					+			'<div class="col-xs-3">资产名称:</div>'
@@ -787,6 +830,89 @@
 					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].fwlog+'</div>'
 					+		'</div>'
 					+	'</div>'	
+		}else if(logType == "log4j" || logType1 == "log4j"){
+			//判断值是否为空 
+			if(logDetailArr[logIndex].officePhone == undefined){
+				logDetailArr[logIndex].officePhone = '-';
+			}
+			if(logDetailArr[logIndex].phoneNo == undefined){
+				logDetailArr[logIndex].phoneNo = '-';
+			}
+			if(logDetailArr[logIndex].employeeNumber == undefined){
+				logDetailArr[logIndex].employeeNumber = '-';
+			}
+			if(logDetailArr[logIndex].workPlace == undefined){
+				logDetailArr[logIndex].workPlace = '-';
+			}
+			
+			if(logDetailArr[logIndex].jobName == undefined){
+				logDetailArr[logIndex].jobName = '-';
+			}
+			if(logDetailArr[logIndex].jobGroupName == undefined){
+				logDetailArr[logIndex].jobGroupName = '-';
+			}
+			if(logDetailArr[logIndex].userMaps == undefined){
+				logDetailArr[logIndex].userMaps = '-';
+			}
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">级别:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_level+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">资产名称:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">用户名:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].user+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">用户ID:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].uid+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">办公室电话:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].officePhone+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">手机号:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].phoneNo+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">工号:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].employeeNumber+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">工作地点:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].workPlace+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">岗位:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].jobName+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:40px">'
+					+			'<div class="col-xs-3">岗位组:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].jobGroupName+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">日志内容:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_des+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">userMaps:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].userMaps+'</div>'
+					+		'</div>'
+					+	'</div>'
 		}else{
 			//资产名称
 			var propertyName = $(this).parent().siblings('.property_name').html();
