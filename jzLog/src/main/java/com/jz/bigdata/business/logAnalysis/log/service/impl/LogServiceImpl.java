@@ -420,33 +420,33 @@ public class LogServiceImpl implements IlogService {
 			//MultiMatchQueryBuilder multiMatchQueryBuilder  = QueryBuilders.multiMatchQuery(content, "operation_level","operation_des","ip","hostname","process","operation_facility","userid").fuzziness("AUTO");
 			count = clientTemplate.count(index, types, multiMatchQueryBuilder);
 			hits = clientTemplate.getHitsByQueryBuilder(index, types, multiMatchQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
+			// 在通过分词查询会后没有结果的情况下，在通过多字段模糊匹配查询，以达到查询效果的目的（该查询效率比较低）
+			if (hits.length<1) {
+				content = "*"+content.toLowerCase()+"*";
+				
+				QueryBuilder wildcardqueryBuilder1 = QueryBuilders.wildcardQuery("operation_des", content);
+				QueryBuilder wildcardqueryBuilder2 = QueryBuilders.wildcardQuery("operation_level", content);
+				QueryBuilder wildcardqueryBuilder3 = QueryBuilders.wildcardQuery("ip", content);
+				QueryBuilder wildcardqueryBuilder4 = QueryBuilders.wildcardQuery("hostname", content);
+				QueryBuilder wildcardqueryBuilder5 = QueryBuilders.wildcardQuery("process", content);
+				QueryBuilder wildcardqueryBuilder6 = QueryBuilders.wildcardQuery("operation_facility", content);
+				QueryBuilder wildcardqueryBuilder7 = QueryBuilders.wildcardQuery("userid", content);
+				BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+				boolQueryBuilder.should(wildcardqueryBuilder1);
+				boolQueryBuilder.should(wildcardqueryBuilder2);
+				boolQueryBuilder.should(wildcardqueryBuilder3);
+				boolQueryBuilder.should(wildcardqueryBuilder4);
+				boolQueryBuilder.should(wildcardqueryBuilder5);
+				boolQueryBuilder.should(wildcardqueryBuilder6);
+				boolQueryBuilder.should(wildcardqueryBuilder7);
+				count = clientTemplate.count(index, types, boolQueryBuilder);
+				hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
+			}
 		}else {
 			count = clientTemplate.count(index, types, null);
 			hits = clientTemplate.getHitsByQueryBuilder(index, types, null,"logdate",SortOrder.DESC,fromInt,sizeInt);
 		}
 			
-		if (hits.length<1) {
-			content = "*"+content.toLowerCase()+"*";
-			
-			QueryBuilder wildcardqueryBuilder1 = QueryBuilders.wildcardQuery("operation_des", content);
-			QueryBuilder wildcardqueryBuilder2 = QueryBuilders.wildcardQuery("operation_level", content);
-			QueryBuilder wildcardqueryBuilder3 = QueryBuilders.wildcardQuery("ip", content);
-			QueryBuilder wildcardqueryBuilder4 = QueryBuilders.wildcardQuery("hostname", content);
-			QueryBuilder wildcardqueryBuilder5 = QueryBuilders.wildcardQuery("process", content);
-			QueryBuilder wildcardqueryBuilder6 = QueryBuilders.wildcardQuery("operation_facility", content);
-			QueryBuilder wildcardqueryBuilder7 = QueryBuilders.wildcardQuery("userid", content);
-			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-			boolQueryBuilder.should(wildcardqueryBuilder1);
-			boolQueryBuilder.should(wildcardqueryBuilder2);
-			boolQueryBuilder.should(wildcardqueryBuilder3);
-			boolQueryBuilder.should(wildcardqueryBuilder4);
-			boolQueryBuilder.should(wildcardqueryBuilder5);
-			boolQueryBuilder.should(wildcardqueryBuilder6);
-			boolQueryBuilder.should(wildcardqueryBuilder7);
-			count = clientTemplate.count(index, types, boolQueryBuilder);
-			hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
-		}
-		
 		Map<String, Object> mapcount = new HashMap<String,Object>();
 		//日志总量
 		mapcount.put("count", count);
@@ -521,7 +521,7 @@ public class LogServiceImpl implements IlogService {
 			QueryBuilder.must(user);
 			count = clientTemplate.count(index, types, QueryBuilder);
 			hits = clientTemplate.getHitsByQueryBuilder(index, types, QueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
-			//2.1无查询结果
+			//2.1无查询结果，在分词查询之后无结果的情况下，需要通过多字段模糊查询达到查询效果（查询效率较低）
 			if (hits.length<1) {
 				content = "*"+content.toLowerCase()+"*";
 				
