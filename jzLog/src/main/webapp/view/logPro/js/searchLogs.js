@@ -199,7 +199,7 @@
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
 			if(logsArr != ''){
 				logLists = '';
-				var logDesArrIndex = '';
+				var logDesArrIndex = 0;
 				for(var i in logsArr){
 					var obj =  filterObj(logsArr[i]);		
 					//替换风险状态
