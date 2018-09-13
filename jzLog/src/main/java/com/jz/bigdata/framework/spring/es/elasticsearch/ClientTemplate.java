@@ -684,7 +684,7 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 		HighlightBuilder highlightBuilder = new HighlightBuilder().field("*").requireFieldMatch(false);
 		highlightBuilder.preTags("<span style=\"color:red\">");
 		highlightBuilder.postTags("</span>");
-		highlightBuilder.fragmentSize(500);
+		highlightBuilder.fragmentSize(1000);
 		searchRequestBuilder.highlighter(highlightBuilder);
 		SearchHit [] searchHits =null;
 		try {
