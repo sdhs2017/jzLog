@@ -204,6 +204,12 @@
 					var obj =  filterObj(logsArr[i]);		
 					//替换风险状态
 					var level = '';
+					if(obj.user == undefined){
+						obj.user = "-"
+					}
+					if(obj.uid == undefined){
+						obj.uid = "-"
+					}
 					/*if(obj.operation_level == "INFO"){
 						level = '<span class="label label-info">INFO</span>'
 					}else if(obj.operation_level == "ERROR"){
