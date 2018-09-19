@@ -196,6 +196,7 @@
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
 			if(logsArr != ''){
 				logLists = '';
+				var logDesArrIndex = 0;
 				for(var i in logsArr){
 					var obj =  filterObj(logsArr[i]);		
 					//替换风险状态
@@ -210,13 +211,13 @@
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
+					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+obj.operation_des+'</p></td>'
 					         +       '<td class="logs_tools">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
-		 
+					logDesArrIndex++
 				}
 			}
 			
@@ -238,6 +239,7 @@
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
 			if(logsArr != ''){
 				logLists = '';
+				var logDesArrIndex = 0;
 				for(var i in logsArr){
 					var obj =  filterObj(logsArr[i]);		
 					//替换风险状态
@@ -252,13 +254,13 @@
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
+					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+obj.operation_des+'</p></td>'
 					         +       '<td class="logs_tools">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
-		 
+					logDesArrIndex++
 				}
 			}			
 			 //添加 日志列表到页面中    
@@ -281,6 +283,7 @@
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
 			if(logsArr != ''){
 				logLists = '';
+				var logDesArrIndex = 0;
 				for(var i in logsArr){				
 					//var obj = logsArr[page][i];		
 					var obj =  filterObj(logsArr[i]);	
@@ -299,13 +302,13 @@
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_hostName">'+obj.equipmentname+'</td>'
-					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
+					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+obj.operation_des+'</p></td>'
 					         +       '<td class="logs_tools" data-logSource="'+obj.logSource+'" data-process_id="'+obj.process_id+'" data-provider_guid="'+obj.provider_guid+'" data-record_number="'+obj.record_number+'" data-thread_id="'+obj.thread_id+'" data-user_name="'+obj.user_name+'" data-user_type="'+obj.user_type+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
-		 
+					 logDesArrIndex++
 				}
 			}
 			
@@ -329,6 +332,7 @@
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
 			if(logsArr != ''){
 				logLists = '';
+				var logDesArrIndex = 0;
 				for(var i in logsArr){
 					var obj =  filterObj(logsArr[i]);		
 					//替换风险状态
@@ -344,13 +348,13 @@
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
+					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+obj.operation_des+'</p></td>'
 					         +       '<td class="logs_tools">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
-		 
+					logDesArrIndex++
 				}
 			}
 			
@@ -550,7 +554,6 @@
 		    	$(".logs_tools").append('<i class="glyphicon glyphicon-remove removeLog" title="删除日志"></i>');
 		    	$(".logs_tools").parents("tr").prepend('<td> <input type="checkbox"></td>')
 		    }
-		    
 		}
 		
 		//表头中的复选框 点击全选或取消全选
@@ -717,7 +720,7 @@
 			var propertyName = $(this).parent().siblings('.property_name').html();
 			//日志内容
 			var index = $(this).parent().siblings('.logs_Mes').attr("data-index");	
-			var logsCon = logDesArr[index];
+			//var logsCon = logDesArr[index];
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:50px">'
@@ -758,7 +761,25 @@
 				area: ['820px', 'auto'], //宽高
 		 		content: html
 			});
-		
+			//鼠标拖选文字功能
+		    $(".layCen").selectText({
+		    	"sFunc":function(obj){
+	    			var sendObj = {};
+	    			sendObj.name = obj.inputText;
+	    			sendObj.feature = obj.selectedText;
+	    			sendObj.userId = 'userId';
+	    			sendObj.equipmentId = 'equipmentId';
+	    			sendObj.type = 'type';
+	    			sendObj.equipmentIUserId = 'equipmentIUserId';
+	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
+	    			
+	    			//成功回调函数
+	    			var sfunc = function(data){
+	    				console.log(data)
+	    			}
+	    			ajaxPost('../../action/insert.do',sendObj,sfunc)
+	    		}
+	    	});
 	})
 	
 	
