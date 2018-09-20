@@ -1,5 +1,6 @@
 
 	var logsArr  = [];//数组 用于存放获取来的logs
+	var logDetailArr = [];//用于查看日志详情存放json日志
 	var pageCount = 0;//总页数
 	var pageTotle = 12;//每一页显示的条数
 	var historyArr = [];//用于存放检索历史数组
@@ -54,6 +55,8 @@
     		showLogs(data[0].list);   
     		//将当页的数据保存在本地 用于过滤
     		filterArr = data[0].list;
+    		//储存日志
+    		logDetailArr = data[0].list;
 			//判断是否是第一次请求
 			if(firstGet == true){
 				//获得总条数
@@ -595,6 +598,7 @@
 	
 	//查看详情 点击事件
 	$("#logs_list").on("click",".more",function(){
+		var logIndex = $(this).parent().siblings(".logs_Mes").attr("data-index");
 		//获取日志类型
 		var logType = $(".device_logType").html();
 		/*if(logType == undefined){//logType ！= undefined 单个设备的日志
@@ -686,7 +690,7 @@
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsCon+'</div>'
+					+			'<div class="col-xs-9 layCen" data-index="'+logIndex+'">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}else if(logType == "log4j" || logType == "syslog" || logType == "mysql"){
@@ -710,7 +714,7 @@
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsCon+'</div>'
+					+			'<div class="col-xs-9 layCen" data-index="'+logIndex+'">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}else{
@@ -731,13 +735,9 @@
 					+			'<div class="col-xs-3">级别:</div>'
 					+			'<div class="col-xs-9 layCen">'+logsLevel+'</div>'
 					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
+					+		'<div class="row" style="line-height:50px" class="ltype">'
 					+			'<div class="col-xs-3">日志类型:</div>'
 					+			'<div class="col-xs-9 layCen">'+logType+'</div>'
-					+		'</div>'
-					+		'<div class="row" style="line-height:50px">'
-					+			'<div class="col-xs-3">用户名:</div>'
-					+			'<div class="col-xs-9 layCen">'+userName+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">资产名称:</div>'
@@ -749,7 +749,7 @@
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsCon+'</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}
@@ -762,20 +762,27 @@
 		 		content: html
 			});
 			//鼠标拖选文字功能
-		    $(".layCen").selectText({
+		    $(".logdes").selectText({
 		    	"sFunc":function(obj){
+		    		//console.log(obj.eventDom.attr("data-index"));
 	    			var sendObj = {};
 	    			sendObj.name = obj.inputText;
 	    			sendObj.feature = obj.selectedText;
-	    			sendObj.userId = 'userId';
+	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
 	    			sendObj.equipmentId = 'equipmentId';
-	    			sendObj.type = 'type';
+	    			sendObj.type = obj.eventDom.siblings('.ltype').children('.layCen').html();
 	    			sendObj.equipmentIUserId = 'equipmentIUserId';
 	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
-	    			
+	    			console.log(sendObj)
 	    			//成功回调函数
 	    			var sfunc = function(data){
-	    				console.log(data)
+	    				if(data.success == "true"){
+							layer.msg(data.message,{icon: 1});
+							//重新加载数据
+							getData();
+						}else if(data.success == "false"){//失败
+							layer.msg(data.message,{icon: 5});
+						} 
 	    			}
 	    			ajaxPost('../../action/insert.do',sendObj,sfunc)
 	    		}

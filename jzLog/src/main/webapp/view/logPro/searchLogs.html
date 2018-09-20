@@ -110,10 +110,10 @@
 		                                         <tr>   
 		                                             <td class="logs_time">2017.7.18 10:10:10 000</td>
 		                                             <td class="logs_level">error</td>
-		                                             <td class="logs_type">log4j</td>
+		                                             <td class="logs_type">winlog</td>
 		                                             <td class="logs_uer">Jarry</td>
 		                                             <td class="property_name">aooo</td>
-		                                             <td class="logs_ip">123</td>
+		                                             <td class="logs_ip">123.147.125.33</td>
 		                                             <td class="logs_Mes" data-index="0">
 		                                             	<p>Updates: 1 BaseJdbcLogger.java com.jz.bigdata.business.health.test.book.dao.IBookDao.delete 20167 139 2017-07-19 16:41:17  Written [{"success":"true","message":"操作成功！","state":"1"}] as "application/json;charset=UTF-8" using [org.springframework.http.converter.StringHttpMessageConverter@2e54b031] AbstractMessageConverterMethodProcessor.java org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor 20185 150</p>
 													 </td>
@@ -127,7 +127,7 @@
 		                                             <td class="logs_type">log4j</td>
 		                                             <td class="logs_uer">Jarry</td>
 		                                             <td class="property_name">aooo</td>
-		                                             <td class="logs_ip">123</td>
+		                                             <td class="logs_ip">113.33.22.5</td>
 		                                             <td class="logs_Mes" data-index="1">
 		                                             	<p>Updates: 1 BaseJdbcLogger.java com.jz.bigdata.business.health.test.book.dao.IBookDao.delete 20167 139 2017-07-19 16:41:17  Written [{"success":"true","message":"操作成功！","state":"1"}] as "application/json;charset=UTF-8" using [org.springframework.http.converter.StringHttpMessageConverter@2e54b031] AbstractMessageConverterMethodProcessor.java org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor 20185 150</p>
 													 </td>
@@ -221,21 +221,26 @@
 			//鼠标拖选文字功能
 		    $(".logs_Mes").selectText({
 	    		"sFunc":function(obj){
-	    			console.log(obj.eventDom.attr("data-index"));
+	    			//console.log(obj.eventDom.attr("data-index"));
 	    			var sendObj = {};
 	    			sendObj.name = obj.inputText;
 	    			sendObj.feature = obj.selectedText;
-	    			sendObj.userId = 'userId';
+	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
 	    			sendObj.equipmentId = 'equipmentId';
-	    			sendObj.type = 'type';
+	    			sendObj.type = obj.eventDom.siblings('.logs_type').html();
 	    			sendObj.equipmentIUserId = 'equipmentIUserId';
 	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
-	    			
 	    			//成功回调函数
 	    			var sfunc = function(data){
-	    				console.log(data)
+	    				if(data.success == "true"){
+							layer.msg(data.message,{icon: 1});
+							//重新加载数据
+							getData();
+						}else if(data.success == "false"){//失败
+							layer.msg(data.message,{icon: 5});
+						} 
 	    			}
-	    			ajaxPost('../../action/insert.do',sendObj,sfunc)
+	    			ajaxPost('../../action/insert.do',sendObj,sfunc);
 	    		}
 	    	});
 		</script>

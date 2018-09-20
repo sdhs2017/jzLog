@@ -28,7 +28,7 @@
 		})
 		//鼠标抬起事件
 		var selectedText = "";
-		var $this = $(this);
+		var $this = "";
 		
 		//菜单提交按钮点击事件
 		$(".commit").click(function (event) {
@@ -48,19 +48,21 @@
 			);*/
 			layer.open({				
 		 		type: 1,
-		 		title:'输入文本',//标题
+		 		title:'添加动作',//标题
 				//area: ['450px', '400px'], //宽高
 				btn: ['确定','取消'], //按钮
 				btn1:function(index){
 					var inputText = $(".layui-layer-input").val();
 					//alert('选中文本：'+selectedText+' 输入文本：'+inputText)
 					if(inputText != ''){
+						
 						var obj = {};
 						obj.selectedText = selectedText;
 						obj.inputText = inputText;
 						obj.eventDom = $this;
-						opt.sFunc(obj)
+						opt.sFunc(obj);
 						layer.close(index);
+						
 					}
 					
 				},
@@ -68,7 +70,7 @@
 						+	'<span style="flex:0 0 80px;width:80px;">已选文本：</span><span style="flex:1;word-break: break-all;">'+selectedText+'</span>'
 						+'</p>'
 						+'<p style="margin-left:20px;margin-right:20px;display:flex;">'
-						+	'<span style="flex:0 0 80px;width:80px;">输入文本：</span><input autofocus="autofocus" style="flex:1;display: block;width: 220px;height: 24px;margin: 0 auto;line-height: 24px;padding: 0 5px;" type="text" class="layui-layer-input form-control" value=""></p>'
+						+	'<span style="flex:0 0 80px;width:80px;">动作名称：</span><input autofocus="autofocus" style="flex:1;display: block;width: 220px;height: 24px;margin: 0 auto;line-height: 24px;padding: 0 5px;" type="text" class="layui-layer-input form-control" value=""></p>'
 			})
 		})
 		//菜单关闭按钮
@@ -81,7 +83,7 @@
 		
 		//鼠标按键抬起事件
 		$(this).mouseup(function(event){
-			console.log($(this));
+			$this = $(this);
 			selectedText = "";
 			//获得选中文本
 			var selectionObj = null;
