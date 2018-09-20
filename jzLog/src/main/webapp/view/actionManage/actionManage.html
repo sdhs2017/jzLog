@@ -11,8 +11,12 @@
 	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
 	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 	<style type="text/css">
+		.action_tools i{
+			margin-right:5px;
+		}
 		.action_tools i:hover{
 			cursor:pointer;
+			color:#5bc0de;
 		}
 		.actionLayer_box{
 			padding:20px 10px;
@@ -93,11 +97,11 @@
 					html += '<tr>'
 		                 +		'<td class="action_checkBox"><input type="checkbox"></td>'
 		                 +		'<td class="action_name">'+obj.name+'</td>'
-		                 +		'<td class="action_user">'+obj.userId+'</td>'
-		                 +		'<td class="action_eqName">'+obj.equipmentId+'</td>'
+		                 +		'<td class="action_user">'+obj.userName+'</td>'
+		                 +		'<td class="action_eqName">'+obj.equipmentName+'</td>'
 		                 +		'<td class="action_logType">'+obj.type+'</td>'
 		                 +		'<td class="action_keyWords">'+obj.feature+'</td>'
-		                 +		'<td class="action_eqUser">'+obj.equipmentUserId+'</td>'
+		                 +		'<td class="action_eqUser">'+obj.equipmentUserName+'</td>'
 		                 +		'<td class="action_state">'+actionState+'</td>'
 		                 +      '<td class="action_tools" data-aIndex="'+dataIndex+'">'
 				         +       	'<i class="glyphicon glyphicon-edit edit" title="查看详情"></i>'
