@@ -70,10 +70,27 @@
 			z-index:999999999999;
 			padding:10px;
 			transition: all .2s linear;
+			box-shadow: 0 3px 15px #4781bb;
+			height:90vh;
+		}
+		.closeIframe{
+			position:absolute;
+			right:-10px;
+			top:-10px;
+			font-size: 14px;
+			font-size:24px;
+			color:#fff;
+		}
+		.closeIframe i {
+			background:#2d3d4c;
+			cursor:pointer;
+		}
+		.actionContent{
+			height:90%;
 		}
 		.actionContent iframe{			
 			border:0;
-			height:500px;
+			height:100%;
 		}
 	</style>
 </head>
@@ -121,9 +138,10 @@
 		<div class="actionBox">
 			<div>
 				<button class="btn btn-info comfirmSelect">确认选择</button>
+				<span class="closeIframe"><i class="glyphicon glyphicon-remove-circle"></i></span>
 			</div>
 			<div class="actionContent">
-				<iframe id="actionIframe" src="../actionManage/actionManage.html" width="100%"></iframe>
+				<iframe id="actionIframe" name="actionIframe" src="../actionManage/actionManage.html" width="100%"></iframe>
 			</div>
 		</div>
 	</div>
@@ -139,7 +157,7 @@
 	<script type="text/javascript">
 		var ids = "";//选中的动作Id
 		//加载数据
-		//getData();	
+		getData();	
 		//获取数据方法
 		function getData(){
 			//成功回调函数
@@ -261,23 +279,28 @@
 			})
 		})
 		
-		//关闭动作列表弹窗弹窗
+		//确认选择动作列表弹窗弹窗
 		$(".comfirmSelect").click(function(){
-			
+			//获得动作数据
+			var arr = document.getElementById('actionIframe').contentWindow.actionArr;
 			//选择列表中被选中的动作
 			var elements = $("#actionIframe").contents().find("#actionTable tbody input[type=checkbox]:checked").click();//jquery
 			//循环获取id
 			for(var i = 0; i < elements.length; i++){
 				//获得索引
 				var index = $(elements[i]).parents("tr").attr("data-index");
-				ids += actionArr[index].id+',';
+				ids += arr[index].id+',';
 				//将选中的动作添加到添加事件选项中
-				$(".selectedActionBox").append(actionArr[index].id);
+				$(".selectedActionBox").append(arr[index].name);
 			}
 			//隐藏弹窗
 			$(".actionBox").css("display","none")
 		})
-		
+		//关闭动作列表弹窗
+		$(".closeIframe").click(function(){
+			//隐藏弹窗
+			$(".actionBox").css("display","none")
+		})
 		
 		
 		
