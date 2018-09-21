@@ -288,7 +288,7 @@
 			//循环获取id
 			for(var i = 0; i < elements.length; i++){
 				//获得索引
-				var index = $(elements[i]).parents("tr").attr("data-index");
+				var index = $(elements[i]).parent().siblings(".action_tools").attr("data-aindex");
 				ids += arr[index].id+',';
 				//将选中的动作添加到添加事件选项中
 				$(".selectedActionBox").append(arr[index].name);
