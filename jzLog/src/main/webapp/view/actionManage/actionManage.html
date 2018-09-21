@@ -101,12 +101,12 @@
 			var sFunc = function(data){
 				actionArr = data[0];
 				var html = '';
+				//定义索引
+				var dataIndex = 0;
 				//循环遍历添加数据
 				for(var i in data[0]){
 					var obj = data[0][i];
 					var actionState = '是';
-					//定义索引
-					var dataIndex = 0;
 					//数值替换显示
 					if(obj.state == 0){
 						actionState = '否'
