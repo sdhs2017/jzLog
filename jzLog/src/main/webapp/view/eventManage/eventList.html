@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>动作列表</title>
+	<title>事件列表</title>
 	<link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css"/>
 	<link rel="stylesheet" type="text/css" href="../../css/bootstrap-table.min.css"/>
 	<link rel="stylesheet" type="text/css" href="../../css/bootstrap-datetimepicker.css"/>
@@ -11,39 +11,90 @@
 	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
 	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 	<style type="text/css">
-		html,body{
-			width:100%;
-			height:100%;
+		.eventTools{
+			margin-bottom:20px;
+			font-size:12px!important;
+			padding:0 10px;
 		}
-		.action_tools i{
+		.btnTools button{
+			color: #5bc0de!important;
+    		border: 1px solid #5bc0de!important;
+    		font-size:12px!important;
+    		transition: all .2s linear;
+		}
+		.btnTools button:hover{
+			background: 0;
+		    transform: translate3d(0 ,-1px ,0);
+		    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+		}
+		.event_tools i{
 			margin-right:5px;
 		}
-		.action_tools i:hover{
+		.event_tools i:hover{
 			cursor:pointer;
 			color:#5bc0de;
 		}
-		.actionLayer_box{
+		.eventLayer_box{
 			padding:20px 10px;
 		}
-		
+		.eventLayer_box .row{
+			margin-bottom:10px!important;
+		}
+		.selectAction{
+			font-size:12px!important;
+			color:#1ab394;
+			padding-left:0!important;
+		}
+		.selectAction:hover{
+			color: #1ab394;
+	    	text-decoration: underline;
+	    	background: 0;
+	    	border:0;
+		}
+		.selectedActionBox{
+			border: 0;
+		    background: 0;
+		    color: #56a4ef;
+		    box-shadow: 0px 0px 7px 1px #4781bb;
+		    min-height:50px;
+		}
+		.actionBox{
+			width:1100px;
+			border:2px solid #ccc;
+			background:#293846;
+			position:absolute;
+			top:10px;
+			left:50%;
+			margin-left:-550px;
+			display: none;
+			z-index:999999999999;
+			padding:10px;
+			transition: all .2s linear;
+		}
+		.actionContent iframe{			
+			border:0;
+			height:500px;
+		}
 	</style>
 </head>
 <body>
 	<div id="box">
 		<div class="top_title">
-			动作列表
+			事件列表
+		</div>
+		<div class="eventTools">
+			<div class="btnTools">
+				<button  class="btn btn-info" id="add_event" title="添加新的事件"><i class="glyphicon glyphicon-plus"></i>&nbsp;添加</button>
+			</div>			
 		</div>
 		<div class="tableCon">
-			<table id="actionTable" data-toggle="table" data-classes="table  table-hover " style="width:100%">
+			<table id="eventTable" data-toggle="table" data-classes="table  table-hover " style="width:100%">
                 <thead>
                     <tr>
                     	<th data-checkbox="true"></th>
-                    	<th >动作名称</th>    
-                    	<th>创建人</th> 
-                    	<th>资产名称</th> 
-                    	<th>日志类型</th>
-                    	<th>关键字</th>    
-                    	<th>资产所属人</th>
+                    	<th>事件名称</th>    
+                    	<th>创建人</th>
+                    	<th>描述</th>
                     	<th>是否启用</th>  
                     	<th>操作</th>                   	                	
                     </tr>
@@ -62,23 +113,18 @@
                 			<i class="glyphicon glyphicon-edit edit" title="修改"></i>
                 			<i class="glyphicon glyphicon-remove removeAction" title="删除"></i>
                 		</td>
-                	</tr>
-                	<tr>
-                		<td class="action_checkBox"><input type="checkbox"></td>
-                		<td class="action_name">登录</td>
-                		<td class="action_user">李洪连</td>
-                		<td class="action_eqName">aooo</td>
-                		<td class="action_logType">syslog</td>
-                		<td class="action_keyWords">1234658</td>
-                		<td class="action_eqUser">李洪连</td>
-                		<td class="action_state">是</td>
-                		<td class="action_tools" data-aIndex="0">
-                			<i class="glyphicon glyphicon-edit edit" title="修改"></i>
-                			<i class="glyphicon glyphicon-remove removeAction" title="删除"></i>
-                		</td>
-                	</tr> -->
+                	</tr>  -->
                 </tbody>
             </table>
+		</div>
+		
+		<div class="actionBox">
+			<div>
+				<button class="btn btn-info comfirmSelect">确认选择</button>
+			</div>
+			<div class="actionContent">
+				<iframe id="actionIframe" src="../actionManage/actionManage.html" width="100%"></iframe>
+			</div>
 		</div>
 	</div>
 	
@@ -91,10 +137,9 @@
 	<script src="../../js/bootstrap-table/js/bootstrap-table.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../js/bootstrap-table/js/bootstrap-table-zh-CN.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		//定义数组存放获取来的数据
-		var actionArr = [];
+		var ids = "";//选中的动作Id
 		//加载数据
-		getData();	
+		//getData();	
 		//获取数据方法
 		function getData(){
 			//成功回调函数
@@ -113,29 +158,132 @@
 					}
 					//拼接
 					html += '<tr>'
-		                 +		'<td class="action_checkBox"><input type="checkbox"></td>'
-		                 +		'<td class="action_name">'+obj.name+'</td>'
-		                 +		'<td class="action_user">'+obj.userName+'</td>'
-		                 +		'<td class="action_eqName">'+obj.equipmentName+'</td>'
-		                 +		'<td class="action_logType">'+obj.type+'</td>'
-		                 +		'<td class="action_keyWords">'+obj.feature+'</td>'
-		                 +		'<td class="action_eqUser">'+obj.equipmentUserName+'</td>'
-		                 +		'<td class="action_state">'+actionState+'</td>'
-		                 +      '<td class="action_tools" data-aIndex="'+dataIndex+'">'
+		                 +		'<td class="event_checkBox"><input type="checkbox"></td>'
+		                 +		'<td class="event_name">'+obj.name+'</td>'
+		                 +		'<td class="event_user">'+obj.userName+'</td>'
+		                 +		'<td class="event_message">'+obj.message+'</td>'
+		                 +		'<td class="event_state">'+actionState+'</td>'
+		                 +      '<td class="event_tools" data-aIndex="'+dataIndex+'">'
 				         +       	'<i class="glyphicon glyphicon-edit edit" title="修改"></i>'
-				         +       	'<i class="glyphicon glyphicon-remove removeAction" title="删除"></i>'
+				         +       	'<i class="glyphicon glyphicon-remove removeEvent" title="删除"></i>'
 				         +       '</td>'
 		                 +	'</tr>'
 		            //索引++
 		            dataIndex++;
 				}
 				//添加到页面中
-				$("#actionTable tbody").html(html);
+				$("#eventTable tbody").html(html);
 			}
-			ajaxPost('../../action/selectAll.do','',sFunc)
+			ajaxPost('../../event/selectAll.do','',sFunc)
 		}
+		
+		//添加事件
+		$("#add_event").click(function(){
+			//拼接弹窗内容
+			var html = '<div class="eventLayer_box">'
+					 +		'<div class="row" style="line-height:40px">'
+					 +			'<div class="col-xs-3">事件名称:</div>'
+					 +			'<div class="col-xs-9 layCen">'
+					 +				'<input type="text" class="form-control name"/>'
+					 +			'</div>'
+					 +		'</div>' 
+					 +		'<div class="row" style="line-height:40px">'
+					 +			'<div class="col-xs-3">动作名称:</div>'
+					 +			'<div class="col-xs-9 layCen">'
+					 +				'<div><button class="btn selectAction">选择动作</button></div>'
+					 +				'<div class="selectedActionBox"></div>'
+					 +			'</div>'
+					 +		'</div>' 
+					 +		'<div class="row" style="line-height:40px">'
+					 +			'<div class="col-xs-3">是否启用:</div>'
+					 +			'<div class="col-xs-9 layCen">'
+					 +				'<input type="radio" name="state" value="1" checked class="yes">是'
+	      			 +				'<input type="radio" name="state" value="0" class="no">否'
+					 +			'</div>'
+					 +		'</div>'
+					 +		'<div class="row" style="line-height:40px">'
+					 +			'<div class="col-xs-3">事件描述:</div>'
+					 +			'<div class="col-xs-9 layCen">'
+					 +				'<textarea class="form-control eventDes"></textarea>'
+					 +			'</div>'
+					 +		'</div>' 
+					 + '</div>'
+			//弹窗
+			layer.open({
+		 		type: 1,
+		 		title:"添加",//标题
+				area: ['420px', 'auto'], //宽高
+				btn: ['确定','取消'], //按钮
+				btn1:function(index){
+					//获得修改后的事件名
+					var name = $(".name").val();
+					//获得状态
+					var state = $("input[name='state']:checked").val();
+					//获得事件描述
+					var eventDes = $(".eventDes").val();
+					//获得创建人
+					var userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
+					//判断值的合法性
+					if(name == ''){//动作名值为空
+						layer.msg('事件名称不能为空',{icon: 5});
+					}else if(ids == ''){//未做修改
+						layer.msg('未选中任何动作',{icon: 5});
+					}else{
+						//传参
+						var obj = {};
+						obj.state = state;
+						obj.name = name;
+						obj.id = ids;
+						obj.message = eventDes;
+						obj.userId = userId;
+						//成功回调函数
+						var sFunc = function(data){
+							if(data.success == "true"){//成功
+								layer.msg(data.message,{icon: 1});
+								//重新获取数据
+								getData();	
+								//关闭弹窗
+								layer.close(index);
+							}else if(data.success == "false"){//失败
+								layer.msg(data.message,{icon: 5});
+							} 
+						}
+						ajaxPost("../../event/insert.do",obj,sFunc) 
+					}
+				},
+		 		content: html
+			});
+					 
+			//选择动作按钮
+			$(".selectAction").click(function(){
+				$(".actionBox").css("display","block");
+				
+			})
+		})
+		
+		//关闭动作列表弹窗弹窗
+		$(".comfirmSelect").click(function(){
+			
+			//选择列表中被选中的动作
+			var elements = $("#actionIframe").contents().find("#actionTable tbody input[type=checkbox]:checked").click();//jquery
+			//循环获取id
+			for(var i = 0; i < elements.length; i++){
+				//获得索引
+				var index = $(elements[i]).parents("tr").attr("data-index");
+				ids += actionArr[index].id+',';
+				//将选中的动作添加到添加事件选项中
+				$(".selectedActionBox").append(actionArr[index].id);
+			}
+			//隐藏弹窗
+			$(".actionBox").css("display","none")
+		})
+		
+		
+		
+		
+		
 		//修改
-		$("#actionTable").on("click",".edit",function(){
+		$("#eventTable").on("click",".edit",function(){
 			//获得当前操作索引
 			var eventIndex = $(this).parent().attr("data-aIndex");
 			//获得id
@@ -145,7 +293,7 @@
 			//获得状态
 			var actionState = actionArr[eventIndex].state;
 			//拼接弹窗内容
-			var html = '<div class="actionLayer_box">'
+			var html = '<div class="eventLayer_box">'
 					 +		'<div class="row" style="line-height:40px">'
 					 +			'<div class="col-xs-3">动作名称:</div>'
 					 +			'<div class="col-xs-9 layCen">'
@@ -207,7 +355,7 @@
 			}			
 		})
 		//删除
-		$("#actionTable").on("click",".removeAction",function(){
+		$("#eventTable").on("click",".removeAction",function(){
 			//获得当前操作索引
 			var eventIndex = $(this).parent().attr("data-aIndex");
 			//询问框
