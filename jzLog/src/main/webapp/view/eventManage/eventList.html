@@ -275,7 +275,7 @@
 					//循环获得添加的动作id
 					var actionList = $(".actionLi");
 					for(var i = 0;i < actionList.length;i++){
-						ids += $(actionList[i]).attr("data-id")+'-'+i+';'
+						ids += $(actionList[i]).attr("data-id")+'-'+i+','
 					}
 					//判断值的合法性
 					if(name == ''){//事件名值为空
