@@ -121,6 +121,10 @@
 			border:0;
 			height:100%;
 		}
+		.selectActionDes{
+			margin-left:10px;
+			color:#9b664c;
+		}
 	</style>
 </head>
 <body>
@@ -317,7 +321,7 @@
 					layer.msg('操作失败',{icon: 5});
 				}
 				//发送请求
-				//ajaxPost("../../action/delete.do ",{eventListArr[eventIndex].id},sfunc,);
+				ajaxPost("../../action/delete.do ",{id:eventListArr[eventIndex].id},sfunc,);
 			}, function(){
 				  layer.close();
 			});
@@ -336,7 +340,7 @@
 					 +		'<div class="row" style="line-height:40px">'
 					 +			'<div class="col-xs-3">动作名称:</div>'
 					 +			'<div class="col-xs-9 layCen">'
-					 +				'<div><button class="btn selectAction">选择动作</button></div>'
+					 +				'<div><button class="btn selectAction">选择动作</button><span class="selectActionDes">(可拖拽排序)</span></div>'
 					 +				'<ul class="selectedActionBox" id="selectedActionBox"></ul>'
 					 +			'</div>'
 					 +		'</div>' 
@@ -380,6 +384,8 @@
 						layer.msg('事件名称不能为空',{icon: 5});
 					}else if(ids == ''){//动作不能为空
 						layer.msg('未添加任何动作',{icon: 5});
+					}else if(eventDes == ''){//动作不能为空
+						layer.msg('事件描述为空',{icon: 5});
 					}else{
 						//传参
 						var obj = {};
@@ -437,7 +443,7 @@
 				}
 				//动作列表
 				//通过动作数组的长度 决定循环的次数
-				for(var i = 0;i < in obj.action[0].length;i++){
+				for(var i = 0;i < obj.action[0].length;i++){
 					//通过遍历每一个动作对象 判断添加动作的位置
 					for(var j in obj.action[0]){
 						//如果当前的动作对象与序列号相同则添加到页面中
