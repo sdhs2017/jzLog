@@ -72,7 +72,7 @@
                 		<td class="action_keyWords">1234658</td>
                 		<td class="action_eqUser">李洪连</td>
                 		<td class="action_state">是</td>
-                		<td class="action_tools" data-aIndex="0">
+                		<td class="action_tools" data-aIndex="1">
                 			<i class="glyphicon glyphicon-edit edit" title="修改"></i>
                 			<i class="glyphicon glyphicon-remove removeAction" title="删除"></i>
                 		</td>
@@ -236,7 +236,16 @@
 				  layer.close();
 			});
 		})
-		
+		//全选框
+		$("#actionTable>thead").on("click","input",function(){
+			if($(this)[0].checked == true){
+				//更改状态
+				$("#actionTable>tbody input[type=checkbox]").prop("checked", "checked");
+			}else if($(this)[0].checked == false){
+				//更改状态
+				$("#actionTable>tbody input[type=checkbox]").removeAttr("checked"); 
+			}
+		})
 	</script>
 </body>
 </html>
