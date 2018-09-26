@@ -14,6 +14,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.loader.SettingsLoader;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -76,6 +77,7 @@ public class ElasticsearchTransportClientFactoryBean implements FactoryBean<Clie
 		internalCreateTransportClient();
 	}
 	
+	@SuppressWarnings("resource")
 	private void internalCreateTransportClient(){
 		Settings.Builder builder = Settings.builder();
 		
@@ -95,11 +97,17 @@ public class ElasticsearchTransportClientFactoryBean implements FactoryBean<Clie
 		 * dengyu
 		 * set cluster.name
 		 */
-		Settings settings = Settings.builder().put("cluster.name", transportAddresses.get("es_name")).build();
+		//Settings settings = Settings.builder().put("cluster.name", transportAddresses.get("es_name")).build();
+		// jiyourui  安装x-pack之后settings的配置修改
+		Settings settings = Settings.builder()
+				.put("cluster.name", transportAddresses.get("es_name"))
+				.put("xpack.security.transport.ssl.enabled", false)
+				// 在安装x-pack之后需要增加用户和密码验证
+				.put("xpack.security.user","elastic:hsdata.321")
+				.build();
 		
-		
-		client = new PreBuiltTransportClient(settings);
-//		client = new PreBuiltTransportClient(builder.build());
+		// jiyourui  注释掉
+		//client = new PreBuiltTransportClient(settings);
 		
 		/*if(transportAddresses != null){
 			for(final Entry<String, Integer> address: transportAddresses.entrySet()){
@@ -116,13 +124,26 @@ public class ElasticsearchTransportClientFactoryBean implements FactoryBean<Clie
 				}
 			}
 		}*/
-		if(transportAddresses != null){
+		
+		// jiyourui 注释掉
+	/*	if(transportAddresses != null){
 			logger.info("正在添加 transport IP地址:" + transportAddresses.get("es_ip") + " 端口:" + transportAddresses.get("es_port"));
 			try {
 				//InetAddress e1 = InetAddress.getByName(transportAddresses.get("es_ip"));
 //				((PreBuiltTransportClient)client).addTransportAddress(new InetSocketTransportAddress(e1, address.getValue()));
 				((PreBuiltTransportClient)client).addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(transportAddresses.get("es_ip")), Integer.valueOf(transportAddresses.get("es_port")) ));
 //				((PreBuiltTransportClient)client).addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.100.101"), 9300));
+			} catch (UnknownHostException e) {
+				logger.info("解析主机地址异常", e);
+			}
+		}*/
+		
+		if(transportAddresses != null){
+			logger.info("正在添加 transport IP地址:" + transportAddresses.get("es_ip") + " 端口:" + transportAddresses.get("es_port"));
+			try {
+				//((PreBuiltTransportClient)client).addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(transportAddresses.get("es_ip")), Integer.valueOf(transportAddresses.get("es_port")) ));
+				client = new PreBuiltXPackTransportClient(settings)
+				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(transportAddresses.get("es_ip")), Integer.valueOf(transportAddresses.get("es_port"))));
 			} catch (UnknownHostException e) {
 				logger.info("解析主机地址异常", e);
 			}
