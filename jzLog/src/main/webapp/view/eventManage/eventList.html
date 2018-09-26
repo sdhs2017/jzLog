@@ -298,7 +298,7 @@
 			
 		})
 		//删除
-		$("#eventTable").on("click",".removeAction",function(){
+		$("#eventTable").on("click",".removeEvent",function(){
 			//获得当前操作索引
 			var eventIndex = $(this).parent().attr("data-aIndex");
 			//询问框
@@ -322,7 +322,7 @@
 					layer.msg('操作失败',{icon: 5});
 				}
 				//发送请求
-				ajaxPost("../../action/delete.do ",{id:eventListArr[eventIndex].id},sfunc,);
+				ajaxPost("../../event/delete.do ",{id:eventListArr[eventIndex].id},sfunc,);
 			}, function(){
 				  layer.close();
 			});
