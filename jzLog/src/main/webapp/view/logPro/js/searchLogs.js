@@ -534,7 +534,7 @@
 					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_type">'+obj.type+'</td>'
-					         +       '<td class="logs_user">'+obj.user+'</td>'
+					        /* +       '<td class="logs_user">'+obj.user+'</td>'*/
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'

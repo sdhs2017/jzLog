@@ -99,7 +99,7 @@
 										          	<th width="200">时间</th>
 										          	<th width="100">级别</th>
 										          	<th width="100">日志类型</th>
-										          	<th width="100">用户名</th>
+										          	<!-- <th width="100">用户名</th> -->
 										          	<th width="120">资产名称</th>
 										          	<th width="125">IP</th>
 										          	<th>日志内容</th>
@@ -107,7 +107,7 @@
 										        </tr>
 									         </thead>
 		                                     <tbody>
-		                                         <tr>   
+		                                         <!-- <tr>   
 		                                             <td class="logs_time">2017.7.18 10:10:10 000</td>
 		                                             <td class="logs_level">error</td>
 		                                             <td class="logs_type">winlog</td>
@@ -134,7 +134,7 @@
 		                                             <td class="logs_tools">
 		                                             	<i class="glyphicon glyphicon-list-alt more"></i>
 		                                             </td>		                                                                                                 	
-		                                         </tr> 
+		                                         </tr>  -->
 		                                     </tbody>
 		                                 </table>
 		                             </div>
@@ -176,7 +176,7 @@
 				getLogs(url,"",searchWords,1,pageSize)
 			})
 			//页面加载完成  获取数据
-			//getLogs(url,'','',1,pageSize);
+			getLogs(url,'','',1,pageSize);
  /************************************新增代码******************************************/	
  			var words =  localStorage.getItem("allDeviceSearchWord");
 			if(words != null){
