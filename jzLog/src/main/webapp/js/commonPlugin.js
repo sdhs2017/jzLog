@@ -98,7 +98,6 @@
 	　　　　	}
 
 			if (selectedText.length > 0) {
-				console.log(selectedText)
 				//菜单选项
 				//获得鼠标当前位置坐标
 				var e = event || window.event;

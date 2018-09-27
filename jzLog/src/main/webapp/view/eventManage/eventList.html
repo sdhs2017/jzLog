@@ -144,6 +144,7 @@
                     	<th data-checkbox="true"></th>
                     	<th>事件名称</th>    
                     	<th>创建人</th>
+                    	<th>动作名称</th>
                     	<th>描述</th>
                     	<th>是否启用</th>  
                     	<th>操作</th>                   	                	
@@ -196,23 +197,26 @@
 		function getData(){
 			//成功回调函数
 			var sFunc = function(data){
-				eventListArr = data[0];
+				eventListArr = data;
 				var html = '';
 				//定义索引
 				var dataIndex = 0;
 				//循环遍历添加数据
-				for(var i in data[0]){
-					var obj = data[0][i];
+				for(var i in data){
+					var obj = data[i];
 					var actionState = '是';
 					//数值替换显示
 					if(obj.state == 0){
 						actionState = '否'
 					}
+					//去除最后一位','
+					obj.actionName = obj.actionName.substring(0,obj.actionName.length - 1);
 					//拼接
 					html += '<tr>'
 		                 +		'<td class="event_checkBox"><input type="checkbox"></td>'
 		                 +		'<td class="event_name">'+obj.name+'</td>'
 		                 +		'<td class="event_user">'+obj.userName+'</td>'
+		                 +		'<td class="event_user">'+obj.actionName+'</td>'
 		                 +		'<td class="event_message">'+obj.message+'</td>'
 		                 +		'<td class="event_state">'+actionState+'</td>'
 		                 +      '<td class="event_tools" data-aIndex="'+dataIndex+'">'

@@ -570,7 +570,31 @@
 				$("#logs_list>tbody input[type=checkbox]").removeAttr("checked"); 
 			}
 		})
-	    
+		//鼠标拖选文字功能
+	    $(".logs_Mes").selectText({
+    		"sFunc":function(obj){
+    			//console.log(obj.eventDom.attr("data-index"));
+    			var sendObj = {};
+    			sendObj.name = obj.inputText;
+    			sendObj.feature = obj.selectedText;
+    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
+    			sendObj.equipmentId = 'equipmentId';
+    			sendObj.type = obj.eventDom.siblings('.logs_type').html();
+    			sendObj.equipmentIUserId = 'equipmentIUserId';
+    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
+    			//成功回调函数
+    			var sfunc = function(data){
+    				if(data.success == "true"){
+						layer.msg(data.message,{icon: 1});
+						//重新加载数据
+						getData();
+					}else if(data.success == "false"){//失败
+						layer.msg(data.message,{icon: 5});
+					} 
+    			}
+    			ajaxPost('../../action/insert.do',sendObj,sfunc);
+    		}
+    	});
 	    
 	}
 	var htmlNum2 = 0;
@@ -690,7 +714,7 @@
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen" data-index="'+logIndex+'">'+logsCon+'</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}else if(logType == "log4j" || logType == "syslog" || logType == "mysql"){
@@ -714,7 +738,7 @@
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen" data-index="'+logIndex+'">'+logsCon+'</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logsCon+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}else{

@@ -218,31 +218,6 @@
 			$(".maxShowData").change(function(){
 				maxShowChange('数据量过大时，可通过 <精确查询> 提高查询效率')
 			})
-			//鼠标拖选文字功能
-		    $(".logs_Mes").selectText({
-	    		"sFunc":function(obj){
-	    			//console.log(obj.eventDom.attr("data-index"));
-	    			var sendObj = {};
-	    			sendObj.name = obj.inputText;
-	    			sendObj.feature = obj.selectedText;
-	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
-	    			sendObj.equipmentId = 'equipmentId';
-	    			sendObj.type = obj.eventDom.siblings('.logs_type').html();
-	    			sendObj.equipmentIUserId = 'equipmentIUserId';
-	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
-	    			//成功回调函数
-	    			var sfunc = function(data){
-	    				if(data.success == "true"){
-							layer.msg(data.message,{icon: 1});
-							//重新加载数据
-							getData();
-						}else if(data.success == "false"){//失败
-							layer.msg(data.message,{icon: 5});
-						} 
-	    			}
-	    			ajaxPost('../../action/insert.do',sendObj,sfunc);
-	    		}
-	    	});
 		</script>
 	</body>
 </html>
