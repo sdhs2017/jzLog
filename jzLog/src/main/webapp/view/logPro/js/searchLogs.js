@@ -580,7 +580,7 @@
     			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
     			sendObj.equipmentId = logDetailArr[index].equipmentid;
     			sendObj.type = logDetailArr[index].type;
-    			sendObj.equipmentIUserId = logDetailArr[index].userid;
+    			sendObj.equipmentUserId = logDetailArr[index].userid;
     			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
     			//成功回调函数
     			var sfunc = function(data){
@@ -795,7 +795,7 @@
 	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
 	    			sendObj.equipmentId = logDetailArr[index].equipmentid;
 	    			sendObj.type = logDetailArr[index].type;
-	    			sendObj.equipmentIUserId = logDetailArr[index].userid;
+	    			sendObj.equipmentUserId = logDetailArr[index].userid;
 	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
 	    			//console.log(sendObj)
 	    			//成功回调函数
