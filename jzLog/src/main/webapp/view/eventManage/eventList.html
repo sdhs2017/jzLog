@@ -213,7 +213,7 @@
 					obj.actionName = obj.actionName.substring(0,obj.actionName.length - 1);
 					//拼接
 					html += '<tr>'
-		                 +		'<td class="event_checkBox"><input type="checkbox"></td>'
+		                 +		'<td class="event_checkBox  bs-checkbox"><input type="checkbox"></td>'
 		                 +		'<td class="event_name">'+obj.name+'</td>'
 		                 +		'<td class="event_user">'+obj.userName+'</td>'
 		                 +		'<td class="event_user">'+obj.actionName+'</td>'
@@ -240,13 +240,13 @@
 		})
 		
 		//确认选择动作列表弹窗弹窗
-		$(".comfirmSelect").click(function(){
-			$("#actionIframe").contents().find("#actionTable thead input").click().removeAttr("checked"); 
+		$(".comfirmSelect").click(function(){ 
 			//获得动作数据
 			var arr = document.getElementById('actionIframe').contentWindow.actionArr;
 			//var arr = [{id:"1",name:"登陆1"},{id:"2",name:"登陆2"}];
 			//选择列表中被选中的动作
 			var elements = $("#actionIframe").contents().find("#actionTable tbody input[type=checkbox]:checked").click();//jquery
+			console.log(elements)
 			//循环获取id
 			for(var i = 0; i < elements.length; i++){
 				//获得索引
@@ -474,6 +474,10 @@
 			//选择动作按钮
 			$(".selectAction").click(function(){
 				$(".actionBox").css("display","block");
+				//移除全选框的状态
+				if($("#actionIframe").contents().find("#actionTable thead input").click()[0].checked == true){
+					$("#actionIframe").contents().find("#actionTable thead input").click().removeAttr("checked");
+				}				
 				//移除弹窗中的点击事件
 				$("#actionIframe").contents().find("#actionTable").off("click",".edit",function(){});
 			})
