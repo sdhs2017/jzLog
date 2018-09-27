@@ -578,7 +578,7 @@
     			sendObj.name = obj.inputText;
     			sendObj.feature = obj.selectedText;
     			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
-    			sendObj.equipmentId = logDetailArr[index].equipmentId;
+    			sendObj.equipmentId = logDetailArr[index].equipmentid;
     			sendObj.type = logDetailArr[index].type;
     			sendObj.equipmentIUserId = logDetailArr[index].userid;
     			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
@@ -793,7 +793,7 @@
 	    			sendObj.name = obj.inputText;
 	    			sendObj.feature = obj.selectedText;
 	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
-	    			sendObj.equipmentId = logDetailArr[index].equipmentId;
+	    			sendObj.equipmentId = logDetailArr[index].equipmentid;
 	    			sendObj.type = logDetailArr[index].type;
 	    			sendObj.equipmentIUserId = logDetailArr[index].userid;
 	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
