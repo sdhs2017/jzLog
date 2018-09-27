@@ -447,7 +447,6 @@
 					$(".no").attr("checked","checked");
 				}
 				//动作列表
-				console.log(obj.action[0])
 				//通过动作数组的长度 决定循环的次数
 				for(var i = 0;i < obj.action[0].length;i++){
 					//通过遍历每一个动作对象 判断添加动作的位置
@@ -461,6 +460,10 @@
 					}
 					
 				}
+				//删除动作方法
+				$(".removeActionLi").click(function(){
+					$(this).parent().remove();
+				})
 			}
 			//添加鼠标拖拽排序问题		 
 			 var list = document.getElementById("selectedActionBox");
