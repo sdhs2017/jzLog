@@ -7,7 +7,7 @@
 	
 	$.fn.selectText = function(paramObj) {
 		//页面添加选项菜单
-		var html = '<div class="selectedMenu" style="position: absolute;width: 80px; color:#fff;box-shadow: 0 3px 15px #4781bb;font-size: 12px;background: rgb(52, 114, 174);z-index: 99999999900;display: none;">'
+		var html = '<div class="selectedMenu" style="position: fixed;width: 80px; color:#fff;box-shadow: 0 3px 15px #4781bb;font-size: 12px;background: rgb(52, 114, 174);z-index: 99999999900;display: none;">'
 				 +   	'<div class="commit" style="width:100%;height: 30px;text-align: center;cursor: pointer;line-height: 30px;border-bottom: 1px solid rgb(92, 144, 192);">确定</div>'
 				 +   	'<div class="cancle" style="width:100%;height: 30px;text-align: center;cursor: pointer;line-height: 30px;">取消</div>'
 				 +	'</div>'
@@ -101,8 +101,8 @@
 				//菜单选项
 				//获得鼠标当前位置坐标
 				var e = event || window.event;
-				var mouseX = e.clientX;
-				var mouxeY = e.clientY;
+				var mouseX = e.originalEvent.x || e.originalEvent.layerX || 0;
+				var mouxeY = e.originalEvent.y || e.originalEvent.layerY || 0;
 				$(".selectedMenu").css({"display":"block","left":mouseX,"top":mouxeY});
 			
 			}	　　　　	

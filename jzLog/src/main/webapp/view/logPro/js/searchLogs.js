@@ -573,14 +573,14 @@
 		//鼠标拖选文字功能
 	    $(".logs_Mes").selectText({
     		"sFunc":function(obj){
-    			//console.log(obj.eventDom.attr("data-index"));
+    			var index = obj.eventDom.attr("data-index")
     			var sendObj = {};
     			sendObj.name = obj.inputText;
     			sendObj.feature = obj.selectedText;
     			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
-    			sendObj.equipmentId = 'equipmentId';
-    			sendObj.type = obj.eventDom.siblings('.logs_type').html();
-    			sendObj.equipmentIUserId = 'equipmentIUserId';
+    			sendObj.equipmentId = logDetailArr[index].equipmentId;
+    			sendObj.type = logDetailArr[index].type;
+    			sendObj.equipmentIUserId = logDetailArr[index].userid;
     			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
     			//成功回调函数
     			var sfunc = function(data){
@@ -788,16 +788,16 @@
 			//鼠标拖选文字功能
 		    $(".logdes").selectText({
 		    	"sFunc":function(obj){
-		    		//console.log(obj.eventDom.attr("data-index"));
+		    		var index = obj.eventDom.attr("data-index");
 	    			var sendObj = {};
 	    			sendObj.name = obj.inputText;
 	    			sendObj.feature = obj.selectedText;
 	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
-	    			sendObj.equipmentId = 'equipmentId';
-	    			sendObj.type = obj.eventDom.siblings('.ltype').children('.layCen').html();
-	    			sendObj.equipmentIUserId = 'equipmentIUserId';
+	    			sendObj.equipmentId = logDetailArr[index].equipmentId;
+	    			sendObj.type = logDetailArr[index].type;
+	    			sendObj.equipmentIUserId = logDetailArr[index].userid;
 	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
-	    			console.log(sendObj)
+	    			//console.log(sendObj)
 	    			//成功回调函数
 	    			var sfunc = function(data){
 	    				if(data.success == "true"){
