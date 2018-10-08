@@ -11,6 +11,7 @@
 		<result column="subordinate" jdbcType="INTEGER" property="subordinate" />
 		<result column="orderId" jdbcType="INTEGER" property="orderId" />
 		<result column="comment" jdbcType="VARCHAR" property="comment" />
+		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
 	</resultMap>
 
 	<resultMap id="ResultOfInteger" type="java.lang.Integer">
@@ -20,7 +21,7 @@
 	<!-- 查询字段设置可重复调用 -->
 	<!-- 部门id,name:部门名称,level:部门层级,superiorId:上级id,subordinate:是否有下级（1有0没有）,orderId:位置排序,comment:简介 -->
 	<sql id="Base_Column_List">
-		id, name, level, superiorId, subordinate,orderId,comment
+		id, name, level, superiorId, subordinate,orderId,comment,departmentNodeId
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -123,7 +124,10 @@
 				orderId,
 			</if>
 			<if test="comment !=null and  comment !=''">
-				comment
+				comment,
+			</if>
+			<if test="departmentNodeId !=null and  departmentNodeId !=''">
+				departmentNodeId
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -143,9 +147,11 @@
 				#{orderId,jdbcType=INTEGER},
 			</if>
 			<if test="comment !=null and  comment !=''">
-				#{comment,jdbcType=VARCHAR}
+				#{comment,jdbcType=VARCHAR},
 			</if>
-
+			<if test="departmentNodeId !=null and  departmentNodeId !=''">
+				#{departmentNodeId,jdbcType=INTEGER}
+			</if>
 		</trim>
 	</insert>
 	<!-- 删除数据 -->
