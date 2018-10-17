@@ -103,7 +103,7 @@
 		var level = 1;
 		var subordinate = 0;
 		var $p = $(".treeBox");
-		var departmentNodeId = '';
+		var departmentNodeId = 0;
 		//判断是否已经存在根节点
 		 if($currentDom.length == 0){
 			 
