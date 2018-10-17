@@ -53,7 +53,7 @@
 			  data[i] = replaceNull(data[i]);
 			  //判断是不是最外层元素  是则添加到rootUL盒子里
 	            if (data[i].superiorId == '') {
-	            	treeHtml += "<li data-id='" + data[i].id + "' data-level='" + data[i].level + "' data-name='" + data[i].name + "' data-superiorId='" + data[i].superiorId + "' data-subordinate='" + data[i].subordinate + "' data-orderId='" + data[i].orderId + "' data-comment='" + data[i].comment + "'><span  onclick='spanClick()'><i class='glyphicon glyphicon-home'></i> " + data[i].name + "</span><b class='loadingBox'></b></li>";
+	            	treeHtml += "<li data-departmentNodeId='"+data[i].departmentNodeId+"' data-id='" + data[i].id + "' data-level='" + data[i].level + "' data-name='" + data[i].name + "' data-superiorId='" + data[i].superiorId + "' data-subordinate='" + data[i].subordinate + "' data-orderId='" + data[i].orderId + "' data-comment='" + data[i].comment + "'><span  onclick='spanClick()'><i class='glyphicon glyphicon-home'></i> " + data[i].name + "</span><b class='loadingBox'></b></li>";
 	            }else{
 	            	/* // 判断是否有子集元素
 	                if(data[i].isSubordinate == 1){
@@ -63,7 +63,7 @@
 	                }*/
 	            	icon = "glyphicon-triangle-right";
 	                //拼接子目录               
-	                treeHtml += "<li data-id='" + data[i].id + "' data-level='" + data[i].level + "' data-name='" + data[i].name + "' data-superiorId='" + data[i].superiorId + "' data-subordinate='" + data[i].subordinate + "' data-orderId='" + data[i].orderId + "' data-comment='" + data[i].comment + "'><span  onclick='spanClick()'><i class='glyphicon " + icon + "'></i> " + data[i].name + "</span><b class='loadingBox'></b></li>"	            	
+	                treeHtml += "<li data-departmentNodeId='"+data[i].departmentNodeId+"' data-id='" + data[i].id + "' data-level='" + data[i].level + "' data-name='" + data[i].name + "' data-superiorId='" + data[i].superiorId + "' data-subordinate='" + data[i].subordinate + "' data-orderId='" + data[i].orderId + "' data-comment='" + data[i].comment + "'><span  onclick='spanClick()'><i class='glyphicon " + icon + "'></i> " + data[i].name + "</span><b class='loadingBox'></b></li>"	            	
 	            	
 	            }
 	      }
@@ -103,6 +103,7 @@
 		var level = 1;
 		var subordinate = 0;
 		var $p = $(".treeBox");
+		var departmentNodeId = '';
 		//判断是否已经存在根节点
 		 if($currentDom.length == 0){
 			 
@@ -115,12 +116,15 @@
 			 var pId = $currentDom.parent().attr("data-id");
 			 //获得最外层父节点的id值
 			 var rId = $currentDom.parents('[data-level="1"]').attr("data-id");
+			 //获得最上级组织机构id
+			 departmentNodeId = $currentDom.parents('[data-level="1"]').attr("data-departmentNodeId");
 			 depObj.rootNodeId = rId;
 			 depObj.id = pId;
 			 
 		 }
 		 depObj.level = level;
 		 depObj.subordinate = subordinate;
+		 depObj.departmentNodeId = departmentNodeId;
 		 departmentHtml(depBtnType,depObj)
 
 	})
