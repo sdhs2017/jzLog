@@ -376,6 +376,45 @@
        		</array>  
    		</property> 
 	</bean>
+	
+	<!-- 动作业务mapper -->
+	<bean id="actionSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="logDataSource" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/action/**/*.xml"></property>
+		
+		<property name="plugins">  
+       		<array>  
+          		<bean class="com.jz.bigdata.util.MapInterceptor"/>  
+       		</array>  
+   		</property> 
+	</bean>
+	
+	<!-- 事件业务mapper -->
+	<bean id="eventSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="logDataSource" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/event/**/*.xml"></property>
+		
+		<property name="plugins">  
+       		<array>  
+          		<bean class="com.jz.bigdata.util.MapInterceptor"/>  
+       		</array>  
+   		</property> 
+	</bean>
+	
+	<!-- 动作事件业务mapper -->
+	<bean id="action_eventSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="logDataSource" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/action_event/**/*.xml"></property>
+		
+		<property name="plugins">  
+       		<array>  
+          		<bean class="com.jz.bigdata.util.MapInterceptor"/>  
+       		</array>  
+   		</property> 
+	</bean>
 	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> 
 	   <property name="basePackage" value="com.business.mapper"/>  
 	</bean> -->
@@ -445,6 +484,23 @@
 		<property name="basePackage" value="com.jz.bigdata.common.menu" />
 		<property name="sqlSessionFactoryBeanName" value="menuSqlSessionFactory"></property>
 	</bean>
+	<!--动作表配置 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.jz.bigdata.common.action" />
+		<property name="sqlSessionFactoryBeanName" value="actionSqlSessionFactory"></property>
+	</bean>
+	
+	<!--事件表配置 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.jz.bigdata.common.event" />
+		<property name="sqlSessionFactoryBeanName" value="eventSqlSessionFactory"></property>
+	</bean>
+	<!--动作事件表配置 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.jz.bigdata.common.action_event" />
+		<property name="sqlSessionFactoryBeanName" value="action_eventSqlSessionFactory"></property>
+	</bean>
+	
 	<!-- es spring官方封装测试 -->
 	<!-- 远程机器 -->
 	<!-- 

@@ -15,6 +15,7 @@ public class Department {
 	private int subordinate;//是否有下级
 	private Integer orderId;//位置排序
 	private String comment;//简介
+	private int departmentNodeId;//部门根目录id
 	
 	public List<Department> getMenus() {
 		return menus;
@@ -69,6 +70,12 @@ public class Department {
 	}
 	public void setOrderId(Integer orderId) {
 		this.orderId = orderId;
+	}
+	public int getDepartmentNodeId() {
+		return departmentNodeId;
+	}
+	public void setDepartmentNodeId(int departmentNodeId) {
+		this.departmentNodeId = departmentNodeId;
 	}
 	
 
