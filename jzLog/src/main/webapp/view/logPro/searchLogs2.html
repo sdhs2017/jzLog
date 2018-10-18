@@ -188,6 +188,98 @@
 			.log_filter{
 				margin-left:0;
 			}
+			.searchLevelBox{
+				position:relative;
+			}
+			.searchedLevelBox{
+				width:100px;
+			}
+			.levelListBox{
+				display:none;
+				position:absolute;
+				width:176px;
+				border:1px solid #4781bb;
+				top:32px;
+				left:0;
+				background:#293846;
+				z-index:10;
+			}
+			.levelListBox input{
+				margin:0;
+				margin-right:5px;
+			}
+			.levelListBox li{
+				padding:5px;
+				color:#56a4ef;
+				cursor:pointer;
+			}
+			.levelListBox li:hover{
+				color:#fff;
+				background:#307fc9;
+			}
+			.zzDiv{
+				width:100%;
+				height: 100%;
+				position:absolute;
+				z-index:9;
+				top:0;
+				left:0;
+			}
+			/* .searchTypeLevelBox{
+				position:absolute;
+				top:34px;
+				left:0;
+				width:284px;
+				border:1px solid #4781bb;
+				z-index:10;
+				padding:0 10px;
+				background:#293846;
+				box-shadow: 0px 0px 7px 1px #4781bb;
+			}
+			.searchTypeLevelBox>div{
+				padding:10px 0;
+				border-bottom:1px solid #4781bb;
+			}
+			.searchTypeLevelBox span{
+				display:inline-block;
+			}
+			.searchTypeLevelBox input{
+				margin:0;
+			}
+			.searchTypeLevelBox .type{
+				font-weight:600;
+				margin-bottom:5px;
+				color:#56a4ef;
+			}
+			.searchTypeLevelBox .level{
+				padding-left:20px;
+				display:none;
+			}
+			.searchTypeLevelBox .overSelect,.searchTypeLevelBox .closeSelect{
+				padding: 0 5px;
+			    height: 24px;
+			    font-size: 10px;
+			    margin: 5px;
+			    background:#5bc0de;
+			    color:#fff;
+			    border:0;
+			    float:right;
+			}
+			.searchTypeLevelBox .cancleAllSelect{
+				display:none;
+				float:right;
+				color:#a7b1c2;
+			}
+			.cancleAllSelect:hover{
+				cursor:pointer;
+				text-decoration: underline;
+			}
+			.searchTypeLevelBox .overSelect{				
+				
+			}
+			.searchTypeLevelBox .closeSelect{
+				background:#e4956d;
+			} */
 		</style>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 	</head>
@@ -199,7 +291,7 @@
 			</div>
 			
 			<!-- 普通查询条件 -->
-			<!-- <div class="search_input">
+			<div class="search_input" style="display:flex;max-width:1286px;">
 				<div class="searchConditions">
 					<div class="searchTimeBox">
 						<div class="searchBoxTitle">时间范围</div>
@@ -222,8 +314,88 @@
 					</div>
 					<div class="searchLevelBox">
 						<div class="searchBoxTitle">日志级别</div>
-						<select class="form-control searchLevel"></select>
+						<input type="text" class="searchedLevelBox" style="width:100px;color: #56a4ef;padding: 6px 12px;" readonly value="全部"/>
+						<div class="levelListBox">
+							<ul>
+							</ul>
+						</div>
 					</div>
+					<!-- <div class="searchLevelBox" style="position:relative;">
+							<div class="searchBoxTitle" style="width: 95px;">日志类型-级别</div>
+							<div class="selectedTypeLevelBox" title="点击选择" style="width: 190px;cursor:pointer;"></div>
+							<div class="searchTypeLevelBox">
+								<div>
+									<p class="type">
+										<input type="checkBox" value="syslog" /> syslog
+										<span class="cancleAllSelect">取消全选</span>
+									</p>
+									<p class="level">
+										<span><input type="checkBox" value="emergency" checked/> emergency</span>
+										<span><input type="checkBox" value="alert" checked/> alert</span>
+										<span><input type="checkBox" value="critical " checked/> critical </span>
+										<span><input type="checkBox" value="error" checked/> error</span>
+										<span><input type="checkBox" value="warn" checked/> warn</span>
+										<span><input type="checkBox" value="notice" checked/> notice</span>
+										<span><input type="checkBox" value="info" checked/> info</span>
+										<span><input type="checkBox" value="debug" checked/> debug</span>
+									</p>
+								</div>
+								<div>
+									<p class="type">
+										<input type="checkBox" value="winlog" /> winlog
+										<span class="cancleAllSelect">取消全选</span>
+									</p>
+									<p class="level">
+										<span><input type="checkBox" value="emergency" checked/> emergency</span>
+										<span><input type="checkBox" value="alert" checked/> alert</span>
+										<span><input type="checkBox" value="critical " checked/> critical </span>
+										<span><input type="checkBox" value="error" checked/> error</span>
+										<span><input type="checkBox" value="warn" checked/> warn</span>
+										<span><input type="checkBox" value="notice" checked/> notice</span>
+										<span><input type="checkBox" value="info" checked/> info</span>
+										<span><input type="checkBox" value="debug" checked/> debug</span>
+									</p>
+								</div>
+								<div>
+									<p class="type">
+										<input type="checkBox" value="log4j" /> log4j
+										<span class="cancleAllSelect">取消全选</span>
+									</p>
+									<p class="level">
+										<span><input type="checkBox" value="info" checked/> info</span>
+										<span><input type="checkBox" value="debug" checked/> debug</span>
+										<span><input type="checkBox" value="error" checked/> error</span>
+										<span><input type="checkBox" value="warn" checked/> warn</span>
+									</p>
+								</div>
+								<div>
+									<p class="type">
+										<input type="checkBox" value="mysql" /> mysql
+										<span class="cancleAllSelect">取消全选</span>
+									</p>
+									<p class="level">
+										<span><input type="checkBox" value="error" checked/> error</span>
+									</p>
+								</div>
+								<div>
+									<p class="type">
+										<input type="checkBox" value="packetfilteringfirewall_log" /> packetfilteringfirewall_log
+										<span class="cancleAllSelect">取消全选</span>
+									</p>
+									<p class="level">
+										<span><input type="checkBox" value="emergency" checked/> emergency</span>
+										<span><input type="checkBox" value="alert" checked/> alert</span>
+										<span><input type="checkBox" value="critical " checked/> critical </span>
+										<span><input type="checkBox" value="error" checked/> error</span>
+										<span><input type="checkBox" value="warn" checked/> warn</span>
+										<span><input type="checkBox" value="notice" checked/> notice</span>
+										<span><input type="checkBox" value="info" checked/> info</span>
+										<span><input type="checkBox" value="debug" checked/> debug</span>
+									</p>
+								</div>
+								<p><button class="overSelect">确定</button></button><button class="closeSelect">关闭</button></button></p>
+							</div>
+						</div> -->
 					<div class="searchIpBox">
 						<div class="searchBoxTitle">IP地址</div>
 						<input type="text" class="form-control searchIp"  placeholder="IP地址">
@@ -234,9 +406,9 @@
 					</div>
 					<button  class="btn btn-primary" id="searchLogs"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
 				</div>
-			</div> -->
+			</div>
 			<!-- 中泰证券查询条件 -->
-			<div class="search_input" style="display:flex;max-width:1286px;">
+			<!-- <div class="search_input" style="display:flex;max-width:1286px;">
 				<div class="search_left" style="flex:1;height:34px;border-left: 2px solid #4781bb;overflow:hidden;transition:all .5s;">
 					<div class="searchConditions" style="margin-bottom:0;">
 						<div class="searchTimeBox">
@@ -262,6 +434,19 @@
 							<div class="searchBoxTitle">日志级别</div>
 							<select class="form-control searchLevel"></select>
 						</div>
+						<div class="searchLevelBox" style="position:relative;">
+							<div class="searchBoxTitle" style="width: 95px;">日志类型-级别</div>
+							<div class="selectedTypeLevelBox" title="点击选择" style="width: 190px;cursor:pointer;"></div>
+							<div class="searchTypeLevelBox">
+								<div>
+									<p class="searchType"><input type="checkBox" value="syslog" />syslog</p>
+									<p class="searchLevel">
+										<input type="checkBox" value="emergency" />emergency
+										<input type="checkBox" value="alert" />alert
+									</p>
+								</div>
+							</div>
+						</div>
 						<div class="searchIpBox">
 							<div class="searchBoxTitle">IP地址</div>
 							<input type="text" class="form-control searchIp"  placeholder="IP地址">
@@ -276,7 +461,7 @@
 							<div class="searchBoxTitle">用户名</div>
 							<input type="text" class="form-control searchUser" style="width:100%;" placeholder="用户名">
 						</div>
-						<!-- <div class="searchUserIDBox" style="width:20%;">
+						<div class="searchUserIDBox" style="width:20%;">
 							<div class="searchBoxTitle">用户ID</div>
 							<input type="text" class="form-control searchUserID"  placeholder="用户ID">
 						</div>
@@ -295,15 +480,15 @@
 						<div class="searchEmailBox"  style="width:20%;">
 							<div class="searchBoxTitle">Email</div>
 							<input type="text" class="form-control searchEmail"  placeholder="Email">
-						</div> -->
+						</div>
 					</div>
-				</div>
+				</div> 
 				<div class="search_right" style="flex:0,0,100px;width:100px;height:34px;position:relative;overflow:hidden;transition:all .5s;">
 					<button  class="btn btn-primary" id="searchLogs" style="height:34px;transition:all .5s;"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
 					<span class="moreConditions" style="cursor: pointer;text-decoration: underline;vertical-align: bottom;margin-left: 5px;">更多</span>
 				</div>
 			</div>
-			
+			-->
 			<div class="row result_box">
 				<div class="col-sm-2 box_left">
 					<h5>检索历史</h5>
@@ -427,7 +612,82 @@
 					}
 				}
 			} */
+			/* $(".selectedTypeLevelBox").click(function(){
+				if($(".searchTypeLevelBox").css("display") == "block"){
+					$(".searchTypeLevelBox").css("display","none")
+				}else{
+					$(".searchTypeLevelBox").css("display","block")
+				}
+			})
 			
+			//选择日志类型 级别
+			$(".searchTypeLevelBox .type input").click(function(){
+				//判断当前多选框的状态
+				if($(this).prop("checked") == true){
+					//点击显示日志级别
+					$(this).parent().siblings(".level").css("display","block");
+					//显示全选按钮
+					$(this).siblings(".cancleAllSelect").css("display","block");
+				}else{
+					//点击隐藏日志级别
+					$(this).parent().siblings(".level").css("display","none");
+					//隐藏全选按钮
+					$(this).siblings(".cancleAllSelect").css("display","none");
+				}
+				
+			})
+			//取消全选按钮点击事件
+			$(".cancleAllSelect").click(function(){
+				//获取日志级别
+				var checkBoxArr = $(this).parents(".type").siblings(".level").find("input");
+				//判断当前点击按钮状态
+				if($(this).html() == "取消全选"){
+					//循环取消全选
+					for(var i=0;i<checkBoxArr.length;i++){
+						$(checkBoxArr[i]).removeAttr("checked")
+					}
+					//修改文字
+					$(this).html("全选"); 
+				}else if($(this).html() == "全选"){
+					//循环 - 全选
+					for(var i=0;i<checkBoxArr.length;i++){
+						$(checkBoxArr[i]).prop("checked", "checked");
+					}
+					//修改文字
+					$(this).html("取消全选");
+				}
+			}) */
+			//日志级别获得焦点事件
+			$(".searchedLevelBox").focus(function(){
+				$(".levelListBox").css("display","block")
+				//创建遮罩
+				$("body").append('<div class="zzDiv"></div>')
+			})
+			//日志级别失去焦点事件
+			/* $(".searchedLevelBox").blur(function(event){
+				$(".levelListBox").css("display","none")
+			}) */
+			//日志级别列表点击事件
+			$(".levelListBox").on("click","li",function(){
+				if($(this).children("input").prop("checked") == true){
+					$(this).children("input").removeAttr("checked")
+				}else{
+					$(this).children("input").prop("checked","checked")
+				}
+			})
+			var levels = '';
+			$("body").on("click",".zzDiv",function(){
+				//获得选中的日级别
+				levels = $(".levelListBox input:checkbox:checked").map(function(index,elem) {
+			        return $(elem).val();
+			    }).get().join(',');
+				//填充选中的值
+				$(".searchedLevelBox").val(levels)	
+				//删除遮罩
+				$(".zzDiv").remove();
+				//隐藏级别列表
+				$(".levelListBox").css("display","none")
+			})
 			var pageSize = 12;
 			var url = "../../log/getLogListByBlend.do";
 			var sendSearchObj = {};//查询日志 参数集合
@@ -456,10 +716,11 @@
 				//获得用户名
 				sendSearchObj.user = $(".searchUser").val();
 				//获取日志级别
-				sendSearchObj.operation_level= $(".searchLevel").val();
+				/* sendSearchObj.operation_level= $(".searchLevel").val();
 				if(sendSearchObj.operation_level == null){
 					sendSearchObj.operation_level = "";
-				}
+				} */
+				sendSearchObj.operation_level = levels;
 				//获取日志类型
 				sendSearchObj.type= $(".searchType").val();
 				if(sendSearchObj.type == null){
@@ -560,30 +821,37 @@
 		  	});
 		   
 		   //日志类型  联动
-		   var typeArr = [
+		   /* var typeArr = [
 			   	['<option selected value=""></option>','<option value="emergency">emergency</option>','<option value="alert">alert</option>','<option value="critical">critical</option>','<option value="error">error</option>','<option value="warn">warn</option>','<option value="notice">notice</option>','<option value="info">info</option>','<option value="debug">debug</option>'],
 		   		['<option selected value=""></option>','<option value="error">error</option>','<option value="warn">warn</option>','<option value="info">info</option>','<option value="debug">debug</option>'],
 		   		['<option selected value=""></option>','<option value="error">error</option>']
+			] */
+			var typeArr = [
+				['emergency','alert','critical','error','warn','notice','info','debug'],
+				['error','warn','info','debug'],
+				['error']
 			]
 		   $(".searchType").change(function(){
 				//获取一级下拉框中的值
 			    var opt=$(".searchType").val();
 			    //清空二级下拉框中的内容
-			    $(".searchLevel").html('');
+			    $(".levelListBox ul").html('');
+			    $(".searchedLevelBox").val('全部');
+			    levels = '';
 			    if(opt == 'syslog' || opt == 'winlog' || opt == 'packetfilteringfirewall_log'){
 			    	//往二级下拉框中循环添加内容 
 				    for(var i in typeArr[0]){
-				    	$(".searchLevel").append(typeArr[0][i])
-				    }
+				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[0][i]+'"/>'+typeArr[0][i]+'</li>')
+				    }			    
 			    }else if(opt == 'log4j'){
 			    	//往二级下拉框中循环添加内容 
 				    for(var i in typeArr[1]){
-				    	$(".searchLevel").append(typeArr[1][i])
+				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[1][i]+'"/>'+typeArr[1][i]+'</li>')
 				    }
 			    }else if(opt == 'mysql'){
 			    	//往二级下拉框中循环添加内容 
-				    for(var i in typeArr[1]){
-				    	$(".searchLevel").append(typeArr[2][i])
+				    for(var i in typeArr[2]){
+				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[2][i]+'"/>'+typeArr[2][i]+'</li>')
 				    }
 			    }
 			    			   
