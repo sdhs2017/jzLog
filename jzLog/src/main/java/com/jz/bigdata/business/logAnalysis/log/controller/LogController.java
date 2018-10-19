@@ -421,9 +421,9 @@ public class LogController extends BaseController{
 		String size = sizeObject.toString();
 		map.remove("size");
 		
-		String type = null;
+		String type = equipment.getLogType();
 		
-		int logType = equipment.getLogType();
+		/*int logType = equipment.getLogType();
 		if(EquipmentConstant.LOGTYPE_SYSLOG==logType){
 			type = EquipmentConstant.LOGTYPE_SYSLOG_EN;
 		}else if(EquipmentConstant.LOGTYPE_WMI==logType){
@@ -438,7 +438,7 @@ public class LogController extends BaseController{
 			type = EquipmentConstant.LOGTYPE_FIREWALL_EN;
 		}else{
 			type = null;
-		}
+		}*/
 		
 		String equipmentId = equipment.getId();
 		
