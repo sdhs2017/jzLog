@@ -407,8 +407,10 @@ function getLogsData(sendObj,page,firstGet,listBox){
 			//显示数据
 		}
 	}
+	var ztObj = {};
+	ztObj.ztData = JSON.stringify(sendObj);
 	//发送请求
-	ajaxPost("../../log/getLogListByEquipment.do",sendObj,sfunc);
+	ajaxPost("../../log/getLogListByEquipment.do",ztObj,sfunc);
 }
 //获得事件列表函数 sendObj-传参对象   page-当前页码  firstGet-判断第一次请求  listBox-存放日志列表的最外层盒子
 function getEventsData(sendObj,page,firstGet,listBox){
@@ -513,8 +515,10 @@ function getEventsData(sendObj,page,firstGet,listBox){
 			//显示数据
 		}
 	}
+	var ztObj = {};
+	ztObj.ztData = JSON.stringify(sendObj);
 	//发送请求
-	ajaxPost("../../log/getEventListByBlend.do",sendObj,sfunc);
+	ajaxPost("../../log/getEventListByBlend.do",ztObj,sfunc);
 }
 //潜在威胁分析
 function getEchartData2(sendObj){
