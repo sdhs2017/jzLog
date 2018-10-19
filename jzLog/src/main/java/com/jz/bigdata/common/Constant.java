@@ -22,6 +22,8 @@ public class Constant {
 	//角色
 	public static String SESSION_USERROLE = "SESSION_USERROLE";
 //	public static String SESSION_DEPARTMENTID = "SESSION_DEPARTMENTID";
+	public static String SESSION_DEPARTMENTNODEID = "SESSION_DEPARTMENTNODEID";
+	
 	/**
 	 * session信息---sessionid
 	 */

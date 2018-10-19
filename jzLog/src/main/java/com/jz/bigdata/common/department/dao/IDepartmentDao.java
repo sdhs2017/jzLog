@@ -1,7 +1,6 @@
 package com.jz.bigdata.common.department.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import com.jz.bigdata.common.department.entity.Department;
 
@@ -27,6 +26,10 @@ public interface IDepartmentDao {
 	List<Department> selectAllDepartment();
 	
 	Department selectDepartment(String id);
+	
+	List<Department> selectMaxId();
+	
+	int updateDepartmentNodeId(Department department);
 	
 //	List<Map<String,Object>>
 

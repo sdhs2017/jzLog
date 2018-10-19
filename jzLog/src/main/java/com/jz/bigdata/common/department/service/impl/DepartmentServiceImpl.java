@@ -41,20 +41,32 @@ public class DepartmentServiceImpl implements IDepartmentService {
 	 * @return
 	 * @description 添加节点
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional 
 	public int insert(Department department) {
 		int result =0;
 //		id不为空级别加一
-		if(department.getId()!=0){
+ 		if(department.getId()!=0){
 			department.setLevel(department.getLevel()+1);
-		}
+		} 
+//		int t=1/0;
 //		添加数据
 		result= departmentDao.insert(department);
-//		int t=1/0;
+		//判断最上级id是否存在
+		if(department.getDepartmentNodeId()==0){
+			//获取刚添加的公司id
+			List<Department> de =	departmentDao.selectMaxId();
+			Department depa=new Department();
+			List<Map<String,Object>> lists=(List<Map<String, Object>>) de.get(0);
+			//赋值
+			depa.setId(Integer.valueOf((String) lists.get(0).get("maxId")));
+			depa.setDepartmentNodeId(Integer.valueOf((String) lists.get(0).get("maxId")));
+			//修改最上级id
+			departmentDao.updateDepartmentNodeId(depa);
+		}
 //		修改上级是否有下级的属性
 		departmentDao.updateSuperiorId(department);
-		
 		return result;
 	}
 

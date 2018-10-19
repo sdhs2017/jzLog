@@ -16,7 +16,7 @@
 		<result column="startUp" jdbcType="INTEGER" property="startUp" />
 		<result column="userId" jdbcType="VARCHAR" property="userId" />
 		<result column="departmentId" jdbcType="INTEGER" property="departmentId" />
-		<result column="logType" jdbcType="INTEGER" property="logType" />
+		<result column="logType" jdbcType="VARCHAR" property="logType" />
 		<result column="system" jdbcType="VARCHAR" property="system" />
 		<result column="systemVersion" jdbcType="VARCHAR" property="systemVersion" />
 		<result column="assetNum" jdbcType="VARCHAR" property="assetNum" />
@@ -27,6 +27,7 @@
 		<result column="high_risk" jdbcType="INTEGER" property="high_risk" />
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
+		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
 		<association property="user" javaType="com.jz.bigdata.common.users.entity.User">
              <id property="userId" column="id"/>
              <result property="name" column="userName"/>
@@ -50,7 +51,7 @@
 		<result column="startUp" jdbcType="INTEGER" property="startUp" />
 		<result column="userId" jdbcType="VARCHAR" property="userId" />
 		<result column="departmentId" jdbcType="INTEGER" property="departmentId" />
-		<result column="logType" jdbcType="INTEGER" property="logType" />
+		<result column="logType" jdbcType="VARCHAR" property="logType" />
 		<result column="system" jdbcType="VARCHAR" property="system" />
 		<result column="systemVersion" jdbcType="VARCHAR" property="systemVersion" />
 		<result column="assetNum" jdbcType="VARCHAR" property="assetNum" />
@@ -62,6 +63,7 @@
 		<result column="high_risk" jdbcType="INTEGER" property="high_risk" />
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
+		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
 	</resultMap>
 	
 	
@@ -168,7 +170,10 @@
 				valuation,
 			</if>
 			<if test="log_level !=null and  log_level !=''">
-				log_level
+				log_level,
+			</if>
+			<if test="departmentNodeId !=null and  departmentNodeId !=''">
+				departmentNodeId
 			</if>
 		</trim> 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -206,7 +211,7 @@
 				#{userId,jdbcType=VARCHAR},
 			</if>
 			<if test="logType != null and  logType !=''">
-				#{logType,jdbcType=INTEGER},
+				#{logType,jdbcType=VARCHAR},
 			</if>
 			<if test="macAdress != null and  macAdress !=''">
 				#{macAdress,jdbcType=VARCHAR},
@@ -227,10 +232,13 @@
 				#{describe,jdbcType=VARCHAR},
 			</if>
 			<if test="valuation != null and  valuation !=''">
-				#{valuation,jdbcType=VARCHAR}
+				#{valuation,jdbcType=VARCHAR},
 			</if>
 			<if test="log_level != null and  log_level !=''">
-				#{log_level,jdbcType=VARCHAR}
+				#{log_level,jdbcType=VARCHAR},
+			</if>
+			<if test="departmentNodeId != null and  departmentNodeId !='' and  departmentNodeId !=0">
+				#{departmentNodeId,jdbcType=INTEGER}
 			</if>
 		</trim>
 	</insert>

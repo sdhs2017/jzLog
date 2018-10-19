@@ -16,6 +16,7 @@ public class Department {
 	private Integer orderId;//位置排序
 	private String comment;//简介
 	private int departmentNodeId;//部门根目录id
+	private int maxId;
 	
 	public List<Department> getMenus() {
 		return menus;
@@ -76,6 +77,12 @@ public class Department {
 	}
 	public void setDepartmentNodeId(int departmentNodeId) {
 		this.departmentNodeId = departmentNodeId;
+	}
+	public int getMaxId() {
+		return maxId;
+	}
+	public void setMaxId(int maxId) {
+		this.maxId = maxId;
 	}
 	
 
