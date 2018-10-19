@@ -649,7 +649,9 @@ public class LogServiceImpl implements IlogService {
 		}
 		// operation_level
 		if (pamap.get("operation_level")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("operation_level", pamap.get("operation_level")));
+			//boolQueryBuilder.must(QueryBuilders.termQuery("operation_level", pamap.get("operation_level")));
+			String [] operation_level = pamap.get("operation_level").split(",");
+			boolQueryBuilder.must(QueryBuilders.termsQuery("operation_level", operation_level));
 		}
 		// event_type
 		if (pamap.get("event_type")!=null) {
