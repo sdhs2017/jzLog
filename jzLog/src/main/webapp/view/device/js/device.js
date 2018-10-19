@@ -342,7 +342,7 @@ function jointDeviceList(data){
 	 	}else if(obj.startUp == 1){
 	 		obj.startUp = "是";
 	 	}
-	 	//日志类型转换
+	 	/*//日志类型转换
 	 	if(obj.logType == 1){
 	 		logType = "syslog";
 	 	}else if(obj.logType == 2){
@@ -355,7 +355,8 @@ function jointDeviceList(data){
 	 		logType = "mysql";
 	 	}else if(obj.logType == 6){
 	 		logType = "packetfilteringfirewall_log";
-	 	}	 	
+	 	}	 	*/
+	 	
 	 	//设备类型
 	 	var typeArr2 = ["网络","安全","主机","应用"]
 	 	var typeArr = [
@@ -386,7 +387,7 @@ function jointDeviceList(data){
             +        '</td>'
             +        '<td class="device_hostname">'+obj.hostName+'</td>'
             +        '<td class="device_type" data-type="'+obj.type+'">'+bigType+'-'+type+'</td>'
-            +        '<td class="device_logType" data-logType="'+obj.logType+'">'+logType+'</td>'
+            +        '<td class="device_logType" data-logType="'+obj.logType+'">'+obj.logType+'</td>'
             +        '<td class="device_ip">'+obj.ip+'</td>'
             +        '<td class="device_starttime">'+obj.createTime+'</td>'   
             +        '<td class="device_updatetime">'+obj.upDateTime+'</td>' 
