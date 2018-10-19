@@ -1189,7 +1189,7 @@ function getEchartData4(dateTime){
         		//结束时间
         		levelLogObj.endtime = date+' 23:59:59';
         		//日志级别
-        		levelLogObj.level = params.name;
+        		levelLogObj.operation_level = params.name;
         		//每页显示条数
         		levelLogObj.size = pageSize;
         		//资产id
