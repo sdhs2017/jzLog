@@ -314,7 +314,7 @@
 					</div>
 					<div class="searchLevelBox">
 						<div class="searchBoxTitle">日志级别</div>
-						<input type="text" class="searchedLevelBox" style="width:100px;color: #56a4ef;padding: 6px 12px;" readonly value="全部"/>
+						<input type="text" class="searchedLevelBox" style="width:100px;color: #56a4ef;padding: 6px 12px;" readonly value=""/>
 						<div class="levelListBox">
 							<ul>
 							</ul>
@@ -675,14 +675,19 @@
 					$(this).children("input").prop("checked","checked")
 				}
 			})
-			var levels = '';
+			var levels = '';//用于存储选中的日志类型
+			//遮罩点击事件
 			$("body").on("click",".zzDiv",function(){
 				//获得选中的日级别
 				levels = $(".levelListBox input:checkbox:checked").map(function(index,elem) {
 			        return $(elem).val();
 			    }).get().join(',');
 				//填充选中的值
-				$(".searchedLevelBox").val(levels)	
+				if(levels.split(',') == ''){
+					$(".searchedLevelBox").val()
+				}else{
+					$(".searchedLevelBox").val(levels.split(',').length+'个级别')	
+				}
 				//删除遮罩
 				$(".zzDiv").remove();
 				//隐藏级别列表
@@ -714,7 +719,7 @@
 				//获取主机名
 				sendSearchObj.hostname= $(".searchHostname").val();
 				//获得用户名
-				sendSearchObj.user = $(".searchUser").val();
+				//sendSearchObj.user = $(".searchUser").val();
 				//获取日志级别
 				/* sendSearchObj.operation_level= $(".searchLevel").val();
 				if(sendSearchObj.operation_level == null){
@@ -726,6 +731,7 @@
 				if(sendSearchObj.type == null){
 					sendSearchObj.type = "";
 				}
+				console.log(sendSearchObj)
 				//获取数据
 				//getLogs(url,'',sendObj);
 				getLogs(url,"",sendSearchObj,1,pageSize);
@@ -737,13 +743,13 @@
 				var searchCon = '';
 				//循环检验查询条件  不为空则添加
 				for (var i in obj){
-					if(obj[i] != '' && i != "id" && i != "param" && i != "order"&& i != "page"&& i != "size"){
+					if(obj[i] != '' && obj[i] != 'undefined' && i != "id" && i != "param" && i != "order"&& i != "page"&& i != "size"){
 						searchCon += obj[i]+';';
 					}
 				}
 				//添加到检索历史列表 不为空且不存在
 				if (searchCon != '' && historyArr.indexOf(searchCon) === -1){
-					var searchHtml = '<li title="'+searchCon+'" data-startTime="'+obj.startTime+'" data-endTime="'+obj.endTime+'" data-ip="'+obj.ip+'" data-operation_level="'+obj.operation_level+'" data-hostname="'+obj.hostname+'" data-type="'+obj.type+'">'+searchCon+'<i class="glyphicon glyphicon-remove" title="删除"></i></li>';
+					var searchHtml = '<li title="'+searchCon+'" data-startTime="'+obj.starttime+'" data-endTime="'+obj.endtime+'" data-ip="'+obj.ip+'" data-operation_level="'+obj.operation_level+'" data-hostname="'+obj.hostname+'" data-type="'+obj.type+'">'+searchCon+'<i class="glyphicon glyphicon-remove" title="删除"></i></li>';
 					$(".history_list").prepend(searchHtml);
 					historyArr.push(searchCon);
 				}
@@ -762,8 +768,8 @@
 			    var $this =$(ev.target); 
 			   	if($this[0].nodeName == "LI" ){ 
 			   		logStatus = true;	
-			   		sendSearchObj.startTime = $(this).attr("data-startTime");
-			   		sendSearchObj.endTime = $(this).attr("data-endTime");
+			   		sendSearchObj.starttime = $(this).attr("data-startTime");
+			   		sendSearchObj.endtime = $(this).attr("data-endTime");
 			   		sendSearchObj.ip = $(this).attr("data-ip");
 			   		sendSearchObj.operation_level = $(this).attr("data-operation_level");
 			   		sendSearchObj.hostname = $(this).attr("data-hostname");
@@ -836,19 +842,21 @@
 			    var opt=$(".searchType").val();
 			    //清空二级下拉框中的内容
 			    $(".levelListBox ul").html('');
-			    $(".searchedLevelBox").val('全部');
 			    levels = '';
 			    if(opt == 'syslog' || opt == 'winlog' || opt == 'packetfilteringfirewall_log'){
+			    	$(".searchedLevelBox").val(typeArr[0].length+'个级别');
 			    	//往二级下拉框中循环添加内容 
 				    for(var i in typeArr[0]){
 				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[0][i]+'"/>'+typeArr[0][i]+'</li>')
 				    }			    
 			    }else if(opt == 'log4j'){
+			    	$(".searchedLevelBox").val(typeArr[1].length+'个级别');
 			    	//往二级下拉框中循环添加内容 
 				    for(var i in typeArr[1]){
 				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[1][i]+'"/>'+typeArr[1][i]+'</li>')
 				    }
 			    }else if(opt == 'mysql'){
+			    	$(".searchedLevelBox").val(typeArr[2].length+'个级别');
 			    	//往二级下拉框中循环添加内容 
 				    for(var i in typeArr[2]){
 				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[2][i]+'"/>'+typeArr[2][i]+'</li>')
