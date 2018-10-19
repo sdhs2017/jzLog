@@ -158,22 +158,24 @@ public class UsersServiceImpl implements IUsersService{
 		verifyLicense.setParam("/verifyparam.properties");
 		//验证证书
 		Boolean vresult = verifyLicense.verify();
-		
+		//证书是否存在
 		if (vresult) {
+			//用户是否存在
 			if(_userList.size()==1){
 				User _user = _userList.get(0);
-//				System.out.println(_user.getState());
+				//用户是否可用
 				if(_user.getState()==1){
 					Department department= departmentDao.selectDepartment((_user.getDepartmentId())+"");
+					//用户是否存在
 					if(_user.getId()!=null){
 						session.setAttribute(Constant.SESSION_USERID, _user.getId());
 						session.setAttribute(Constant.SESSION_USERNAME, _user.getName());
 						session.setAttribute(Constant.SESSION_USERACCOUNT, _user.getPhone());
-						if(_user.getDepartmentId()==0){
-							
-						}else{
+						//是否有所属部门
+						if(_user.getDepartmentId()!=0){
 							session.setAttribute(Constant.SESSION_DEPARTMENTNAME, department.getName());
 							session.setAttribute(Constant.SESSION_DEPARTMENTID, _user.getDepartmentId());
+							session.setAttribute(Constant.SESSION_DEPARTMENTNODEID, department.getDepartmentNodeId());
 						}
 						
 						session.setAttribute(Constant.SESSION_ID, session.getId());
@@ -182,6 +184,7 @@ public class UsersServiceImpl implements IUsersService{
 						result=1;
 						return result;
 					}
+				//账号被锁定
 				}else{
 					result=3;
 					return result;
@@ -192,24 +195,23 @@ public class UsersServiceImpl implements IUsersService{
 			SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 			String startTime =df.format(new Date(date.getTime() -  30 * 60 * 1000));
 			String endTime=df.format(date);
-			
+			//判断登录密码次数过多，锁定账号
 			List<Note> list=noteDao.selectLimitNote(user.getPhone(), startTime, endTime);
 			Boolean res = false;
-			System.out.println(list.size());
 			if(list.size()==5){
 				for(int i=0;i<list.size();i++){
 					if(list.get(i).getResult()==1){
 						res=true;
 					}
 				}
-				System.out.println(res);
-				System.out.println(res==false);
+				//修改状态
 				if(res==false){
 					userDao.updateByPhone(user.getPhone());	
 				}
 			}
 			result=2;
 			return result;
+		//无授权
 		}else {
 			return 4;
 		}

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,11 +52,13 @@ public class DepartmentController {
 	@ResponseBody
 	@RequestMapping("/selectAll")
 	@DescribeLog(describe="查询所有部门信息")
-	public Map<String,Object> selectAll(HttpServletRequest request,Department department){
+	public Map<String,Object> selectAll(HttpServletRequest request,Department department,HttpSession session){
 
 		//结果一般命名为result
 //		int result = 0;
 //		result=departmentService.insert(department);
+		System.out.println(session.getAttribute(Constant.SESSION_DEPARTMENTNAME));
+		
 		return departmentService.selectAll(department);
 	}
 	

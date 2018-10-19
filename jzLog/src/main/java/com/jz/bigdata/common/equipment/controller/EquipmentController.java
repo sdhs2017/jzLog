@@ -124,17 +124,6 @@ public class EquipmentController {
 		if(request.getParameter("logType") !=null && !request.getParameter("logType").equals("")){
 			 logType =Integer.valueOf(logtype);
 		}
-		
-//		Integer logType =Integer.valueOf(logtype);
-//		if(logtype !=null){
-//			int logType=Integer.valueOf(logtype);
-//		}else{
-//			
-//		}
-		
-		
-		System.err.println(logType);
-		
 		return equipmentService.selectAllByPage(hostName,name,ip,logType, pageIndex, pageSize);
 	}
 	/**

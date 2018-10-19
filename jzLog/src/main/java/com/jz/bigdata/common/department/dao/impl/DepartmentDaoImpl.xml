@@ -12,6 +12,7 @@
 		<result column="orderId" jdbcType="INTEGER" property="orderId" />
 		<result column="comment" jdbcType="VARCHAR" property="comment" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
+		<result column="maxId" jdbcType="INTEGER" property="maxId" />
 	</resultMap>
 
 	<resultMap id="ResultOfInteger" type="java.lang.Integer">
@@ -66,16 +67,6 @@
 		id=#{_parameter,jdbcType=INTEGER}
 	</select>
 
-
-
-
-
-
-
-
-
-
-
 	<!-- 查询下一级数据 -->
 	<select id="selectSubordinate" parameterType="java.lang.String"
 		resultMap="BaseResultMap">
@@ -126,7 +117,7 @@
 			<if test="comment !=null and  comment !=''">
 				comment,
 			</if>
-			<if test="departmentNodeId !=null and  departmentNodeId !=''">
+			<if test="departmentNodeId !=null and  departmentNodeId !='' and departmentNodeId !=0">
 				departmentNodeId
 			</if>
 		</trim>
@@ -149,7 +140,7 @@
 			<if test="comment !=null and  comment !=''">
 				#{comment,jdbcType=VARCHAR},
 			</if>
-			<if test="departmentNodeId !=null and  departmentNodeId !=''">
+			<if test="departmentNodeId !=null and  departmentNodeId !='' and departmentNodeId !=0">
 				#{departmentNodeId,jdbcType=INTEGER}
 			</if>
 		</trim>
@@ -187,5 +178,15 @@
 		<if test="id != null and id !='0'">
 			update department set subordinate=1 where  id=#{id,jdbcType=INTEGER}
 		</if>
+	</update>
+	
+	<!-- 查询最大id -->
+	<select id="selectMaxId" resultMap="BaseResultMap">
+		select max(id) as maxId from department
+	</select>
+	
+	<!-- 修改公司最上级id -->
+	<update id="updateDepartmentNodeId" parameterType="com.jz.bigdata.common.department.entity.Department">
+		update department set departmentNodeId=#{departmentNodeId,jdbcType=INTEGER} where  id=#{id,jdbcType=INTEGER}
 	</update>
 </mapper>

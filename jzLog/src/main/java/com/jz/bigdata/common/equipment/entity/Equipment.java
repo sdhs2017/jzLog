@@ -20,7 +20,7 @@ public class Equipment {
 	private int startUp;//是否启用
 	private String userId;//用户id
 	private int departmentId;//部门id
-	private int logType;//日志类型
+	private String logType;//日志类型
 	private String system;//系统
 	private String systemVersion;//系统版本号
 	private String assetNum;//资产编号
@@ -33,7 +33,7 @@ public class Equipment {
 	private int high_risk;//高危
 	private int moderate_risk;//中危
 	private int low_risk;//低危
-	
+	private int departmentNodeId;//部门最上级id
 	
 	
 	
@@ -115,10 +115,11 @@ public class Equipment {
 	public void setValuation(String valuation) {
 		this.valuation = valuation;
 	}
-	public int getLogType() {
+	
+	public String getLogType() {
 		return logType;
 	}
-	public void setLogType(int logType) {
+	public void setLogType(String logType) {
 		this.logType = logType;
 	}
 	public String getUserId() {
@@ -187,6 +188,12 @@ public class Equipment {
 	}
 	public void setStartUp(int startUp) {
 		this.startUp = startUp;
+	}
+	public int getDepartmentNodeId() {
+		return departmentNodeId;
+	}
+	public void setDepartmentNodeId(int departmentNodeId) {
+		this.departmentNodeId = departmentNodeId;
 	}
 	
 

@@ -67,7 +67,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 			User user = userDao.selectById(session.getAttribute(Constant.SESSION_USERID).toString());
 			equipment.setDepartmentId(user.getDepartmentId());
 			equipment.setUserId(session.getAttribute(Constant.SESSION_USERID).toString());
-
+			equipment.setDepartmentNodeId((int) session.getAttribute(Constant.SESSION_DEPARTMENTNODEID));
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
 			// 获取日期
 			equipment.setCreateTime(df.format(new Date()));
@@ -185,30 +185,10 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		List<Equipment> list = equipmentDao.selectAllHostName();
 		Equipment e;
 		String logType = "syslog";
+		//key ip和日志类型为组合主键，用于日志资产匹配
 		for (int i = 0; i < list.size(); i++) {
-			e = list.get(i);
-			if (1 == e.getLogType()) {
-				logType = LogType.LOGTYPE_SYSLOG;
-			} else if (2 == e.getLogType()) {
-				logType = LogType.LOGTYPE_WINLOG;
-			} else if (3 == e.getLogType()) {
-				// snmp
-			} else if (4 == e.getLogType()) {
-				logType = LogType.LOGTYPE_LOG4J;
-			} else if (5 == e.getLogType()) {
-				logType = LogType.LOGTYPE_MYSQLLOG;
-			} else if (6 == e.getLogType()) {
-				logType = LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG;
-			} else if (7 == e.getLogType()) {
-				logType = LogType.LOGTYPE_APPLOG;
-			}else {
-				logType = LogType.LOGTYPE_SYSLOG;
-			}
-			map.put(list.get(i).getIp() + logType, list.get(i));
+			map.put(list.get(i).getIp() + list.get(i).getLogType(), list.get(i));
 		}
-		// System.out.println("111111111");
-		// Equipment equipment = map.get("192.168.0.129");
-		// System.out.println(equipment.getId());
 		return map;
 	}
 
