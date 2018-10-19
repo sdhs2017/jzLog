@@ -231,9 +231,9 @@ function getEchartData(sendObj){
         		$echartBox.parents(".col-md-6").removeClass("col-md-6");
         		//定义传参对象
         		//开始时间
-        		hourLogObj.startTime = date+' '+params.name+':00:00';
+        		hourLogObj.starttime = date+' '+params.name+':00:00';
         		//结束时间
-        		hourLogObj.endTime = date+' '+params.name+':59:59';
+        		hourLogObj.endtime = date+' '+params.name+':59:59';
         		//每页显示条数
         		hourLogObj.size = pageSize;
         		//资产id
@@ -711,9 +711,9 @@ function getEchartData2(sendObj){
         		$(document).scrollTop(tt+329);
         		//定义传参对象
         		//开始时间
-        		hourEventObj.startTime = date+' '+params.name+':00:00';
+        		hourEventObj.starttime = date+' '+params.name+':00:00';
         		//结束时间
-        		hourEventObj.endTime = date+' '+params.name+':59:59';
+        		hourEventObj.endtime = date+' '+params.name+':59:59';
         		//每页显示条数
         		hourEventObj.size = pageSize;
         		//资产id
@@ -976,9 +976,9 @@ function getEchartData3(sendObj){
         		$(document).scrollTop(tt+659);
         		//定义传参对象
         		//开始时间
-        		typeEventObj.startTime = date+' 00:00:00';
+        		typeEventObj.starttime = date+' 00:00:00';
         		//结束时间
-        		typeEventObj.endTime = date+' 23:59:59';
+        		typeEventObj.endtime = date+' 23:59:59';
         		//每页显示条数
         		typeEventObj.size = pageSize;
         		//资产id
@@ -1020,9 +1020,9 @@ function getEchartData3(sendObj){
         		$(document).scrollTop(tt+659);
         		//定义传参对象
         		//开始时间
-        		typeEventObj.startTime = date+' 00:00:00';
+        		typeEventObj.starttime = date+' 00:00:00';
         		//结束时间
-        		typeEventObj.endTime = date+' 23:59:59';
+        		typeEventObj.endtime = date+' 23:59:59';
         		//每页显示条数
         		typeEventObj.size = pageSize;
         		//资产id
@@ -1185,9 +1185,9 @@ function getEchartData4(dateTime){
         		$echartBox.parents(".col-md-5").removeClass("col-md-5");
         		//定义传参对象
         		//开始时间
-        		levelLogObj.startTime = date+' 00:00:00';
+        		levelLogObj.starttime = date+' 00:00:00';
         		//结束时间
-        		levelLogObj.endTime = date+' 23:59:59';
+        		levelLogObj.endtime = date+' 23:59:59';
         		//日志级别
         		levelLogObj.level = params.name;
         		//每页显示条数
