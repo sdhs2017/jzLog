@@ -163,6 +163,15 @@ public final static Map<Integer, String> facility = new HashMap<>();
 	String pport;
 	String fwlog;
 	/**
+	 * IP来源
+	 */
+	String from;
+	String admin;
+	String act;
+	String result;
+	String user;
+	String agent;
+	/**
 	 * 日志消息类型
 	 */
 	String dsp_msg;
@@ -493,16 +502,64 @@ public final static Map<Integer, String> facility = new HashMap<>();
 		this.operation_facility = operation_facility;
 	}
 
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(String admin) {
+		this.admin = admin;
+	}
+
+	public String getAct() {
+		return act;
+	}
+
+	public void setAct(String act) {
+		this.act = act;
+	}
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getAgent() {
+		return agent;
+	}
+
+	public void setAgent(String agent) {
+		this.agent = agent;
+	}
+
 	public PacketFilteringFirewal() {
 		
 	}
 	
 	public PacketFilteringFirewal(String log) {
 		
-		if (!log.contains("logtype=1")||!log.contains("包过滤日志")) {
+		/*if (!log.contains("logtype=1")||!log.contains("包过滤日志")) {
 			return ;
-		}
-		Pattern pattern = Pattern.compile("<\\d{1,5}>\\s+\\d{4}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+[A-Za-z]{1,6}:\\s+");
+		}*/
+		Pattern pattern = Pattern.compile("<\\d{1,5}>\\s+\\d{4}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+[A-Za-z]{1,10}:\\s+");
 		Matcher matcher = pattern.matcher(log);
 		if (matcher.find()) {
 			String leftlog = matcher.group(0);
@@ -528,7 +585,7 @@ public final static Map<Integer, String> facility = new HashMap<>();
 			log = log.replace(matcher.group(0), "");
 			this.operation_des = log;
 			log = "{"+log.replaceAll("=", ":")+"}";
-			log = log.replaceAll(" ", ",");
+			log = log.replaceAll(" +", ",");
 			
 			Gson gson = new Gson();
 			PacketFilteringFirewal fire = gson.fromJson(log, PacketFilteringFirewal.class);
@@ -567,6 +624,12 @@ public final static Map<Integer, String> facility = new HashMap<>();
 			this.duration = fire.getDuration();
 			this.rcvd = fire.getRcvd();
 			this.sent = fire.getSent();
+			this.agent = fire.getAgent();
+			this.act = fire.getAct();
+			this.result = fire.getResult();
+			this.user = fire.getUser();
+			this.from = fire.getFrom();
+			this.admin = fire.getAdmin();
 			if (fire.getSata()!=null) {
 				this.sata = fire.getSata();
 			}else if (fire.getPa()!=null) {
@@ -664,8 +727,10 @@ public final static Map<Integer, String> facility = new HashMap<>();
 	
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		String log = "<6> 2018-04-17 01:17:06 124.133.246.61 124.133.246.61 kernel: devid=0 date=\"2017/10/30 11:26:08\" dname=venus logtype=1 pri=5 ver=0.3.0 mod=pf sa=58.242.83.10 sport=49996 type=NULL da=124.133.246.61 dport=22 code=NULL proto=IPPROTO_TCP policy=POLICY_NAT_PERMIT duration=0 rcvd=60 sent=60 pa=192.168.2.161 pport=22 fwlog=0 dsp_msg=\"包过滤日志\"";
-		String yclog="<6> 2018-04-17 01:17:06 10.60.32.154 10.60.32.154 kernel: devid=0 date=\"2018/04/16 17:44:07\" dname=venus logtype=1 pri=5 ver=0.3.0 mod=pf sa=10.37.54.75 sport=137 type=NULL da=10.37.54.127 dport=137 code=NULL proto=IPPROTO_UDP policy=POLICY_DENY duration=0 rcvd=78 sent=78 fwlog=0 dsp_msg=\"包过滤日志\"";
+		//String log = "<6> 2018-04-17 01:17:06 124.133.246.61 124.133.246.61 kernel: devid=0 date=\"2017/10/30 11:26:08\" dname=venus logtype=1 pri=5 ver=0.3.0 mod=pf sa=58.242.83.10 sport=49996 type=NULL da=124.133.246.61 dport=22 code=NULL proto=IPPROTO_TCP policy=POLICY_NAT_PERMIT duration=0 rcvd=60 sent=60 pa=192.168.2.161 pport=22 fwlog=0 dsp_msg=\"包过滤日志\"";
+		//String yclog="<6> 2018-04-17 01:17:06 10.60.32.154 10.60.32.154 kernel: devid=0 date=\"2018/04/16 17:44:07\" dname=venus logtype=1 pri=5 ver=0.3.0 mod=pf sa=10.37.54.75 sport=137 type=NULL da=10.37.54.127 dport=137 code=NULL proto=IPPROTO_UDP policy=POLICY_DENY duration=0 rcvd=78 sent=78 fwlog=0 dsp_msg=\"包过滤日志\"";
+		String dzlog ="<158> 2018-09-20 15:44:22 10.61.64.250 10.61.64.250 webui: devid=0 date=\"2018/09/20 15:45:44\" dname=zhuxianlu_fw logtype=9 pri=6 ver=0.3.0 mod=webui from=10.63.64.132 agent=\"Mozilla/4.0 \" admin=administrator act=登录 result=0 msg=\"成功\" dsp_msg=\"administrator 登录\"  fwlog=0";
+		String configlog = "<157> 2018-09-20 15:36:43 10.61.64.250 10.61.64.250 newconfig: devid=0 date=\"2018/09/20 15:38:05\" dname=zhuxianlu_fw logtype=9 pri=5 ver=0.3.0 mod=newconfig act=保存配置 result=0 user=\"administrator\" dsp_msg=\"保存配置\" fwlog=0";
 	  //Pattern PRIpattern = Pattern.compile("<\\d{1,5}>\\s+\\d{4}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+[A-Za-z]{1,6}:\\s+");
 		/*Pattern PRIpattern = Pattern.compile("<\\d{1,5}>\\s+\\d{4}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+[A-Za-z]{1,6}:\\s+");
 		Matcher PRImatcher = PRIpattern.matcher(log);
@@ -674,8 +739,8 @@ public final static Map<Integer, String> facility = new HashMap<>();
 		}*/
 		
 		
-		//PacketFilteringFirewal firewall = new PacketFilteringFirewal(yclog);
-		System.out.println(new PacketFilteringFirewal().toMapping());
+		PacketFilteringFirewal firewall = new PacketFilteringFirewal(configlog);
+//		System.out.println(new PacketFilteringFirewal().toMapping());
 		
 	}
 
