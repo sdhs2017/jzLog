@@ -551,13 +551,13 @@
 	<bean id="esClient" class="com.jz.bigdata.framework.spring.es.elasticsearch.ElasticsearchTransportClientFactoryBean">
 		<property name="transportAddresses">
 			<map>
-				<entry key="es_ip" value="40.125.210.39"/>
+				<entry key="es_ip" value="192.168.2.181"/>
 				<entry key="es_port" value="9300"/>
 				<entry key="es_name" value="myElasticsearchCluster"/>
 			</map>
 		</property>	
 		 
-		<property name="configLocation" value="40.125.210.39"/>
+		<property name="configLocation" value="192.168.2.181"/>
 		
 		
 		<!-- <property name="configLocation" value="classpath:elasticsearch/elasticsearch-conf.properties"/> -->
