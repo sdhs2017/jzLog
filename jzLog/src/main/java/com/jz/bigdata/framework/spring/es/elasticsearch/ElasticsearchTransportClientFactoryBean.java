@@ -97,17 +97,17 @@ public class ElasticsearchTransportClientFactoryBean implements FactoryBean<Clie
 		 * dengyu
 		 * set cluster.name
 		 */
-		//Settings settings = Settings.builder().put("cluster.name", transportAddresses.get("es_name")).build();
+		Settings settings = Settings.builder().put("cluster.name", transportAddresses.get("es_name")).build();
 		// jiyourui  安装x-pack之后settings的配置修改
-		Settings settings = Settings.builder()
+		/*Settings settings = Settings.builder()
 				.put("cluster.name", transportAddresses.get("es_name"))
 				.put("xpack.security.transport.ssl.enabled", false)
 				// 在安装x-pack之后需要增加用户和密码验证
 				.put("xpack.security.user","elastic:hsdata.321")
-				.build();
+				.build();*/
 		
 		// jiyourui  注释掉
-		//client = new PreBuiltTransportClient(settings);
+		client = new PreBuiltTransportClient(settings);
 		
 		/*if(transportAddresses != null){
 			for(final Entry<String, Integer> address: transportAddresses.entrySet()){
@@ -126,7 +126,7 @@ public class ElasticsearchTransportClientFactoryBean implements FactoryBean<Clie
 		}*/
 		
 		// jiyourui 注释掉
-	/*	if(transportAddresses != null){
+		if(transportAddresses != null){
 			logger.info("正在添加 transport IP地址:" + transportAddresses.get("es_ip") + " 端口:" + transportAddresses.get("es_port"));
 			try {
 				//InetAddress e1 = InetAddress.getByName(transportAddresses.get("es_ip"));
@@ -136,9 +136,9 @@ public class ElasticsearchTransportClientFactoryBean implements FactoryBean<Clie
 			} catch (UnknownHostException e) {
 				logger.info("解析主机地址异常", e);
 			}
-		}*/
+		}
 		
-		if(transportAddresses != null){
+		/*if(transportAddresses != null){
 			logger.info("正在添加 transport IP地址:" + transportAddresses.get("es_ip") + " 端口:" + transportAddresses.get("es_port"));
 			try {
 				//((PreBuiltTransportClient)client).addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(transportAddresses.get("es_ip")), Integer.valueOf(transportAddresses.get("es_port")) ));
@@ -147,7 +147,7 @@ public class ElasticsearchTransportClientFactoryBean implements FactoryBean<Clie
 			} catch (UnknownHostException e) {
 				logger.info("解析主机地址异常", e);
 			}
-		}
+		}*/
 	}
 	
 	private void internalLoadSettings(Settings.Builder builder, Resource configLocation){
