@@ -152,7 +152,7 @@
 			}*/
 			.indexPropertyBoxRight b,.indexLogsBoxRight b{
 				color:#e4956d;
-				
+				cursor:pointer;
 			} 
 			.indexlologsBox{
 				background:#2f455c;
@@ -261,7 +261,7 @@
 								</div>		
 								<div class="indexLogsBoxRight">
 									<p>error日志条数</p>	
-									<p> <b class="errorLogsCount"> -</b></p>						
+									<p> <b class="errorLogsCount" title="点击检索error日志"> -</b></p>						
 								</div>																
 							</div>
 						</div>
@@ -757,6 +757,22 @@
 			getlogsCount();
 			//定时查询数据 1分钟查询一次	
 			setInterval(getlogsCount,60000);
+			var htmlNum3 = 0;
+			//error日志点击跳转到日志检索页面
+			$(".errorLogsCount").click(function(){
+				localStorage.setItem("allDeviceSearchWord",'error');
+        		//拼接导航
+        		var html ='<a href="javascript:;" class="active J_menuTab" data-id="searchLogs'+htmlNum3+'">error日志检索<i class="fa fa-times-circle"></i></a>'
+        		//移除导航菜单选中属性
+        		$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
+        		//添加导航菜单
+        		$('.page-tabs-content', parent.document).click().append(html);
+        		var iframe = '<iframe class="J_iframe" width="100%" height="100%" src="logPro/searchLogs.html?v=4.0" frameborder="0" data-id="searchLogs'+htmlNum3+'" seamless="" style="display: inline;"></iframe>'
+        		//移除其他页面
+        		$('#content-main', parent.document).click().children("iframe").hide();
+        		$('#content-main', parent.document).click().append(iframe);
+        		htmlNum3++;
+			}),
 			
 			//数字时钟
 			$(document).ready(function() {

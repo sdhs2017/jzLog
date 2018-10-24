@@ -105,6 +105,43 @@
 		}
 		.log_filter{
 			margin-left:0;
+		}		
+		.searchLevelBox{
+			position:relative;
+		}
+		.levelListBox{
+			display:none;
+			position:absolute;
+			width:176px;
+			border:1px solid #4781bb;
+			top:32px;
+			left:0;
+			background:#293846;
+			z-index:10;
+		}
+		.levelListBox input{
+			margin:0;
+			margin-right:5px;
+		}
+		.levelListBox li{
+			padding:5px;
+			color:#56a4ef;
+			cursor:pointer;
+			line-height: 20px;
+			text-shadow:none;
+			font-size:14px;
+		}
+		.levelListBox li:hover{
+			color:#fff;
+			background:#307fc9;
+		}
+		.zzDiv{
+			width:100%;
+			height: 100%;
+			position:absolute;
+			z-index:9;
+			top:0;
+			left:0;
 		}
 	</style>
 	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
@@ -123,7 +160,11 @@
 					</div>
 					<div class="searchLevelBox">
 						<div class="searchBoxTitle">日志级别</div>
-						<select class="form-control searchLevel"></select>
+						<input type="text" class="searchedLevelBox" style="width:100px;color: #56a4ef;padding: 6px 12px;" readonly value=""/>
+						<div class="levelListBox">
+							<ul>
+							</ul>
+						</div>
 					</div>
 					<button  class="btn btn-primary" id="searchLogs"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
 				</div>
@@ -384,30 +425,74 @@
 			  	});
 			   
 			   //日志类型  
-			   var typeArr = [
+			   /* var typeArr = [
 				   	['<option selected value=""></option>','<option value="emergency">emergency</option>','<option value="alert">alert</option>','<option value="critical">critical</option>','<option value="error">error</option>','<option value="warn">warn</option>','<option value="notice">notice</option>','<option value="info">info</option>','<option value="debug">debug</option>'],
 			   		['<option selected value=""></option>','<option value="error">error</option>','<option value="warn">warn</option>','<option value="info">info</option>','<option value="debug">debug</option>'],
 			   		['<option selected value=""></option>','<option value="error">error</option>']
+				] */
+				var typeArr = [
+					['emergency','alert','critical','error','warn','notice','info','debug'],
+					['error','warn','info','debug'],
+					['error']
 				]
 				//获取日志类型
 				var opt = obj.deviceLogType;
 			   //添加日志级别下拉框的内容列表
-				if(opt == 'syslog' || opt == 'winlog'){
-					//往二级下拉框中循环添加内容 
-					for(var i in typeArr[0]){
-						$(".searchLevel").append(typeArr[0][i])
+				if(opt == 'syslog' || opt == 'winlog' || opt == 'packetfilteringfirewall_log'){
+			    	$(".searchedLevelBox").val(typeArr[0].length+'个级别');
+			    	//往二级下拉框中循环添加内容 
+				    for(var i in typeArr[0]){
+				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[0][i]+'"/>'+typeArr[0][i]+'</li>')
+				    }			    
+			    }else if(opt == 'log4j'){
+			    	$(".searchedLevelBox").val(typeArr[1].length+'个级别');
+			    	//往二级下拉框中循环添加内容 
+				    for(var i in typeArr[1]){
+				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[1][i]+'"/>'+typeArr[1][i]+'</li>')
+				    }
+			    }else if(opt == 'mysql'){
+			    	$(".searchedLevelBox").val(typeArr[2].length+'个级别');
+			    	//往二级下拉框中循环添加内容 
+				    for(var i in typeArr[2]){
+				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[2][i]+'"/>'+typeArr[2][i]+'</li>')
+				    }
+			    }
+				//日志级别获得焦点事件
+				$(".searchedLevelBox").focus(function(){
+					$(".levelListBox").css("display","block")
+					//创建遮罩
+					$("body").append('<div class="zzDiv"></div>')
+				})
+				//日志级别失去焦点事件
+				/* $(".searchedLevelBox").blur(function(event){
+					$(".levelListBox").css("display","none")
+				}) */
+				//日志级别列表点击事件
+				$(".levelListBox").on("click","li",function(){
+					if($(this).children("input").prop("checked") == true){
+						$(this).children("input").removeAttr("checked")
+					}else{
+						$(this).children("input").prop("checked","checked")
 					}
-				}else if(opt == 'log4j'){
-					//往二级下拉框中循环添加内容 
-					for(var i in typeArr[1]){
-						$(".searchLevel").append(typeArr[1][i])
+				})
+				var levels = '';//用于存储选中的日志类型
+				//遮罩点击事件
+				$("body").on("click",".zzDiv",function(){
+					//获得选中的日级别
+					levels = $(".levelListBox input:checkbox:checked").map(function(index,elem) {
+				        return $(elem).val();
+				    }).get().join(',');
+					//填充选中的值
+					if(levels.split(',') == ''){
+						$(".searchedLevelBox").val()
+					}else{
+						$(".searchedLevelBox").val(levels.split(',').length+'个级别')	
 					}
-				}else if(opt == 'mysql'){
-					//往二级下拉框中循环添加内容 
-					for(var i in typeArr[1]){
-						$(".searchLevel").append(typeArr[2][i])
-					}
-				}
+					//删除遮罩
+					$(".zzDiv").remove();
+					//隐藏级别列表
+					$(".levelListBox").css("display","none")
+				})
 			   
 				//日期清除
 				   $(".startTimeRemove").click(function(){
@@ -429,7 +514,7 @@
 					//获取结束时间
 					sendObj.endtime = $("#endTime").val();
 					//获取日志级别
-					sendObj.operation_level= $(".searchLevel").val();
+					sendObj.operation_level= levels;
 					//资产id
 					sendObj.id = id;
 					//查询日志

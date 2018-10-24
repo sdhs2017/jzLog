@@ -623,8 +623,9 @@
 	//查看详情 点击事件
 	$("#logs_list").on("click",".more",function(){
 		var logIndex = $(this).parent().siblings(".logs_Mes").attr("data-index");
+		console.log(logDetailArr[logIndex])
 		//获取日志类型
-		var logType = $(".device_logType").html();
+		var logType = logDetailArr[logIndex].type;
 		/*if(logType == undefined){//logType ！= undefined 单个设备的日志
 			logType = $(this).parent().siblings('.logs_type').html();
 		}*/
@@ -739,6 +740,42 @@
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
 					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logsCon+'</div>'
+					+		'</div>'
+					+	'</div>'	
+		}else if(logType == "packetfilteringfirewall_log"){
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">级别:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_level+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">资产名称:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">dsp_msg:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dsp_msg+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">act:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].act+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">mod:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].mod+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">日志内容:</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}else{
