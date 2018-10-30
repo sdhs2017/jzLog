@@ -571,7 +571,7 @@
 			}
 		})
 		//鼠标拖选文字功能
-	    $(".logs_Mes").selectText({
+	    $(".equipmentLogBody .logs_Mes").selectText({
     		"sFunc":function(obj){
     			var index = obj.eventDom.attr("data-index")
     			var sendObj = {};
@@ -823,7 +823,7 @@
 		 		content: html
 			});
 			//鼠标拖选文字功能
-		    $(".logdes").selectText({
+		    $(".equipmentLogBody .logdes").selectText({
 		    	"sFunc":function(obj){
 		    		var index = obj.eventDom.attr("data-index");
 	    			var sendObj = {};

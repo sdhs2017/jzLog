@@ -99,13 +99,25 @@
 				padding: 10px;
 				height: 111px;
 			}
+			.moveLogs>li:hover{
+				background:#3b5773!important;
+			}
 			.moveLogs>li p{
 				padding-left:20px;
 				padding-bottom: 5px;
 				padding-top: 5px;
 				margin: 0;
-				height: 50px;
-				overflow: hidden;
+				height: 48px;
+				display: -webkit-box; 
+				display: -moz-box;  
+				white-space: pre-wrap; 
+				word-wrap: break-word;
+				overflow: hidden; 
+				text-overflow: ellipsis; 
+				-webkit-box-orient: vertical; 
+				-moz-binding:url('ellipsis.xml#ellipsis');
+				-webkit-line-clamp:2;   /*显示行数*/
+				cursor:pointer;
 			}
 			.moveLogs>li span{
 				margin-right:10px;
@@ -154,6 +166,9 @@
 				color:#e4956d;
 				cursor:pointer;
 			} 
+			.indexLogsBoxRight b:hover{
+				text-decoration: underline;
+			}
 			.indexlologsBox{
 				background:#2f455c;
 				display: flex;
@@ -301,7 +316,7 @@
 						</div>
 						<div class="ecBox" style="height: 350px;">
 							<ul class="moveLogs">
-								暂无error日志数据
+								<span class="noErr">暂无error日志数据</span>
 								<!-- <li>
 									<span>#zxcv-12-88#</span><span>#192.168.10.26#</span>
 									<p>1Preparing: delete from book where id in ( ? )  BaseJdbcLogger.java com.jz.bigdata.business.health.test.book.dao.IBookDao.delete 20075 139</p>
@@ -683,13 +698,14 @@
 	    						+		'<p>'+obj.operation_des+'</p>'
 	    						+		'<small class="block text-muted"><i class="glyphicon glyphicon-time"></i>'+obj.logtime+'</small>'
 	    						+	'</li>'  */
-	    					if(i >= 20){
+	    					if(i >= 30){
 	    						break;
 	    					}
 	            		} 
 	            		//拼接日志列表
 	            		if(logArr.length != 0){
-	            			splitLogs(logArr);
+	            			$(".noErr").remove();
+	            			splitLogs(logArr);	            			
 	            		}else{
 	            			 clearInterval(interval);
 	            		}           		
@@ -699,28 +715,32 @@
 	            });
             }
             //获取数据
-            getLogsData();            
+            getLogsData();  
             //拼接日志列表函数
             function splitLogs(logArr){
+            	html = ""
+            	//创建索引
+            	var index = 0; 
+            	//循化拼接
             	for(var i in logArr){
             		var obj = logArr[i];
-            			 html += '<li>'
-							+		'<span>#'+obj.operation_level+'#</span><span>#'+obj.ip+'#</span>'
-							+		'<p>'+obj.operation_des+'</p>'
-							+		'<small class="block text-muted"><i class="glyphicon glyphicon-time"></i>'+obj.logtime+'</small>'
-							+	'</li>'
+           			 html = '<li data-index="'+index+'" title="点击查看详情" data-type="'+obj.type+'">'
+						+		'<span class="logLevel">#'+obj.operation_level+'#</span><span class="logIp">#'+obj.ip+'#</span><span class="logEquipmentName" style="float:right;font-weight:600;">#'+obj.equipmentname+'#</span>'
+						+		'<p>'+obj.operation_des+'</p>'
+						+		'<small class="block text-muted logTime"><i class="glyphicon glyphicon-time"></i>'+obj.logtime+'</small>'
+						+	'</li>'
+					index++;
+            		$('.moveLogs').append(html);
             	}
-            	 
-            	$('.moveLogs').html(html);
             }
            	var logIndex = 0;//日志数组中的索引
            	
             //滚动函数
             var doscroll = function(){
-            	if(logIndex >= logArr.length - 2){
+            	if(logIndex >= logArr.length - 3){
             		//重新获取数据
-            		//getLogsData();
-            		splitLogs(logArr)
+            		getLogsData();
+            		//splitLogs(logArr)
             		logIndex = 0;
             	}
 				var $parent = $('.moveLogs');
@@ -732,13 +752,82 @@
 					/*var html = splitLogs(logArr[logIndex]);
 					$parent.append(html);
 					logIndex++;*/
-					logIndex++
+					logIndex++;
+					//删除第一个li
 					$first.remove();
 					
 				});    
 			};
 			//定时器 每过2s  滚动一次
 			var interval = setInterval(function(){doscroll()}, 3000);
+			
+			//鼠标进入 停止滚动
+			$(".moveLogs").hover(function(){//
+				//清除定时器
+				clearInterval(interval);
+			},function(){//离开 恢复滚动
+				//启动定时器 
+				interval = setInterval(function(){doscroll()}, 3000);
+			})
+			
+			//日志列表点击事件
+			$(".moveLogs").on("click","li",function(){
+				//延时器
+				setTimeout(function(){
+					//清除定时器
+					clearInterval(interval)
+				},1000);
+				//获得日志索引
+				var index =  $(this).attr("data-index");
+				//获取数据
+				var logtime = $(this).children(".logTime").text();
+				var operation_level = $(this).children(".logLevel").html().split("#")[1];
+				var type = $(this).attr("data-type");
+				var equipmentname = $(this).children(".logEquipmentName").html().split("#")[1];
+				var ip = $(this).children(".logIp").html().split("#")[1];
+				var operation_des = $(this).children("p").html();
+				//显示弹窗 日志详情
+				//拼接弹窗 html		
+				var html = '<div class="layer_box" style="padding:10px 30px 20px 30px;">'
+						+		'<div class="row" style="line-height:50px">'
+						+			'<div class="col-xs-3">时间:</div>'
+						+			'<div class="col-xs-9 layCen">'+logtime+'</div>'
+						+		'</div>'
+						+		'<div class="row" style="line-height:50px">'
+						+			'<div class="col-xs-3">级别:</div>'
+						+			'<div class="col-xs-9 layCen">'+operation_level+'</div>'
+						+		'</div>'
+						+		'<div class="row" style="line-height:50px" class="ltype">'
+						+			'<div class="col-xs-3">日志类型:</div>'
+						+			'<div class="col-xs-9 layCen">'+type+'</div>'
+						+		'</div>'
+						+		'<div class="row" style="line-height:50px">'
+						+			'<div class="col-xs-3">资产名称:</div>'
+						+			'<div class="col-xs-9 layCen">'+equipmentname+'</div>'
+						+		'</div>'
+						+		'<div class="row" style="line-height:50px">'
+						+			'<div class="col-xs-3">IP:</div>'
+						+			'<div class="col-xs-9 layCen">'+ip+'</div>'
+						+		'</div>'
+						+		'<div class="row" style="line-height:24px">'
+						+			'<div class="col-xs-3">日志内容:</div>'
+						+			'<div class="col-xs-9 layCen logdes" style="word-wrap: break-word;">'+operation_des+'</div>'
+						+		'</div>'
+						+	'</div>'	
+						
+				//弹窗
+				layer.open({
+			 		type: 1,
+			 		title:"详细日志",//标题
+					area: ['600px', 'auto'], //宽高
+			 		content: html
+				});
+				//关闭按钮
+				$(".layui-layer-close1").click(function(){
+					//启动定时器 
+					interval = setInterval(function(){doscroll()}, 3000);
+				})
+			})
 			
 		//统计模块实现方法
 			function getlogsCount(){
@@ -749,8 +838,8 @@
 			        dataType:"json", //数据类型  
 					success:function(data){
 						//填充数据
-						$(".allLogsCount").html(data[0].indices);//全部日志
-						$(".errorLogsCount").html(data[0].indiceserror);
+						$(".allLogsCount").html(parseInt(data[0].indices).toLocaleString());//全部日志
+						$(".errorLogsCount").html(parseInt(data[0].indiceserror).toLocaleString());
 					}
 				});
 			}

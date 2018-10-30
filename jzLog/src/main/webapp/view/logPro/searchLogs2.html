@@ -225,6 +225,9 @@
 				top:0;
 				left:0;
 			}
+			.history_list>li{
+				text-align:left!important;
+			}
 			/* .searchTypeLevelBox{
 				position:absolute;
 				top:34px;
@@ -731,7 +734,6 @@
 				if(sendSearchObj.type == null){
 					sendSearchObj.type = "";
 				}
-				console.log(sendSearchObj)
 				//获取数据
 				//getLogs(url,'',sendObj);
 				getLogs(url,"",sendSearchObj,1,pageSize);
@@ -739,6 +741,9 @@
 			}
 			//检索历史记录函数  obj-检索条件
 			function historySearch(obj){
+				//获取当前系统时间
+				var newDate = new Date();
+				var currentTime =  newDate.getFullYear()+ "/" +(Number(newDate.getMonth())+1) + '/' +  newDate.getDate()+' '+newDate.getHours()+':'+newDate.getMinutes()+':'+newDate.getSeconds();
 				//定义检索条件 用于页面显示
 				var searchCon = '';
 				//循环检验查询条件  不为空则添加
@@ -749,7 +754,7 @@
 				}
 				//添加到检索历史列表 不为空且不存在
 				if (searchCon != '' && historyArr.indexOf(searchCon) === -1){
-					var searchHtml = '<li title="'+searchCon+'" data-startTime="'+obj.starttime+'" data-endTime="'+obj.endtime+'" data-ip="'+obj.ip+'" data-operation_level="'+obj.operation_level+'" data-hostname="'+obj.hostname+'" data-type="'+obj.type+'">'+searchCon+'<i class="glyphicon glyphicon-remove" title="删除"></i></li>';
+					var searchHtml = '<li title="'+searchCon+'" data-startTime="'+obj.starttime+'" data-endTime="'+obj.endtime+'" data-ip="'+obj.ip+'" data-operation_level="'+obj.operation_level+'" data-hostname="'+obj.hostname+'" data-type="'+obj.type+'"><b>'+currentTime+' - </b>'+searchCon+'<i class="glyphicon glyphicon-remove" title="删除"></i></li>';
 					$(".history_list").prepend(searchHtml);
 					historyArr.push(searchCon);
 				}
@@ -766,7 +771,7 @@
 				var searchWords = $(this).text();
 				var ev = arguments.callee.caller.arguments[0] || window.event;
 			    var $this =$(ev.target); 
-			   	if($this[0].nodeName == "LI" ){ 
+			   	if($this[0].nodeName == "LI" || $this[0].nodeName == "B" ){ 
 			   		logStatus = true;	
 			   		sendSearchObj.starttime = $(this).attr("data-startTime");
 			   		sendSearchObj.endtime = $(this).attr("data-endTime");
@@ -776,6 +781,26 @@
 			   		sendSearchObj.type = $(this).attr("data-type");
 			   		//获取数据
 			   		getLogs(url,"",sendSearchObj,1,pageSize);
+			   		//填充搜索框中得值
+			   		$("#startTime").val(sendSearchObj.starttime);
+					$("#endTime").val(sendSearchObj.endtime);
+					$(".searchIp").val(sendSearchObj.ip);
+					$(".searchHostname").val(sendSearchObj.hostname);						
+					$(".searchType").val(sendSearchObj.type);
+					//触发select的change事件					
+					$(".searchType").trigger("change");
+					//判断是否选择过日志级别
+					if(sendSearchObj.operation_level.split(',')[0] !== ''){//是
+						//填充日志级别个数
+						$(".searchedLevelBox").val(sendSearchObj.operation_level.split(',').length+'个级别');
+						//清空原始选择状态
+						$(".levelListBox input").removeAttr("checked");
+						//填充多选框的值
+						for(var i in sendSearchObj.operation_level.split(',')){
+							$(".levelListBox").find('input:checkbox[value="'+sendSearchObj.operation_level.split(',')[i]+'"]').prop('checked',true);
+						}
+					}
+					
 			   	}
 				
 			})
@@ -861,6 +886,8 @@
 				    for(var i in typeArr[2]){
 				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[2][i]+'"/>'+typeArr[2][i]+'</li>')
 				    }
+			    }else{
+			    	$(".searchedLevelBox").val('');
 			    }
 			    			   
 			});

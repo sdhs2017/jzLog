@@ -145,7 +145,7 @@
 		}
 	</style>
 	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
-	<body>
+	<body class="equipmentLogBody">
 		<div id="box">
 			<div class="top_title">
 				<span></span>
@@ -456,6 +456,8 @@
 				    for(var i in typeArr[2]){
 				    	$(".levelListBox ul").append('<li><input type="checkBox" checked value="'+typeArr[2][i]+'"/>'+typeArr[2][i]+'</li>')
 				    }
+			    }else{
+			    	$(".searchedLevelBox").val('');
 			    }
 				//日志级别获得焦点事件
 				$(".searchedLevelBox").focus(function(){
@@ -534,7 +536,7 @@
 					}
 					//添加到检索历史列表 不为空且不存在
 					if (searchCon != '' && historyArr.indexOf(searchCon) === -1){
-						var searchHtml = '<li title="'+searchCon+'" data-startTime="'+obj.startTime+'" data-endTime="'+obj.endTime+'" data-level="'+obj.level+'">'+searchCon+'<i class="glyphicon glyphicon-remove" title="删除"></i></li>';
+						var searchHtml = '<li title="'+searchCon+'" data-startTime="'+obj.starttime+'" data-endTime="'+obj.endtime+'" data-level="'+obj.operation_level+'">'+searchCon+'<i class="glyphicon glyphicon-remove" title="删除"></i></li>';
 						$(".history_list").prepend(searchHtml);
 						historyArr.push(searchCon);
 					}
@@ -551,9 +553,9 @@
 				    var $this =$(ev.target); 
 				   	if($this[0].nodeName == "LI" ){ 
 				   		logStatus = true;	
-				   		sendObj.startTime = $(this).attr("data-startTime");
-				   		sendObj.endTime = $(this).attr("data-endTime");
-				   		sendObj.level = $(this).attr("data-level");
+				   		sendObj.starttime = $(this).attr("data-startTime");
+				   		sendObj.endtime = $(this).attr("data-endTime");
+				   		sendObj.operation_level = $(this).attr("data-level");
 				   		//获取数据
 				   		getLogs("../../log/getLogListByEquipment.do","",sendObj,1,pageSize)
 				   	}
@@ -640,6 +642,31 @@
 			$(".maxShowData").change(function(){
 				maxShowChange('数据量过大时，细化查询条件提高查询效率')
 			})
+			//鼠标拖选文字
+			$(".logs_Mes").selectText({
+	    		"sFunc":function(obj){
+	    			var index = obj.eventDom.attr("data-index")
+	    			var sendObj = {};
+	    			sendObj.name = obj.inputText;
+	    			sendObj.feature = obj.selectedText;
+	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
+	    			sendObj.equipmentId = logDetailArr[index].equipmentid;
+	    			sendObj.type = logDetailArr[index].type;
+	    			sendObj.equipmentUserId = logDetailArr[index].userid;
+	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
+	    			//成功回调函数
+	    			var sfunc = function(data){
+	    				if(data.success == "true"){
+							layer.msg(data.message,{icon: 1});
+							//重新加载数据
+							getData();
+						}else if(data.success == "false"){//失败
+							layer.msg(data.message,{icon: 5});
+						} 
+	    			}
+	    			ajaxPost('../../action/insert.do',sendObj,sfunc);
+	    		}
+	    	});
 		</script>
 	</body>
 </html>
