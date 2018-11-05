@@ -17,7 +17,7 @@ public class Menu {
 	private int childId;//子节点
 	private String url;//路径
 	private String icon;//引用
-	
+	private int state;//状态
 	private List<Menu> menus;
 	
 	
@@ -63,6 +63,12 @@ public class Menu {
 	}
 	public void setIcon(String icon) {
 		this.icon = icon;
+	}
+	public int getState() {
+		return state;
+	}
+	public void setState(int state) {
+		this.state = state;
 	}
 	
 	

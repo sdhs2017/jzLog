@@ -9,6 +9,7 @@ public class Action_event {
 	private String eventId;
 	private int order;
 	private Action action;
+	private int number;
 	
 	public String getId() {
 		return id;
@@ -39,6 +40,12 @@ public class Action_event {
 	}
 	public void setAction(Action action) {
 		this.action = action;
+	}
+	public int getNumber() {
+		return number;
+	}
+	public void setNumber(int number) {
+		this.number = number;
 	}
 	
 

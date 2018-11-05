@@ -7,6 +7,7 @@
 		<result column="actionId" jdbcType="VARCHAR" property="actionId" />
 		<result column="eventId" jdbcType="VARCHAR" property="eventId" />
 		<result column="order" jdbcType="INTEGER" property="order" />
+		<result column="number" jdbcType="INTEGER" property="number" />
 		<association property="action" javaType="com.jz.bigdata.common.action.entity.Action">
              <id property="actionId" column="id"/>
              <result property="name" column="actionName"/>
@@ -16,18 +17,18 @@
 	<!-- 查询字段设置可重复调用 -->
 	<!-- 部门id,name:部门名称,level:部门层级,superiorId:上级id,subordinate:是否有下级（1有0没有）,orderId:位置排序,comment:简介 -->
 	<sql id="Base_Column_List">
-		id, actionId, eventId,order
+		id, actionId, eventId,order,number
 	</sql>
 
 	<!-- 批量插入关系 -->
      <insert id ="insert" parameterType="java.util.List" >
            
            insert into action_event
-           (actionId,eventId,action_event.order)
+           (actionId,eventId,action_event.order,number)
            values
             <foreach collection ="list" item="action_event" index= "index" separator =",">
                 (
-                #{action_event.actionId}, #{action_event.eventId}, #{action_event.order}
+                #{action_event.actionId}, #{action_event.eventId}, #{action_event.order},#{action_event.number}
                 )
             </foreach >
      </insert >
@@ -47,7 +48,7 @@
 	</delete>
 
 	<select id="selectAll" resultMap="BaseResultMap">
-		SELECT  action_event.id, actionId, eventId,action_event.order,name FROM action_event
+		SELECT  action_event.id, actionId, eventId,action_event.order,name,number FROM action_event
 		LEFT JOIN action  ON action_event.actionId=action.id
 	</select>
 

@@ -4,15 +4,24 @@ import com.jz.bigdata.common.users.entity.User;
 
 public class Event {
 	private String id;
-	private String name;
-	private String userId;
-	private int state;
-	private String message;
+	private String name;//事件名称
+	private String userId;//用户id
+	private int state;//状态
+	private String message;//描述
 	private User user;
-	private String actionId;
-	private String actionName;
-	private String userName;
+	private String actionId;//动作id
+	private String actionName;//动作名称
+	private String userName;//用户名称
+	private int enabled;//是否启用
+	private String dangerous_level;//危险级别
 	
+	private String month;//月
+	private String day;//日
+	private String hour;//小时
+	private String minute;//分钟
+	private String time;//时间
+	private String safeStrategyName;//安全策略名称
+	private String time_interval;//时间拼接
 	
 	public String getId() {
 		return id;
@@ -68,6 +77,62 @@ public class Event {
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	
+	public int getEnabled() {
+		return enabled;
+	}
+	public void setEnabled(int enabled) {
+		this.enabled = enabled;
+	}
+	public String getDangerous_level() {
+		return dangerous_level;
+	}
+	public void setDangerous_level(String dangerous_level) {
+		this.dangerous_level = dangerous_level;
+	}
+	public String getMonth() {
+		return month;
+	}
+	public void setMonth(String month) {
+		this.month = month;
+	}
+	public String getDay() {
+		return day;
+	}
+	public void setDay(String day) {
+		this.day = day;
+	}
+	public String getHour() {
+		return hour;
+	}
+	public void setHour(String hour) {
+		this.hour = hour;
+	}
+	public String getMinute() {
+		return minute;
+	}
+	public void setMinute(String minute) {
+		this.minute = minute;
+	}
+	
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
+	public String getSafeStrategyName() {
+		return safeStrategyName;
+	}
+	public void setSafeStrategyName(String safeStrategyName) {
+		this.safeStrategyName = safeStrategyName;
+	}
+	public String getTime_interval() {
+		return time_interval;
+	}
+	public void setTime_interval(String time_interval) {
+		this.time_interval = time_interval;
 	}
 	
 	

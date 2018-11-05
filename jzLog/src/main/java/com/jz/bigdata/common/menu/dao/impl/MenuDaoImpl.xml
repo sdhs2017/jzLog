@@ -10,13 +10,14 @@
 		<result column="childId" jdbcType="INTEGER" property="childId" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="icon" jdbcType="VARCHAR" property="icon" />
+		<result column="state" jdbcType="INTEGER" property="state" />
 		
 	</resultMap>
 
 	<!-- 查询字段设置可重复调用 -->
 	<!-- 部门id,name:部门名称,level:部门层级,superiorId:上级id,subordinate:是否有下级（1有0没有）,orderId:位置排序,comment:简介 -->
 	<sql id="Base_Column_List">
-		id, menuName, superiorId, childId, url,icon
+		id, menuName, superiorId, childId, url,icon,state
 	</sql>
 	
 	
@@ -25,6 +26,7 @@
 	<!-- 查询所有数据 -->
 	<select id="selectAll"  resultMap="BaseResultMap"  >
 		SELECT  <include refid="Base_Column_List" />  from menu where id in(select menuId from roles_menu where roleId= #{role,jdbcType=BIGINT})
+		and state=1;
 	</select>
 
 

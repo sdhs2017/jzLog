@@ -58,12 +58,23 @@ public class EventServiceImpl implements IEventService {
 			Action_event action_event =new Action_event();
 			action_event.setActionId(parm[0]);
 			action_event.setOrder(Integer.valueOf(parm[1]));
+			action_event.setNumber(Integer.valueOf(parm[2]));
 			action_event.setEventId(eventId);
 			list.add(action_event);
 		}
+		int time=0;
+		String time_interval="";
+		//计算时间换算成秒
+		time=Integer.valueOf(event.getMonth())*30*24*60+Integer.valueOf(event.getDay())*24*60
+				+Integer.valueOf(event.getHour())*60+Integer.valueOf(event.getMinute());
+		//拼接时间
+		time_interval=event.getMonth()+"-"+event.getDay()+"-"+event.getHour()+"-"+event.getMinute();
+		event.setTime(time+"");
+		event.setTime_interval(time_interval);
+		
 		action_eventDao.insert(list);
 		event.setId(eventId);
-		event.setState(1);
+//		event.setState(1);
 		return eventDao.insert(event);
 	}
 
@@ -122,19 +133,30 @@ public class EventServiceImpl implements IEventService {
 		int result=action_eventDao.deleteByEventId(event.getId());
 		//是否删除成功
 		if(result>0){
-			//分割字符串
-			String[] actionId=event.getActionId().split(",");
 			List<Action_event> list =new ArrayList<>();
+			//分割actionid
+			String[] actionId=event.getActionId().split(",");
 			String[] parm=new String[2];
-			//循环添加数据
+			//循环遍历添加list
 			for(int i=0;i<actionId.length;i++){
 				parm=actionId[i].split("-");
 				Action_event action_event =new Action_event();
 				action_event.setActionId(parm[0]);
 				action_event.setOrder(Integer.valueOf(parm[1]));
+				action_event.setNumber(Integer.valueOf(parm[2]));
 				action_event.setEventId(event.getId());
 				list.add(action_event);
 			}
+			int time=0;
+			String time_interval="";
+			//计算时间换算成秒
+			time=Integer.valueOf(event.getMonth())*30*24*60+Integer.valueOf(event.getDay())*24*60
+					+Integer.valueOf(event.getHour())*60+Integer.valueOf(event.getMinute());
+			//拼接时间
+			time_interval=event.getMonth()+"-"+event.getDay()+"-"+event.getHour()+"-"+event.getMinute();
+			event.setTime(time+"");
+			event.setTime_interval(time_interval);
+			
 			action_eventDao.insert(list);
 			result=eventDao.updataById(event);
 		}
