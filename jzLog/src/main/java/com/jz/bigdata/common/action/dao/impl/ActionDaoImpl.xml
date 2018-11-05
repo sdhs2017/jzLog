@@ -123,7 +123,7 @@
 		select action.id, action.name, action.userId, action.state,
 		equipmentId,action.type,feature,equipmentUserId,a.`name` AS
 		userName,b.`name` AS equipmentUserName ,equipment.`name` as
-		equipmentName ,action_event.`order` FROM action_event
+		equipmentName ,action_event.`order`,action_event.number FROM action_event
 
 		LEFT JOIN action on action_event.actionId=action.id
 		LEFT JOIN user AS a on action.userId=a.id

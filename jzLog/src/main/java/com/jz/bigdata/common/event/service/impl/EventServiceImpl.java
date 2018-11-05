@@ -198,6 +198,15 @@ public class EventServiceImpl implements IEventService {
 		Event event=eventDao.selectEvent(id);
 		//查询action
 		List<Action> list= actionDao.selectActionByEventId(id);
+		String[] time = event.getTime_interval().split("-");
+		if(time.length>0){
+			event.setMonth(time[0]);
+			event.setDay(time[1]);
+			event.setHour(time[2]);
+			event.setMinute(time[3]);
+		}
+		
+		
 		Map<String, Object> map=new HashMap<>();
 		map.put("event", event);
 		map.put("action", list);
