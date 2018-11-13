@@ -875,8 +875,14 @@ public class LogServiceImpl implements IlogService {
 		}
 		// 遍历map
 		for(Map.Entry<String, String> entry : map.entrySet()){
-			QueryBuilder queryBuilder = QueryBuilders.termQuery(entry.getKey(), entry.getValue());
-			boolQueryBuilder.must(queryBuilder);
+			if (entry.getKey().equals("operation_level")) {
+				String [] operation_level = entry.getValue().split(",");
+				boolQueryBuilder.must(QueryBuilders.termsQuery("operation_level", operation_level));
+			}else {
+				QueryBuilder queryBuilder = QueryBuilders.termQuery(entry.getKey(), entry.getValue());
+				boolQueryBuilder.must(queryBuilder);
+			}
+			
 		}
 		//日志总量
 		count = clientTemplate.count(index, types, boolQueryBuilder);
