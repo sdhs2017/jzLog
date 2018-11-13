@@ -181,9 +181,10 @@ public class ManageServiceImpl extends QuartzJobBean implements IManageService {
      * @param type
      * @param url,user,passwd,host
      */
-    public void doshell(String url,String user,String passwd,String host) {
+    public Map<String, String> doshell(String url,String user,String passwd,String host) {
     	Map<String, String> result = ResourceUsage.runDistanceShell(url, user, passwd, host);
     	System.out.println(result);
+    	return result;
 	}
     
     

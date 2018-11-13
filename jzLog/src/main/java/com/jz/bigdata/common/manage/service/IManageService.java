@@ -8,6 +8,6 @@ public interface IManageService {
 	
 	public void doCutl(String type,String url) ;
 
-	public void doshell(String url, String host_user, String host_passwd, String host_ip);
+	public Map<String, String> doshell(String url, String host_user, String host_passwd, String host_ip);
 	
 }

@@ -68,7 +68,7 @@ public class ManageController {
 		// 创建快照并指定索引
 		String snapshotUrlByIndices = "curl -XPUT http://"+configProperty.getEs_path_snapshot()+"/_snapshot/EsBackup/snapshot -d \'{\"indices\":\""+configProperty.getEs_index()+"\",\"wait_for_completion\":true}\'";
 		//iManageService.doCutl("-XPUT", snapshotUrlByIndices);
-		iManageService.doshell(snapshotUrlByIndices,configProperty.getHost_user(), configProperty.getHost_passwd(), configProperty.getHost_ip());
+		Map<String, String> result = iManageService.doshell(snapshotUrlByIndices,configProperty.getHost_user(), configProperty.getHost_passwd(), configProperty.getHost_ip());
 		
 		Map<String, Object> map= new HashMap<>();
 		map.put("state", true);
