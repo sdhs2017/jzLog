@@ -248,11 +248,15 @@ public class KafkaCollector implements Runnable {
 				Matcher logtype_matcher = logtype_pattern.matcher(log);
 				Pattern dmg_pattern = Pattern.compile("包过滤日志");
 				Matcher dmg_matcher = dmg_pattern.matcher(log);
-				// 防火墙-其他日志信息过滤条件
-				Pattern logothertype_pattern = Pattern.compile("logtype=");
-				Matcher logtotherype_matcher = logothertype_pattern.matcher(log);
-				Pattern dmgother_pattern = Pattern.compile("dsp_msg=");
-				Matcher dmgother_matcher = dmgother_pattern.matcher(log);
+				// 防火墙-日志
+				Pattern firewallsDevid_pattern = Pattern.compile("devid=");
+				Matcher firewallsDevid_matcher = firewallsDevid_pattern.matcher(log);
+				Pattern firewallsType_pattern = Pattern.compile("logtype=");
+				Matcher firewallsType_matcher = firewallsType_pattern.matcher(log);
+				Pattern firewallsMod_pattern = Pattern.compile("mod=");
+				Matcher firewallsMod_matcher = firewallsMod_pattern.matcher(log);
+				Pattern firewallsMsg_pattern = Pattern.compile("dsp_msg=");
+				Matcher firewallsMsg_matcher = firewallsMsg_pattern.matcher(log);
 				// windows安全审计
 				Pattern win2008pattern = Pattern.compile("Security-Auditing:");
 				Matcher win2008matcher = win2008pattern.matcher(log);
@@ -344,8 +348,10 @@ public class KafkaCollector implements Runnable {
 							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
 						}
 					}
-					
-				}else if (logtype_matcher.find()&&dmg_matcher.find()) {
+				
+				// 注释掉原有的包过滤日志关键字判断方式，改用防火墙基本字段判断是否为防火墙日志
+				//}else if (logtype_matcher.find()&&dmg_matcher.find()) {
+				}else if (firewallsDevid_matcher.find()&&firewallsMod_matcher.find()&&firewallsType_matcher.find()&&firewallsMsg_matcher.find()) {
 					logType = LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG;
 					try {
 						packetFilteringFirewal = new PacketFilteringFirewal(log);
