@@ -571,7 +571,7 @@
 			}
 		})
 		//鼠标拖选文字功能
-	    $(".equipmentLogBody .logs_Mes").selectText({
+	    /*$(".equipmentLogBody .logs_Mes").selectText({
     		"sFunc":function(obj){
     			var index = obj.eventDom.attr("data-index")
     			var sendObj = {};
@@ -594,7 +594,7 @@
     			}
     			ajaxPost('../../action/insert.do',sendObj,sfunc);
     		}
-    	});
+    	});*/
 	    
 	}
 	var htmlNum2 = 0;
@@ -823,7 +823,7 @@
 		 		content: html
 			});
 			//鼠标拖选文字功能
-		    $(".equipmentLogBody .logdes").selectText({
+		    /*$(".equipmentLogBody .logdes").selectText({
 		    	"sFunc":function(obj){
 		    		var index = obj.eventDom.attr("data-index");
 	    			var sendObj = {};
@@ -847,7 +847,7 @@
 	    			}
 	    			ajaxPost('../../action/insert.do',sendObj,sfunc)
 	    		}
-	    	});
+	    	});*/
 	})
 	
 	
