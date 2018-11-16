@@ -75,7 +75,7 @@
 	<sql id="Base_Column_List">
 		equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
-		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk
+		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -320,7 +320,7 @@
 			and ip = #{ip,jdbcType=VARCHAR}
 		</if>
 		<if test="logType != null and logType !='' and logType !=0">
-			and logType = #{logType,jdbcType=INTEGER}
+			and logType = #{logType,jdbcType=VARCHAR}
 		</if>
 		
 	    limit #{startRecord},#{pageSize}
@@ -341,7 +341,7 @@
 	  	and ip = #{ip,jdbcType=VARCHAR}
 	  </if>
 	  <if test="logType != null and logType !='' and logType !=0">
-			and logType = #{logType,jdbcType=INTEGER}
+			and logType = #{logType,jdbcType=VARCHAR}
 	  </if>
 	</select>
 	
