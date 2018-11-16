@@ -119,11 +119,7 @@ public class EquipmentController {
 		//ip地址
 		String ip=request.getParameter("ip");
 		//日志类型
-		String logtype =request.getParameter("logType");
-		int logType=0;
-		if(request.getParameter("logType") !=null && !request.getParameter("logType").equals("")){
-			 logType =Integer.valueOf(logtype);
-		}
+		String logType =request.getParameter("logType");
 		return equipmentService.selectAllByPage(hostName,name,ip,logType, pageIndex, pageSize);
 	}
 	/**

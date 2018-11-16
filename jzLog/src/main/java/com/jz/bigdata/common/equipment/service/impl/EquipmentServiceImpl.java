@@ -137,7 +137,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 	 * @description 分页查询数据
 	 */
 	@Override
-	public String selectAllByPage(String hostName, String name, String ip, int logType, int pageIndex, int pageSize) {
+	public String selectAllByPage(String hostName, String name, String ip, String logType, int pageIndex, int pageSize) {
 		// 获取起始数
 		int startRecord = (pageSize * (pageIndex - 1));
 		// 获取总数

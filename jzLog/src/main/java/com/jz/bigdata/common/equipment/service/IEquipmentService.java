@@ -25,7 +25,7 @@ public interface IEquipmentService {
 	
 	List<Equipment> selectEquipment(Equipment equipment);
 	
-	String selectAllByPage(String hostName,String name,String ip,int logType,int pageIndex,int pageSize);
+	String selectAllByPage(String hostName,String name,String ip,String logType,int pageIndex,int pageSize);
 	
 	Equipment selectOneEquipment(Equipment equipment);
 	
