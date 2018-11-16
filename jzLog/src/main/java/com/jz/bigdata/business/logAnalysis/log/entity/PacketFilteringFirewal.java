@@ -561,12 +561,45 @@ public final static Map<Integer, String> facility = new HashMap<>();
 		}*/
 		Pattern pattern = Pattern.compile("<\\d{1,5}>\\s+\\d{4}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\D+\\d{1,2}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\s+[A-Za-z]{1,10}:\\s+");
 		Matcher matcher = pattern.matcher(log);
+		// 去除不规则数据
+		Pattern NGPattern = Pattern.compile("[A-Za-z0-9]{1,10}=[0-9]{1,10}:[0-9]{1,10}");
+		Matcher NGmatcher = NGPattern.matcher(log);
+		Pattern NGPatternIP = Pattern.compile("[A-Za-z]{1,10}=\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		Matcher NGmatcherIP = NGPatternIP.matcher(log);
+		Pattern NGPatternFilter = Pattern.compile("[A-Za-z]{1,10}=\\s+");
+		Matcher NGmatcherFilter = NGPatternFilter.matcher(log);
+		// 两个逗号之间没有冒号
+		Pattern NGPatternNO = Pattern.compile("[,][A-Za-z]{1,100}[-][\u4E00-\u9FA5]{1,100}[,]");
+		Matcher NGmatcherNO = NGPatternNO.matcher(log);
+		
+		while (NGmatcher.find()) {
+			log = log.replaceAll(NGmatcher.group(0), "");
+		}
+		while (NGmatcherIP.find()) {
+			String tmp = NGmatcherIP.group(0);
+			Pattern PatternIP = Pattern.compile(":\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+			Matcher matcherIP = PatternIP.matcher(tmp);
+			if (matcherIP.find()) {
+				tmp = tmp.replaceAll(matcherIP.group(0), "");
+				log = log.replaceAll(NGmatcherIP.group(0), tmp);
+			}else{
+				log = log.replaceAll(NGmatcherIP.group(0), "");
+			}
+		}
+		
+		if (NGmatcherFilter.find()) {
+			log = log.replaceAll(NGmatcherFilter.group(0), "");
+		}
+		
+		// 通过正则截取防护墙前段日志（即syslog的信息除message）
 		if (matcher.find()) {
 			String leftlog = matcher.group(0);
 			Pattern PRIpattern = Pattern.compile("<[0-9]{1,5}>");
 			Matcher PRImatcher = PRIpattern.matcher(leftlog);
 			Pattern IPpattern = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 			Matcher IPmatcher = IPpattern.matcher(leftlog);
+			Pattern ProcessPattern = Pattern.compile("[A-Za-z]{1,30}:");
+			Matcher ProcessMatcher = ProcessPattern.matcher(leftlog);
 			if (PRImatcher.find()) {
 				String PRI = PRImatcher.group(0);
 				PRI = PRI.substring(1, PRI.length()-1);
@@ -582,10 +615,28 @@ public final static Map<Integer, String> facility = new HashMap<>();
 			if (IPmatcher.find()) {
 				this.ip=IPmatcher.group(0);
 			}
+			
 			log = log.replace(matcher.group(0), "");
 			this.operation_des = log;
 			log = "{"+log.replaceAll("=", ":")+"}";
 			log = log.replaceAll(" +", ",");
+			log = log.replaceAll(",,", ",");
+			// 去除不规则数据
+			if (ProcessMatcher.find()) {
+				String tmp = ProcessMatcher.group(0).replace(":", "");
+				Pattern NGPattern1 = Pattern.compile("mod:"+tmp+",");
+				Matcher NGmatcher1 = NGPattern1.matcher(log);
+				Pattern NGPattern2 = Pattern.compile("mod:[\u4E00-\u9FA5]{1,50},");
+				Matcher NGmatcher2 = NGPattern2.matcher(log);
+				if (!NGmatcher1.find()&&!NGmatcher2.find()) {
+					System.out.println(NGmatcher2.group(0));
+					log = log.replaceAll("mod:"+tmp, "mod:"+tmp+",");
+				}
+			}
+			if (NGmatcherNO.find()) {
+				log = log.replaceAll(NGmatcherNO.group(0), ",");
+			}
+			
 			
 			Gson gson = new Gson();
 			PacketFilteringFirewal fire = gson.fromJson(log, PacketFilteringFirewal.class);
@@ -682,7 +733,8 @@ public final static Map<Integer, String> facility = new HashMap<>();
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": "
                        + "true" + "\n");
 			}
-            if (fields[i].getName().equals("operation_des")||fields[i].getName().equals("ip")||fields[i].getName().equals("process")||fields[i].getName().equals("hostname")||fields[i].getName().equals("equipmentname")||fields[i].getName().equals("event_des")||fields[i].getName().equals("dsp_msg")||fields[i].getName().equals("from")||fields[i].getName().equals("act")) {
+            // 由于旧版es的防护墙dsp_msg采用包过滤，该字段过于简单，所以没有设置分词，所以该字段没有更新   ||fields[i].getName().equals("dsp_msg")
+            if (fields[i].getName().equals("operation_des")||fields[i].getName().equals("ip")||fields[i].getName().equals("process")||fields[i].getName().equals("hostname")||fields[i].getName().equals("equipmentname")||fields[i].getName().equals("event_des")||fields[i].getName().equals("from")||fields[i].getName().equals("act")) {
 	           	 fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \""
 	           	 + "index_ansj\"" + "\n");
 	           	 fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \""
