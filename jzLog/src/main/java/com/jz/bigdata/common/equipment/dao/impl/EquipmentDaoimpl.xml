@@ -319,7 +319,7 @@
 		<if test="ip != null and ip !=''">
 			and ip = #{ip,jdbcType=VARCHAR}
 		</if>
-		<if test="logType != null and logType !='' and logType !=0">
+		<if test="logType != null and logType !='' ">
 			and logType = #{logType,jdbcType=VARCHAR}
 		</if>
 		
@@ -340,7 +340,7 @@
 	  <if test="ip != null and ip !=''">
 	  	and ip = #{ip,jdbcType=VARCHAR}
 	  </if>
-	  <if test="logType != null and logType !='' and logType !=0">
+	  <if test="logType != null and logType !='' ">
 			and logType = #{logType,jdbcType=VARCHAR}
 	  </if>
 	</select>

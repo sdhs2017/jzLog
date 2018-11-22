@@ -284,36 +284,36 @@ public class KafkaCollector implements Runnable {
 								//进入范式化
 								try {
 									log4j = new Log4j(builder.toString());
+									
+									ipadress = log4j.getIp();
+									//判断是否在资产ip地址池里
+									if(ipadressSet.contains(ipadress)){
+										//判断是否在已识别资产里————日志类型可识别
+										equipment=equipmentMap.get(log4j.getIp() +logType);
+										if(null != equipment){
+											log4j.setUserid(equipment.getUserId());
+											log4j.setDeptid(String.valueOf(equipment.getDepartmentId()));
+											log4j.setEquipmentname(equipment.getName());
+											log4j.setEquipmentid(equipment.getId());
+											json = gson.toJson(log4j);
+											requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
+										}else{
+											log4j.setUserid(LogType.LOGTYPE_UNKNOWN);
+											log4j.setDeptid(LogType.LOGTYPE_UNKNOWN);
+											log4j.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+											log4j.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+											json = gson.toJson(log4j);
+											requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
+										}
+									}else{
+										//不在资产ip池里，暂不处理
+										//TODO
+									}
 								} catch (Exception e) {
 									e.printStackTrace();
 									continue;
 								}
 								
-								ipadress = log4j.getIp();
-								//判断是否在资产ip地址池里
-								if(ipadressSet.contains(ipadress)){
-									//判断是否在已识别资产里————日志类型可识别
-									equipment=equipmentMap.get(log4j.getIp() +logType);
-									if(null != equipment){
-										log4j.setUserid(equipment.getUserId());
-										log4j.setDeptid(String.valueOf(equipment.getDepartmentId()));
-										log4j.setEquipmentname(equipment.getName());
-										log4j.setEquipmentid(equipment.getId());
-										json = gson.toJson(log4j);
-										requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
-									}else{
-										log4j.setUserid(LogType.LOGTYPE_UNKNOWN);
-										log4j.setDeptid(LogType.LOGTYPE_UNKNOWN);
-										log4j.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
-										log4j.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
-										json = gson.toJson(log4j);
-										requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
-									}
-								}else{
-									//不在资产ip池里，暂不处理
-									//TODO
-								}
-
 								//清空数据
 								builder.delete(0, builder.length());
 							}
@@ -325,28 +325,29 @@ public class KafkaCollector implements Runnable {
 					logType = LogType.LOGTYPE_LOG4J;
 					try {
 						log4j = new Log4j(log, cal);
+						
+						ipadress = log4j.getIp();
+						if (ipadressSet.contains(ipadress)) {
+							equipment = equipmentMap.get(log4j.getIp()+logType);
+							if (equipment!=null) {
+								log4j.setUserid(equipment.getUserId());
+								log4j.setDeptid(String.valueOf(equipment.getDepartmentId()));
+								log4j.setEquipmentname(equipment.getName());
+								log4j.setEquipmentid(equipment.getId());
+								json = gson.toJson(log4j);
+								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
+							}else {
+								log4j.setUserid(LogType.LOGTYPE_UNKNOWN);
+								log4j.setDeptid(LogType.LOGTYPE_UNKNOWN);
+								log4j.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+								log4j.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+								json = gson.toJson(log4j);
+								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
+							}
+						}
 					}catch (Exception e) {
 						e.printStackTrace();
 						continue;
-					}
-					ipadress = log4j.getIp();
-					if (ipadressSet.contains(ipadress)) {
-						equipment = equipmentMap.get(log4j.getIp()+logType);
-						if (equipment!=null) {
-							log4j.setUserid(equipment.getUserId());
-							log4j.setDeptid(String.valueOf(equipment.getDepartmentId()));
-							log4j.setEquipmentname(equipment.getName());
-							log4j.setEquipmentid(equipment.getId());
-							json = gson.toJson(log4j);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
-						}else {
-							log4j.setUserid(LogType.LOGTYPE_UNKNOWN);
-							log4j.setDeptid(LogType.LOGTYPE_UNKNOWN);
-							log4j.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
-							log4j.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
-							json = gson.toJson(log4j);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_LOG4J, json));
-						}
 					}
 				
 				// 注释掉原有的包过滤日志关键字判断方式，改用防火墙基本字段判断是否为防火墙日志
@@ -355,32 +356,34 @@ public class KafkaCollector implements Runnable {
 					logType = LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG;
 					try {
 						packetFilteringFirewal = new PacketFilteringFirewal(log);
+						
+						ipadress = packetFilteringFirewal.getIp();
+						if (ipadressSet.contains(ipadress)) {
+							equipment=equipmentMap.get(packetFilteringFirewal.getIp() +logType);
+							if (equipment!=null) {
+								packetFilteringFirewal.setUserid(equipment.getUserId());
+								packetFilteringFirewal.setDeptid(String.valueOf(equipment.getDepartmentId()));
+								packetFilteringFirewal.setEquipmentid(equipment.getId());
+								packetFilteringFirewal.setEquipmentname(equipment.getName());
+								json = gson.toJson(packetFilteringFirewal);
+								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG, json));
+							}else {
+								packetFilteringFirewal.setUserid(LogType.LOGTYPE_UNKNOWN);
+								packetFilteringFirewal.setDeptid(LogType.LOGTYPE_UNKNOWN);
+								packetFilteringFirewal.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+								packetFilteringFirewal.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+								json = gson.toJson(packetFilteringFirewal);
+								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG, json));
+							}
+						}else {
+							//不在资产ip池里，暂不处理
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 						continue;
 					}
 					
-					ipadress = packetFilteringFirewal.getIp();
-					if (ipadressSet.contains(ipadress)) {
-						equipment=equipmentMap.get(packetFilteringFirewal.getIp() +logType);
-						if (equipment!=null) {
-							packetFilteringFirewal.setUserid(equipment.getUserId());
-							packetFilteringFirewal.setDeptid(String.valueOf(equipment.getDepartmentId()));
-							packetFilteringFirewal.setEquipmentid(equipment.getId());
-							packetFilteringFirewal.setEquipmentname(equipment.getName());
-							json = gson.toJson(packetFilteringFirewal);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG, json));
-						}else {
-							packetFilteringFirewal.setUserid(LogType.LOGTYPE_UNKNOWN);
-							packetFilteringFirewal.setDeptid(LogType.LOGTYPE_UNKNOWN);
-							packetFilteringFirewal.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
-							packetFilteringFirewal.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
-							json = gson.toJson(packetFilteringFirewal);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG, json));
-						}
-					}else {
-						//不在资产ip池里，暂不处理
-					}
+					
 					//es暂无防火墙包过滤日志对应的mapping，暂未入库es
 				}/*else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
 					//防火墙、不包括包过滤日志，暂不处理
@@ -415,80 +418,80 @@ public class KafkaCollector implements Runnable {
 					logType = LogType.LOGTYPE_WINLOG;
 					try {
 						winlog = new Winlog(log);
-					} catch (Exception e) {
-						e.printStackTrace();
-						continue;
-					}
-					
-					ipadress = winlog.getIp();
-					//判断是否在资产ip地址池里
-					if(ipadressSet.contains(ipadress)){
-						//判断是否在已识别资产里————日志类型可识别
-						equipment=equipmentMap.get(winlog.getIp() +logType);
-						if(equipment != null){
-							if (equipmentLogType.get(equipment.getId()).indexOf(winlog.getOperation_level().toLowerCase())!=-1) {
-								winlog.setUserid(equipment.getUserId());
-								winlog.setDeptid(String.valueOf(equipment.getDepartmentId()));
-								winlog.setEquipmentname(equipment.getName());
-								winlog.setEquipmentid(equipment.getId());
+						
+						ipadress = winlog.getIp();
+						//判断是否在资产ip地址池里
+						if(ipadressSet.contains(ipadress)){
+							//判断是否在已识别资产里————日志类型可识别
+							equipment=equipmentMap.get(winlog.getIp() +logType);
+							if(equipment != null){
+								if (equipmentLogType.get(equipment.getId()).indexOf(winlog.getOperation_level().toLowerCase())!=-1) {
+									winlog.setUserid(equipment.getUserId());
+									winlog.setDeptid(String.valueOf(equipment.getDepartmentId()));
+									winlog.setEquipmentname(equipment.getName());
+									winlog.setEquipmentid(equipment.getId());
+									json = gson.toJson(winlog);
+									requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_WINLOG, json));
+								}
+							}else{
+								winlog.setUserid(LogType.LOGTYPE_UNKNOWN);
+								winlog.setDeptid(LogType.LOGTYPE_UNKNOWN);
+								winlog.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+								winlog.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
 								json = gson.toJson(winlog);
 								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_WINLOG, json));
 							}
 						}else{
-							winlog.setUserid(LogType.LOGTYPE_UNKNOWN);
-							winlog.setDeptid(LogType.LOGTYPE_UNKNOWN);
-							winlog.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
-							winlog.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
-							json = gson.toJson(winlog);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_WINLOG, json));
+							//不在资产ip池里，暂不处理
 						}
-					}else{
-						//不在资产ip池里，暂不处理
-					}
-				}else {
-					logType = LogType.LOGTYPE_SYSLOG;
-					try {
-						syslog = new Syslog(log);
 					} catch (Exception e) {
 						e.printStackTrace();
 						continue;
 					}
 					
-					ipadress = syslog.getIp();
-					//判断是否在资产ip地址池里
-					if(ipadressSet.contains(ipadress)){
-						//判断是否在已识别资产里————日志类型可识别
-						equipment = equipmentMap.get(syslog.getIp() +logType);
-						if(null != equipment){
-							if (equipmentLogType.get(equipment.getId()).indexOf(syslog.getOperation_level().toLowerCase())!=-1) {
-								syslog.setUserid(equipment.getUserId());
-								syslog.setDeptid(String.valueOf(equipment.getDepartmentId()));
-								syslog.setEquipmentid(equipment.getId());
-								syslog.setEquipmentname(equipment.getName());
+				}else {
+					logType = LogType.LOGTYPE_SYSLOG;
+					try {
+						syslog = new Syslog(log);
+						
+						ipadress = syslog.getIp();
+						//判断是否在资产ip地址池里
+						if(ipadressSet.contains(ipadress)){
+							//判断是否在已识别资产里————日志类型可识别
+							equipment = equipmentMap.get(syslog.getIp() +logType);
+							if(null != equipment){
+								if (equipmentLogType.get(equipment.getId()).indexOf(syslog.getOperation_level().toLowerCase())!=-1) {
+									syslog.setUserid(equipment.getUserId());
+									syslog.setDeptid(String.valueOf(equipment.getDepartmentId()));
+									syslog.setEquipmentid(equipment.getId());
+									syslog.setEquipmentname(equipment.getName());
+									
+									/*if (eventType.contains(syslog.getEvent_type())) {
+										Sendmail sendmail = new Sendmail(syslog.getIp(), syslog.getEquipmentname(), syslog.getEvent_des(), usersService.selectById(syslog.getUserid()).getEmail());
+									}*/
+									json = gson.toJson(syslog);
+									requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_SYSLOG, json));
+								}
 								
-								/*if (eventType.contains(syslog.getEvent_type())) {
-									Sendmail sendmail = new Sendmail(syslog.getIp(), syslog.getEquipmentname(), syslog.getEvent_des(), usersService.selectById(syslog.getUserid()).getEmail());
-								}*/
+								
+								
+							}else{
+								//在资产ip地址池里，但是无法识别日志类型
+								syslog.setUserid(LogType.LOGTYPE_UNKNOWN);
+								syslog.setDeptid(LogType.LOGTYPE_UNKNOWN);
+								syslog.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+								syslog.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
 								json = gson.toJson(syslog);
-								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_SYSLOG, json));
+								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_UNKNOWN, json));
 							}
-							
-							
-							
 						}else{
-							//在资产ip地址池里，但是无法识别日志类型
-							syslog.setUserid(LogType.LOGTYPE_UNKNOWN);
-							syslog.setDeptid(LogType.LOGTYPE_UNKNOWN);
-							syslog.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
-							syslog.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
-							json = gson.toJson(syslog);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_UNKNOWN, json));
+							//不在资产ip池里，暂不处理
+							//TODO
 						}
-					}else{
-						//不在资产ip池里，暂不处理
-						//TODO
+					} catch (Exception e) {
+						e.printStackTrace();
+						continue;
 					}
-
 					
 				}
 				
