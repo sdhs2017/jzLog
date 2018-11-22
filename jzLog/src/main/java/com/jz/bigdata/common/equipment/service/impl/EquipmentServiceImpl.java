@@ -150,8 +150,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		// 总数添加到map
 		map.put("count", (listCount.get(0)));
 		// 查询所有数据
-		List<Equipment> listEquipment = equipmentDao.selectAllByPage(hostName, name, ip, logType, startRecord,
-				pageSize);
+		List<Equipment> listEquipment = equipmentDao.selectAllByPage(hostName, name, ip, logType, startRecord,pageSize);
 		// System.err.println(listEquipment.get(0).getCreateTime());
 		// 数据添加到map
 		map.put("equipment", listEquipment);
