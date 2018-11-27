@@ -36,6 +36,10 @@
 			e.stopPropagation();
 			//关闭菜单
 			$(".selectedMenu").css("display","none");
+			var obj = {};
+			obj.selectedText = selectedText;
+			obj.eventDom = $this;
+			opt.sFunc(obj);
 			/*layer.prompt(
 				{
 					title: '输入文本', 
@@ -46,7 +50,7 @@
 			    	alert('选中文本：'+selectedText+' <br/>输入文本：'+text)
 			    }
 			);*/
-			layer.open({				
+			/*layer.open({				
 		 		type: 1,
 		 		title:'添加动作',//标题
 				//area: ['450px', '400px'], //宽高
@@ -71,7 +75,7 @@
 						+'</p>'
 						+'<p style="margin-left:20px;margin-right:20px;display:flex;">'
 						+	'<span style="flex:0 0 80px;width:80px;">动作名称：</span><input autofocus="autofocus" style="flex:1;display: block;width: 220px;height: 24px;margin: 0 auto;line-height: 24px;padding: 0 5px;" type="text" class="layui-layer-input form-control" value=""></p>'
-			})
+			})*/
 		})
 		//菜单关闭按钮
 		$(".cancle").click(function (event) {

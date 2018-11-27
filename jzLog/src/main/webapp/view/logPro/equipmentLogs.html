@@ -143,6 +143,102 @@
 			top:0;
 			left:0;
 		}
+		.actionWapper{
+			width:340px;
+			height:250px;
+			position:fixed;
+			top:0;
+			left:0;
+			border:1px solid #386c9a;
+			background:#293846;
+			z-index: 99999999;
+		}
+		.actionWapper .aw-title{
+			height:40px;
+			line-height:40px;
+			text-align: center;
+			font-size:14px;
+			color:#9b664c;
+			font-weight:600;
+			border-top: 4px solid #2e8ded;
+			border-bottom:1px solid #386c9a;
+		}
+		.actionWapper .aw-content{
+			padding:10px;
+			height:165px;
+		}
+		.actionWapper .aw-content>div{
+			display:flex;
+			justify-content: center;
+			margin-bottom:10px;
+		}
+		.actionWapper .aw-content>div lable{
+			width:100px;
+		}
+		.actionWapper .aw-content>div .keywordsBox{
+			display:inline-block;
+			width:240px;
+			height:108px;
+			border: 0;
+		    background: 0;
+		    color: #56a4ef;
+		    padding: 6px;
+		    border-radius:5px;
+		    box-shadow: 0px 0px 7px 1px #4781bb;
+		    overflow-y:auto;
+		}
+		.keywordsBox span{
+			position:relative;
+			display:inline-block;
+			border:1px solid #386c9a;
+			padding:0 5px;
+			margin-bottom:5px;
+			border-radius:5px;
+			word-break: break-all;
+		}
+		.keywordsBox span:hover .removeKeywords{
+			displsy:inline-block;
+		}
+		.keywordsBox span .removeKeywords{
+			display:none;
+			position:absolute;		
+			width:16px;
+			height:16px;
+			line-height:16px;
+			text-align:center;
+			right:-3px;
+			top:-5px;
+			background: #d9534f;
+    		color: #fff;
+    		border-radius:100%;
+    		cursor:pointer;
+		}
+		.actionWapper .aw-content>div .actionName{
+			height:28px;
+			line-height: 28px;
+		}
+		.actionWapper .aw-tools{
+			height:40px;
+		}
+		.actionWapper .aw-tools button{
+			margin-top:8px;
+			border-top:1px solid #ccc;
+			float:right;
+			padding:0 10px;
+			background:0;
+			height:24px;
+			line-height: 24px;
+			border:0;
+		}
+		.actionWapper .aw-tools .actionCommit{
+			background-color: #2e8ded;
+			color:#fff;
+		}
+		.actionWapper .aw-tools .actionCancle{
+			background-color: #f1f1f1;
+			margin-left:6px;
+			margin-right:10px;
+		}
 	</style>
 	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 	<body class="equipmentLogBody">
@@ -167,6 +263,7 @@
 						</div>
 					</div>
 					<button  class="btn btn-primary" id="searchLogs"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
+					<a class="openSelect" href="javascript:void(0);">开启拖选</a>
 				</div>
 				<!-- <form class="form-inline" onsubmit="return false">
 					<div class="form-group">
@@ -299,6 +396,25 @@
 	                 	</div>
 					</div>
 				</div>
+			</div>
+			<div class="actionWapper">
+				<div class="aw-title">添加动作</div>
+				<div class="aw-content">
+					<div>
+						<lable>动作名称：</lable>
+						<input type="text"	class="form-control actionName"/>
+					</div>
+					<div>
+						<lable style="width:74px;">选取特征：</lable>
+						<div class="keywordsBox">
+							<span>已枚举用户的本地组成员身份 <i class="glyphicon glyphicon-remove removeKeywords"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="aw-tools">					
+					<button class="actionCancle">取消</button>
+					<button class="actionCommit">确定</button>
+				</div>	
 			</div>
 		</div>
 		
@@ -642,31 +758,37 @@
 			$(".maxShowData").change(function(){
 				maxShowChange('数据量过大时，细化查询条件提高查询效率')
 			})
-			//鼠标拖选文字
-			$(".logs_Mes").selectText({
-	    		"sFunc":function(obj){
-	    			var index = obj.eventDom.attr("data-index")
-	    			var sendObj = {};
-	    			sendObj.name = obj.inputText;
-	    			sendObj.feature = obj.selectedText;
-	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
-	    			sendObj.equipmentId = logDetailArr[index].equipmentid;
-	    			sendObj.type = logDetailArr[index].type;
-	    			sendObj.equipmentUserId = logDetailArr[index].userid;
-	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
-	    			//成功回调函数
-	    			var sfunc = function(data){
-	    				if(data.success == "true"){
-							layer.msg(data.message,{icon: 1});
-							//重新加载数据
-							getData();
-						}else if(data.success == "false"){//失败
-							layer.msg(data.message,{icon: 5});
-						} 
-	    			}
-	    			ajaxPost('../../action/insert.do',sendObj,sfunc);
-	    		}
-	    	});
+			
+			//点击开启拖选按钮
+			$(".openSelect").click(function(){
+				//鼠标拖选文字功能
+			    $(".equipmentLogBody .logs_Mes").selectText({
+		    		"sFunc":function(obj){
+		    			/* var index = obj.eventDom.attr("data-index");
+		    			var sendObj = {};
+		    			sendObj.name = obj.inputText;
+		    			sendObj.feature = obj.selectedText;
+		    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
+		    			sendObj.equipmentId = logDetailArr[index].equipmentid;
+		    			sendObj.type = logDetailArr[index].type;
+		    			sendObj.equipmentUserId = logDetailArr[index].userid;
+		    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
+		    			//成功回调函数
+		    			var sfunc = function(data){
+		    				if(data.success == "true"){
+								layer.msg(data.message,{icon: 1});
+								//重新加载数据
+								getData();
+							}else if(data.success == "false"){//失败
+								layer.msg(data.message,{icon: 5});
+							} 
+		    			}
+		    			ajaxPost('../../action/insert.do',sendObj,sfunc); */
+		    			console.log(obj)
+		    			$(".keywordsBox").append('<span>'+obj.selectedText+'<i class="glyphicon glyphicon-remove removeKeywords"></i></span>')
+		    		}
+		    	});
+			})
 		</script>
 	</body>
 </html>
