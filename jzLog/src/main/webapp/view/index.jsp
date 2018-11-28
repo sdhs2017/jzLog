@@ -29,15 +29,6 @@
     	body.canvas-menu .navbar-static-side, body.fixed-sidebar .navbar-static-side{
     		position:absolute;
     	}
-        .threshold{
-        	float:left;
-        	margin-left: 195px;
-        	font-weight:600; 
-        	display:inline-block;
-        	height:36px;
-        	line-height:36px;     
-        	padding-left:10px;
-        }	
         #wrapper{
         	position:fixed;
         }
@@ -77,6 +68,9 @@
         	padding-bottom:0;
         	line-height:36px;
         	min-width:1366px;
+        }
+        .footer a:hover{
+        	color:#ccc;
         }
         .userLogout{
         	float:right;
@@ -146,9 +140,29 @@
 			background:#eee;
 			border-radius:5px;
 		}
-		.threshold_setting{
-			margin-left:10px;
-		}
+		.threshold{
+        	float:left;
+        	margin-left: 195px;
+        	font-weight:600; 
+        	display:inline-block;
+        	height:36px;
+        	line-height:36px;     
+        	padding-left:10px;
+        }	
+        .threshold_setting{
+        	float:left;
+        }
+        .changeIpBox{
+        	float:left;
+        	height:36px;
+        	line-height:36px;     
+        	padding-left:20px;
+        }
+        .ipValue{
+        	color:#e4956d;
+        	font-weight:600;
+        }
+        
 		.rangeBox{
 			padding:10px;
 		}
@@ -209,6 +223,9 @@
 		    background: #ffd8b4;
 		    color: #fff;
 		    list-style-type: none;
+		}
+		.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{
+			background-color: #2d3d4c;
 		}
     </style>
     <link rel="stylesheet" type="text/css" href="../css/indexDeepColor.css" >
@@ -282,278 +299,8 @@
                </ul>
             </div> -->
             <div class="sidebar-collapse">
-                <ul class="nav" id="side-menu">
-                    
-				<!--  
-                    <li>
-                        <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">电商BI</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            
-                        </ul>
-                    </li>
-                    -->
+                <ul class="nav" id="side-menu">               
                     <!-- <li>
-                        <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">电商业务模型</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level"> -->
-                        <!-- 	<li>
-	                            <a href="#">
-		                            <span class="nav-label">用户属性</span>
-		                            <span class="fa arrow"></span>
-		                        </a>
-		                        <ul class="nav nav-third-level"> 
-		                        	<li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/userAttr/RegUserDistribution.jsp">注册用户分布</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/userAttr/UserRegSituation.jsp">用户注册情况</a>
-		                            </li>
-		                        </ul>
-							</li> -->
-                           <!--  <li>
-	                        	<a href="#">
-		                            <span class="nav-label">商品属性</span>
-		                            <span class="fa arrow"></span>
-		                        </a>
-		                        <ul class="nav nav-third-level"> 
-		                        	<li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/goodsAttr/BasicInfo.jsp">商品基本信息</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/goodsAttr/GoodsSales.jsp">商品销量</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/goodsAttr/GoodsEvaluate.jsp">商品评价</a>
-		                            </li>
-		                        </ul>
-                            </li>
-                            <li>
-	                        	<a href="#">
-		                            <span class="nav-label">订单分析</span>
-		                            <span class="fa arrow"></span>
-		                        </a>
-		                        <ul class="nav nav-third-level"> 
-		                        	<li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/orderAnalyse/BasicInfo.jsp">订单基本信息</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/orderAnalyse/OrderDeal.jsp">全国订单成交情况</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/orderAnalyse/OrderParticulars.jsp">已支付订单信息</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/orderAnalyse/OrderCancelAndReturn.jsp">订单取消&退换货</a>
-		                            </li>
-		                        </ul>
-                            </li>
-                            <li>
-	                        	<a href="#">
-		                            <span class="nav-label">用户行为分析</span>
-		                            <span class="fa arrow"></span>
-		                        </a>
-		                        <ul class="nav nav-third-level"> 
-		                        	<li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/behaviorAnalyse/SalesDistribution.jsp">全国销售额区域分布</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/behaviorAnalyse/BehaviorFunnel.jsp">用户行为漏斗</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/behaviorAnalyse/PageVisit.jsp">用户访问</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/behaviorAnalyse/UserActive.jsp">用户活跃情况</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/behaviorAnalyse/LoyaltyAndConsumingAbility.jsp">用户忠诚度&消费能力</a>
-		                            </li>
-		                        </ul>
-                            </li>
-                            <li>
-	                        	<a href="#">
-		                            <span class="nav-label">流式分析</span>
-		                            <span class="fa arrow"></span>
-		                        </a>
-		                        <ul class="nav nav-third-level"> 
-		                        	<li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/kafka/user.jsp">用户</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/kafka/DataTransfor.jsp">数据迁徙</a>
-		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/kafka/DataMap.jsp">数据地图</a>
-		                            </li>
-		                             
-		                            <li>
-		                                <a class="J_menuItem" href="business/electronicBusiness/kafka/SalesVolume.jsp">流量</a>
-		                            </li>
-		                           
-		                        </ul>
-                            </li>
-                            
-                            <li>
-                            	<a class="J_menuItem" href="electronicBusiness/userAttr.jsp">用户自然属性 </a>
-                            </li>
-                            <li>
-                                <a class="J_menuItem" href="electronicBusiness/goodsAttr.jsp">商品自然属性</a>
-                            </li>
-                            <li>
-                                <a class="J_menuItem" href="electronicBusiness/behaviorAnalyse.jsp">用户行为分析 </a>
-                            </li>
-                            <li>
-                                <a class="J_menuItem" href="electronicBusiness/orderAnalyse.jsp">订单分析</a>
-                            </li>
-                           
-                        </ul>
-                    </li>
-                    <li >
-                        <a href="#">
-                            <i class="fa fa fa-bar-chart-o"></i>
-                            <span class="nav-label">学生体检</span>
-                            <span class="fa arrow"></span>
-                        </a>
-                        <ul class="nav nav-second-level">
-                            <li class="">
-                                <a class="J_menuItem active" href="business/health/ophthalmology/ophthalmology.jsp">眼科 <span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li><a class="J_menuItem" href="business/health/ophthalmology/PoorsightChart.jsp">视力</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/ophthalmology/SicknessChart.jsp">眼病</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/ophthalmology/ophthalmologyData.jsp">基础数据查询</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="">
-                                <a class="J_menuItem" href="business/health/nutritional/nutritionalsurface.jsp" data-index="0">营养评价 <span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li><a class="J_menuItem" href="business/health/nutritional/FatChart.jsp">肥胖</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/nutritional/DystrophiaChart.jsp">营养不良</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/nutritional/DystrophiaRated.jsp">营养评价状况</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/nutritional/nutritionalData.jsp">基础数据查询</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="">
-                                <a class="J_menuItem" href="business/health/tooth/toothIndex.jsp">牙齿 <span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li><a class="J_menuItem" href="business/health/tooth/CariesChars.jsp">龋齿</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/tooth/PeriodontosisChart.jsp">牙周病</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/tooth/ToothData.jsp">基础数据查询</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="">
-                                <a class="J_menuItem" href="business/health/commonDisease/commonDiseaseIndex.jsp">常见病 <span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li><a class="J_menuItem" href="business/health/commonDisease/LhemoglobinChart.jsp">低血红蛋白</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/commonDisease/HbloodpressureChart.jsp">血压偏高</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/commonDisease/ExceptionalChart.jsp">其他异常情况</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/commonDisease/commonDiseaseData.jsp">基础数据查询</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="">
-                                <a class="J_menuItem" href="business/health/physiqueDevelopment/physiqueDevelopmentIndex.jsp">体型&发育水平 <span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li><a class="J_menuItem" href="business/health/physiqueDevelopment/physiqueChart.jsp">体型</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/physiqueDevelopment/DevelopmentChart.jsp">发育水平</a>
-                                    </li>
-                                    <li><a class="J_menuItem" href="business/health/physiqueDevelopment/physiqueDevelopmentData.jsp">基础数据查询</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            
-                        </ul>
-                    </li> -->
-                   <!--  <li>
-                        <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">图书管理</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                        	<li>
-                                <a class="J_menuItem" href="book/bookIndex.jsp">任务管理 </a>
-                            </li>
-                           
-                        </ul>
-                    </li> -->
-                    <!--  <li>
-                    	 <a href="#"><i class="fa fa-desktop"></i> <span class="nav-label">首页</span><span class="fa arrow"></span></a>
-                    	  <ul class="nav nav-second-level">
-                        	<li>
-                                <a class="J_menuItem" href="logPro/logIndex.html">首页 </a>
-                            </li>
-                           
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-users"></i> <span class="nav-label">用户管理</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                        	<li>
-                                <a class="J_menuItem" href="userManage/userManage.html">用户管理 </a>
-                            </li>
-                           
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-user"></i> <span class="nav-label">角色管理</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                        	<li>
-                                <a class="J_menuItem" href="roleManage/roleManage.html">角色管理</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-laptop"></i> <span class="nav-label">资产管理</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                        	<li>
-                                <a class="J_menuItem" href="device/device.html">资产管理</a>
-                            </li>
-                           
-                        </ul>
-                    </li>
-                     <li>
-                        <a href="#"><i class="fa fa-database"></i> <span class="nav-label">数据源管理</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                        	<li>
-                                <a class="J_menuItem" href="sourceFile/sourceFile.html">数据源管理</a>
-                                <a class="J_menuItem" href="device/newProperty.html">资产管理</a>
-                            </li>
-                           
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-list-alt"></i> <span class="nav-label">日志管理</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                        	<li>
-                                <a class="J_menuItem" href="logPro/searchLogs.html">日志检索 </a>
-                            </li>
-                            <li>
-                                <a class="J_menuItem" href="logPro/searchLogs2.html">精确查询 </a>
-                            </li> 
-                           
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-file-text-o"></i> <span class="nav-label">事件管理</span><span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                        	<li>
-                                <a class="J_menuItem" href="eventManage/eventSearch.html">事件搜索</a>
-                            </li>
-                            <li>
-                                <a class="J_menuItem" href="eventManage/eventAlarm.html">事件告警</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
                         <a href="#"><i class="fa fa-th"></i> <span class="nav-label">平台管理</span><span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                         	<li>
@@ -563,9 +310,7 @@
                                 <a class="J_menuItem" href="auditLog/serviceManage.html">控制中心</a>
                             </li>
                         </ul>
-                    </li> -->
-                     
-                   
+                    </li> -->                 
                 </ul>
             </div>
         </nav>
@@ -618,10 +363,15 @@
         <!--右侧边栏开始-->
         <!--右侧边栏结束-->
          <div class="footer">           	
-            <div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2017-2018 &nbsp;山东九州信泰信息科技股份有限公司 &nbsp;</div>
-             <!-- <div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2017-2018 &nbsp;山东中网云安智能科技有限公司 &nbsp;</div> -->
-             <span class="threshold"></span>
-              <a class="threshold_setting">（阈值设置）</a>
+         	<div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2017-2018 &nbsp;山东九州信泰信息科技股份有限公司 &nbsp;</div>
+            <!-- <div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2017-2018 &nbsp;山东中网云安智能科技有限公司 &nbsp;</div> -->
+            <span class="threshold"></span>
+            <a class="threshold_setting">（阈值设置）</a>
+            <div class="changeIpBox">
+            	<span style="color:#ccc;font-weight: 600;">系统IP :</span>
+              	<span class="ipValue">192.168.2.2</span>
+              	<a class="changeIp">（修改）</a>	
+            </div>
          </div>
     </div>
     <script src="../hplus/js/jquery.min.js?v=2.1.4"></script>
@@ -667,28 +417,6 @@ $(function(){
 		}
 	});
 });
-/* function checkSession(){
-	console.log("D")
-	$.ajax({
-		url:'../users/checkLogin.do',
-		type:"get",  //提交方式  
-        dataType:"json", //数据类型  
-		success:function(data){
-			if(data.success=="false"){
-				layer.open({
-					  content: '您的登陆信息已经超时，请重新登陆！',
-					  closeBtn: 0, //取消关闭按钮
-					  yes: function(index, layero){
-						  window.location.href="../Login.jsp";
-					  }
-				}); 
-			}
-		}
-	});
-}
-checkSession();
-//定时查看阈值情况  100分钟 查看一次
-setInterval(checkSession,120000); */
 //系统登出
 function loginOut(){
 	$.ajax({
@@ -998,6 +726,108 @@ $(window).scroll(function(){//开始监听滚动条
 	var leftVal = ($(document).scrollLeft());
 	$("#wrapper").css("left",-leftVal+'px')
 })
+
+//获取ip地址
+function getIp(){
+	 $.ajax({
+	  	type:"post",
+	  	url:"../ip/getIp.do",
+	  	/* url:'menuData.json', */
+	  	data:{},
+	  	async:true,
+	  	success:function(data){
+	  		//填充ip数据
+			$(".ipValue").html(data);
+	  		/* if(data.success == "true"){
+				//填充ip数据
+				$(".ipValue").html('');
+			}else if(data.success == "false"){
+				$(".ipValue").html(data.message);
+			}	 */
+	  	},
+	  	error:function(data){
+	  		$(".ipValue").html('获取失败');
+	  	}
+	 })
+}
+//循环获取ip  10分钟
+getIp();
+setInterval(getIp,600000);
+
+//点击修改ip地址
+$(".changeIp").click(function(){
+	//获取ip地址
+	var oldIp = $(".ipValue").html();
+	//弹窗html代码
+	var layerHtml = '<div class="changePWBox">'
+				  +		'<form class="form-horizontal">'
+				  +			'<div class="form-group passw">'
+		 		  +				'<label for="inputEmail3" class="col-sm-3 control-label">原IP：</label>'
+				  +				'<div class="col-sm-8">'
+				  +					'<input type="text" readonly class="form-control" value="'+oldIp+'">'
+				  +				'</div>'
+				  +			'</div>'
+				  +			'<div class="form-group passw">'
+		 		  +				'<label for="inputEmail3" class="col-sm-3 control-label">登录名：</label>'
+				  +				'<div class="col-sm-8">'
+				  +					'<input type="text" readonly class="form-control rootName" value="root">'
+				  +				'</div>'
+				  +			'</div>'
+				  +			'<div class="form-group passw">'
+		 		  +				'<label for="inputEmail3" class="col-sm-3 control-label">密码：</label>'
+				  +				'<div class="col-sm-8">'
+				  +					'<input type="password" class="form-control rootPasswd" maxlength="18" mixlength="6" onkeyup="pwStrength(this.value)" placeholder="6-18位数字、字母、字符">'
+				  +				'</div>'
+				  +			'</div>'
+				  +			'<div class="form-group passw">'
+		 		  +				'<label for="inputEmail3" class="col-sm-3 control-label">修改IP：</label>'
+				  +				'<div class="col-sm-8">'
+				  +					'<input type="text" class="form-control systemIp" placeholder="输入IP">'
+				  +				'</div>'
+				  +			'</div>'
+				  +		'</form>'
+				  + '</div>'
+	//弹窗
+	layer.open({ 
+ 		type: 1,
+ 		title:"修改IP地址",//标题
+			area: ['450px', '350px'], //宽高
+			btn: ['确定','取消'], //按钮
+			btn1:function(index){
+				//ip正则验证
+				var isIp2 =/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
+				//获取输入的数据
+				var obj = {};
+				obj.user = $(".rootName").val();
+				obj.passwd = $(".rootPasswd").val();
+				obj.host = $(".systemIp").val();
+				//判断参数合理性
+				if(!isIp2.test(obj.host)){
+					layer.msg("ip地址不能为空或格式不正确",{icon:5});
+				}else if(obj.passwd == ''){
+					layer.msg("密码不能为空",{icon:5});
+				}else{
+					//成功函数
+					var sfunc = function(data){
+						console.log(data);
+						/* if(data.success == "true"){
+							layer.msg(data.message,{icon: 1});
+							//重新获取ip地址
+							getIp();
+							//关闭弹窗
+					  		layer.close(index);
+						}else if(data.success == "false"){
+							layer.msg(data.message,{icon: 5});
+						}	 */				
+					}
+					//发送请求
+					ajaxPost("../ip/updateIp.do",obj,sfunc);
+				}
+			},
+			content:layerHtml
+	})
+})
+
 </script>
 
 </html>
