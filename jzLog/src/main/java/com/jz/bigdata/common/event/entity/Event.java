@@ -22,6 +22,9 @@ public class Event {
 	private String time;//时间
 	private String safeStrategyName;//安全策略名称
 	private String time_interval;//时间拼接
+	private int event_classify;
+	private String equipmentIds;
+	
 	
 	public String getId() {
 		return id;
@@ -133,6 +136,18 @@ public class Event {
 	}
 	public void setTime_interval(String time_interval) {
 		this.time_interval = time_interval;
+	}
+	public int getEvent_classify() {
+		return event_classify;
+	}
+	public void setEvent_classify(int event_classify) {
+		this.event_classify = event_classify;
+	}
+	public String getEquipmentIds() {
+		return equipmentIds;
+	}
+	public void setEquipmentIds(String equipmentIds) {
+		this.equipmentIds = equipmentIds;
 	}
 	
 	

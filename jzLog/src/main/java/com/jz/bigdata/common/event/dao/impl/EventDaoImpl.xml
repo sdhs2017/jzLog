@@ -13,6 +13,7 @@
 		<result column="time" jdbcType="VARCHAR" property="time" />
 		<result column="safeStrategyName" jdbcType="VARCHAR" property="safeStrategyName" />
 		<result column="time_interval" jdbcType="VARCHAR" property="time_interval" />
+		<result column="event_classify" jdbcType="INTEGER" property="event_classify" />
 		<association property="user"
 			javaType="com.jz.bigdata.common.users.entity.User">
 			<id property="userId" column="id" />
@@ -33,18 +34,19 @@
 		<result column="time" jdbcType="VARCHAR" property="time" />
 		<result column="safeStrategyName" jdbcType="VARCHAR" property="safeStrategyName" />
 		<result column="time_interval" jdbcType="VARCHAR" property="time_interval" />
+		<result column="event_classify" jdbcType="INTEGER" property="event_classify" />
 	</resultMap>
 	<!-- 查询字段设置可重复调用 -->
 	<!-- 部门id,name:部门名称,level:部门层级,superiorId:上级id,subordinate:是否有下级（1有0没有）,orderId:位置排序,comment:简介 -->
 	<sql id="Base_Column_List">
-		id, name, userId, state, message,enabled,dangerous_level,time,safeStrategyName,time_interval
+		id, name, userId, state, message,enabled,dangerous_level,time,safeStrategyName,time_interval,event_classify
 	</sql> 
 
 	<!-- 查询所有数据 -->
 	<select id="selectAll" parameterType="com.jz.bigdata.common.event.entity.Event"
 		resultMap="BaseResultMap">
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
-		select event.id, event.name, event.userId,
+		select event.id, event.name, event.userId,event_classify,
 		event.state,message,enabled,dangerous_level,time,safeStrategyName,time_interval, a.`name` AS userName FROM
 		event
 		LEFT JOIN user AS a
@@ -87,7 +89,10 @@
 				safeStrategyName,
 			</if>
 			<if test="time_interval != null ">
-				time_interval
+				time_interval,
+			</if>
+			<if test="event_classify != null ">
+				event_classify
 			</if>
 			
 		</trim>
@@ -120,7 +125,10 @@
 				#{safeStrategyName,jdbcType=VARCHAR},
 			</if>
 			<if test="time_interval != null">
-				#{time_interval,jdbcType=VARCHAR}
+				#{time_interval,jdbcType=VARCHAR},
+			</if>
+			<if test="event_classify != null ">
+				#{event_classify,jdbcType=INTEGER}
 			</if>
 			
 		</trim>
@@ -145,7 +153,7 @@
 	<select id="selectEventByActionId" parameterType="java.lang.String"
 		resultMap="BaseResultMap">
 		select event.id, event.name, event.userId, event.state,
-		message,enabled,dangerous_level,time,safeStrategyName, 
+		message,enabled,dangerous_level,time,safeStrategyName, event_classify,
 		time_interval, a.`name` AS userName
 		FROM action_event
 		LEFT JOIN event ON
@@ -161,7 +169,7 @@
 		resultMap="BaseResultEventMap">
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
 		select event.id, event.name, event.userId, event.state,message,
-		enabled,dangerous_level,time,safeStrategyName,time_interval FROM
+		enabled,dangerous_level,time,safeStrategyName,time_interval,event_classify FROM
 		event
 		where event.id=#{id,jdbcType=VARCHAR}
 	</select>

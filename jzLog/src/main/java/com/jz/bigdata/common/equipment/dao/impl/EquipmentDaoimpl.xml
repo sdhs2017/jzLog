@@ -382,4 +382,18 @@
 	    select count(*) as count from equipment 
 	</select>
 	
+	<!-- 根据事件id查询资产数据 -->
+	<select id="selectEquipmentByEventId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
+		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
+		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId
+		,a.`name` AS userName  FROM  equipment_event
+		LEFT JOIN equipment on equipment_event.equipmentId=equipment.id
+		LEFT JOIN user AS a on equipment.userId=a.id
+		WHERE equipment_event.eventId=#{eventId,jdbcType=VARCHAR}
+	</select>
+	
+	
+	
 </mapper>

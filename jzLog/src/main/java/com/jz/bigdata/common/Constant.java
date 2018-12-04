@@ -42,6 +42,7 @@ public class Constant {
 	public static String REGISTERPATH="com.jz.bigdata.common.users.controller.UsersController.registerUser";
 	
 	public static String uploadPATH="com.jz.bigdata.common.users.controller.FileUploadController.licenseUpload";
+	public static String updateIp="com.jz.bigdata.common.users.controller.UpdateIpController";
 	/**
 	 * 执行异常错误信息
 	 */

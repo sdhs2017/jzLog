@@ -26,7 +26,6 @@
 		$(this).mousedown(function () {
 			$(".selectedMenu").css("display","none");
 		})
-		//鼠标抬起事件
 		var selectedText = "";
 		var $this = "";
 		
@@ -86,7 +85,7 @@
 		})
 		
 		//鼠标按键抬起事件
-		$(this).mouseup(function(event){
+		$(this).on('mouseup',function(event){
 			$this = $(this);
 			selectedText = "";
 			//获得选中文本

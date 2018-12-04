@@ -415,6 +415,19 @@
        		</array>  
    		</property> 
 	</bean>
+	
+	<!-- 资产事件业务mapper -->
+	<bean id="equipment_eventSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="logDataSource" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/equipment_event/**/*.xml"></property>
+		
+		<property name="plugins">  
+       		<array>  
+          		<bean class="com.jz.bigdata.util.MapInterceptor"/>  
+       		</array>  
+   		</property> 
+	</bean>
 	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> 
 	   <property name="basePackage" value="com.business.mapper"/>  
 	</bean> -->
@@ -501,6 +514,12 @@
 		<property name="sqlSessionFactoryBeanName" value="action_eventSqlSessionFactory"></property>
 	</bean>
 	
+	<!--资产事件表配置 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.jz.bigdata.common.equipment_event" />
+		<property name="sqlSessionFactoryBeanName" value="equipment_eventSqlSessionFactory"></property>
+	</bean>
+	
 	<!-- es spring官方封装测试 -->
 	<!-- 远程机器 -->
 	<!-- 
@@ -551,13 +570,13 @@
 	<bean id="esClient" class="com.jz.bigdata.framework.spring.es.elasticsearch.ElasticsearchTransportClientFactoryBean">
 		<property name="transportAddresses">
 			<map>
-				<entry key="es_ip" value="192.168.2.181"/>
+				<entry key="es_ip" value="192.168.2.182"/>
 				<entry key="es_port" value="9300"/>
 				<entry key="es_name" value="myElasticsearchCluster"/>
 			</map>
 		</property>	
 		 
-		<property name="configLocation" value="192.168.2.181"/>
+		<property name="configLocation" value="192.168.2.182"/>
 		
 		
 		<!-- <property name="configLocation" value="classpath:elasticsearch/elasticsearch-conf.properties"/> -->

@@ -15,5 +15,7 @@ public interface IActionDao {
 	int delete(String id);
 	
 	List<Action> selectActionByEventId(String eventId);
+	
+	List<Action> selectAllByType(String type);
 
 }
