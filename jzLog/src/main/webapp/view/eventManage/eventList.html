@@ -281,6 +281,10 @@
 		$("#eventTable").on("click",".edit",function(){
 			//获得当前操作索引
 			var eventIndex = $(this).parent().attr("data-aIndex");
+			// 储存在本地
+			sessionStorage.setItem("eventId", eventListArr[eventIndex].id);
+			//跳转到 添加资产页面
+			location.href="addEvent.html";
 			//获取此次事件的数据
 			//成功回调函数
 			var sfunc = function(data){//成功
@@ -293,6 +297,8 @@
 				}else if(data.success == "false"){//失败
 					layer.msg(data.message,{icon: 5});
 				}  */
+				
+				
 			}
 			//失败回调函数
 			var efunc = function(data){
@@ -300,7 +306,7 @@
 				layer.msg('操作失败',{icon: 5});
 			}
 			//发送请求
-			ajaxPost("../../event/selectEventAction.do ",{id:eventListArr[eventIndex].id},sfunc,);
+			//ajaxPost("../../event/selectEventAction.do ",{id:eventListArr[eventIndex].id},sfunc,);
 			
 		})
 		//删除
