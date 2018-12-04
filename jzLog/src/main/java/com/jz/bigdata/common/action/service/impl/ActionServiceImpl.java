@@ -38,6 +38,7 @@ public class ActionServiceImpl implements IActionService{
 	public int insert(Action action) {
 		action.setId(Uuid.getUUID());
 		action.setState(1);
+		action.setType("syslog");
 		return actionDao.insert(action);
 	}
 
@@ -85,6 +86,11 @@ public class ActionServiceImpl implements IActionService{
 	@Override
 	public List<Action> selectActionByEventId(String eventId) {
 		return actionDao.selectActionByEventId(eventId);
+	}
+
+	@Override
+	public List<Action> selectAllByType(String type) {
+		return actionDao.selectAllByType(type);
 	}
 
 }

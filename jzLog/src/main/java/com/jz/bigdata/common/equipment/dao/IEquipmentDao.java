@@ -36,4 +36,6 @@ public interface IEquipmentDao {
 	List<Equipment> selectAllEquipmentByRisk();
 	
 	List<Object> count_Number();
+	
+	List<Equipment> selectEquipmentByEventId(String eventId);
 }
