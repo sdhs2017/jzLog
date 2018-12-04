@@ -822,32 +822,31 @@
 				area: ['820px', 'auto'], //宽高
 		 		content: html
 			});
-			//鼠标拖选文字功能
-		    /*$(".equipmentLogBody .logdes").selectText({
-		    	"sFunc":function(obj){
-		    		var index = obj.eventDom.attr("data-index");
-	    			var sendObj = {};
-	    			sendObj.name = obj.inputText;
-	    			sendObj.feature = obj.selectedText;
-	    			sendObj.userId = JSON.parse(localStorage.getItem('LoginUser'))[0].id;
-	    			sendObj.equipmentId = logDetailArr[index].equipmentid;
-	    			sendObj.type = logDetailArr[index].type;
-	    			sendObj.equipmentUserId = logDetailArr[index].userid;
-	    			//console.log('选中文本：'+selectedText+' 输入文本：'+inputText)
-	    			//console.log(sendObj)
-	    			//成功回调函数
-	    			var sfunc = function(data){
-	    				if(data.success == "true"){
-							layer.msg(data.message,{icon: 1});
-							//重新加载数据
-							getData();
-						}else if(data.success == "false"){//失败
-							layer.msg(data.message,{icon: 5});
-						} 
-	    			}
-	    			ajaxPost('../../action/insert.do',sendObj,sfunc)
-	    		}
-	    	});*/
+			//判断拖选动作按钮是否开启  true-开启 绑定拖选方法
+			if($(".equipmentLogBody input[name='status']").prop('checked') == true){
+				//鼠标拖选文字功能
+			    $(".equipmentLogBody .logdes").selectText({
+			    	"sFunc":function(obj){
+						//创建特征到页面中
+						$(".keywordsBox").append('<span>'+obj.selectedText+'<i class="glyphicon glyphicon-remove removeKeywords"></i></span>');
+						$(".keywordsBox").attr("log-type",logDetailArr[obj.eventDom.attr("data-index")].type);
+						//鼠标悬停在动作特征除 显示删除图表
+						$(".keywordsBox span").hover(function(){
+							$(this).children("i").css("display","block");
+						},function(){
+							$(this).children("i").css("display","none");
+						})
+						//点击删除动作特征
+						$(".removeKeywords").click(function(){
+							$(this).parent().remove();
+						})
+				   }
+		    	});
+			}else{
+				//关闭拖选事件
+				$(".equipmentLogBody .logdes").off('mouseup');
+			}
+		    
 	})
 	
 	
