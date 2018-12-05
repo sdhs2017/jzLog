@@ -833,6 +833,7 @@
 			function getlogsCount(){
 				$.ajax({
 					url:'../../log/getIndicesCount.do',
+					cache: false ,//清除缓存
 					data:'',
 					type:"get",  //提交方式  
 			        dataType:"json", //数据类型  
