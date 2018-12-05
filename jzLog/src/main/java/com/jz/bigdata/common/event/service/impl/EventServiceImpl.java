@@ -145,6 +145,26 @@ public class EventServiceImpl implements IEventService {
 	public int updataById(Event event) {
 		// 删除关系表中的数据
 		int result = action_eventDao.deleteByEventId(event.getId());
+		//判断是否是资产事件
+		if(event.getEvent_classify()==1) {
+			result=equipment_eventDao.deleteByEventId(event.getId());
+			//是否删除数据
+			if(result>0) {
+				//分割资产id
+				String[] equipmentId = event.getEquipmentIds().split(",");
+				List<Equipment_event> equipmentList = new ArrayList<>();
+				// 循环遍历添加list
+				for (int i = 0; i < equipmentId.length; i++) {
+					Equipment_event equipment_event = new Equipment_event();
+					equipment_event.setEquipmentId(equipmentId[i]);
+					equipment_event.setEventId(event.getId());
+					equipmentList.add(equipment_event);
+				}
+				equipment_eventDao.insert(equipmentList);
+				
+			}
+		}
+		
 		// 是否删除成功
 		if (result > 0) {
 			List<Action_event> list = new ArrayList<>();
