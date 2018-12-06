@@ -401,7 +401,7 @@ $(".actionCommit").click(function(){
 				layer.msg(data.message,{icon: 5});
 			} 
 		}
-		//ajaxPost('../../action/insert.do',sendObj,sfunc);
+		ajaxPost('../../action/insert.do',sendObj,sfunc);
 	}
 })
 //取消添加动作弹窗
