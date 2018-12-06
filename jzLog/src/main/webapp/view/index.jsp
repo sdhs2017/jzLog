@@ -524,6 +524,7 @@ $.ajax({
 	url:"../users/selectUserRole.do",
 	data:"",
 	type:"get",  //提交方式  
+	cache: false ,
     dataType:"json", //数据类型  
 	success:function(data){
 		var roleName = data[0][0].roleName;

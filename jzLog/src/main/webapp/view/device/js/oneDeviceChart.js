@@ -114,6 +114,7 @@ function getEchartData(sendObj){
         	//var myChart01 = echarts.init(document.getElementById('echartsBox'));
 			myChart03 = echarts.init(document.getElementById('echartsBox'));
 			myChart03.setOption({
+				backgroundColor:'#293846',
         		title: {
     				text:" 每小时日志数据量统计",
 		        	x:'center',
@@ -545,6 +546,7 @@ function getEchartData2(sendObj){
         	//var myChart01 = echarts.init(document.getElementById('echartsBox'));
 			myChart04 = echarts.init(document.getElementById('echartsBox2'));
 			myChart04.setOption({
+				backgroundColor:'#293846',
         		title: {
     				text:" 每小时事件数量统计",
 		        	x:'center',
@@ -765,6 +767,7 @@ function getEchartData3(sendObj){
 			//柱状图
         	myChart05 = echarts.init(document.getElementById('echartsBox3'));
         	myChart05.setOption({
+        		backgroundColor:'#293846',
         		title: {
         				text: '事件类型数量-柱状图',
 			        	x:'center',
@@ -871,6 +874,7 @@ function getEchartData3(sendObj){
                         }
                     }
         		},
+        		backgroundColor:'#293846',
         		title : {
 			        text: '事件类型数量-饼图',
 			        x:'center',
@@ -1066,6 +1070,7 @@ function getEchartData4(dateTime){
 			}
 			myChart07 = echarts.init(document.getElementById('echartsBox5'));
 			myChart07.setOption({
+				backgroundColor:'#293846',
 				color: ['#5bc0de'],
 				title : {
 			        text: '日志级别数量统计',

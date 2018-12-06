@@ -372,11 +372,11 @@ $(".actionCommit").click(function(){
 	var keywords = '';
 	
 	//获取动作名称
-	sendObj.name = $(".actionName").html();
+	sendObj.name = $(".actionName").val();
 	//获取动作特征
 	var keywordsArr = $(".keywordsBox span");
 	for(var i=0;i < keywordsArr.length;i++){
-		keywords += $(keywordsArr[i]).text()+'@#$' 
+		keywords += $(keywordsArr[i]).text()+'@#$' ;
 	}
 	sendObj.feature = keywords;
 	//创建人
@@ -385,7 +385,7 @@ $(".actionCommit").click(function(){
 	sendObj.type = $(".keywordsBox").attr("log-type");
 	if(sendObj.name == ''){
 		layer.msg('动作名称不能为空',{icon: 5});
-	}else if(sendObj.keywords == ''){
+	}else if(sendObj.feature == ''){
 		layer.msg('动作特征不能为空',{icon: 5});
 	}else{
 		//成功回调函数
@@ -401,7 +401,7 @@ $(".actionCommit").click(function(){
 				layer.msg(data.message,{icon: 5});
 			} 
 		}
-		ajaxPost('../../action/insert.do',sendObj,sfunc);
+		//ajaxPost('../../action/insert.do',sendObj,sfunc);
 	}
 })
 //取消添加动作弹窗
