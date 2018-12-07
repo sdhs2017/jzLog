@@ -166,8 +166,8 @@
 				//出现绑定资产框
 				$(".equipmentWarpper").css({"height":"auto","padding":"10px"});
 				//拼接资产列表
-				for(var i in data.event.equipment){
-					var obj = data.event.equipment[i];
+				for(var i in data.equipment[0]){
+					var obj = data.event.equipment[0][i];
 					ehtml   = '<tr data-id="'+obj.id+'" class="equipmentTr">'
 							 +	'<td class="equipment_name">'+obj.name+'</td>'
 							 +	'<td class="equipment_hostName">'+obj.hostName+'</td>'
