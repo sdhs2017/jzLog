@@ -765,7 +765,7 @@ $(".changeIp").click(function(){
 				  +			'<div class="form-group passw">'
 		 		  +				'<label for="inputEmail3" class="col-sm-3 control-label">原IP：</label>'
 				  +				'<div class="col-sm-8">'
-				  +					'<input type="text" readonly class="form-control" value="'+oldIp+'">'
+				  +					'<input type="text" readonly class="form-control oldIp" value="'+oldIp+'">'
 				  +				'</div>'
 				  +			'</div>'
 				  +			'<div class="form-group passw">'
@@ -801,7 +801,8 @@ $(".changeIp").click(function(){
 				var obj = {};
 				obj.user = $(".rootName").val();
 				obj.passwd = $(".rootPasswd").val();
-				obj.host = $(".systemIp").val();
+				obj.host = $(".oldIp").val();//源ip
+				obj.ip = $(".systemIp").val();
 				//判断参数合理性
 				if(!isIp2.test(obj.host)){
 					layer.msg("ip地址不能为空或格式不正确",{icon:5});
