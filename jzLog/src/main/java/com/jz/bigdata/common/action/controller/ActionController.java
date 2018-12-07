@@ -113,12 +113,12 @@ public class ActionController {
 	@ResponseBody
 //	@RequestMapping("/selectActionByEventId")
 	@RequestMapping(value="/selectAllByType",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe="根据事件id查询动作")
+	@DescribeLog(describe="根据动作日志类型查询动作")
 	public List<Action> selectAllByType(HttpServletRequest request){
 
 		//结果一般命名为result
 		String type =request.getParameter("type");
-		return actionService.selectActionByEventId(type);
+		return actionService.selectAllByType(type);
 	}
 
 }

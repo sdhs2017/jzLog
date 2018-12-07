@@ -8,10 +8,8 @@ public class Action {
 	private String name;
 	private String userId;
 	private int state;
-	private String equipmentId;
 	private String type;
 	private String feature;
-	private String equipmentUserId;
 	private User user;
 	private Equipment equipment;
 	
@@ -39,12 +37,7 @@ public class Action {
 	public void setState(int state) {
 		this.state = state;
 	}
-	public String getEquipmentId() {
-		return equipmentId;
-	}
-	public void setEquipmentId(String equipmentId) {
-		this.equipmentId = equipmentId;
-	}
+	
 	public String getType() {
 		return type;
 	}
@@ -57,12 +50,7 @@ public class Action {
 	public void setFeature(String feature) {
 		this.feature = feature;
 	}
-	public String getEquipmentUserId() {
-		return equipmentUserId;
-	}
-	public void setEquipmentUserId(String equipmentUserId) {
-		this.equipmentUserId = equipmentUserId;
-	}
+	
 	public User getUser() {
 		return user;
 	}

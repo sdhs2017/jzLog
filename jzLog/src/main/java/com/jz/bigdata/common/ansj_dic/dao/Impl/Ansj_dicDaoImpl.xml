@@ -12,15 +12,15 @@
 	
 
 	<!-- 查询所有数据 -->
-	<select id="selectAll" 
+	<select id="selectByName"  parameterType="java.lang.String"
 		resultMap="BaseResultMap">
-		select  dic.name, dic.nature, dic.freq FROM dic 
+		select  dic.name, dic.nature, dic.freq FROM dic where name=#{name,jdbcType=VARCHAR}
 	</select>
 
 
 	<!-- 添加数据 -->
 	<insert id="insert" parameterType="com.jz.bigdata.common.ansj_dic.entity.Dic">
-		insert into action
+		insert into dic
 		<!-- 格式化 -->
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<!-- 判断参数是否为空 -->
@@ -33,7 +33,6 @@
 			<if test="freq != null">
 				freq
 			</if>
-		
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="name != null">
@@ -47,5 +46,18 @@
 			</if>
 		</trim>
 	</insert>
+	
+	<!-- 批量插入关系 -->
+     <insert id ="insertList" parameterType="java.util.List" >
+           
+           insert into dic
+           (dic.name,dic.nature,dic.freq)
+           values
+            <foreach collection ="list" item="dic" index= "index" separator =",">
+                (
+                #{dic.name}, #{dic.nature}, #{dic.freq}
+                )
+            </foreach >
+     </insert >
 
 </mapper>

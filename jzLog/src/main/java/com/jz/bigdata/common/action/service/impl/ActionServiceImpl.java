@@ -10,6 +10,8 @@ import com.jz.bigdata.common.action.dao.IActionDao;
 import com.jz.bigdata.common.action.entity.Action;
 import com.jz.bigdata.common.action.service.IActionService;
 import com.jz.bigdata.common.action_event.dao.IAction_eventDao;
+import com.jz.bigdata.common.ansj_dic.dao.IAnsj_dicDao;
+import com.jz.bigdata.common.ansj_dic.entity.Dic;
 import com.jz.bigdata.util.Uuid;
 
 
@@ -26,7 +28,8 @@ public class ActionServiceImpl implements IActionService{
 	private IActionDao actionDao;
 	@Resource
 	private IAction_eventDao action_eventDao;
-	
+	@Resource
+	private IAnsj_dicDao ansj_dicDao;
 
 	/**
 	 * @param action
@@ -38,8 +41,19 @@ public class ActionServiceImpl implements IActionService{
 	public int insert(Action action) {
 		action.setId(Uuid.getUUID());
 		action.setState(1);
-		action.setType("syslog");
-		return actionDao.insert(action);
+		int result =actionDao.insert(action);
+		if(result>0) {
+			Dic dics=ansj_dicDao.selectByName(action.getName());
+			if(null==dics) {
+				Dic dic =new Dic();
+				dic.setFreq("1000");
+				dic.setNature("userDefine");
+				dic.setName(action.getName());
+				ansj_dicDao.insert(dic);
+			}
+			
+		}
+		return result;
 	}
 
 	/**
