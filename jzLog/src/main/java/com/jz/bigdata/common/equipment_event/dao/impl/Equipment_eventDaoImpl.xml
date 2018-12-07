@@ -18,11 +18,11 @@
      <insert id ="insert" parameterType="java.util.List" >
            
            insert into equipment_event
-           (actionId,eventId)
+           (equipmentId,eventId)
            values
             <foreach collection ="list" item="equipment_event" index= "index" separator =",">
                 (
-                #{equipment_event.equipmentId}, #{action_event.eventId}
+                #{equipment_event.equipmentId}, #{equipment_event.eventId}
                 )
             </foreach >
      </insert >
