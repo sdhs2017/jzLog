@@ -11,19 +11,14 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.alibaba.fastjson.JSONObject;
 import com.jz.bigdata.common.Constant;
 import com.jz.bigdata.common.function.dao.IFunctionDao;
-import com.jz.bigdata.common.function.entity.Function;
 import com.jz.bigdata.common.function.service.IFunctionService;
-import com.jz.bigdata.common.function.service.impl.FunctionServiceImpl;
 import com.jz.bigdata.common.function.util.GetfunctionMap;
 import com.jz.bigdata.common.users.dao.IUsersDao;
 import com.jz.bigdata.common.users.entity.User;
 import com.jz.bigdata.common.users.service.IUsersService;
-import com.jz.bigdata.common.users.service.impl.UsersServiceImpl;
 
-import net.sf.json.JSONArray;
 
 /**
  * @author yiyang

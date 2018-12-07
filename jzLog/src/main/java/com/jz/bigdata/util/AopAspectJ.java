@@ -2,12 +2,9 @@ package com.jz.bigdata.util;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Enumeration;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -15,13 +12,11 @@ import javax.servlet.http.HttpSession;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -140,7 +135,7 @@ public class AopAspectJ {
 	 */
 	// @AfterReturning(value=EDP,returning="result")
 	public void doAfterReturning(JoinPoint jp, String result) {
-		System.out.println("===========执行后置通知============");
+//		System.out.println("===========执行后置通知============");
 	}
 
 	/**
@@ -150,7 +145,7 @@ public class AopAspectJ {
 	 */
 	// @After(value=EDP)
 	public void doAfter(JoinPoint jp) {
-		System.out.println("===========执行最终通知============");
+//		System.out.println("===========执行最终通知============");
 	}
 
 	/**
