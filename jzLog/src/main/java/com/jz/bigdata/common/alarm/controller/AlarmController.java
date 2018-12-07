@@ -49,7 +49,6 @@ public class AlarmController {
 	@RequestMapping(value="/updateById",produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="修改警告信息")
 	public String  updateById(Alarm alarm){
-		System.out.println(alarm.getEmailState());
 		return alarmService.updateById(alarm);
 	}
 }

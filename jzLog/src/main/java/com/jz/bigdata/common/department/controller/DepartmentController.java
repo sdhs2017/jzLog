@@ -57,8 +57,6 @@ public class DepartmentController {
 		//结果一般命名为result
 //		int result = 0;
 //		result=departmentService.insert(department);
-		System.out.println(session.getAttribute(Constant.SESSION_DEPARTMENTNAME));
-		
 		return departmentService.selectAll(department);
 	}
 	
