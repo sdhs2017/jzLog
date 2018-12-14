@@ -18,6 +18,7 @@ import com.google.gson.GsonBuilder;
 import com.jz.bigdata.business.logAnalysis.log.LogType;
 import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.Mysql;
+import com.jz.bigdata.business.logAnalysis.log.entity.Netflow;
 import com.jz.bigdata.business.logAnalysis.log.entity.PacketFilteringFirewal;
 import com.jz.bigdata.business.logAnalysis.log.entity.Syslog;
 import com.jz.bigdata.business.logAnalysis.log.entity.Winlog;
@@ -94,6 +95,7 @@ public class KafkaCollector implements Runnable {
 	ZtsSyslog ztsSyslog;
 	ZtsLog4j ztsLog4j;
 	ZtsApp ztsapp;
+	Netflow netflow;
 
 	/**
 	 * @param equipment
@@ -265,7 +267,9 @@ public class KafkaCollector implements Runnable {
 				// mysql日志
 				Pattern mysqlpattern = Pattern.compile("timestamp");
 				Matcher mysqlmatcher = mysqlpattern.matcher(log);
-				
+				//netflow日志
+				Pattern netflowpattern = Pattern.compile("\"type\"=>\"netflow\"");
+				Matcher netflowmatcher = mysqlpattern.matcher(log);
 				if (facility_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
 					synchronized (log) {
@@ -384,8 +388,29 @@ public class KafkaCollector implements Runnable {
 					}
 					
 					
-					//es暂无防火墙包过滤日志对应的mapping，暂未入库es
-				}/*else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
+					
+				}else if(netflowmatcher.find()){
+					logType = LogType.LOGTYPE_NETFLOW;
+					try {
+						netflow = new Netflow(log, cal);
+//						netflow=netflow.SetNetflow(log, cal);
+						equipment = equipmentMap.get(netflow.getIp()+logType);
+						if (equipment!=null) {
+							netflow.setUserid(equipment.getUserId());
+							netflow.setDeptid(String.valueOf(equipment.getDepartmentId()));
+							netflow.setEquipmentname(equipment.getName());
+							netflow.setEquipmentid(equipment.getId());
+							json = gson.toJson(netflow);
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_NETFLOW, json));
+						}
+					}catch (Exception e) {
+						e.printStackTrace();
+						continue;
+					}
+					
+				}
+				//es暂无防火墙包过滤日志对应的mapping，暂未入库es
+				/*else if(logtotherype_matcher.find()&&dmgother_matcher.find()){
 					//防火墙、不包括包过滤日志，暂不处理
 					System.out.println("-------不做处理-------------");
 				}*//*else if (mysqlmatcher.find()) {

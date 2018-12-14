@@ -35,6 +35,7 @@ import com.google.gson.GsonBuilder;
 import com.jz.bigdata.business.logAnalysis.log.LogType;
 import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.Mysql;
+import com.jz.bigdata.business.logAnalysis.log.entity.Netflow;
 import com.jz.bigdata.business.logAnalysis.log.entity.PacketFilteringFirewal;
 import com.jz.bigdata.business.logAnalysis.log.entity.Syslog;
 import com.jz.bigdata.business.logAnalysis.log.entity.Unknown;
@@ -153,6 +154,7 @@ public class LogController extends BaseController{
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_LOG4J, new Log4j().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_MYSQLLOG, new Mysql().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG, new PacketFilteringFirewal().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_NETFLOW, new Netflow().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_UNKNOWN, new Unknown().toMapping());
 			
 			map.put("state", true);

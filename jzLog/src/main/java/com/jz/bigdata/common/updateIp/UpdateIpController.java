@@ -34,10 +34,8 @@ public class UpdateIpController {
 	@ResponseBody
 	@RequestMapping("/updateIp")
 	@DescribeLog(describe="修改ip地址")  
-	public Map<String, String> updateIp(String user,String passwd,String host){
-		String url="";
-//		Map<String, String> map =manageService.doshell(url, user, passwd, host);
-		
+	public Map<String, String> updateIp(String user,String passwd,String host,String ip){
+		String url="sh /opt/jzlog/ip_modify "+ip;
 		return manageService.doshell(url, user, passwd, host);
 		
 	}
