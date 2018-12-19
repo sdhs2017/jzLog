@@ -24,6 +24,8 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.ClusterAdminClient;
 import org.elasticsearch.client.IndicesAdminClient;
@@ -31,6 +33,8 @@ import org.elasticsearch.client.Requests;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.get.GetResult;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -50,12 +54,16 @@ import org.springframework.util.Assert;
 
 import com.jz.bigdata.framework.spring.es.index.IndexSearchEngine;
 
+import net.sf.json.util.JSONBuilder;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperations{
 	
@@ -323,6 +331,61 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 	}
 	
 	/**
+	 * 
+	 * @param index
+	 * @param type
+	 * @param id
+	 * @param map
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws IOException
+	 * 更新索引
+	 */
+	public void update(String index,String type,String id,Map<String, String> map) throws InterruptedException, ExecutionException, IOException {
+		
+		XContentBuilder builder = XContentFactory.jsonBuilder();
+		builder.startObject();
+		for (String key : map.keySet()) {
+			builder.field(key, map.get(key));
+		}
+		builder.endObject();
+
+		
+		UpdateRequest updateRequest = new UpdateRequest(index, type, id)
+		        .doc(builder);
+		UpdateResponse updateResponse = client.update(updateRequest).get();
+		GetResult result = updateResponse.getGetResult();
+	}
+	/**
+	 * 
+	 * @param index
+	 * @param type
+	 * @param id
+	 * @param map
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws IOException
+	 * 更新索引
+	 */
+	public void merge(String index,String type,String id,Map<String, String> map) throws InterruptedException, ExecutionException, IOException {
+		
+		XContentBuilder builder = XContentFactory.jsonBuilder();
+		builder.startObject();
+		for (String key : map.keySet()) {
+			//QueryBuilders.constantScoreQuery(QueryBuilders.existsQuery(key));
+			//queryBuilder.mustNot(QueryBuilders.regexpQuery("pcSkuId", "[0-9]+"));
+			builder.field(key, map.get(key));
+		}
+		builder.endObject();
+		
+		
+		UpdateRequest updateRequest = new UpdateRequest(index, type, id)
+				.doc(builder);
+		UpdateResponse updateResponse = client.update(updateRequest).get();
+		GetResult result = updateResponse.getGetResult();
+	}
+	
+	/**
 	 * @param index
 	 * @param type
 	 * @param id
@@ -336,6 +399,12 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 		return result.toString();
 	}
 	
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 * 删除索引
+	 */
 	public boolean deleteByIndex(String index) {
 		boolean result = false;
 		DeleteIndexResponse dResponse = client.admin().indices().prepareDelete(index)
@@ -479,14 +548,7 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 	 * @return
 	 * 实现sql group by
 	 */
-	/**
-	 * @param index
-	 * @param type
-	 * @param param
-	 * @return 
-	 */
-	public List<Map<String, Object>> countGroupBy(String index, String type,String param,QueryBuilder queryBuilder) {
-		// TODO Auto-generated method stub
+	/*public List<Map<String, Object>> countGroupBy(String index, String type,String param,QueryBuilder queryBuilder) {
 		// 拼接查询条件
 		SearchRequestBuilder sBuilder = client.prepareSearch(index);
 		if (type!=null&&!type.equals("")) {
@@ -519,7 +581,7 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
     	list.add(map);
 
 		return list;
-	}
+	}*/
 
 
 	/**
@@ -761,24 +823,29 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 	}
 	
 	/**
+	 * 
 	 * @param index
 	 * @param types
+	 * @param groupby
 	 * @param queryBuilder
 	 * @return
-	 * template层  
+	 * template层  实现sql group by
 	 */
-	public List<Map<String, Object>> getListGroupByQueryBuilder(String index,String types,QueryBuilder queryBuilder,String param) {
+	public List<Map<String, Object>> getListGroupByQueryBuilder(String index,String types,String groupby,QueryBuilder queryBuilder) {
 		
 		SearchRequestBuilder sBuilder = client.prepareSearch(index);
 		if (types!=null&&!types.equals("")) {
 			sBuilder.setTypes(types);
 		}
 		
-		sBuilder.setQuery(queryBuilder);
+		if (queryBuilder!=null) {
+			sBuilder.setQuery(queryBuilder);
+		}
 		
-		String count = param+"_count";
+		
+		String count = groupby+"_count";
 		// 聚合查询group by
-		AggregationBuilder  termsQueryBuilder = AggregationBuilders.terms(count).field(param).size(24);
+		AggregationBuilder  termsQueryBuilder = AggregationBuilders.terms(count).field(groupby).order(Terms.Order.count(false)).size(24);
 		
 		sBuilder.addAggregation(termsQueryBuilder);
 		

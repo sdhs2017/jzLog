@@ -84,9 +84,7 @@ public class LogServiceImpl implements IlogService {
 		// TODO Auto-generated method stub
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-		if (map.isEmpty()) {
-			list = clientTemplate.countGroupBy(index, type, param,null);
-		}else {
+		if (map!=null&&!map.isEmpty()) {
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if (entry.getKey().equals("logdate")) {
 					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));
@@ -94,7 +92,9 @@ public class LogServiceImpl implements IlogService {
 					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
 				}
 			}
-			list = clientTemplate.countGroupBy(index, type, param,queryBuilder);
+			list = clientTemplate.getListGroupByQueryBuilder(index, type, param,queryBuilder);
+		}else {
+			list = clientTemplate.getListGroupByQueryBuilder(index, type, param,null);
 		}
 		
 		return list;
@@ -133,7 +133,7 @@ public class LogServiceImpl implements IlogService {
 				.must(Queryeid)
 				.must(Queryevent)
 				.must(Querydate);
-		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, queryBuilder,"event_type");
+		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, "event_type", queryBuilder);
 		
 		return list;
 	}
@@ -252,7 +252,7 @@ public class LogServiceImpl implements IlogService {
 					.must(rangequery)
 					.must(querytime);
 		}
-		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, queryBuilder,groupby);
+		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, groupby, queryBuilder);
 		
 		return list;
 	}
@@ -291,7 +291,7 @@ public class LogServiceImpl implements IlogService {
 					.must(existquery)
 					.must(querytime);
 		}
-		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, queryBuilder,groupby);
+		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, groupby, queryBuilder);
 		
 		return list;
 	}

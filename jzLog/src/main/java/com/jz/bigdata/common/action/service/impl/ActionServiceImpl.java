@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.ansj.domain.Result;
+import org.ansj.domain.Term;
+import org.ansj.splitWord.analysis.NlpAnalysis;
 import org.springframework.stereotype.Service;
 
 import com.jz.bigdata.common.action.dao.IActionDao;
@@ -12,6 +15,7 @@ import com.jz.bigdata.common.action.service.IActionService;
 import com.jz.bigdata.common.action_event.dao.IAction_eventDao;
 import com.jz.bigdata.common.ansj_dic.dao.IAnsj_dicDao;
 import com.jz.bigdata.common.ansj_dic.entity.Dic;
+import com.jz.bigdata.common.manage.service.IManageService;
 import com.jz.bigdata.util.Uuid;
 
 
@@ -30,6 +34,8 @@ public class ActionServiceImpl implements IActionService{
 	private IAction_eventDao action_eventDao;
 	@Resource
 	private IAnsj_dicDao ansj_dicDao;
+	@Resource(name="manageService")
+	private IManageService iManageService;
 
 	/**
 	 * @param action
@@ -43,6 +49,18 @@ public class ActionServiceImpl implements IActionService{
 		action.setState(1);
 		int result =actionDao.insert(action);
 		if(result>0) {
+			Result NLP =  NlpAnalysis.parse(action.getName());
+			for(Term term : NLP.getTerms()){
+				//System.out.println(term.getName()+"\t"+term.getNatureStr()+"\t"+term.getOffe());
+				Dic dics=ansj_dicDao.selectByName(term.getName());
+				if(null==dics) {
+					Dic dic =new Dic();
+					dic.setFreq(String.valueOf(term.getOffe()));
+					dic.setNature(term.getNatureStr());
+					dic.setName(term.getName());
+					ansj_dicDao.insert(dic);
+				}
+			}
 			Dic dics=ansj_dicDao.selectByName(action.getName());
 			if(null==dics) {
 				Dic dic =new Dic();
@@ -53,6 +71,9 @@ public class ActionServiceImpl implements IActionService{
 			}
 			
 		}
+		
+		iManageService.doCutl("", "http://192.168.2.181:9200/_ansj/flush/dic?key=dic");
+		
 		return result;
 	}
 

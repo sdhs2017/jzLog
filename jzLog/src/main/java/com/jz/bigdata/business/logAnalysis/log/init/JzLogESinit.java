@@ -22,7 +22,7 @@ public class JzLogESinit {
 	
 	public List<Map<String, Object>> countGroupBy(String index, String type,String param,ClientTemplate clientTemplate){
 		
-		return clientTemplate.countGroupBy(index,type,param,null);
+		return clientTemplate.getListGroupByQueryBuilder(index,type,param,null);
 	}
 	
 	public <T> void init(String index, String type,T classes,ClientTemplate clientTemplate){

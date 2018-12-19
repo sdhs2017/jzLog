@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -494,7 +495,7 @@ public class LogController extends BaseController{
 		String size = sizeo.toString();
 		System.err.println("-----------关键词：	"+keyWords);
 		
-		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG};
+		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
 		
 
 		List<Map<String, Object>> list =null;
@@ -566,7 +567,7 @@ public class LogController extends BaseController{
 				list = logService.getListByBlend(configProperty.getEs_index(), types, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
 			}
 		}else {
-			String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG};
+			String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
 			if (userrole.equals("1")) {
 				list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,size);
 			}else {
@@ -671,7 +672,7 @@ public class LogController extends BaseController{
 		
 		List<Map<String, Object>> list =null;
 		
-		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG};
+		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
 		if (userrole.equals("1")) {
 			list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,size);
 		}else {
@@ -689,7 +690,38 @@ public class LogController extends BaseController{
 		return replace;
 	}
 	
-
+	/**
+	 * 通过事件获取日志信息
+	 * @param requestt
+	 * @return
+	 */
+	/*@ResponseBody
+	@RequestMapping(value="/getLogListByLevel",produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="通过事件查询日志信息")*/
+	public String getLogListByEvent(HttpServletRequest request) {
+		
+		// 获取动作列表(事件)
+		String actions = request.getParameter("actions");
+		// 时间
+		
+		// 资产id
+		
+		
+		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
+		
+		Map<String, String> map = new HashMap<>();
+		//map.put("operation_level", keyWords);
+		List<Map<String, Object>> list =null;
+		try {
+			list = logService.getListByMap(configProperty.getEs_index(), types, map);
+		} catch (Exception e) {
+		}
+		String result = JSONArray.fromObject(list).toString();
+		String replace=result.replace("\\\\005", "<br/>");
+		
+		return replace;
+	}
+	
 	/**
 	 * 通过日志级别获取日志信息
 	 * @param requestt
@@ -702,9 +734,7 @@ public class LogController extends BaseController{
 		
 		String keyWords = request.getParameter("words");
 		
-		System.out.println("-----------关键词：	"+keyWords);
-		
-		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG};
+		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
 		
 		Map<String, String> map = new HashMap<>();
 		map.put("operation_level", keyWords);
@@ -721,7 +751,7 @@ public class LogController extends BaseController{
 	
 	/**
 	 * 获取索引数据的数量
-	 * @param requestt
+	 * @param request
 	 * @return
 	 */
 	@ResponseBody
@@ -730,7 +760,7 @@ public class LogController extends BaseController{
 	public String getIndicesCount(HttpServletRequest request) {
 		
 		
-		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG};
+		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
 		String equipmentid = request.getParameter("equipmentid");
 		Map<String, Object> map = new HashMap<>();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -770,7 +800,7 @@ public class LogController extends BaseController{
 	}
 	
 	/**
-	 * 获取索引数据的数量
+	 * 获取事件数据的数量
 	 * @param requestt
 	 * @return
 	 */
@@ -780,7 +810,7 @@ public class LogController extends BaseController{
 	public String getEventsCount(HttpServletRequest request) {
 		
 		
-		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG};
+		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
 		String equipmentid = request.getParameter("equipmentid");
 		Map<String, Object> map = new HashMap<>();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -818,6 +848,29 @@ public class LogController extends BaseController{
 		String result = JSONArray.fromObject(list).toString();
 		
 		return result;
+	}
+	
+	/**
+	 * @param request
+	 * 统计netflow源IP、目的IP、源端口、目的端口的数量
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getTopGroupByIPOrPort")
+	@DescribeLog(describe="统计netflow源IP、目的IP、源端口、目的端口的数量")
+	public String getTopGroupByIPOrPort(HttpServletRequest request) {
+		String index = configProperty.getEs_index();
+		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
+		String type = "netflow";
+		
+		//Map<String, String> map = new HashMap<>();
+		Map<String, Map<String,Object>> map = new LinkedHashMap<String, Map<String,Object>>();
+		for(String param:groupbys) {
+			List<Map<String, Object>> list = logService.groupBy(index, type, param, null);
+			map.put(param, list.get(0));
+		}
+		
+		return JSONArray.fromObject(map).toString();
 	}
 	
 	/**
