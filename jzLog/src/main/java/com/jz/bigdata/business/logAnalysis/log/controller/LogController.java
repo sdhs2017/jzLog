@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -876,11 +877,18 @@ public class LogController extends BaseController{
 		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
 		String [] types = {"netflow"};
 		
-		//Map<String, String> map = new HashMap<>();
-		Map<String, Map<String,Object>> map = new LinkedHashMap<String, Map<String,Object>>();
+		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
 		for(String param:groupbys) {
 			List<Map<String, Object>> list = logService.groupBy(index, types, param, null);
-			map.put(param, list.get(0));
+			
+			List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+			for(Entry<String, Object> key : list.get(0).entrySet()) {
+				Map<String,Object> tMap = new HashMap<>();
+				tMap.put("IpOrPort", key.getKey());
+				tMap.put("count", key.getValue());
+				tmplist.add(tMap);
+			}
+			map.put(param, tmplist);
 		}
 		
 		return JSONArray.fromObject(map).toString();
@@ -907,11 +915,19 @@ public class LogController extends BaseController{
 			searchmap.put(groupby, iporport);
 		}
 		
-		Map<String, Map<String,Object>> map = new LinkedHashMap<String, Map<String,Object>>();
+		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
 		for(String param:groupbys) {
 			if (!param.equals(groupby)) {
 				List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap,10);
-				map.put(param, list.get(0));
+				
+				List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+				for(Entry<String, Object> key : list.get(0).entrySet()) {
+					Map<String,Object> tMap = new HashMap<>();
+					tMap.put("IpOrPort", key.getKey());
+					tMap.put("count", key.getValue());
+					tmplist.add(tMap);
+				}
+				map.put(param, tmplist);
 			}
 		}
 		

@@ -45,7 +45,7 @@ public class EsTest{
 	@Test
 	public void countGroupBy(){
 		String index = "estest";
-		String type = "Log4j";
+		String [] type = {"Log4j"};
 		String param = "equipmentid";
 		List<Map<String, Object>> list = new JzLogESinit().countGroupBy(index,type,param,clientTemplate);
 		String result = JSONArray.fromObject(list).toString();
