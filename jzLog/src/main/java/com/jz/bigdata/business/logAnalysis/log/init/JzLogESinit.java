@@ -20,7 +20,7 @@ public class JzLogESinit {
 		clientTemplate.deleteByIndex(index);
 	}
 	
-	public List<Map<String, Object>> countGroupBy(String index, String type,String param,ClientTemplate clientTemplate){
+	public List<Map<String, Object>> countGroupBy(String index, String[] type,String param,ClientTemplate clientTemplate){
 		
 		return clientTemplate.getListGroupByQueryBuilder(index,type,param,null);
 	}

@@ -94,7 +94,7 @@ public class SafeStrategyController {
 		}
 		
 		String index = configProperty.getEs_index();
-    	String types = null;
+    	String types [] = null;
     	Date enddate = new Date();
 		logService.getEventstypeCountByEquipmentid(index, types, safeStrategy.getEquipmentId(), enddate);
 		
@@ -133,7 +133,7 @@ public class SafeStrategyController {
 		}
 		
 		String index = configProperty.getEs_index();
-    	String types = null;
+    	String types [] = null;
     	Date enddate = new Date();
 		logService.getEventstypeCountByEquipmentid(index, types, equipment.getId(), enddate);
 		

@@ -80,8 +80,8 @@ public class LogServiceImpl implements IlogService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> groupBy(String index, String type, String param,Map<String, String> map) {
-		// TODO Auto-generated method stub
+	public List<Map<String, Object>> groupBy(String index, String[] types, String param,Map<String, String> map) {
+
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 		if (map!=null&&!map.isEmpty()) {
@@ -92,9 +92,30 @@ public class LogServiceImpl implements IlogService {
 					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
 				}
 			}
-			list = clientTemplate.getListGroupByQueryBuilder(index, type, param,queryBuilder);
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, param,queryBuilder);
 		}else {
-			list = clientTemplate.getListGroupByQueryBuilder(index, type, param,null);
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, param,null);
+		}
+		
+		return list;
+	}
+	
+	@Override
+	public List<Map<String, Object>> groupBy(String index, String[] types, String param,Map<String, String> map,int size) {
+
+		List<Map<String, Object>> list = null;
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		if (map!=null&&!map.isEmpty()) {
+			for(Map.Entry<String, String> entry : map.entrySet()){
+				if (entry.getKey().equals("logdate")) {
+					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));
+				}else {
+					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
+				}
+			}
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, param,queryBuilder,size);
+		}else {
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, param,null,size);
 		}
 		
 		return list;
@@ -123,7 +144,7 @@ public class LogServiceImpl implements IlogService {
 	 * service层 
 	 */
 	@Override
-	public List<Map<String, Object>> getListGroupByEvent(String index,String types,String equipmentid,String event_type,String starttime,String endtime) {
+	public List<Map<String, Object>> getListGroupByEvent(String index,String[] types,String equipmentid,String event_type,String starttime,String endtime) {
 		
 		QueryBuilder queryBuilder = null;
 		BoolQueryBuilder Queryeid = QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("equipmentid", equipmentid));
@@ -146,7 +167,7 @@ public class LogServiceImpl implements IlogService {
 	 * service层 
 	 */
 	@Override
-	public List<Map<String, Object>> getEventstypeCountByEquipmentid(String index,String types,String equipmentid,Date enddate) {
+	public List<Map<String, Object>> getEventstypeCountByEquipmentid(String index,String[] types,String equipmentid,Date enddate) {
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String endtime = format.format(enddate);
@@ -205,14 +226,11 @@ public class LogServiceImpl implements IlogService {
 		return list;
 	}
 	
-	/**
-	 * @param index
-	 * @param types
-	 * @param map
-	 * @return
-	 * service层 
+	
+	/* (non-Javadoc)
+	 * @see com.jz.bigdata.business.logAnalysis.log.service.IlogService#getEventListGroupByTime(java.lang.String, java.lang.String[], java.lang.String, java.lang.String, java.lang.String, int)
 	 */
-	public List<Map<String, Object>> getEventListGroupByTime(String index,String types,String dates,String equipmentid,String eventtype,int i) {
+	public List<Map<String, Object>> getEventListGroupByTime(String index,String[] types,String dates,String equipmentid,String eventtype,int i) {
 		
 		String groupby = "logtime_hour";
 		int gte = 0;
@@ -252,7 +270,7 @@ public class LogServiceImpl implements IlogService {
 					.must(rangequery)
 					.must(querytime);
 		}
-		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, groupby, queryBuilder);
+		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, groupby, queryBuilder,24);
 		
 		return list;
 	}
@@ -264,10 +282,11 @@ public class LogServiceImpl implements IlogService {
 	 * @param equipmentid
 	 * @param groupby
 	 * @return
+	 * todo
 	 * service层 
 	 */
 	@Override
-	public List<Map<String, Object>> getEventListGroupByEventType(String index,String types,String dates,String equipmentid,String groupby) {
+	public List<Map<String, Object>> getEventListGroupByEventType(String index,String[] types,String dates,String equipmentid,String groupby) {
 		
 		
 		QueryBuilder queryBuilder = null;

@@ -198,9 +198,13 @@ public class LogController extends BaseController{
 	@RequestMapping("/getCountGroupByParam")
 	@DescribeLog(describe="读取日志级别数据量")
 	public List<Map<String, Object>> getCountGroupByParam(HttpServletRequest request) {
-//		String index = request.getParameter("index");
+		
 		String index = configProperty.getEs_index();
 		String type = request.getParameter("type");
+		String [] types = null;
+		if (!type.equals("")) {
+			types = type.split(",");
+		}
 		String param = request.getParameter("param");
 		String time = request.getParameter("time");
 		String equipmentid = request.getParameter("equipmentid");
@@ -213,7 +217,7 @@ public class LogController extends BaseController{
 			map.put("logdate", time);
 		}
 		
-		List<Map<String, Object>> list = logService.groupBy(index, type, param, map);
+		List<Map<String, Object>> list = logService.groupBy(index, types, param, map);
 		
 		return list;
 	}
@@ -229,11 +233,15 @@ public class LogController extends BaseController{
 	public List<Map<String, Object>> getCountGroupByEvent(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String type = request.getParameter("type");
+		String [] types = null;
+		if (!type.equals("")) {
+			types = type.split(",");
+		}
 		String dates = request.getParameter("param");
 		String equipmentid = request.getParameter("equipmentid");
 		String groupby = "event_type";
 		
-		List<Map<String, Object>> list = logService.getEventListGroupByEventType(index, type, dates, equipmentid, groupby);
+		List<Map<String, Object>> list = logService.getEventListGroupByEventType(index, types, dates, equipmentid, groupby);
 		
 		return list;
 	}
@@ -249,13 +257,17 @@ public class LogController extends BaseController{
 	public List<Map<String, Object>> getCountGroupByEventType(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String type = request.getParameter("type");
+		String [] types = null;
+		if (!type.equals("")) {
+			types = type.split(",");
+		}
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		String param = request.getParameter("param");
 		String equipmentid = request.getParameter("equipmentid");
 		String [] hours = {"00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"};
 		// 0全部，1高危，2中等，3普通
 		for(int i=0;i<4;i++) {
-			List<Map<String, Object>> list1 = logService.getEventListGroupByTime(index, type, param,equipmentid,"event_type",i);
+			List<Map<String, Object>> list1 = logService.getEventListGroupByTime(index, types, param,equipmentid,"event_type",i);
 			Map<String, Object> map = new HashMap<>();
 			for(String hour : hours) {
 				map.put(hour, list1.get(0).get(hour)!=null?list1.get(0).get(hour):0);
@@ -303,6 +315,10 @@ public class LogController extends BaseController{
 	public List<Map<String, Object>> getCountGroupByEventstype(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String type = request.getParameter("type");
+		String [] types = null;
+		if (!type.equals("")) {
+			types = type.split(",");
+		}
 		String equipmentid = request.getParameter("equipmentid");
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date enddate = new Date();
@@ -320,7 +336,7 @@ public class LogController extends BaseController{
 			calendar.add(Calendar.MINUTE, -Integer.valueOf(dates));
 			Date startdate = calendar.getTime();
 			String starttime = format.format(startdate);
-			List<Map<String, Object>> loglist = logService.getListGroupByEvent(index, type, equipmentid,event_type,starttime,endtime);
+			List<Map<String, Object>> loglist = logService.getListGroupByEvent(index, types, equipmentid,event_type,starttime,endtime);
 			
 			if (!loglist.get(0).isEmpty()) {
 				float per = Float.valueOf(loglist.get(0).get(safeStrategy.getEvent_type()).toString())/safeStrategy.getNumber();
@@ -490,13 +506,10 @@ public class LogController extends BaseController{
 			keyWords = wordso.toString();
 		}
 		
-		
 		String page = pageo.toString();
 		String size = sizeo.toString();
-		System.err.println("-----------关键词：	"+keyWords);
 		
 		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
-		
 
 		List<Map<String, Object>> list =null;
 		
@@ -691,7 +704,7 @@ public class LogController extends BaseController{
 	}
 	
 	/**
-	 * 通过事件获取日志信息
+	 * 通过事件获取日志信息(未完成)
 	 * @param requestt
 	 * @return
 	 */
@@ -861,13 +874,45 @@ public class LogController extends BaseController{
 	public String getTopGroupByIPOrPort(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
-		String type = "netflow";
+		String [] types = {"netflow"};
 		
 		//Map<String, String> map = new HashMap<>();
 		Map<String, Map<String,Object>> map = new LinkedHashMap<String, Map<String,Object>>();
 		for(String param:groupbys) {
-			List<Map<String, Object>> list = logService.groupBy(index, type, param, null);
+			List<Map<String, Object>> list = logService.groupBy(index, types, param, null);
 			map.put(param, list.get(0));
+		}
+		
+		return JSONArray.fromObject(map).toString();
+	}
+	
+	/**
+	 * @param request
+	 * 通过netflow源IP、目的IP、源端口、目的端口的一项作为条件统计其他三项的数量
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getIPAndPortTop")
+	@DescribeLog(describe="通过netflow源IP、目的IP、源端口、目的端口的一项作为条件统计其他三项的数量")
+	public String getIPAndPortTop(HttpServletRequest request) {
+		
+		String index = configProperty.getEs_index();
+		String groupby = request.getParameter("groupfiled");
+		String iporport = request.getParameter("iporport");
+		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
+		String[] types = {"netflow"};
+		
+		Map<String, String> searchmap = new HashMap<>();
+		if (groupby!=null&&iporport!=null) {
+			searchmap.put(groupby, iporport);
+		}
+		
+		Map<String, Map<String,Object>> map = new LinkedHashMap<String, Map<String,Object>>();
+		for(String param:groupbys) {
+			if (!param.equals(groupby)) {
+				List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap,10);
+				map.put(param, list.get(0));
+			}
 		}
 		
 		return JSONArray.fromObject(map).toString();

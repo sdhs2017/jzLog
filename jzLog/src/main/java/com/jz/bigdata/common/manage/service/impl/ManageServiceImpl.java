@@ -213,7 +213,7 @@ public class ManageServiceImpl extends QuartzJobBean implements IManageService {
 		
     	List<Equipment> list = equipmentService.selectAllEquipmentByRisk();
     	String index = configProperty.getEs_index();
-    	String types = null;
+    	String [] types = null;
     	Date enddate = new Date();
     	for(Equipment equipment : list) {
     		logService.getEventstypeCountByEquipmentid(index, types, equipment.getId(), enddate);

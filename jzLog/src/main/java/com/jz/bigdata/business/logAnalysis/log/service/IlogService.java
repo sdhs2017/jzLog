@@ -47,7 +47,18 @@ public interface IlogService {
 	 * @param map 条件参数
 	 * @return
 	 */
-	public List<Map<String, Object>> groupBy(String index,String type,String param,Map<String, String> map) ;
+	public List<Map<String, Object>> groupBy(String index,String[] type,String param,Map<String, String> map);
+	
+	/**
+	 * 实现类sql的group by功能
+	 * @param index
+	 * @param type
+	 * @param param groupby的key值
+	 * @param size 设置es group by返回的数据条数，es默认是10条
+	 * @param map 条件参数
+	 * @return
+	 */
+	public List<Map<String, Object>> groupBy(String index, String[] types, String param, Map<String, String> map, int size);
 	
 	/**
 	 * 分页排序
@@ -108,9 +119,17 @@ public interface IlogService {
 	 */
 	public List<Map<String, Object>> getListByContent(String index,String[] types,String content,String userid,String page,String size);
 	
+	/**
+	 * @param index
+	 * @param types
+	 * @param param
+	 * @param equipmentid
+	 * TO DO 获取资产各个时段的日志数据
+	 * @return
+	 */
 	public List<Map<String, Object>> getListGroupByTime(String index,String types,String param,String equipmentid);
 	
-	public List<Map<String, Object>> getEventListGroupByTime(String index,String types,String dates,String equipmentid,String eventtype,int i);
+	public List<Map<String, Object>> getEventListGroupByTime(String index,String[] types,String dates,String equipmentid,String eventtype,int i);
 	
 	public List<Map<String, Object>> getListByMap(String index,String[] types,Map<String, String> map);
 
@@ -170,13 +189,13 @@ public interface IlogService {
 	 */
 	public String deleteById(String index, String type, String id);
 
-	public List<Map<String, Object>> getEventListGroupByEventType(String index, String types, String dates, String equipmentid,
+	public List<Map<String, Object>> getEventListGroupByEventType(String index, String[] types, String dates, String equipmentid,
 			String groupby);
 
-	List<Map<String, Object>> getListGroupByEvent(String index, String types, String equipmentid, String event_type,
+	List<Map<String, Object>> getListGroupByEvent(String index, String[] types, String equipmentid, String event_type,
 			String starttime, String endtime);
 
-	List<Map<String, Object>> getEventstypeCountByEquipmentid(String index, String types, String equipmentid, Date enddate);
+	List<Map<String, Object>> getEventstypeCountByEquipmentid(String index, String[] types, String equipmentid, Date enddate);
 
 	
 }
