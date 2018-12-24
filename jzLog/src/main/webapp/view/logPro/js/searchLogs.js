@@ -486,6 +486,66 @@
 			}
 			 //添加 日志列表到页面中    
 		    $("#logs_list>tbody").html(logLists);
+		}else if(logType == "netflow"){
+			/****************1 netflow 日志列表格式*******************/
+			var logLists = "<b>暂无日志数据</b>";//日志列表
+			var logListTittle = "";//日志列名
+			//拼接日志列名 只需拼接一次	
+			logListTittle += '<th width="200">时间</th>'
+						  +	 '<th width="100">级别</th>'
+						  +	 '<th width="100">日志类型</th>'
+						  +	 '<th width="120">资产名称</th>'
+						  +	 '<th width="125">IP</th>'
+						  +	 '<th>日志内容</th>'
+						  +	 '<th width="50">操作</th>'
+			//添加日志表头到页面
+			$(".con_title").html(logListTittle);
+			//判断日志是否为空  不为空则删除“暂无日志数据”提示
+			if(logsArr != ''){
+				logLists = '';
+				var logDesArrIndex = 0;
+				for(var i in logsArr){
+					
+					var obj =  filterObj(logsArr[i]);	
+					if(obj.logtime == undefined){
+						obj.logtime = "-"
+					}
+					if(obj.operation_level == undefined){
+						obj.operation_level = "-"
+					}
+					if(obj.operation_des == undefined){
+						obj.operation_des = "-"
+					}
+					//替换风险状态
+					/*var level = '';
+					if(obj.operation_level == "INFO"){
+						level = '<span class="label label-info">INFO</span>'
+					}else if(obj.operation_level == "ERROR"){
+						level = '<span class="label label-danger">ERROR</span>'
+					}	
+					*/
+					//删除日志内容的<br/>标签
+					logDesArr.push(obj.operation_des);				
+					var reg = new RegExp("<br/>","g");
+					var logCon = obj.operation_des.replace(reg,"");
+					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
+					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
+					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
+					         +       '<td class="logs_type">'+obj.type+'</td>'
+					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
+					         +       '<td class="logs_ip">'+obj.ip+'</td>'
+					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'
+					         +       '<td class="logs_tools">'
+					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       '</td>'		                                                                                                 	
+					         +   '</tr>'
+
+					
+					 logDesArrIndex++;
+				}
+			}
+			 //添加 日志列表到页面中    
+		    $("#logs_list>tbody").html(logLists);
 		} else{
 			  /**************** 通用 日志列表格式*******************/ 
 			var logLists = "<b>暂无日志数据</b>";//日志列表
@@ -778,6 +838,50 @@
 					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'	
+		}else if(logType == "netflow"){
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">级别:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_level+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">资产名称:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">IP协议:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].protocol+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">源IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ipv4_src_addr+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">目的IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ipv4_dst_addr+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">源端口:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].l4_src_port+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">目的端口:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].l4_dst_port+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">日志内容:</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
+					+		'</div>'
+					+	'</div>'
 		}else{
 			//日志类型
 			var logType = $(this).parent().siblings('.logs_type').html();
