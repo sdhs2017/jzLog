@@ -658,6 +658,22 @@ public class LogServiceImpl implements IlogService {
 		if (pamap.get("ip")!=null) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("ip", pamap.get("ip")));
 		}
+		// src_IP
+		if (pamap.get("ipv4_src_addr")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("ipv4_src_addr", pamap.get("ipv4_src_addr")));
+		}
+		// dst_IP
+		if (pamap.get("ipv4_dst_addr")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("ipv4_dst_addr", pamap.get("ipv4_dst_addr")));
+		}
+		// src_port
+		if (pamap.get("l4_src_port")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("l4_src_port", pamap.get("l4_src_port")));
+		}
+		// dst_port
+		if (pamap.get("l4_dst_port")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("l4_dst_port", pamap.get("l4_dst_port")));
+		}
 		// equipmentid
 		if (pamap.get("equipmentid")!=null) {
 			boolQueryBuilder.must(QueryBuilders.matchQuery("equipmentid", pamap.get("equipmentid")));
