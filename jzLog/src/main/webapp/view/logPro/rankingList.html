@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>动作列表</title>
+	<link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/bootstrap-table.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/bootstrap-datetimepicker.css"/>
+	<link src="../../css/layer.css" type="text/javascript" charset="utf-8"></link>
+	<link rel="stylesheet" type="text/css" href="../../css/layui.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
+	<style type="text/css">
+		html,body{
+			width:100%;
+			height:100%;
+		}
+		#box{
+			padding: 10px;
+		    width: 100%;
+		    height: 100%;
+		    overflow-y: auto;
+		}
+		.rankingListBox span{
+			display:inline-block;
+			font-weight:600;
+			/* border:1px solid #ccc; */
+		}	
+		.ipRanking,.portRanking{
+		    display: flex;
+		}
+		.startIpBox,.endIpBox,.startPortBox,.endPortBox{			
+			width:50%;
+			padding:40px;
+			padding-top:10px;	
+			box-shadow: 0 3px 15px #4781bb;	
+		}
+		.rankingTitle{
+			height:40px;
+			line-height: 40px;
+			text-align: center;
+			font-size:18px;
+			margin-bottom:20px;
+			/* color:#2c76bd; */
+			color: #e4956d;
+    		text-shadow: 3px 4px 3px #4e7ba9;
+			font-weight:600;
+		}
+		.rankingList ul{
+			width:100%;
+			max-width:530px;
+			margin:0 auto;
+		}
+		.rankingList .firstItem{	
+			background:#f54545;
+			color:#fff;
+			height:45px;
+			line-height:45px;
+			font-size:15px;
+			position: relative;
+		    box-shadow: 5px 5px 20px #293846;
+		    z-index: 10;
+		}
+		.rankingList .secondItem{
+			background:#ff8547;
+			color:#fff;
+			height:40px;
+			line-height:40px;
+			font-size:14px;
+			position: relative;
+		    box-shadow: 5px 5px 20px #293846;
+		    z-index: 9;
+		}
+		.rankingList .thirdItem{
+			background:#ffac38;
+			color:#fff;
+			height:35px;
+			line-height:35px;
+			position: relative;
+		    box-shadow: 5px 5px 20px #293846;
+		    z-index: 8;
+		}
+		.rankingList li{
+			height:30px;
+			line-height: 30px;
+			background:#3b5773;
+			border-bottom:1px solid #293846;
+			border-radius:20px 15px 15px 20px;
+		}
+		.rankingList li:hover{
+			cursor:pointer;
+			transform: scale(1.05);
+			transition: all 0.3s;
+			-webkit-transform: scale(1.05);
+			-webkit-transform: all 0.3s;
+			position:relative;
+			z-index: 20;
+		}
+		.rankingList li .rankingOrder{
+			width:40px;
+			height:40px;
+			text-align: center;
+		}
+		.rankingList li .rankingText{
+			text-align:center;
+			width:calc(100% - 130px);
+			border-left: 1px solid #293846;
+    		border-right: 1px solid #293846;
+		}
+		.rankingList li .rankingNum{
+			width:80px;
+			height:40px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<div id="box">
+		<div class="top_title">
+			排行
+		</div>
+		<div class="rankingListBox">
+			<div class="ipRanking">
+				<div class="startIpBox">
+					<div class="rankingTitle">源IP排行榜</div>
+					<div class="rankingList">
+						<ul>
+							<!-- <li class="firstItem" data-val="123">
+								<span class="rankingOrder">1</span><span class="rankingText">192.168.5.11</span><span class="rankingNum">9952</span>
+							</li>
+							<li class="secondItem">
+								<span class="rankingOrder">2</span><span class="rankingText">192.168.5.11</span><span class="rankingNum">9952</span>
+							</li>
+							<li class="thirdItem">
+								<span class="rankingOrder">3</span><span class="rankingText">192.168.5.11</span><span class="rankingNum">9952</span>
+							</li>
+							<li class="">
+								<span class="rankingOrder">4</span><span class="rankingText">192.168.5.11</span><span class="rankingNum">9952</span>
+							</li>
+							<li class="">
+								<span class="rankingOrder">5</span><span class="rankingText">192.168.5.11</span><span class="rankingNum">9952</span>
+							</li> -->
+						</ul>
+					</div>
+				</div>
+				<div class="endIpBox">
+					<div class="rankingTitle">目的IP排行榜</div>
+					<div class="rankingList">
+						<ul>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="portRanking">
+				<div class="startPortBox">
+					<div class="rankingTitle">源端口排行榜</div>
+					<div class="rankingList">
+						<ul>
+						</ul>
+					</div>
+				</div>
+				<div class="endPortBox">
+					<div class="rankingTitle">目的端口排行榜</div>
+					<div class="rankingList">
+						<ul>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+	<script src="../../js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/bootstrap/js/bootstrap-datetimepicker.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/bootstrap/js/bootstrap-datetimepicker.zh-CN.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/bootstrap-table/js/bootstrap-table.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/bootstrap-table/js/bootstrap-table-zh-CN.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var sfunc = function(data){//成功 
+			var startIpObj = data[0].ipv4_src_addr;//源ip数组集合
+			var endIpObj = data[0].ipv4_dst_addr;//目的ip数组集合
+			var startPortObj = data[0].l4_src_port;//源端口数组集合
+			var endPortObj = data[0].l4_dst_port;//目的端口数组集合			
+			//源ip排行榜列表
+			splitRankingList(startIpObj,'startIpBox');			
+			//目的ip排行榜列表
+			splitRankingList(endIpObj,'endIpBox');
+			//源端口排行榜列表
+			splitRankingList(data[0].l4_src_port,'startPortBox');			
+			//目的端口排行榜列表
+			splitRankingList(endPortObj,'endPortBox');
+		}
+		//失败回调函数
+		var efunc = function(data){
+			layer.msg('操作失败',{icon: 5});
+		}
+		//发送请求
+		ajaxPost("../../log/getTopGroupByIPOrPort.do","",sfunc,"",efunc);
+		
+		//拼接排行榜通用方法 arr-列表数组   elem-页面中列表展示的位置（class名）
+		function splitRankingList(arr,eleClassName){
+			var html = '';
+			var className = '';//class名 用于颜色显示
+			var type = '';
+			//判断列表类型
+			if(eleClassName == 'startIpBox'){
+				type = 'ipv4_src_addr-源IP';
+			}else if(eleClassName == 'endIpBox'){
+				type = 'ipv4_dst_addr-目的IP';
+			}else if(eleClassName == 'startPortBox'){
+				type = 'l4_src_port-源端口';
+			}else if(eleClassName == 'endPortBox'){
+				type = 'l4_dst_port-目的端口';
+			}
+			
+			for(var i = 0;i<arr.length;i++){
+				var className = '';//class名 用于颜色显示
+				//判断顺序 添加class名
+				if(i == 0){
+					className = 'firstItem';
+				}else if(i == 1){
+					className = 'secondItem';
+				}else if(i == 2){
+					className = 'thirdItem';
+				}
+				var obj = arr[i];
+				html += '<li class="'+className+'" data-val="'+obj.IpOrPort+'" data-type="'+type+'">'
+					 +		'<span class="rankingOrder">'+ (i+1) +'</span><span class="rankingText">'+obj.IpOrPort+'</span><span class="rankingNum">'+obj.count+'</span>'		
+					 +  '</li>'			
+			}
+			//添加到页面中
+			$("."+eleClassName+" ul").html(html);
+			
+		}
+		var htmlNum = 0;
+		//点击排行榜列表 跳转到日志列表 禅查询日志
+		$(".rankingListBox").on("click","li",function(){
+			//类型
+			var dataType = $(this).attr('data-type');
+			//值
+			var dataVal = $(this).attr('data-val');
+			// 储存在本地
+			sessionStorage.setItem("netflowVal", dataType+'-'+dataVal);
+			//拼接导航
+			var html ='<a href="javascript:;" class="active J_menuTab" data-id="ranklingListDetail'+htmlNum+'">'+dataVal+' 排行 <i class="fa fa-times-circle"></i></a>'
+			//移除导航菜单选中属性
+			$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
+			//添加导航菜单
+			$('.page-tabs-content', parent.document).click().append(html);
+			var iframe = '<iframe class="J_iframe" width="100%" height="100%" src="logPro/rankingListDetail.html" frameborder="0" data-id="ranklingListDetail'+htmlNum+'" seamless="" style="display: inline;"></iframe>'
+			//移除其他页面
+			$('#content-main', parent.document).click().children("iframe").hide();
+			$('#content-main', parent.document).click().append(iframe);
+			htmlNum++;
+		})
+	</script>
+</body>
+</html>
