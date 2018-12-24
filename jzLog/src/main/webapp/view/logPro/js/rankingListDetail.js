@@ -587,8 +587,8 @@ $(".btnBox").click(function(){
 	sendObj.type = "netflow";
 	sendObj.ipv4_src_addr = "";
 	sendObj.ipv4_dst_addr = "";
-	sendObj.I4_src_port = "";
-	sendObj.I4_dst_port = "";
+	sendObj.l4_dst_port = "";
+	sendObj.l4_dst_port = "";
 	
 	differentiateType(rankingListVal.split('-')[1],rankingListVal.split('-')[2])
 	//获取参数
@@ -630,10 +630,10 @@ function differentiateType(name,val){
 			sendObj.ipv4_dst_addr = val;
 		    break;
 		case "源端口":
-			sendObj.I4_src_port= val;
+			sendObj.l4_dst_port= val;
 		    break;
 		case "目的端口":
-			sendObj.I4_dst_port = val;
+			sendObj.l4_dst_port = val;
 		    break;
 		default:
 		    
