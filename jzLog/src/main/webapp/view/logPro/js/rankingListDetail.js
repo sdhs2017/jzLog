@@ -279,7 +279,7 @@
             // Node styles
             utils.inject( '.node {' +
                 'position: relative;' +
-                'display: block;' +
+ /*               'display: block;' +*/
                 '}');
 
             // Face styles
@@ -527,8 +527,6 @@ function splitList(title, data,eleClassName){
 		$("."+eleClassName).html(html);
 	}
 }
-
-
 //拖拽开始函数
 function drag(event){	
 	var e = window.event||event||arguments.callee.caller.arguments[0];
@@ -538,12 +536,18 @@ function drag(event){
 	e.dataTransfer.setData("text/plain",eParent+"-"+eVal);
 	// 存储当前拖动的对象的id
 	//e.dataTransfer.setData("Text",e.target);
+	let ifFirefox = userAgent.indexOf("Firefox");
+    if(ifFirefox){
+    	console.log("0000")
+       // e.dataTransfer.setData("imgInfo", item);
+    }
 }
 //拖拽停止 放下动作函数
 function drop(event){
 	var e = window.event||event||arguments.callee.caller.arguments[0];
 	//清除默认行为
 	e.preventDefault();
+	e.stopPropagation();
 	var text = e.dataTransfer.getData("text/plain");
 	if($(e.target).attr("class") == "cond1_text" && text.split("-")[0] == "list01"){
 		console.log("sss")
@@ -583,47 +587,23 @@ $(".btnBox").click(function(){
 	sendObj.type = "netflow";
 	sendObj.ipv4_src_addr = "";
 	sendObj.ipv4_dst_addr = "";
-	sendObj.ipv4_src_port = "";
-	sendObj.ipv4_dst_port = "";
+	sendObj.Ipv4_src_port = "";
+	sendObj.Ipv4_dst_port = "";
 	
 	differentiateType(rankingListVal.split('-')[1],rankingListVal.split('-')[2])
 	//获取参数
 	var tit1 = $(".cond1_title").html(); 
 	var val1 = $(".cond1_text").find(".val").html();
 	differentiateType(tit1,val1)
-	/*if(tit1 == '源IP'){
-		obj.ipv4_src_addr = val1;
-	}else if(tit1 == '目的IP'){
-		obj.ipv4_dst_addr = val1;
-	}else if(tit1 == '源端口'){
-		obj.ipv4_src_port = val1;
-	}else if(tit1 == '目的端口'){
-		obj.ipv4_dst_port = val1;
-	}*/
+	
 	var tit2 = $(".cond2_title").html(); 
 	var val2 = $(".cond2_text").find(".val").html();
 	differentiateType(tit2,val2)
-	/*if(tit2 == '源IP'){
-		obj.ipv4_src_addr = val2;
-	}else if(tit2 == '目的IP'){
-		obj.ipv4_dst_addr = val2;
-	}else if(tit2 == '源端口'){
-		obj.ipv4_src_port = val2;
-	}else if(tit2 == '目的端口'){
-		obj.ipv4_dst_port = val2;
-	}*/
+
 	var tit3 = $(".cond3_title").html(); 
 	var val3 = $(".cond3_text").find(".val").html();
 	differentiateType(tit3,val3)
-	/*if(tit3 == '源IP'){
-		obj.ipv4_src_addr = val3;
-	}else if(tit3 == '目的IP'){
-		obj.ipv4_dst_addr = val3;
-	}else if(tit3 == '源端口'){
-		obj.ipv4_src_port = val3;
-	}else if(tit3 == '目的端口'){
-		obj.ipv4_dst_port = val3;
-	}*/
+
 	//跳转页面
 	// 储存在本地
 	sessionStorage.setItem("netflowSearchObj",JSON.stringify(sendObj));
@@ -650,10 +630,10 @@ function differentiateType(name,val){
 			sendObj.ipv4_dst_addr = val;
 		    break;
 		case "源端口":
-			sendObj.ipv4_src_port= val;
+			sendObj.Ipv4_src_port= val;
 		    break;
 		case "目的端口":
-			sendObj.ipv4_dst_port = val;
+			sendObj.Ipv4_dst_port = val;
 		    break;
 		default:
 		    
