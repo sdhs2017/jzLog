@@ -309,6 +309,7 @@ a {
 	display:none;
 	top:-15px;
 	right:-50px;
+	cursor:pointer;
 }
 .btnBox{
 	width:150px;

@@ -275,12 +275,21 @@
                 '0%   { opacity: 0.0; }' +
                 '100% { opacity: 1.0; }' +
                 '}');
-
+            var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+            if (userAgent.indexOf("Firefox") > -1) { //判断是否Firefox浏览器
+            	 utils.inject( '.node {' +
+                 'position: relative;' +
+                 'display: block;' +
+                 '}');
+            };
+            if (userAgent.indexOf("Chrome") > -1) {//判断是否Chrome浏览器
+            	 utils.inject( '.node {' +
+            		'position: relative;' +
+                    'display: block;' +
+                 '}');	
+            }
             // Node styles
-            utils.inject( '.node {' +
-                'position: relative;' +
- /*               'display: block;' +*/
-                '}');
+           
 
             // Face styles
             utils.inject( '.face {' +
@@ -500,6 +509,14 @@ var sfunc = function(data){//成功
 
 	    $( '.warning' ).show();
 	}
+	 var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+     if (userAgent.indexOf("Firefox") > -1) { //判断是否Firefox浏览器
+     	$(".node").hover(function(){
+     		$(this).css("display","inline");
+     	},function(){
+     		$(this).css("display","block");
+     	})
+     }
 }
 //失败回调函数
 var efunc = function(data){
@@ -571,7 +588,7 @@ function allowDrop(event){
 }
 
 //鼠标悬停
-$(".cond1_text,.cond2_text,cond3_text").hover(function(){
+$(".cond1_text,.cond2_text,.cond3_text").hover(function(){
 	$(this).find("i").css("display","inline-block");
 },function(){
 	$(this).find("i").css("display","none");
@@ -587,7 +604,7 @@ $(".btnBox").click(function(){
 	sendObj.type = "netflow";
 	sendObj.ipv4_src_addr = "";
 	sendObj.ipv4_dst_addr = "";
-	sendObj.l4_dst_port = "";
+	sendObj.l4_src_port = "";
 	sendObj.l4_dst_port = "";
 	
 	differentiateType(rankingListVal.split('-')[1],rankingListVal.split('-')[2])
@@ -630,7 +647,7 @@ function differentiateType(name,val){
 			sendObj.ipv4_dst_addr = val;
 		    break;
 		case "源端口":
-			sendObj.l4_dst_port= val;
+			sendObj.l4_src_port= val;
 		    break;
 		case "目的端口":
 			sendObj.l4_dst_port = val;
