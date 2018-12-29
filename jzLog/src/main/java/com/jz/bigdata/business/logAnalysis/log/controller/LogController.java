@@ -984,7 +984,7 @@ public class LogController extends BaseController{
 					// 组织data中的数据内容
 					Map<String,Object> dataMap1 = new HashMap<>();
 					dataMap1.put("node", 2);
-					dataMap1.put("name", "node2\n"+key1.getKey());
+					dataMap1.put("name", "level2\n"+key1.getKey());
 					dataMap1.put("count", key1.getValue());
 					datalist.add(dataMap1);
 					// 组织links中的数据内容
@@ -992,9 +992,9 @@ public class LogController extends BaseController{
 					linksMap1.put("node", 1);
 					if (groupby.equals("ipv4_src_addr")) {
 						linksMap1.put("source", iporport);
-						linksMap1.put("target", "node2\n"+key1.getKey());
+						linksMap1.put("target", "level2\n"+key1.getKey());
 					}else {
-						linksMap1.put("source", "node2\n"+key1.getKey());
+						linksMap1.put("source", "level2\n"+key1.getKey());
 						linksMap1.put("target", iporport);
 					}
 					linksMap1.put("count", key1.getValue());
@@ -1009,18 +1009,18 @@ public class LogController extends BaseController{
 						// 组织data中的数据内容
 						Map<String,Object> dataMap2 = new HashMap<>();
 						dataMap2.put("node", 3);
-						dataMap2.put("name", "node3\n"+key2.getKey());
+						dataMap2.put("name", "level3\n"+key2.getKey());
 						dataMap2.put("count", key2.getValue());
 						datalist.add(dataMap2);
 						// 组织links中的数据内容
 						Map<String,Object> linksMap2 = new HashMap<>();
 						linksMap2.put("node", 2);
 						if (groupby.equals("ipv4_src_addr")) {
-							linksMap2.put("source", "node2\n"+key1.getKey());
-							linksMap2.put("target", "node3\n"+key2.getKey());
+							linksMap2.put("source", "level2\n"+key1.getKey());
+							linksMap2.put("target", "level3\n"+key2.getKey());
 						}else {
-							linksMap2.put("source", "node3\n"+key2.getKey());
-							linksMap2.put("target", "node2\n"+key1.getKey());
+							linksMap2.put("source", "level3\n"+key2.getKey());
+							linksMap2.put("target", "level2\n"+key1.getKey());
 						}
 						
 						linksMap2.put("count", key2.getValue());
