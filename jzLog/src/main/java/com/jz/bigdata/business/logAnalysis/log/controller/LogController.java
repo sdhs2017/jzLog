@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -930,6 +931,107 @@ public class LogController extends BaseController{
 				map.put(param, tmplist);
 			}
 		}
+		
+		return JSONArray.fromObject(map).toString();
+	}
+	
+	/**
+	 * @param request
+	 * 通过netflow源IP、目的IP、源端口、目的端口的一项作为条件统计其他三项的数量
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getTopologicalData")
+	@DescribeLog(describe="通过netflow数据获取网络拓扑数据")
+	public String getTopologicalData(HttpServletRequest request) {
+		
+		String index = configProperty.getEs_index();
+		String groupby = request.getParameter("groupfiled");
+		String iporport = request.getParameter("iporport");
+		String count = request.getParameter("count");
+		
+		// 双向划线
+		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr"};
+		String[] types = {"netflow"};
+		
+		Map<String, String> searchmap = new HashMap<>();
+		if (groupby!=null&&iporport!=null) {
+			searchmap.put(groupby, iporport);
+		}
+		
+		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
+		
+		//System.out.println(new Date().getTime());
+		long starttime = new Date().getTime();
+		
+		for(String param:groupbys) {
+			if (!param.equals(groupby)) {
+				// 第一层数据结果
+				List<Map<String, Object>> list1 = logService.groupBy(index, types, param, searchmap,5);
+				
+				List<Map<String, Object>> datalist = new LinkedList<Map<String, Object>>();
+				List<Map<String, Object>> linkslist = new LinkedList<Map<String, Object>>();
+				
+				
+				// 组织data中的数据内容中心点
+				Map<String,Object> dataMap = new HashMap<>();
+				dataMap.put("node", 1);
+				dataMap.put("name", iporport);
+				dataMap.put("count", count);
+				datalist.add(dataMap);
+				// 遍历第一层数据结果
+				for(Entry<String, Object> key1 : list1.get(0).entrySet()) {
+					// 组织data中的数据内容
+					Map<String,Object> dataMap1 = new HashMap<>();
+					dataMap1.put("node", 2);
+					dataMap1.put("name", key1.getKey());
+					dataMap1.put("count", key1.getValue());
+					datalist.add(dataMap1);
+					// 组织links中的数据内容
+					Map<String,Object> linksMap1 = new HashMap<>();
+					linksMap1.put("node", 1);
+					linksMap1.put("source", iporport);
+					linksMap1.put("target", key1.getKey());
+					linksMap1.put("count", key1.getValue());
+					linkslist.add(linksMap1);
+					
+					
+					// 第二层查询条件和数据结果
+					searchmap.put(groupby, key1.getKey());
+					List<Map<String, Object>> list2 = logService.groupBy(index, types, param, searchmap,5);
+					// 遍历第二层数据结果
+					for(Entry<String, Object> key2: list2.get(0).entrySet()) {
+						// 组织data中的数据内容
+						Map<String,Object> dataMap2 = new HashMap<>();
+						dataMap2.put("node", 3);
+						dataMap2.put("name", key2.getKey());
+						dataMap2.put("count", key2.getValue());
+						datalist.add(dataMap2);
+						// 组织links中的数据内容
+						Map<String,Object> linksMap2 = new HashMap<>();
+						linksMap2.put("node", 2);
+						linksMap2.put("source", key1.getKey());
+						linksMap2.put("target", key2.getKey());
+						linksMap2.put("count", key2.getValue());
+						linkslist.add(linksMap2);
+						
+						/*searchmap.put(groupby, key1.getKey());
+						List<Map<String, Object>> itelists = logService.groupBy(index, types, param, searchmap,5);
+						Map<String,Object> itemap = itelists.get(0);*/
+					}
+					
+					
+					
+				}
+				map.put("data", datalist);
+				map.put("links", linkslist);
+			}
+		}
+		//System.out.println(new Date().getTime());
+		long endtime = new Date().getTime();
+		long ms = endtime-starttime;
+		long time = (endtime-starttime)/1000;
+		System.out.println("----------------------聚合消耗时间："+time+"s ==========="+ms+"ms");
 		
 		return JSONArray.fromObject(map).toString();
 	}
