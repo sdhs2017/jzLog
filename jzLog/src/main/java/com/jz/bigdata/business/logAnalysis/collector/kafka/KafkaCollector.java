@@ -269,7 +269,7 @@ public class KafkaCollector implements Runnable {
 				Matcher mysqlmatcher = mysqlpattern.matcher(log);
 				//netflow日志
 				Pattern netflowpattern = Pattern.compile("\"type\"=>\"netflow\"");
-				Matcher netflowmatcher = mysqlpattern.matcher(log);
+				Matcher netflowmatcher = netflowpattern.matcher(log);
 				if (facility_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
 					synchronized (log) {
