@@ -990,7 +990,7 @@ public class LogController extends BaseController{
 					// 组织links中的数据内容
 					Map<String,Object> linksMap1 = new HashMap<>();
 					linksMap1.put("node", 1);
-					if (groupby=="ipv4_dst_addr") {
+					if (groupby.equals("ipv4_src_addr")) {
 						linksMap1.put("source", iporport);
 						linksMap1.put("target", "node2\n"+key1.getKey());
 					}else {
@@ -1015,7 +1015,7 @@ public class LogController extends BaseController{
 						// 组织links中的数据内容
 						Map<String,Object> linksMap2 = new HashMap<>();
 						linksMap2.put("node", 2);
-						if (groupby=="ipv4_dst_addr") {
+						if (groupby.equals("ipv4_src_addr")) {
 							linksMap2.put("source", "node2\n"+key1.getKey());
 							linksMap2.put("target", "node3\n"+key2.getKey());
 						}else {
