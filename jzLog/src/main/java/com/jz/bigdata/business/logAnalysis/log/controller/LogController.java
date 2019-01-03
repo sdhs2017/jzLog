@@ -1047,6 +1047,69 @@ public class LogController extends BaseController{
 		return JSONArray.fromObject(map).toString();
 	}
 	
+	
+	/**
+	 * @param request
+	 * 通过netflow数据获取网络拓扑图
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getNetworkTopological")
+	@DescribeLog(describe="通过netflow数据获取网络拓扑数据")
+	public String getNetworkTopological(HttpServletRequest request) {
+		
+		String index = configProperty.getEs_index();
+		
+		// 双向划线
+		String [] groupbys = {"ipv4_src_addr","ipv4_dst_addr"};
+		String[] types = {"netflow"};
+		
+		Map<String, String> searchmap = new HashMap<>();
+		
+		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
+		
+		List<Map<String, Object>> datalist = new LinkedList<Map<String, Object>>();
+		List<Map<String, Object>> linkslist = new LinkedList<Map<String, Object>>();
+		// 临时map
+		Map<String,Object> tMap = new HashMap<>();
+		
+		for(String param:groupbys) {
+
+			// 第一层数据结果
+			List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap,100);
+			if (tMap.isEmpty()) {
+				tMap = list.get(0);
+			}else {
+				for(Entry<String, Object> entrymap : list.get(0).entrySet()) {
+					if (tMap.containsKey(entrymap.getKey())) {
+						int newvalue  = Integer.parseInt(tMap.get(entrymap.getKey()).toString())+Integer.parseInt(entrymap.getValue().toString());
+						tMap.put(entrymap.getKey(), newvalue);
+					}else{
+						tMap.put(entrymap.getKey(), entrymap.getValue());
+					}
+				}
+			}
+			
+		}
+		
+		linkslist = logService.groupBy(index, types, groupbys, searchmap,1000);
+		System.out.println("---------------------------"+linkslist.size()+"-------------------------------");
+		
+		// 遍历第一层数据结果
+		for(Entry<String, Object> key : tMap.entrySet()) {
+			// 组织data中的数据内容
+			Map<String,Object> dataMap = new HashMap<>();
+			dataMap.put("name", key.getKey());
+			dataMap.put("count", key.getValue());
+			datalist.add(dataMap);
+		}
+		map.put("data", datalist);
+		map.put("links", linkslist);
+		
+		
+		return JSONArray.fromObject(map).toString();
+	}
+	
 	/**
 	 * 导入历史数据
 	 * @param requestt

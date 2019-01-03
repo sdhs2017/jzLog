@@ -914,4 +914,64 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 		
 		return list;
 	}
+	
+	/**
+	 * 
+	 * @param index
+	 * @param types
+	 * @param groupby
+	 * @param queryBuilder
+	 * @param size
+	 * @return
+	 * template层  实现sql group by
+	 */
+	public List<Map<String, Object>> getListGroupByQueryBuilder(String index,String[] types,String[] groupbys,QueryBuilder queryBuilder,int size) {
+		
+		List<Map<String, Object>> list = new LinkedList<Map<String,Object>>();
+		
+		SearchRequestBuilder sBuilder = client.prepareSearch(index);
+		if (types!=null&&types.length>0) {
+			sBuilder.setTypes(types);
+		}
+		
+		if (queryBuilder!=null) {
+			sBuilder.setQuery(queryBuilder);
+		}
+		AggregationBuilder  termsQueryBuilder = null;
+		for(String groupby : groupbys) {
+			String count = groupby+"_count";
+			// 聚合查询group by
+			if (termsQueryBuilder==null) {
+				termsQueryBuilder = AggregationBuilders.terms(count).field(groupby).order(Terms.Order.count(false)).size(size);
+			}else {
+				termsQueryBuilder.subAggregation(AggregationBuilders.terms(count).field(groupby).order(Terms.Order.count(false)).size(size));
+			}
+			
+		}
+		
+		sBuilder.addAggregation(termsQueryBuilder);
+		
+    	SearchResponse response = sBuilder.execute().actionGet();
+		
+    	Aggregations aggregations = response.getAggregations();
+    	
+    	Terms terms  = aggregations.get(groupbys[0]+"_count");
+    	
+    	for(Bucket bucket:terms.getBuckets()) {
+    		
+    		Terms terms1 = (Terms) bucket.getAggregations().asMap().get(groupbys[1]+"_count");
+    		for(Bucket bucket2 : terms1.getBuckets()) {
+    			Map<String, Object> map = new LinkedHashMap<String, Object>();
+    			map.put("source", bucket.getKeyAsString());
+    			map.put("target",bucket2.getKeyAsString());
+    			map.put("count", bucket2.getDocCount());
+    			list.add(map);
+    		}
+    		
+    	}
+    	
+    	
+		
+		return list;
+	}
 }

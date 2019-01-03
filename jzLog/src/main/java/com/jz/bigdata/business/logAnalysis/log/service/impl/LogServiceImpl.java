@@ -121,6 +121,27 @@ public class LogServiceImpl implements IlogService {
 		return list;
 	}
 	
+	@Override
+	public List<Map<String, Object>> groupBy(String index, String[] types, String[] param,Map<String, String> map,int size) {
+
+		List<Map<String, Object>> list = null;
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		if (map!=null&&!map.isEmpty()) {
+			for(Map.Entry<String, String> entry : map.entrySet()){
+				if (entry.getKey().equals("logdate")) {
+					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));
+				}else {
+					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
+				}
+			}
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, param,queryBuilder,size);
+		}else {
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, param,null,size);
+		}
+		
+		return list;
+	}
+	
 	/**
 	 * @param index
 	 * @param types

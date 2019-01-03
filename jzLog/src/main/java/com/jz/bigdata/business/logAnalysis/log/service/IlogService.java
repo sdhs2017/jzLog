@@ -61,6 +61,17 @@ public interface IlogService {
 	public List<Map<String, Object>> groupBy(String index, String[] types, String param, Map<String, String> map, int size);
 	
 	/**
+	 * 实现类sql的group by功能
+	 * @param index
+	 * @param type
+	 * @param []param groupby的key值
+	 * @param size 设置es group by返回的数据条数，es默认是10条
+	 * @param map 条件参数
+	 * @return
+	 */
+	public List<Map<String, Object>> groupBy(String index, String[] types, String[] param, Map<String, String> map, int size);
+	
+	/**
 	 * 分页排序
 	 * @param index
 	 * @param type
