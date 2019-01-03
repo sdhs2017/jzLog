@@ -103,7 +103,7 @@
 			if (selectedText.length > 0) {
 				//菜单选项
 				//获得鼠标当前位置坐标
-				var e = event || window.event;
+				var e = event || window.event || arguments.callee.caller.arguments[0];
 				var mouseX = e.originalEvent.x || e.originalEvent.layerX || 0;
 				var mouxeY = e.originalEvent.y || e.originalEvent.layerY || 0;
 				$(".selectedMenu").css({"display":"block","left":mouseX,"top":mouxeY});

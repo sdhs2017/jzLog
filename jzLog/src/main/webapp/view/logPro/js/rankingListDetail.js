@@ -425,6 +425,7 @@
 
 //获取从排行榜传过来的值
 var rankingListVal = sessionStorage.getItem("netflowVal");
+sessionStorage.removeItem("netflowVal");
 //传送参数
 var obj = {};
 obj.groupfiled = rankingListVal.split('-')[0];
@@ -528,6 +529,7 @@ ajaxPost("../../log/getIPAndPortTop.do",obj,sfunc,"",efunc);
 //拼接列表  title-列表名   data-列表数据   eleClassName-列表class名
 function splitList(title, data,eleClassName){
 	var html = '<dt>'+title+'排行榜</dt>';
+	var count = '';
 	for(var i = 0;i<data.length;i++){
 		var className = '';//class名 用于颜色显示
 		//判断顺序 添加class名
@@ -538,8 +540,14 @@ function splitList(title, data,eleClassName){
 		}else if(i == 2){
 			className = 'thirdItem';
 		}
-		var obj = data[i];			
-		html += '<dd ondragstart="drag(event)" draggable="true" class="'+className+'"><a href="#"><span class="rankingOrder">'+(i+1)+'</span><span class="rankingText">'+obj.IpOrPort+'</span><span class="rankingNum">'+obj.count+'</span></a></dd>'	    
+		var obj = data[i];	
+		//判断次数大小 超过一万 做万位处理
+		if(obj.count > 10000){
+			count = (Number(obj.count) / 10000).toFixed(1) + ' 万';
+		}else {
+			count = obj.count;
+		}
+		html += '<dd ondragstart="drag(event)" draggable="true" class="'+className+'"><a href="#"><span class="rankingOrder">'+(i+1)+'</span><span class="rankingText">'+obj.IpOrPort+'</span><span class="rankingNum">'+count+'</span></a></dd>'	    
 		//添加到页面中
 		$("."+eleClassName).html(html);
 	}
@@ -567,7 +575,6 @@ function drop(event){
 	e.stopPropagation();
 	var text = e.dataTransfer.getData("text/plain");
 	if($(e.target).attr("class") == "cond1_text" && text.split("-")[0] == "list01"){
-		console.log("sss")
 		if($(".cond1_text").children('div').length == 0){
 			$(".cond1_text").html('<div><span class="val">'+text.split("-")[1]+'</span><i class=" fa fa-times"></i></div>')
 		}
