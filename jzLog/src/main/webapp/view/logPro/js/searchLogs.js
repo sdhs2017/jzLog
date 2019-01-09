@@ -87,8 +87,8 @@
     		
     	};
     	//中泰代码 将object对象转换成字符串
-    	var ztObj = {};
-    	ztObj.ztData = JSON.stringify(param);
+    	var hsObj = {};
+    	hsObj.hsData = JSON.stringify(param);
 	    //获取数据并通过回调函数进行数据加载。
 	    ajaxPost(url,ztObj,sFunc); 		
 	}
@@ -214,8 +214,8 @@
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+obj.operation_des+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
@@ -257,8 +257,8 @@
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+obj.operation_des+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
@@ -305,8 +305,8 @@
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_hostName">'+obj.equipmentname+'</td>'
-					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+obj.operation_des+'</p></td>'
-					         +       '<td class="logs_tools" data-logSource="'+obj.logSource+'" data-process_id="'+obj.process_id+'" data-provider_guid="'+obj.provider_guid+'" data-record_number="'+obj.record_number+'" data-thread_id="'+obj.thread_id+'" data-user_name="'+obj.user_name+'" data-user_type="'+obj.user_type+'">'
+					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'" data-logSource="'+obj.logSource+'" data-process_id="'+obj.process_id+'" data-provider_guid="'+obj.provider_guid+'" data-record_number="'+obj.record_number+'" data-thread_id="'+obj.thread_id+'" data-user_name="'+obj.user_name+'" data-user_type="'+obj.user_type+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
@@ -351,8 +351,8 @@
 					         +       '<td class="logs_time">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+obj.operation_des+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_Mes"><p>'+obj.operation_des+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
@@ -412,8 +412,8 @@
 					         +       '<td class="logs_type">'+obj.type+'</td>'
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
@@ -474,8 +474,8 @@
 					         +       '<td class="logs_type">'+obj.type+'</td>'
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
@@ -534,8 +534,8 @@
 					         +       '<td class="logs_type">'+obj.type+'</td>'
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
@@ -546,6 +546,70 @@
 			}
 			 //添加 日志列表到页面中    
 		    $("#logs_list>tbody").html(logLists);
+		}else if(logType == "dns"){
+			/**************** dns 日志列表格式*******************/
+			var logLists = "<b>暂无日志数据</b>";//日志列表
+			var logListTittle = "";//日志列名
+			//拼接日志列名 只需拼接一次	
+			logListTittle += '<th width="35"><input type="checkbox" id="theadCheck"></th>' 
+						  +	 '<th width="200">时间</th>'
+						  +	 '<th>资产名称</th>'
+						  +	 '<th>客户IP</th>'
+						  +	 '<th>dns解析类型</th>'
+						  +	 '<th>访问域名</th>'
+						  +	 '<th>DNS view</th>'
+						  +	 '<th>DNS服务器</th>'
+						  +	 '<th width="50">操作</th>'
+			//添加日志表头到页面
+			$(".con_title").html(logListTittle);
+			//判断日志是否为空  不为空则删除“暂无日志数据”提示
+			if(logsArr != ''){
+				logLists = '';
+				var logDesArrIndex = 0;
+				for(var i in logsArr){
+					
+					var obj =  filterObj(logsArr[i]);	
+					if(obj.logtime == undefined){
+						obj.logtime = "-"
+					}
+					if(obj.operation_level == undefined){
+						obj.operation_level = "-"
+					}
+					if(obj.operation_des == undefined){
+						obj.operation_des = "-"
+					}
+					//替换风险状态
+					/*var level = '';
+					if(obj.operation_level == "INFO"){
+						level = '<span class="label label-info">INFO</span>'
+					}else if(obj.operation_level == "ERROR"){
+						level = '<span class="label label-danger">ERROR</span>'
+					}	
+					*/
+					//删除日志内容的<br/>标签
+					logDesArr.push(obj.operation_des);				
+					var reg = new RegExp("<br/>","g");
+					var logCon = obj.operation_des.replace(reg,"");
+					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
+					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
+					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
+					         +       '<td class="logs_clientip">'+obj.dns_clientip+'</td>'
+					         +       '<td class="logs_ana_type">'+obj.dns_ana_type+'</td>'				         
+					         +       '<td class="logs_domain_name">'+obj.dns_domain_name+'</td>'
+					         +       '<td class="logs_dns_view">'+obj.dns_view+'</td>'
+					         +       '<td class="logs_dns_server">'+obj.dns_server+'</td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
+					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       '</td>'		                                                                                                 	
+					         +   '</tr>'
+
+					
+					 logDesArrIndex++;
+				}
+			}
+			 //添加 日志列表到页面中    
+		    $("#logs_list>tbody").html(logLists);
+			
 		} else{
 			  /**************** 通用 日志列表格式*******************/ 
 			var logLists = "<b>暂无日志数据</b>";//日志列表
@@ -597,8 +661,8 @@
 					        /* +       '<td class="logs_user">'+obj.user+'</td>'*/
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
-					         +       '<td class="logs_Mes" data-index="'+logDesArrIndex+'"><p>'+logCon+'</p></td>'
-					         +       '<td class="logs_tools">'
+					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
@@ -682,7 +746,7 @@
 	
 	//查看详情 点击事件
 	$("#logs_list").on("click",".more",function(){
-		var logIndex = $(this).parent().siblings(".logs_Mes").attr("data-index");
+		var logIndex = $(this).parent().attr("data-index");
 		console.log(logDetailArr[logIndex])
 		//获取日志类型
 		var logType = logDetailArr[logIndex].type;
@@ -783,23 +847,23 @@
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">时间:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsTime+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">级别:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsLevel+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_level+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">资产名称:</div>'
-					+			'<div class="col-xs-9 layCen">'+equipmentName+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">IP:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsIp+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ip+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logsCon+'</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}else if(logType == "packetfilteringfirewall_log"){
@@ -882,39 +946,73 @@
 					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'
-		}else{
-			//日志类型
-			var logType = $(this).parent().siblings('.logs_type').html();
-			//资产名称
-			var propertyName = $(this).parent().siblings('.property_name').html();
-			//日志内容
-			var index = $(this).parent().siblings('.logs_Mes').attr("data-index");	
+		}else if(logType == "dns"){
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">客户IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dns_clientip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">资产名称:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">DNS view:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dns_view+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">访问域名:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dns_domain_name+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">dns解析类型:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dns_ana_type+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">dns服务器:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dns_server+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">日志内容:</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
+					+		'</div>'
+					+	'</div>'	
+		} else{
 			//var logsCon = logDesArr[index];
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">时间:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsTime+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">级别:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsLevel+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_level+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px" class="ltype">'
 					+			'<div class="col-xs-3">日志类型:</div>'
-					+			'<div class="col-xs-9 layCen">'+logType+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtype+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">资产名称:</div>'
-					+			'<div class="col-xs-9 layCen">'+propertyName+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">IP:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsIp+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ip+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logsCon+'</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}
