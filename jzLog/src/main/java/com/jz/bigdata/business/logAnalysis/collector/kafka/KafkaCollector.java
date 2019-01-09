@@ -16,6 +16,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jz.bigdata.business.logAnalysis.log.LogType;
+import com.jz.bigdata.business.logAnalysis.log.entity.DHCP;
 import com.jz.bigdata.business.logAnalysis.log.entity.DNS;
 import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.Mysql;
@@ -98,6 +99,7 @@ public class KafkaCollector implements Runnable {
 	ZtsApp ztsapp;
 	Netflow netflow;
 	DNS dns;
+	DHCP dhcp;
 
 	/**
 	 * @param equipment
@@ -275,6 +277,9 @@ public class KafkaCollector implements Runnable {
 				// DNS日志
 				Pattern dnspattern = Pattern.compile("\\s+named");
 				Matcher dnsmatcher = dnspattern.matcher(log);
+				//dhcp
+				Pattern dhcppattern = Pattern.compile("\\s+dhcpd:");
+				Matcher dhcpmatcher = dnspattern.matcher(log);
 				if (facility_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
 					synchronized (log) {
@@ -503,6 +508,40 @@ public class KafkaCollector implements Runnable {
 								dns.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
 								json = gson.toJson(dns);
 								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DNS, json));
+							}
+						}else{
+							//不在资产ip池里，暂不处理
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						continue;
+					}
+				}else if (dhcpmatcher.find()) {
+					logType = LogType.LOGTYPE_DHCP;
+					try {
+						dhcp = new DHCP(log);
+						
+						ipadress = dhcp.getIp();
+						//判断是否在资产ip地址池里
+						if(ipadressSet.contains(ipadress)){
+							//判断是否在已识别资产里————日志类型可识别
+							equipment=equipmentMap.get(dhcp.getIp() +logType);
+							if(equipment != null){
+								if (equipmentLogType.get(equipment.getId()).indexOf(dhcp.getOperation_level().toLowerCase())!=-1) {
+									dhcp.setUserid(equipment.getUserId());
+									dhcp.setDeptid(String.valueOf(equipment.getDepartmentId()));
+									dhcp.setEquipmentname(equipment.getName());
+									dhcp.setEquipmentid(equipment.getId());
+									json = gson.toJson(dhcp);
+									requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DHCP, json));
+								}
+							}else{
+								dhcp.setUserid(LogType.LOGTYPE_UNKNOWN);
+								dhcp.setDeptid(LogType.LOGTYPE_UNKNOWN);
+								dhcp.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+								dhcp.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+								json = gson.toJson(dhcp);
+								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DHCP, json));
 							}
 						}else{
 							//不在资产ip池里，暂不处理
