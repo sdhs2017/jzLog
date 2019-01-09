@@ -954,6 +954,57 @@ public class LogServiceImpl implements IlogService {
 	/**
 	 * @param index
 	 * @param types
+	 * @param content
+	 * @return
+	 * service层  时间段+map+分页
+	 */
+	@Override
+	public List<Map<String, Object>> getListByMap(String index,String[] types,String starttime,String endtime,Map<String, String> map,String userid, String page,String size) {
+		
+		List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
+		
+		Integer fromInt = 0;
+		Integer sizeInt = 10;
+		long count = 0;
+		if (page!=null&&size!=null) {
+			fromInt = (Integer.parseInt(page)-1)*Integer.parseInt(size);
+			sizeInt = Integer.parseInt(size);
+		}
+		
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+		// 时间段
+		if (!starttime.equals("")&&!endtime.equals("")) {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
+		}else if (!starttime.equals("")) {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime));
+		}else if (!endtime.equals("")) {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(endtime));
+		}
+		// 遍历map
+		for(Map.Entry<String, String> entry : map.entrySet()){
+			if (entry.getKey().equals("operation_level")) {
+				String [] operation_level = entry.getValue().split(",");
+				boolQueryBuilder.must(QueryBuilders.termsQuery("operation_level", operation_level));
+			}else {
+				QueryBuilder queryBuilder = QueryBuilders.termQuery(entry.getKey(), entry.getValue());
+				boolQueryBuilder.must(queryBuilder);
+			}
+			
+		}
+		//日志总量
+		count = clientTemplate.count(index, types, boolQueryBuilder);
+		Map<String, Object> mapcount = new HashMap<String,Object>();
+		mapcount.put("count", count);
+		
+		list.add(mapcount);
+		list.addAll(clientTemplate.getListByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt));
+		
+		return list;
+	}
+	
+	/**
+	 * @param index
+	 * @param types
 	 * @param map
 	 * @return
 	 * service层 

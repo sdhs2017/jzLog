@@ -290,6 +290,46 @@ public class DNS {
 		this.event_des = event_des;
 	}
 
+	public String getDns_clientip() {
+		return dns_clientip;
+	}
+
+	public void setDns_clientip(String dns_clientip) {
+		this.dns_clientip = dns_clientip;
+	}
+
+	public String getDns_view() {
+		return dns_view;
+	}
+
+	public void setDns_view(String dns_view) {
+		this.dns_view = dns_view;
+	}
+
+	public String getDns_domain_name() {
+		return dns_domain_name;
+	}
+
+	public void setDns_domain_name(String dns_domain_name) {
+		this.dns_domain_name = dns_domain_name;
+	}
+
+	public String getDns_ana_type() {
+		return dns_ana_type;
+	}
+
+	public void setDns_ana_type(String dns_ana_type) {
+		this.dns_ana_type = dns_ana_type;
+	}
+
+	public String getDns_server() {
+		return dns_server;
+	}
+
+	public void setDns_server(String dns_server) {
+		this.dns_server = dns_server;
+	}
+
 	public DNS() {
 		
 	}
@@ -520,16 +560,16 @@ public class DNS {
                           + "\t\t{#}\n" 
                   + "\t\t\t\t}"
               +"}";
-		String fieldString =  getClassMapping(new Syslog());
+		String fieldString =  getClassMapping(new DNS());
 		template = template.replace("{#}",fieldString);
 		return template;
 	}
 
 	public <T> String getClassMapping(T classes) {
 		
-		StringBuilder fieldstring = new StringBuilder();
+	   StringBuilder fieldstring = new StringBuilder();
 		
-		String [] fielddata = {"userid","deptid","equipmentid","logtime","ip","hostname","operation_facility","operation_level","process","logtime_year","logtime_month","logtime_day","logtime_hour","logtime_minute","equipmentname","event_type"};
+	   String [] fielddata = {"userid","deptid","equipmentid","logtime","ip","hostname","operation_facility","operation_level","process","logtime_year","logtime_month","logtime_day","logtime_hour","logtime_minute","equipmentname","event_type","dns_clientip","dns_view","dns_domain_name","dns_ana_type","dns_server"};
        Field[] fields = classes.getClass().getDeclaredFields();
        for (int i = 0; i < fields.length; i++) {
             fieldstring.append("\t\t\t\t\"" + fields[i].getName().toLowerCase() + "\": {\n");
@@ -543,7 +583,7 @@ public class DNS {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": "
                        + "true" + "\n");
 			}
-            if (fields[i].getName().equals("operation_des")||fields[i].getName().equals("ip")||fields[i].getName().equals("process")||fields[i].getName().equals("hostname")||fields[i].getName().equals("equipmentname")||fields[i].getName().equals("event_des")) {
+            if (fields[i].getName().equals("operation_des")||fields[i].getName().equals("ip")||fields[i].getName().equals("process")||fields[i].getName().equals("hostname")||fields[i].getName().equals("equipmentname")||fields[i].getName().equals("event_des")||fields[i].getName().equals("dns_clientip")||fields[i].getName().equals("dns_view")||fields[i].getName().equals("dns_domain_name")||fields[i].getName().equals("dns_ana_type")||fields[i].getName().equals("dns_server")) {
            	 fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \""
            	 + "index_ansj\"" + "\n");
            	 fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \""
@@ -599,18 +639,18 @@ public class DNS {
     }
 	
 	// 正则匹配
-		public static String getSubUtil(String soap,String rgex){  
-	        Pattern pattern = Pattern.compile(rgex);// 匹配的模式  
-	        Matcher m = pattern.matcher(soap);  
-	        while(m.find()){
-	            return m.group(0);  
-	        }  
-	        return null;  
-	    }
+	public static String getSubUtil(String soap,String rgex){  
+        Pattern pattern = Pattern.compile(rgex);// 匹配的模式  
+        Matcher m = pattern.matcher(soap);  
+        while(m.find()){
+            return m.group(0);  
+        }  
+        return null;  
+    }
 	
 	public static void main(String [] args) throws IOException {
 		
-		//System.out.println(new DHCP().toMapping());
+		System.out.println(new DNS().toMapping());
 		
 		/*String log1 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 #015";
 		String log2 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 systemd: Started Delayed Shutdown Service.";
@@ -662,10 +702,10 @@ public class DNS {
 		System.out.println(getSubUtilSimple(log, "IN\\s+(.*?)\\s+[+]"));
 		System.out.println(getSubUtilSimple(log, "[+]\\s+\\((.*?)\\)"));*/
 		
-		if (getSubUtil(log,"\\s+named")!=null) {
+		/*if (getSubUtil(log,"\\s+named")!=null) {
 			DNS dns = new DNS(log);
 			System.out.println("---------");
-		}
+		}*/
 		
 	}
 	

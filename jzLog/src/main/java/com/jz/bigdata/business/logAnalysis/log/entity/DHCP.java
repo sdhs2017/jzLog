@@ -427,9 +427,9 @@ public class DHCP {
 			if (logs.length > 3) {
 				String des = syslog.substring(syslog.indexOf(logs[3]), syslog.length());
 				this.operation_des = des;
-//				
+				
 				this.client_mac=getSubUtil(des,"(([a-f0-9]{2}:)|([a-f0-9]{2}-)){5}[a-f0-9]{2}");
-//				
+				
 				this.client_ip=getSubUtil(des.substring(0,des.indexOf("via")),"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 				this.dhcp_type=getSubUtil(des,"[A-Z]{4,}");
 				this.client_hostname=getSubUtil(des,"(?<=\\()(\\S+)(?=\\) via)");
@@ -437,8 +437,8 @@ public class DHCP {
 				
 				if(getSubUtilSimple(des, "via\\s+(.*?)[:]")!=null){
 					this.relay_ip = getSubUtilSimple(des, "via\\s+(.*?):");
-				}else if(getSubUtilSimple(des, "via\\s+(.*?)")!=null){
-					this.relay_ip = getSubUtilSimple(des, "via\\s+\\d.\\d.\\d.\\d");
+				}else if(getSubUtilSimple(des, "via\\s+([\\s\\S]+)")!=null){
+					this.relay_ip = getSubUtilSimple(des, "via\\s+([\\s\\S]+)");
 				}
 				
 				this.network_error = getSubUtilSimple(des,"network\\s+(.*?):");
