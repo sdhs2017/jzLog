@@ -90,7 +90,7 @@
     	var hsObj = {};
     	hsObj.hsData = JSON.stringify(param);
 	    //获取数据并通过回调函数进行数据加载。
-	    ajaxPost(url,ztObj,sFunc); 		
+	    ajaxPost(url,hsObj,sFunc); 		
 	}
 	//最大显示数据改变事件函数 html-数值改变 提示标语
 	function maxShowChange(html){
