@@ -181,15 +181,31 @@ public interface IlogService {
 	public List<Map<String, Object>> getListByMap(String index, String[] types, String starttime, String endtime,Map<String, String> map);
 	
 	/**
-	 * 通过map查询数据
+	 * 通过时间段+map
 	 * @param index
 	 * @param types
 	 * @param starttime
 	 * @param endtime
-	 * @param pamap
+	 * @param map
+	 * @param page
+	 * @param size
 	 * @return
 	 */
 	public List<Map<String, Object>> getListByMap(String index, String[] types, String starttime, String endtime,Map<String, String> map,String page,String size);
+	
+	/**
+	 * 通过时间段+map+userid
+	 * @param index
+	 * @param types
+	 * @param starttime
+	 * @param endtime
+	 * @param map
+	 * @param userid
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public List<Map<String, Object>> getListByMap(String index, String[] types, String starttime, String endtime,Map<String, String> map, String userid, String page, String size);
 
 	/**
 	 * 通过ID删除索引数据
@@ -207,6 +223,8 @@ public interface IlogService {
 			String starttime, String endtime);
 
 	List<Map<String, Object>> getEventstypeCountByEquipmentid(String index, String[] types, String equipmentid, Date enddate);
+
+	
 
 	
 }

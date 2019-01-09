@@ -36,6 +36,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jz.bigdata.business.logAnalysis.log.LogType;
+import com.jz.bigdata.business.logAnalysis.log.entity.DHCP;
+import com.jz.bigdata.business.logAnalysis.log.entity.DNS;
 import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.Mysql;
 import com.jz.bigdata.business.logAnalysis.log.entity.Netflow;
@@ -158,6 +160,8 @@ public class LogController extends BaseController{
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_MYSQLLOG, new Mysql().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG, new PacketFilteringFirewal().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_NETFLOW, new Netflow().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DNS, new DNS().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DHCP, new DHCP().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_UNKNOWN, new Unknown().toMapping());
 			
 			map.put("state", true);
@@ -403,7 +407,7 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="条件获取设备日志数据")
 	public String getLogListByEquipment(HttpServletRequest request,Equipment equipment) {
 		
-		String ztData = request.getParameter("ztData");
+		String ztData = request.getParameter("hsData");
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> map = new HashMap<String, String>();
 		
@@ -496,7 +500,7 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="查询日志数据")
 	public String getLogListByContent(HttpServletRequest request,HttpSession session) {
 		
-		String ztData = request.getParameter("ztData");
+		String ztData = request.getParameter("hsData");
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
 		
 		Map<String, String> mapper = toMap(ztData);
@@ -555,7 +559,7 @@ public class LogController extends BaseController{
 	public String getLogListByBlend(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
 		// receive parameter
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
-		String ztData = request.getParameter("ztData");
+		String ztData = request.getParameter("hsData");
 		System.out.println(ztData);
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -616,6 +620,80 @@ public class LogController extends BaseController{
 		}
 		return map;
 	}*/
+	
+	/**
+	 * DNS组合查询
+	 * @param requestt
+	 * @author jiyourui
+	 * @return 
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value="/getDNSLogListByBlend",produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="DNS组合查询日志数据")
+	public String getDNSLogListByBlend(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
+		// receive parameter
+		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
+		String hsData = request.getParameter("hsData");
+		System.out.println(hsData);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, String> map = new HashMap<String, String>();
+		
+		map = removeMapEmptyValue(mapper.readValue(hsData, Map.class));
+		System.out.println(map);
+		Object pageo = map.get("page");
+		Object sizeo = map.get("size");
+		
+		String page = pageo.toString();
+		String size = sizeo.toString();
+		
+		String starttime = "";
+		String endtime = "";
+		if (map.get("starttime")!=null) {
+			Object start = map.get("starttime");
+			starttime = start.toString();
+			map.remove("starttime");
+		}
+		if (map.get("endtime")!=null) {
+			Object end = map.get("endtime");
+			endtime = end.toString();
+			map.remove("endtime");
+		}
+		
+		
+		ArrayList<String> arrayList = new ArrayList<>();
+		List<Map<String, Object>> list =null;
+		
+		if (map.get("type")!=null&&!map.get("type").equals("")) {
+			arrayList.add(map.get("type"));
+			String [] types = arrayList.toArray(new String[arrayList.size()]);
+			if (userrole.equals("1")) {
+				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,page,size);
+			}else {
+				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
+			}
+		}else {
+			String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW,LogType.LOGTYPE_DNS,LogType.LOGTYPE_DHCP};
+			if (userrole.equals("1")) {
+				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,page,size);
+			}else {
+				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
+			}
+		}
+		Map<String, Object> allmap = new HashMap<>();
+		allmap = list.get(0);
+		list.remove(0);
+		allmap.put("list", list);
+		String result = JSONArray.fromObject(allmap).toString();
+		String replace=result.replace("\\\\005", "<br/>");
+		
+		return replace;
+	
+	}
 	
 	public static Map<String,String> removeMapEmptyValue(Map<String,String> paramMap){
 		Set<String> set = paramMap.keySet();
