@@ -590,7 +590,8 @@
 					logDesArr.push(obj.operation_des);				
 					var reg = new RegExp("<br/>","g");
 					var logCon = obj.operation_des.replace(reg,"");
-					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
+					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">' 
+							 +		 '<td> <input type="checkbox"></td>'
 					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_clientip">'+obj.dns_clientip+'</td>'
@@ -653,7 +654,8 @@
 					logDesArr.push(obj.operation_des);				
 					var reg = new RegExp("<br/>","g");
 					var logCon = obj.operation_des.replace(reg,"");
-					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
+					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">' 
+							 +		 '<td> <input type="checkbox"></td>'
 					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_clientip">'+obj.dhcp_type+'</td>'
