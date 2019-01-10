@@ -427,9 +427,9 @@ public class DHCP {
 			if (logs.length > 3) {
 				String des = syslog.substring(syslog.indexOf(logs[3]), syslog.length());
 				this.operation_des = des;
-				
+//				
 				this.client_mac=getSubUtil(des,"(([a-f0-9]{2}:)|([a-f0-9]{2}-)){5}[a-f0-9]{2}");
-				
+//				
 				this.client_ip=getSubUtil(des.substring(0,des.indexOf("via")),"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 				this.dhcp_type=getSubUtil(des,"[A-Z]{4,}");
 				this.client_hostname=getSubUtil(des,"(?<=\\()(\\S+)(?=\\) via)");
@@ -437,8 +437,8 @@ public class DHCP {
 				
 				if(getSubUtilSimple(des, "via\\s+(.*?)[:]")!=null){
 					this.relay_ip = getSubUtilSimple(des, "via\\s+(.*?):");
-				}else if(getSubUtilSimple(des, "via\\s+([\\s\\S]+)")!=null){
-					this.relay_ip = getSubUtilSimple(des, "via\\s+([\\s\\S]+)");
+				}else if(getSubUtilSimple(des, "via\\s+(.*?)")!=null){
+					this.relay_ip = getSubUtilSimple(des, "via\\s+\\d.\\d.\\d.\\d");
 				}
 				
 				this.network_error = getSubUtilSimple(des,"network\\s+(.*?):");
@@ -529,7 +529,7 @@ public class DHCP {
 
 	public String toMapping() {
 		String template = "{\n" + "\t\t\"properties\":{\n" + "\t\t{#}\n" + "\t\t\t\t}" + "}";
-		String fieldString = getClassMapping(new Syslog());
+		String fieldString = getClassMapping(new DHCP());
 		template = template.replace("{#}", fieldString);
 		return template;
 	}
@@ -627,8 +627,7 @@ public class DHCP {
 		// System.out.println(new Syslog().toMapping());
 
 //		String log ="<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPDISCOVER from 00:0c:29:38:f8:f8 via eth0: network 192.168.0.0/24: no free leases";
-//		String log = "<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPOFFER on 10.238.17.62 to 78:d2:94:a5:9f:6f (NetgearA59F6F) via 10.238.16.254";
-		String log ="<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPOFFER on 10.238.135.37 to 20:4e:7f:79:6e:c0 (NW16) via 10.238.135.254";
+		String log = "<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPOFFER on 10.238.17.62 to 78:d2:94:a5:9f:6f (NetgearA59F6F) via 10.238.16.254";
 		DHCP dh = new DHCP(log);
 //		System.out.println(dh.operation_des);
 		System.out.println(dh.client_hostname);
