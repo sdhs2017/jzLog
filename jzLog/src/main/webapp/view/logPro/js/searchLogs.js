@@ -631,25 +631,26 @@
 				logLists = '';
 				var logDesArrIndex = 0;
 				for(var i in logsArr){
-					
 					var obj =  filterObj(logsArr[i]);	
+					//判断有无字段  若无 替换成“-”
 					if(obj.logtime == undefined){
 						obj.logtime = "-"
 					}
-					if(obj.operation_level == undefined){
-						obj.operation_level = "-"
+					if(obj.client_ip == undefined){
+						obj.client_ip = "-"
+					}
+					if(obj.dhcp_type == undefined){
+						obj.dhcp_type = "-"
+					}
+					if(obj.client_mac == undefined){
+						obj.client_mac = "-"
+					}
+					if(obj.relay_ip == undefined){
+						obj.relay_ip = "-"
 					}
 					if(obj.operation_des == undefined){
 						obj.operation_des = "-"
 					}
-					//替换风险状态
-					/*var level = '';
-					if(obj.operation_level == "INFO"){
-						level = '<span class="label label-info">INFO</span>'
-					}else if(obj.operation_level == "ERROR"){
-						level = '<span class="label label-danger">ERROR</span>'
-					}	
-					*/
 					//删除日志内容的<br/>标签
 					logDesArr.push(obj.operation_des);				
 					var reg = new RegExp("<br/>","g");
@@ -1050,6 +1051,28 @@
 					+		'</div>'
 					+	'</div>'	
 		}else if(logType == "dhcp"){
+			//判断有无字段  若无替换成‘-’
+			if(logDetailArr[logIndex].client_ip == undefined){
+				logDetailArr[logIndex].client_ip = "-"
+			}
+			if(logDetailArr[logIndex].dhcp_type == undefined){
+				logDetailArr[logIndex].dhcp_type = "-"
+			}
+			if(logDetailArr[logIndex].client_mac == undefined){
+				logDetailArr[logIndex].client_mac = "-"
+			}
+			if(logDetailArr[logIndex].relay_ip == undefined){
+				logDetailArr[logIndex].relay_ip = "-"
+			}
+			if(logDetailArr[logIndex].client_hostname == undefined){
+				logDetailArr[logIndex].client_hostname = "-"
+			}
+			if(logDetailArr[logIndex].error_log == undefined){
+				logDetailArr[logIndex].error_log = "-"
+			}
+			if(logDetailArr[logIndex].network_error == undefined){
+				logDetailArr[logIndex].network_error = "-"
+			}
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:50px">'
