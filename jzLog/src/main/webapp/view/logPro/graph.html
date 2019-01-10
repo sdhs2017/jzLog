@@ -30,7 +30,7 @@
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			//获取从排行榜传过来的值
-			var rankingListVal = sessionStorage.getItem("netflowVal");
+			var rankingListVal = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-val");
 			//sessionStorage.removeItem("netflowVal");
 			//填充页面相关数据
 			$(".top_title").html(rankingListVal.split('-')[1]+':'+rankingListVal.split('-')[2]+' 关系图');//类型：值

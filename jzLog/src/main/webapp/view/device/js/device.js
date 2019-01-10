@@ -1,3 +1,21 @@
+$(function(){
+	//加载日志类型数据下拉框
+	$.ajax({
+		url:'../../staticdata/staticData.json',
+		type:"get",  //提交方式  
+        dataType:"json", //数据类型  
+		success:function(data){
+			//$(".eLogType")
+			var logTypeArr = data.logType;
+			for(var i in logTypeArr){
+				var logTypOpt = '';
+				logTypOpt = '<option value="'+logTypeArr[i]+'">'+logTypeArr[i]+'</option>'
+				$(".logType").append(logTypOpt)
+			}
+		}
+	});
+});
+
 var pageIndex = 1;//页码
 var pageSize = 15;//每页显示的条数
 var searchStutus = false;//用于判断是否是搜索
@@ -192,9 +210,11 @@ $(".list_con").on("click",".device_logs",function(){
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
 	// 储存在本地
-	sessionStorage.setItem("deviceObj", objstr);
+	//sessionStorage.setItem("deviceObj", objstr);
+	//将  " 替换成 '
+	objstr = objstr.replace(/"/g,"'");
 	//拼接导航
-	var html ='<a href="javascript:;" class="active J_menuTab" data-id="equipmentLogs'+htmlNum+'">'+obj.deviceName+'日志<i class="fa fa-times-circle"></i></a>'
+	var html ='<a href="javascript:;" class="active J_menuTab" data-obj="'+objstr+'" data-id="equipmentLogs'+htmlNum+'">'+obj.deviceName+'日志<i class="fa fa-times-circle"></i></a>'
 	//移除导航菜单选中属性
 	$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
 	//添加导航菜单
@@ -222,9 +242,11 @@ $(".list_con").on("click",".device_echarts",function(){
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
 	// 储存在本地
-	sessionStorage.setItem("deviceObj1", objstr);
+	//sessionStorage.setItem("deviceObj1", objstr);
+	//将  " 替换成 '
+	objstr = objstr.replace(/"/g,"'");
 	//拼接导航
-	var html ='<a href="javascript:;" class="active J_menuTab" data-id="echart'+htmlNum1+'">'+obj.deviceName+'报表<i class="fa fa-times-circle"></i></a>'
+	var html ='<a href="javascript:;" class="active J_menuTab" data-obj="'+objstr+'" data-id="echart'+htmlNum1+'">'+obj.deviceName+'报表<i class="fa fa-times-circle"></i></a>'
 	//移除导航菜单选中属性
 	$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
 	//添加导航菜单

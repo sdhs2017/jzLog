@@ -2,10 +2,12 @@ $(function(){
 	var pageSize = 12;//每页显示条数
 	//定义加载数据的类型  0-默认加载  1-精细加载
 	var searchType = '0';
-	var getDeviceObj = sessionStorage.getItem("deviceObj");//获取本地存储的设备值 对象
+	//var getDeviceObj = sessionStorage.getItem("deviceObj");//获取本地存储的设备值 对象
+	//获取存放在标签页标题中的数据
+	var getDeviceObj = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
 	logStatus = true;//ture表明是搜索操作 false表示是过滤操作
 	//将获取的本地sessionstorage字符串转换为obj对象格式
-	var obj = JSON.parse(getDeviceObj);	
+	var obj = JSON.parse(getDeviceObj.replace(/'/g,"\""));	
 	//取出设备id
 	var id = obj.deviceId;
 	$(".top_title>span").html(obj.deviceName+"日志")

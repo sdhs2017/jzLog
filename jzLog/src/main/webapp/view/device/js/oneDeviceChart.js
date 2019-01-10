@@ -71,9 +71,11 @@ if(da < 10){
 	da = "0"+ (day1.getDate());
 }
 var s1 = day1.getFullYear()+"-" + mon + "-" + da;
-var getDeviceId = sessionStorage.getItem("deviceObj1");//获取本地存储的设备值 对象
+//var getDeviceId = sessionStorage.getItem("deviceObj1");//获取本地存储的设备值 对象
+//获取存放在标签页标题中的数据
+var getDeviceId = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
 if(getDeviceId != null){
-	var str = JSON.parse(getDeviceId);
+	var str = JSON.parse(getDeviceId.replace(/'/g,"\""));	
 	var title = str.deviceName;
 	var logType = str.logType;
 	$(".top_title>span").html(title+' 数据统计')

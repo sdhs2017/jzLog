@@ -320,8 +320,9 @@
 			var dataVal = $(this).attr('data-val');
 			//次数
 			var dataCount = $(this).attr('data-count');
+			var netglowVal = dataType+'-'+dataVal+'-'+dataCount;
 			// 储存在本地
-			sessionStorage.setItem("netflowVal", dataType+'-'+dataVal+'-'+dataCount);
+			//sessionStorage.setItem("netflowVal", dataType+'-'+dataVal+'-'+dataCount);
 			//判断点击的是什么类型的排行榜
 			if(dataType == "ipv4_src_addr-源IP" || dataType == "ipv4_dst_addr-目的IP"){//源、目的 IP				
 				//页面添加选项菜单
@@ -344,13 +345,13 @@
 				
 				//菜单排行榜点击事件
 				$(".menuRanking").click(function(){
-					jumpHtml(src,dataVal,' 排行');	
+					jumpHtml(src,dataVal,' 排行',netglowVal);	
 					$(".selectedMenu").css({"display":"none"});
 				})
 				//菜单关系图点击事件
 				$(".menuGraph").click(function(){
 					src = "logPro/graph.html";
-					jumpHtml(src,dataVal,' 关系图');
+					jumpHtml(src,dataVal,' 关系图',netglowVal);
 					$(".selectedMenu").css({"display":"none"});
 				})
 				//菜单取消点击事件
@@ -358,7 +359,7 @@
 					$(".selectedMenu").css({"display":"none"});
 				})
 			}else{//源、目的 端口
-				jumpHtml(src,dataVal,' 排行');
+				jumpHtml(src,dataVal,' 排行',netglowVal);
 			}
 			
 			
@@ -366,9 +367,9 @@
 			  */
 		})
 		
-		//跳转页面 src-页面路径  dataVal-标签名 type-页面类型（排行榜、关系图）
-		function jumpHtml(src,dataVal,type){
-			 var html ='<a href="javascript:;" class="active J_menuTab" data-id="'+src+htmlNum+'">'+dataVal+type+'<i class="fa fa-times-circle"></i></a>'
+		//跳转页面 src-页面路径  dataVal-标签名 type-页面类型（排行榜、关系图） netglowVal-值的集合
+		function jumpHtml(src,dataVal,type,netglowVal){
+			 var html ='<a href="javascript:;" class="active J_menuTab" data-val="'+netglowVal+'" data-id="'+src+htmlNum+'">'+dataVal+type+'<i class="fa fa-times-circle"></i></a>'
 				//移除导航菜单选中属性
 				$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
 				//添加导航菜单

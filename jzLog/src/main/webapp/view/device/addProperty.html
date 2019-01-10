@@ -94,14 +94,14 @@
 					<div class="col-sm-6">
 						<label>日志类型 ：</label>
     					<select class="form-control eLogType">
-    						<!-- <option disabled selected value=""></option> -->
+    						<!-- <option disabled selected value=""></option>
  							<option value="syslog">syslog</option>
  							<option value="winlog">winlog</option>
  							<option value="snmp">snmp</option>
  							<option value="log4j">log4j</option>
  							<option value="mysql">mysql</option>
  							<option value="netflow">netflow</option>
- 							<option value="packetfilteringfirewall_log">packetfilteringfirewall_log</option>
+ 							<option value="packetfilteringfirewall_log">packetfilteringfirewall_log</option> -->
  						</select>
 					</div>
 				</div>
@@ -240,7 +240,23 @@
 		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 		<script>
-			
+			$(function(){
+				//加载日志类型数据下拉框
+				$.ajax({
+					url:'../../staticdata/staticData.json',
+					type:"get",  //提交方式  
+			        dataType:"json", //数据类型  
+					success:function(data){
+						//$(".eLogType")
+						var logTypeArr = data.logType;
+						for(var i in logTypeArr){
+							var logTypOpt = '';
+							logTypOpt = '<option value="'+logTypeArr[i]+'">'+logTypeArr[i]+'</option>'
+							$(".eLogType").append(logTypOpt)
+						}
+					}
+				});
+			});
 			//获得本地储存的资产Id
 			var getId = sessionStorage.getItem("propertyId");//获取本地存储的设备值 对象
 			//如果getId == null 说明不是从资产列表跳转过来的

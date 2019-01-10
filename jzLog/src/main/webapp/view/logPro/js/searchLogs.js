@@ -610,6 +610,67 @@
 			 //添加 日志列表到页面中    
 		    $("#logs_list>tbody").html(logLists);
 			
+		}else if(logType == "dhcp"){
+			/**************** dhcp 日志列表格式*******************/
+			var logLists = "<b>暂无日志数据</b>";//日志列表
+			var logListTittle = "";//日志列名
+			//拼接日志列名 只需拼接一次	
+			logListTittle += '<th width="35"><input type="checkbox" id="theadCheck"></th>' 
+						  +	 '<th width="200">时间</th>'
+						  +	 '<th>资产名称</th>'
+						  +	 '<th>dhcp类型</th>'
+						  +	 '<th>mac地址</th>'
+						  +	 '<th>中继设备地址</th>'
+						  +	 '<th>客户端IP</th>'
+						  +	 '<th width="50">操作</th>'
+			//添加日志表头到页面
+			$(".con_title").html(logListTittle);
+			//判断日志是否为空  不为空则删除“暂无日志数据”提示
+			if(logsArr != ''){
+				logLists = '';
+				var logDesArrIndex = 0;
+				for(var i in logsArr){
+					
+					var obj =  filterObj(logsArr[i]);	
+					if(obj.logtime == undefined){
+						obj.logtime = "-"
+					}
+					if(obj.operation_level == undefined){
+						obj.operation_level = "-"
+					}
+					if(obj.operation_des == undefined){
+						obj.operation_des = "-"
+					}
+					//替换风险状态
+					/*var level = '';
+					if(obj.operation_level == "INFO"){
+						level = '<span class="label label-info">INFO</span>'
+					}else if(obj.operation_level == "ERROR"){
+						level = '<span class="label label-danger">ERROR</span>'
+					}	
+					*/
+					//删除日志内容的<br/>标签
+					logDesArr.push(obj.operation_des);				
+					var reg = new RegExp("<br/>","g");
+					var logCon = obj.operation_des.replace(reg,"");
+					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
+					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
+					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
+					         +       '<td class="logs_clientip">'+obj.dhcp_type+'</td>'
+					         +       '<td class="logs_ana_type">'+obj.client_mac+'</td>'				         
+					         +       '<td class="logs_domain_name">'+obj.relay_ip+'</td>'
+					         +       '<td class="logs_domain_name">'+obj.client_ip+'</td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
+					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       '</td>'		                                                                                                 	
+					         +   '</tr>'
+
+					
+					 logDesArrIndex++;
+				}
+			}
+			 //添加 日志列表到页面中    
+		    $("#logs_list>tbody").html(logLists);
 		} else{
 			  /**************** 通用 日志列表格式*******************/ 
 			var logLists = "<b>暂无日志数据</b>";//日志列表
@@ -980,6 +1041,50 @@
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">dns服务器:</div>'
 					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dns_server+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">日志内容:</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
+					+		'</div>'
+					+	'</div>'	
+		}else if(logType == "dhcp"){
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">资产名称:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">dhcp类型:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].dhcp_type+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">mac地址:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].client_mac+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">客户端主机名:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].client_hostname+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">中继设备地址:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].relay_ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">错误信息:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].error_log+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">客户端ip:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].client_ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">出现问题网段:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].network_error+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'

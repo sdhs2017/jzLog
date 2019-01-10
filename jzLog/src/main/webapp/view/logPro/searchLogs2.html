@@ -7,6 +7,7 @@
 		<link src="../../css/layer.css" type="text/javascript" charset="utf-8"/>
 		<link rel="stylesheet" type="text/css" href="../../css/bootstrap-datetimepicker.css"/>
 		<link rel="stylesheet" type="text/css" href="../../css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
 		<link rel="stylesheet" type="text/css" href="css/searchLogs.css"/>
 		<style>
 			.serviceStatus{
@@ -308,12 +309,12 @@
 						<div class="searchBoxTitle">日志类型</div>
 						<select class="form-control searchType">
 		 					<option	selected value=""></option>
-							<option  value="syslog">syslog</option>
+							<!--  <option  value="syslog">syslog</option>
 							<option value="winlog">winlog</option>
 							<option value="log4j">log4j</option>
 							<option value="mysql">mysql</option>
 							<option value="netflow">netflow</option>
-							<option value="packetfilteringfirewall_log">packetfilteringfirewall_log</option>
+							<option value="packetfilteringfirewall_log">packetfilteringfirewall_log</option> -->
 						</select>
 					</div>
 					<div class="searchLevelBox">
@@ -590,6 +591,24 @@
 		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/searchLogs.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
+			$(function(){
+				//加载日志类型数据下拉框
+				$.ajax({
+					url:'../../staticdata/staticData.json',
+					type:"get",  //提交方式  
+			        dataType:"json", //数据类型  
+					success:function(data){
+						//$(".eLogType")
+						var logTypeArr = data.logType;
+						for(var i in logTypeArr){
+							var logTypOpt = '';
+							logTypOpt = '<option value="'+logTypeArr[i]+'">'+logTypeArr[i]+'</option>'
+							$(".searchType").append(logTypOpt)
+						}
+					}
+				});
+			});
+		
 			//更多查询条件点击按钮
 			$(".moreConditions").click(function(){
 				//改变高度

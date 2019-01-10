@@ -424,8 +424,7 @@
 
 
 //获取从排行榜传过来的值
-var rankingListVal = sessionStorage.getItem("netflowVal");
-sessionStorage.removeItem("netflowVal");
+var rankingListVal = rankingListVal = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-val");
 //传送参数
 var obj = {};
 obj.groupfiled = rankingListVal.split('-')[0];
@@ -561,11 +560,7 @@ function drag(event){
 	e.dataTransfer.setData("text/plain",eParent+"-"+eVal);
 	// 存储当前拖动的对象的id
 	//e.dataTransfer.setData("Text",e.target);
-	let ifFirefox = userAgent.indexOf("Firefox");
-    if(ifFirefox){
-    	console.log("0000")
-       // e.dataTransfer.setData("imgInfo", item);
-    }
+	
 }
 //拖拽停止 放下动作函数
 function drop(event){
@@ -630,9 +625,10 @@ $(".btnBox").click(function(){
 
 	//跳转页面
 	// 储存在本地
-	sessionStorage.setItem("netflowSearchObj",JSON.stringify(sendObj));
+	//sessionStorage.setItem("netflowSearchObj",JSON.stringify(sendObj));
+	var objstr = JSON.stringify(sendObj).replace(/"/g,"'");
 	//拼接导航
-	var html ='<a href="javascript:;" class="active J_menuTab" data-id="netflowLogs'+htmlNum+'">'+rankingListVal.split('-')[2]+'日志 <i class="fa fa-times-circle"></i></a>'
+	var html ='<a href="javascript:;" class="active J_menuTab" data-obj="'+objstr+'" data-id="netflowLogs'+htmlNum+'">'+rankingListVal.split('-')[2]+'日志 <i class="fa fa-times-circle"></i></a>'
 	//移除导航菜单选中属性
 	$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
 	//添加导航菜单
