@@ -279,7 +279,7 @@ public class KafkaCollector implements Runnable {
 				Matcher dnsmatcher = dnspattern.matcher(log);
 				//dhcp
 				Pattern dhcppattern = Pattern.compile("\\s+dhcpd:");
-				Matcher dhcpmatcher = dnspattern.matcher(log);
+				Matcher dhcpmatcher = dhcppattern.matcher(log);
 				if (facility_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
 					synchronized (log) {
