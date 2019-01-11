@@ -426,11 +426,13 @@ public class DHCP {
 			}
 			if (logs.length > 3) {
 				String des = syslog.substring(syslog.indexOf(logs[3]), syslog.length());
+				Pattern checkpattern = Pattern.compile("ICMP Echo");
+				Matcher checkmatcher = checkpattern.matcher(des);
+				Pattern Abandpattern = Pattern.compile("Abandoning");
+				Matcher Abandmatcher = Abandpattern.matcher(des);
 				this.operation_des = des;
 //				
 				this.client_mac=getSubUtil(des,"(([a-f0-9]{2}:)|([a-f0-9]{2}-)){5}[a-f0-9]{2}");
-//				
-				this.client_ip=getSubUtil(des.substring(0,des.indexOf("via")),"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 				this.dhcp_type=getSubUtil(des,"[A-Z]{4,}");
 				this.client_hostname=getSubUtil(des,"(?<=\\()(\\S+)(?=\\) via)");
 				
@@ -442,8 +444,17 @@ public class DHCP {
 				}
 				
 				this.network_error = getSubUtilSimple(des,"network\\s+(.*?):");
+				if(checkmatcher.find()){
+					this.dhcp_type="PING-CHECK";
+					this.client_ip=getSubUtil(des,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+				}else if(Abandmatcher.find()){
+					this.dhcp_type="Abandoning";
+					this.client_ip=getSubUtil(des,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+				}else{
+					this.client_ip=getSubUtil(des.substring(0,des.indexOf("via")),"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+				}
 				
-				String [] errorlog = {"unknown network segment","wrong network","not found","no free leases"};
+				String [] errorlog = {"unknown network segment","wrong network","not found","no free leases","pinged before offer"};
 				for(String erro:errorlog){
 					if(getSubUtil(des, erro)!=null){
 						this.error_log = getSubUtil(des, erro);
@@ -628,6 +639,9 @@ public class DHCP {
 
 //		String log ="<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPDISCOVER from 00:0c:29:38:f8:f8 via eth0: network 192.168.0.0/24: no free leases";
 		String log = "<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: DHCPREQUEST for 192.168.0.201 (192.168.0.160) from 00:16:00:00:00:c7 (rbwww) via eth0";
+//		String log="<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: ICMP Echo reply while lease 192.168.0.161 valid.";
+//		String log="<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: Abandoning IP address 192.168.0.161: pinged before offer";
+
 		DHCP dh = new DHCP(log);
 //		System.out.println(dh.operation_des);
 		System.out.println(dh.client_hostname);
