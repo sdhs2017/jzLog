@@ -190,7 +190,7 @@
 						<input type="text" class="form-control searchClientMac"  placeholder="mac地址">
 					</div>
 					<div class="searchAnaTypeBox">
-						<div class="searchBoxTitle">中继设备地址</div>
+						<div class="searchBoxTitle">中继设备</div>
 						<input type="text" class="form-control searchRelayIp"  placeholder="中继设备地址">
 					</div>
 					<div class="searchServerBox">
@@ -429,7 +429,7 @@
 					for(var i = 0; i< checkboxs.length;i++){
 						//拼接日志Id
 						logsId += $(checkboxs[i]).parents("tr").attr("data-logid")+',';
-						logsType += $(checkboxs[i]).parent().siblings(".logs_type").html()+',';
+						logsType += 'dhcp ,';
 					}	
 					//调用删除函数
 					removeLogs(logsId,logsType)
@@ -438,7 +438,7 @@
 			//单个日志删除
 			$("#logs_list").on("click",".removeLog",function(){
 				var logId = $(this).parents("tr").attr("data-logid");
-				var logtype = $(this).parent().siblings(".logs_type").html();
+				var logtype = "dhcp";
 				removeLogs(logId,logtype)
 			})
 

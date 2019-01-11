@@ -437,7 +437,7 @@
 					for(var i = 0; i< checkboxs.length;i++){
 						//拼接日志Id
 						logsId += $(checkboxs[i]).parents("tr").attr("data-logid")+',';
-						logsType += $(checkboxs[i]).parent().siblings(".logs_type").html()+',';
+						logsType += 'dns ,';
 					}	
 					//调用删除函数
 					removeLogs(logsId,logsType)
@@ -446,7 +446,8 @@
 			//单个日志删除
 			$("#logs_list").on("click",".removeLog",function(){
 				var logId = $(this).parents("tr").attr("data-logid");
-				var logtype = $(this).parent().siblings(".logs_type").html();
+				/* var logtype = $(this).parent().siblings(".logs_type").html(); */
+				var logtype = "dns"
 				removeLogs(logId,logtype)
 			})
 
