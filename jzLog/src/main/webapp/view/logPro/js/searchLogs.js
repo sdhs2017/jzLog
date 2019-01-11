@@ -415,6 +415,7 @@
 					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
 					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
 
@@ -477,6 +478,7 @@
 					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
 					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
 
@@ -537,6 +539,7 @@
 					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
 					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
 
@@ -601,6 +604,7 @@
 					         +       '<td class="logs_dns_server">'+obj.dns_server+'</td>'
 					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
 
@@ -665,6 +669,7 @@
 					         +       '<td class="logs_domain_name">'+obj.client_ip+'</td>'
 					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
 					         +       '</td>'		                                                                                                 	
 					         +   '</tr>'
 
