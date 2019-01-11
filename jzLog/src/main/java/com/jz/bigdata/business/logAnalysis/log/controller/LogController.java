@@ -647,6 +647,8 @@ public class LogController extends BaseController{
 		System.out.println(map);
 		Object pageo = map.get("page");
 		Object sizeo = map.get("size");
+		map.remove("page");
+		map.remove("size");
 		
 		String page = pageo.toString();
 		String size = sizeo.toString();
@@ -664,12 +666,12 @@ public class LogController extends BaseController{
 			map.remove("endtime");
 		}
 		
-		
 		ArrayList<String> arrayList = new ArrayList<>();
 		List<Map<String, Object>> list =null;
 		
 		if (map.get("type")!=null&&!map.get("type").equals("")) {
 			arrayList.add(map.get("type"));
+			map.remove("type");
 			String [] types = arrayList.toArray(new String[arrayList.size()]);
 			if (userrole.equals("1")) {
 				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,page,size);
