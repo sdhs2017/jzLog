@@ -429,7 +429,7 @@
 					for(var i = 0; i< checkboxs.length;i++){
 						//拼接日志Id
 						logsId += $(checkboxs[i]).parents("tr").attr("data-logid")+',';
-						logsType += 'dhcp ,';
+						logsType += 'dhcp,';
 					}	
 					//调用删除函数
 					removeLogs(logsId,logsType)
