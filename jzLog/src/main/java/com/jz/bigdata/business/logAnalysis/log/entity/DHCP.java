@@ -437,8 +437,8 @@ public class DHCP {
 				
 				if(getSubUtilSimple(des, "via\\s+(.*?)[:]")!=null){
 					this.relay_ip = getSubUtilSimple(des, "via\\s+(.*?):");
-				}else if(getSubUtilSimple(des, "via\\s+(.*?)")!=null){
-					this.relay_ip = getSubUtilSimple(des, "via\\s+\\d.\\d.\\d.\\d");
+				}else if(getSubUtilSimple(des, "via\\s+([\\s\\S]+)")!=null){
+					this.relay_ip = getSubUtilSimple(des, "via\\s+([\\s\\S]+)");
 				}
 				
 				this.network_error = getSubUtilSimple(des,"network\\s+(.*?):");
@@ -627,7 +627,7 @@ public class DHCP {
 		// System.out.println(new Syslog().toMapping());
 
 //		String log ="<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPDISCOVER from 00:0c:29:38:f8:f8 via eth0: network 192.168.0.0/24: no free leases";
-		String log = "<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPOFFER on 10.238.17.62 to 78:d2:94:a5:9f:6f (NetgearA59F6F) via 10.238.16.254";
+		String log = "<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: DHCPREQUEST for 192.168.0.201 (192.168.0.160) from 00:16:00:00:00:c7 (rbwww) via eth0";
 		DHCP dh = new DHCP(log);
 //		System.out.println(dh.operation_des);
 		System.out.println(dh.client_hostname);
