@@ -638,7 +638,7 @@ public class DHCP {
 		// System.out.println(new Syslog().toMapping());
 
 //		String log ="<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPDISCOVER from 00:0c:29:38:f8:f8 via eth0: network 192.168.0.0/24: no free leases";
-		String log = "<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: DHCPREQUEST for 192.168.0.201 (192.168.0.160) from 00:16:00:00:00:c7 (rbwww) via eth0";
+		String log = "<30> 2019-01-12 16:18:01 dev 123.232.103.226 dhcpd: DHCPDISCOVER from 04:a1:51:91:ef:e4 via 10.131.100.50: unknown network segment";
 //		String log="<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: ICMP Echo reply while lease 192.168.0.161 valid.";
 //		String log="<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: Abandoning IP address 192.168.0.161: pinged before offer";
 

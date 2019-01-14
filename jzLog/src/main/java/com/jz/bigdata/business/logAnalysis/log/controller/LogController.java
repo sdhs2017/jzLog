@@ -515,7 +515,8 @@ public class LogController extends BaseController{
 		String page = pageo.toString();
 		String size = sizeo.toString();
 		
-		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
+		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW,LogType.LOGTYPE_DNS,LogType
+				.LOGTYPE_DHCP};
 
 		List<Map<String, Object>> list =null;
 		
@@ -855,7 +856,8 @@ public class LogController extends BaseController{
 	public String getIndicesCount(HttpServletRequest request) {
 		
 		
-		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
+		//String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
+		String[] types = null;
 		String equipmentid = request.getParameter("equipmentid");
 		Map<String, Object> map = new HashMap<>();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();

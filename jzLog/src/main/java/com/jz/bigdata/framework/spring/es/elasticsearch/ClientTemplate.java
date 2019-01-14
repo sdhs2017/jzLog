@@ -737,7 +737,9 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 	public SearchHit [] getHitsByQueryBuilder(String index,String[] types,QueryBuilder queryBuilder,String orderfield,SortOrder order,Integer from,Integer size) {
 		
 		SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index);
-		searchRequestBuilder.setTypes(types);
+		if (types!=null&&types.length>0) {
+			searchRequestBuilder.setTypes(types);
+		}
 		searchRequestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 		searchRequestBuilder.setQuery(queryBuilder);
 		searchRequestBuilder.addSort(orderfield, order);
