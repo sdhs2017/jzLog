@@ -934,8 +934,11 @@ public class LogServiceImpl implements IlogService {
 			if (entry.getKey().equals("operation_level")) {
 				String [] operation_level = entry.getValue().split(",");
 				boolQueryBuilder.must(QueryBuilders.termsQuery("operation_level", operation_level));
+			}else if(entry.getKey().equals("dns_domain_name")){
+				QueryBuilder queryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
+				boolQueryBuilder.must(queryBuilder);
 			}else {
-				QueryBuilder queryBuilder = QueryBuilders.termQuery(entry.getKey(), entry.getValue());
+				QueryBuilder queryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
 				boolQueryBuilder.must(queryBuilder);
 			}
 			
