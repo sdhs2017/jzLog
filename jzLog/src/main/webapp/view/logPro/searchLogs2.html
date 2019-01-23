@@ -1098,11 +1098,13 @@
 							var exportObj =  sendSearchObj;
 							//添加导出日志条数条件
 							exportObj.exportSize = exportSize;
+							var hsObj = {};
+					    	hsObj.hsData = JSON.stringify(exportObj);
 							//发送请求
 							$.ajax({
 								type:"post",
 								url:"../../log/exportLogList.do",
-								data:exportObj,
+								data:hsObj,
 								async:false,
 								success:function(data){
 									//创建进度盒子
