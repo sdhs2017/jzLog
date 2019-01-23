@@ -9,7 +9,7 @@
 	var logDesArr = [];
 	var firstGet = true;//定义第一次请求
 	var sendObj = {};//传参对象合集
-	var allCount = 0;//检索的结果总总数
+	var allCount ;//检索的结果总总数
 	var currentPage = 1;//当前显示的页码
 	//获取数据函数  url-请求链接  id-用于区分单个设备日志 searchWord-查询条件 page-当前页码 size-每页条数
 	function getLogs(url,id,searchWords,page,pageTotle){
@@ -51,6 +51,8 @@
 		sendObj.searchWords = searchWords;
 		//回调函数
 		var sFunc = function(data){
+			//清除总数的数值
+			allCount = 0;
 			//调用函数显示日志信息
     		showLogs(data[0].list);   
     		//将当页的数据保存在本地 用于过滤
@@ -79,14 +81,16 @@
 					//创建分页函数
 					createPage("pageBox",allCount,pageTotle);
 				}
-				
+				//判断到处日志状态
+				if(exportStatus){
+					exportLogs();
+				}
 				
 			}else{
 				//显示数据
 			}
-    		
     	};
-    	//中泰代码 将object对象转换成字符串
+    	//将object对象转换成字符串
     	var hsObj = {};
     	hsObj.hsData = JSON.stringify(param);
 	    //获取数据并通过回调函数进行数据加载。

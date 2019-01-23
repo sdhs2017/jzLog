@@ -186,6 +186,15 @@
 				margin-right:10px;
 				margin-left:10px;
 			}
+			#exportLogs{
+				height: 30px;
+			    /* line-height: 26px; */
+			    margin-top: 10px;
+			    font-size: 10px;
+			    padding: 0 6px;
+			    margin-right: 3px;
+			    background:#2e8ded;
+			}
 			.log_filter{
 				margin-left:0;
 			}
@@ -228,6 +237,19 @@
 			}
 			.history_list>li{
 				text-align:left!important;
+			}
+			.form-horizontal .form-group {
+				margin-left:0;
+				margin-right:0;
+				padding:0 20px;
+			}
+			.form-horizontal .form-group label{
+				margin-bottom:5px!important;
+				font-size:14px!important;
+				color:#2e8dec!important;
+			}
+			.form-horizontal .form-group .form-control{
+				height:30px!important;
 			}
 			/* .searchTypeLevelBox{
 				position:absolute;
@@ -284,11 +306,49 @@
 			.searchTypeLevelBox .closeSelect{
 				background:#e4956d;
 			} */
+			.progressBox{
+				position:absolute;
+				top:0;
+				right:50px;
+			}
+			.progressContent{
+				width:50px;
+				height:55px;			
+				border:2px solid #fff;	
+				border-bottom:0;	
+				color:#fff;
+				background: #00bcd4;
+				border-top:0;
+				margin:0 30px;
+			}
+			.progressName{
+				width:46px;
+				height:30px;
+				text-align:center;
+				/* line-height:30px; */
+				word-break: break-all;
+			}
+			.progressVal{
+				width:50px;
+				height:50px;
+				position:relative;
+				left:-2px;
+				text-align:center;
+				line-height:50px;
+				border-radius: 100%;
+				border:2px solid #fff;
+				font-weight:600;
+				font-size:14px;
+				background: #00bcd4;
+			}
 		</style>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 	</head>
 	<!-- 中泰证券 -->
 	<body>
+		<div class="progressBox">
+			
+		</div>
 		<div id="box">
 			<div class="top_title">
 				日志检索		
@@ -512,11 +572,11 @@
 							  <button  class="btn btn-default" id="filterLogs">过滤</button>
 							</form>
 						</div>
-						<div class="allCountBox">共检索到的日志数量为<b>0</b>条,最大展示<select class="form-control maxShowData"><option value="100000">10万</option><option value="200000">20万</option><option value="500000">50万</option><option value="1000000">100万</option><option value="10000000">1000万</option><option value="100000000">1亿</option></select>条</div>
+						<div class="allCountBox">共检索日志数为<b>0</b>条,最大展示<select class="form-control maxShowData"><option value="100000">10万</option><option value="200000">20万</option><option value="500000">50万</option><option value="1000000">100万</option><option value="10000000">1000万</option><option value="100000000">1亿</option></select>条</div>
 						<div id="pageBox">
 							
 						</div>
-						
+						<button  class="btn btn-default" id="exportLogs">导出</button>
 						<!--<nav aria-label="Page navigation">
 						  	<ul class="pagination">
 						    	<li>
@@ -716,15 +776,19 @@
 				//隐藏级别列表
 				$(".levelListBox").css("display","none")
 			})
+			
 			var pageSize = 12;
 			var url = "../../log/getLogListByBlend.do";
 			var sendSearchObj = {};//查询日志 参数集合
+			var exportStatus = false;//导出日志状态
 			//点击检索按钮 获取数据
 			$("#searchLogs").click(function(){
 				//定义第一次请求
 				firstGet = true;
 				//获得数据
 				getData();
+				//改变导出日志状态
+				exportStatus = false;
 			})
 			//获取数据函数
 			function getData(){	
@@ -992,6 +1056,79 @@
 			$(".maxShowData").change(function(){
 				maxShowChange('数据量过大时，细化查询条件提高查询效率')
 			})
+			
+			//日志导出按钮
+			$("#exportLogs").click(function(){
+				//加载数据
+				getData();
+				exportStatus = true;
+			})
+			/* <a href="javascript:void(0)" style="color:#1ab394!important;" class="pushMaxVal">（最大值）</a> */
+			//到处日志弹窗方法
+			function exportLogs(){
+				//出现弹窗
+				var layerHtml = '<form class="form-horizontal">'
+							+		'<div class="form-group">'
+					 		+			'<label  class=" control-label">总共日志条数</label>'
+					 		+			'<div>'
+					 		+				'<input type="text" class="form-control" readonly value="'+allCount+'">'
+					 		+			'</div>'
+							+		'</div>'
+							+		'<div class="form-group">'
+					 		+			'<label  class=" control-label">导出的日志条数 </label>'
+					 		+			'<div>'
+					 		+				'<input type="text" class="form-control exportSize">'
+					 		+			'</div>'
+							+		'</div>'
+							+	 '</form>'
+				//弹窗
+				layer.open({
+			 		type: 1,
+			 		title:"导出日志",//标题
+					area: ['350px', '400'], //宽高
+					btn: ['确定','取消'], //按钮
+					btn1:function(index){
+						//获得要导出的日志条数
+						var exportSize = $(".exportSize").val();
+						//判断条数是否为空
+						if(exportSize == ''){
+							layer.msg('导出日志条数为空',{icon: 5});
+						}else{
+							//获得检索框中的条件
+							var exportObj =  sendSearchObj;
+							//添加导出日志条数条件
+							exportObj.exportSize = exportSize;
+							//发送请求
+							$.ajax({
+								type:"post",
+								url:"../../log/exportLogList.do",
+								data:exportObj,
+								async:false,
+								success:function(data){
+									//创建进度盒子
+									//$(".progressBox").append('<div class="progressContent"><div class="progressName">导出中</div><div class="progressVal">0%</div></div>')
+									//增加定时器 循环更新进度
+									
+									layer.close(index);
+								},
+								error:function(err){
+									layer.msg('导出失败',{icon: 5});
+									console.log(err)
+								}
+							})
+						}
+						
+					},
+			 		content: layerHtml
+				});
+		  }
+		
+			//定时器 填充进度条数据
+			function updataProgressValue(boxClass){
+				
+			}
+			
+			
 		</script>
 	</body>
 </html>

@@ -418,7 +418,7 @@ html,body{
 		border:0;
 		background:0;
 	}
-	#filterLogs,#refreshLogs,#removeLogs{
+	#filterLogs,#refreshLogs,#removeLogs,#exportLogs{
 		color:#fff;
 		border:1px solid #4781bb;
 	}
