@@ -308,8 +308,10 @@
 			} */
 			.progressBox{
 				position:absolute;
-				top:0;
+				top:-80px;
 				right:50px;
+				display: flex;
+				transition: all .2s;
 			}
 			.progressContent{
 				width:50px;
@@ -326,6 +328,7 @@
 				height:30px;
 				text-align:center;
 				/* line-height:30px; */
+				line-height: 14px;
 				word-break: break-all;
 			}
 			.progressVal{
@@ -340,7 +343,31 @@
 				font-weight:600;
 				font-size:14px;
 				background: #00bcd4;
+				
 			}
+			.rotateClass{
+				-webkit-transition-property: -webkit-transform;
+			    -webkit-transition-duration: 1s;
+			    -moz-transition-property: -moz-transform;
+			    -moz-transition-duration: 1s;
+			    -webkit-animation: rotate 3s linear infinite;
+			    -moz-animation: rotate 3s linear infinite;
+			    -o-animation: rotate 3s linear infinite;
+			    animation: rotate 3s linear infinite;
+			}
+			@-webkit-keyframes rotate{from{-webkit-transform: rotate(0deg)}
+			    to{-webkit-transform: rotate(360deg)}
+			}
+			@-moz-keyframes rotate{from{-moz-transform: rotate(0deg)}
+			    to{-moz-transform: rotate(359deg)}
+			}
+			@-o-keyframes rotate{from{-o-transform: rotate(0deg)}
+			    to{-o-transform: rotate(359deg)}
+			}
+			@keyframes rotate{from{transform: rotate(0deg)}
+			    to{transform: rotate(359deg)}
+			}
+
 		</style>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 	</head>
@@ -1057,11 +1084,30 @@
 				maxShowChange('数据量过大时，细化查询条件提高查询效率')
 			})
 			
+			
+			//用于记录是否有导出任务正在进行  
+			var exporting = false;
+		  	//计时器 获取导出进度
+			var exportInterval;
+			//获取本地是否有导出任务
+			if(localStorage.getItem('exportLogs')){
+				exporting = true;
+				$(".progressBox").append('<div class="progressContent"><div class="progressName">导出中<br\>...</div><div class="progressVal rotateClass"></div></div>')
+				//从顶端滑出
+				$(".progressBox").css("top","0");
+				exportInterval = setInterval(updataProgressValue,1000);
+			};
+		  	
 			//日志导出按钮
 			$("#exportLogs").click(function(){
-				//加载数据
-				getData();
-				exportStatus = true;
+				if(!exporting){
+					//加载数据
+					getData();
+					exportStatus = true;
+				}else{
+					layer.msg('有导出任务正在进行中，请稍后',{icon: 5});
+				}
+				
 			})
 			/* <a href="javascript:void(0)" style="color:#1ab394!important;" class="pushMaxVal">（最大值）</a> */
 			//到处日志弹窗方法
@@ -1077,9 +1123,10 @@
 							+		'<div class="form-group">'
 					 		+			'<label  class=" control-label">导出的日志条数 </label>'
 					 		+			'<div>'
-					 		+				'<input type="text" class="form-control exportSize">'
+					 		+				'<input type="number" min="0" class="form-control exportSize">'
 					 		+			'</div>'
 							+		'</div>'
+							+		'<div class="form-group" style="color:#9b664c;">说明：日志以时间倒序排列导出</div>'
 							+	 '</form>'
 				//弹窗
 				layer.open({
@@ -1093,6 +1140,8 @@
 						//判断条数是否为空
 						if(exportSize == ''){
 							layer.msg('导出日志条数为空',{icon: 5});
+						}else if(exportSize <= 0){
+							layer.msg('导出日志条数错误',{icon: 5});
 						}else{
 							//获得检索框中的条件
 							var exportObj =  sendSearchObj;
@@ -1104,13 +1153,19 @@
 							$.ajax({
 								type:"post",
 								url:"../../log/exportLogList.do",
+								//url:'',
 								data:hsObj,
-								async:false,
 								success:function(data){
+									//将导出任务存在localstorage中用于页面打开时加载
+									localStorage.setItem('exportLogs','true');
+									//标记任务正在进行中
+									exporting = true;
 									//创建进度盒子
-									//$(".progressBox").append('<div class="progressContent"><div class="progressName">导出中</div><div class="progressVal">0%</div></div>')
-									//增加定时器 循环更新进度
-									
+									$(".progressBox").append('<div class="progressContent"><div class="progressName">导出中<br\>...</div><div class="progressVal rotateClass"></div></div>')
+									//从顶端滑出
+									$(".progressBox").css("top","0");
+									//增加定时器 循环更新进度	
+									exportInterval = setInterval(updataProgressValue,1000);
 									layer.close(index);
 								},
 								error:function(err){
@@ -1126,8 +1181,45 @@
 		  }
 		
 			//定时器 填充进度条数据
-			function updataProgressValue(boxClass){
-				
+			function updataProgressValue(){
+				$.ajax({
+					type:"post",
+					url:"../../log/getExportProcess.do",
+					data:'',
+					success:function(data){
+						//导出成功
+						if(data[0].state == "finished"){
+							//将导出状态跟新为false
+							exporting = false;
+							//清除定时器
+							clearInterval(exportInterval);
+							//更换状态颜色
+							$(".progressContent").css("background","#009688");
+							$(".progressVal").css("background","#009688")
+							$(".progressName").html("导出<br\>完成");
+							$(".progressVal").removeClass("rotateClass");
+							$(".progressVal").html(data[0].value);
+							//删除本地保存的导出任务
+							localStorage.removeItem('exportLogs');
+							//延时隐藏导出进度
+							setTimeout(function(){
+								$(".progressBox").css("top","-80px");
+							},5000)
+							//删除进度条
+							setTimeout(function(){
+								$(".progressBox").html('');
+							},5300)
+							//导出成功弹窗
+							layer.msg('导出成功',{icon:1});
+						}else {
+							$(".progressVal").html(data[0].value)
+						}
+					},
+					error:function(err){
+						//layer.msg('导出失败',{icon: 5});
+						console.log(err)
+					}
+				})
 			}
 			
 			
