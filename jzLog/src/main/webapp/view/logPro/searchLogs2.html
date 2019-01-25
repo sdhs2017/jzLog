@@ -1149,6 +1149,18 @@
 							exportObj.exportSize = exportSize;
 							var hsObj = {};
 					    	hsObj.hsData = JSON.stringify(exportObj);
+					    	
+					    	//将导出任务存在localstorage中用于页面打开时加载
+							localStorage.setItem('exportLogs','true');
+							//标记任务正在进行中
+							exporting = true;
+							//创建进度盒子
+							$(".progressBox").append('<div class="progressContent"><div class="progressName">导出中<br\>...</div><div class="progressVal rotateClass"></div></div>')
+							//从顶端滑出
+							$(".progressBox").css("top","0");
+							//增加定时器 循环更新进度	
+							exportInterval = setInterval(updataProgressValue,1000);
+					    	
 							//发送请求
 							$.ajax({
 								type:"post",
@@ -1156,23 +1168,18 @@
 								//url:'',
 								data:hsObj,
 								success:function(data){
-									//将导出任务存在localstorage中用于页面打开时加载
-									localStorage.setItem('exportLogs','true');
-									//标记任务正在进行中
-									exporting = true;
-									//创建进度盒子
-									$(".progressBox").append('<div class="progressContent"><div class="progressName">导出中<br\>...</div><div class="progressVal rotateClass"></div></div>')
-									//从顶端滑出
-									$(".progressBox").css("top","0");
-									//增加定时器 循环更新进度	
-									exportInterval = setInterval(updataProgressValue,1000);
-									layer.close(index);
+									var obj = JSON.parse(data)[0];
+									if(obj.state == "false"){
+										closeProgress()
+										layer.msg(obj.state,{icon: 5});
+									}
 								},
 								error:function(err){
-									layer.msg('导出失败',{icon: 5});
+									closeProgress()
 									console.log(err)
 								}
 							})
+							layer.close(index);
 						}
 						
 					},
@@ -1216,17 +1223,21 @@
 							$(".progressVal").html(obj.value)
 						}
 					},
-					error:function(err){
-						//删除本地保存的导出任务
-						localStorage.removeItem('exportLogs');
-						layer.msg('导出失败',{icon: 5});
-						$(".progressBox").html('');
-						
+					error:function(err){						
+						closeProgress()
 						console.log(err)
 					}
 				})
 			}
-			
+			//导出失败关闭进程弹窗
+			function closeProgress(){
+				//删除本地保存的导出任务
+				localStorage.removeItem('exportLogs');
+				//清除定时器
+				clearInterval(exportInterval);
+				layer.msg('导出失败',{icon: 5});
+				$(".progressBox").html('');
+			}
 			
 		</script>
 	</body>
