@@ -1187,8 +1187,9 @@
 					url:"../../log/getExportProcess.do",
 					data:'',
 					success:function(data){
+						var obj = JSON.parse(data)[0];
 						//导出成功
-						if(data[0].state == "finished"){
+						if(obj.state == "finished"){
 							//将导出状态跟新为false
 							exporting = false;
 							//清除定时器
@@ -1198,7 +1199,7 @@
 							$(".progressVal").css("background","#009688")
 							$(".progressName").html("导出<br\>完成");
 							$(".progressVal").removeClass("rotateClass");
-							$(".progressVal").html(data[0].value);
+							$(".progressVal").html(obj.value);
 							//删除本地保存的导出任务
 							localStorage.removeItem('exportLogs');
 							//延时隐藏导出进度
@@ -1212,11 +1213,15 @@
 							//导出成功弹窗
 							layer.msg('导出成功',{icon:1});
 						}else {
-							$(".progressVal").html(data[0].value)
+							$(".progressVal").html(obj.value)
 						}
 					},
 					error:function(err){
-						//layer.msg('导出失败',{icon: 5});
+						//删除本地保存的导出任务
+						localStorage.removeItem('exportLogs');
+						layer.msg('导出失败',{icon: 5});
+						$(".progressBox").html('');
+						
 						console.log(err)
 					}
 				})
