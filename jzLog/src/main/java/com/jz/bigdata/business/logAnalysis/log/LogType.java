@@ -15,6 +15,7 @@ public class LogType {
 	public static final String LOGTYPE_DNS = "dns";
 	public static final String LOGTYPE_DHCP = "dhcp";
 	public static final String LOGTYPE_APP_FILE = "app_file";
+	public static final String LOGTYPE_APP_APACHE = "app_apache";
 
 	public static final String LOGTYPE_UNKNOWN = "unknown";	
 

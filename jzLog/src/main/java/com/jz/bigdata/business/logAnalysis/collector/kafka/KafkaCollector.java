@@ -16,6 +16,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jz.bigdata.business.logAnalysis.log.LogType;
+import com.jz.bigdata.business.logAnalysis.log.entity.App_file;
 import com.jz.bigdata.business.logAnalysis.log.entity.DHCP;
 import com.jz.bigdata.business.logAnalysis.log.entity.DNS;
 import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
@@ -100,6 +101,7 @@ public class KafkaCollector implements Runnable {
 	Netflow netflow;
 	DNS dns;
 	DHCP dhcp;
+	App_file app_file;
 
 	/**
 	 * @param equipment
@@ -280,6 +282,9 @@ public class KafkaCollector implements Runnable {
 				//dhcp
 				Pattern dhcppattern = Pattern.compile("\\s+dhcpd:");
 				Matcher dhcpmatcher = dhcppattern.matcher(log);
+				//filebeat
+				Pattern filebeatpattern = Pattern.compile("\"logtype\":\"app_*");
+				Matcher filebeatmatcher = filebeatpattern.matcher(log);
 				if (facility_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
 					synchronized (log) {
@@ -550,6 +555,47 @@ public class KafkaCollector implements Runnable {
 						e.printStackTrace();
 						continue;
 					}
+				}else if (filebeatmatcher.find()) {
+					logType = getSubUtilSimple(log,"\"logtype\":\"(.*?)\"");
+					if(logType==null) {
+						logType = LogType.LOGTYPE_APP_FILE;
+					}
+					try {
+						app_file = new App_file(log);
+						
+						ipadress = app_file.getIp();
+						//判断是否在资产ip地址池里
+						if(ipadressSet.contains(ipadress)){
+							//判断是否在已识别资产里————日志类型可识别
+							equipment = equipmentMap.get(app_file.getIp() +logType);
+							if(null != equipment){
+								if (equipmentLogType.get(equipment.getId()).indexOf(app_file.getOperation_level().toLowerCase())!=-1) {
+									app_file.setUserid(equipment.getUserId());
+									app_file.setDeptid(String.valueOf(equipment.getDepartmentId()));
+									app_file.setEquipmentid(equipment.getId());
+									app_file.setEquipmentname(equipment.getName());
+									
+									json = gson.toJson(app_file);
+									requests.add(template.insertNo(configProperty.getEs_index(), logType, json));
+								}
+								
+							}else{
+								//在资产ip地址池里，但是无法识别日志类型
+								app_file.setUserid(LogType.LOGTYPE_UNKNOWN);
+								app_file.setDeptid(LogType.LOGTYPE_UNKNOWN);
+								app_file.setEquipmentid(LogType.LOGTYPE_UNKNOWN);
+								app_file.setEquipmentname(LogType.LOGTYPE_UNKNOWN);
+								json = gson.toJson(app_file);
+								requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_UNKNOWN, json));
+							}
+						}else{
+							//不在资产ip池里，暂不处理
+							//TODO
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						continue;
+					}
 				}else {
 					logType = LogType.LOGTYPE_SYSLOG;
 					try {
@@ -611,5 +657,15 @@ public class KafkaCollector implements Runnable {
 		}
 
 	}
+	
+	// 正则匹配
+	public static String getSubUtilSimple(String soap,String rgex){  
+        Pattern pattern = Pattern.compile(rgex);// 匹配的模式  
+        Matcher m = pattern.matcher(soap);  
+        while(m.find()){
+            return m.group(1);  
+        }  
+        return null;  
+    }
 
 }

@@ -365,7 +365,7 @@ public class LogServiceImpl implements IlogService {
 	}
 	
 	/**
-	 * TODO
+	 * 通过资产获取日志
 	 */
 	@Override
 	public List<Map<String, Object>> getLogListByEquipmentId(String index, String type, String param,String order,String equipmentId,String page,String size) {
@@ -409,7 +409,7 @@ public class LogServiceImpl implements IlogService {
 	
 	@Override
 	public void createIndexAndmapping(String index, String type,String mappingproperties) {
-		// TODO Auto-generated method stub
+		
 		if (mappingproperties!=null&&!mappingproperties.equals("")) {
 			clientTemplate.addMapping(index, type, mappingproperties);
 		}

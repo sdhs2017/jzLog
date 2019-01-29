@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jz.bigdata.business.logAnalysis.log.LogType;
+import com.jz.bigdata.business.logAnalysis.log.entity.App_file;
 import com.jz.bigdata.business.logAnalysis.log.entity.DHCP;
 import com.jz.bigdata.business.logAnalysis.log.entity.DNS;
 import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
@@ -56,6 +58,7 @@ import com.jz.bigdata.common.safeStrategy.service.ISafeStrategyService;
 import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.BaseController;
+import com.jz.bigdata.util.CSVUtil;
 import com.jz.bigdata.util.ConfigProperty;
 import com.jz.bigdata.util.DescribeLog;
 import com.jz.bigdata.util.Sendmail;
@@ -85,19 +88,25 @@ public class LogController extends BaseController{
 	private IUsersService usersService;
 	
 	@Autowired protected ClientTemplate clientTemplate;
-//	/**
-//	 * @param request
-//	 * @return 插入索引数据
-//	 */
-//	@ResponseBody
-//	@RequestMapping("/insert")
-//	public void insert() {
-//		String log = "2017-09-10 11:00:34,132 [INFO] 192.168.4.123  [com.jz.bigdata.common.department.dao.IDepartmentDao.selectAll] debug()[139] [210348] \r\n";
-//		Log4j log4j = new Log4j(log);
-//		Gson gson = new Gson();
-//		String json = gson.toJson(log4j);
-//		this.logService.insert("estest", "Log4j", json);
-//	}
+	
+	private String exportProcess = "[{\"state\":\"finished\",\"value\":\"1-1\"}]";
+	
+	
+	/**
+	 * 轮巡导出状态
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/getExportProcess")
+	@DescribeLog(describe="轮巡导出状态")
+	public String getExportProcess() {
+		return exportProcess;
+	}
+
+	public void setExportProcess(String exportProcess) {
+		this.exportProcess = exportProcess;
+	}
+	
 	
 	/**
 	 * @param request
@@ -162,6 +171,8 @@ public class LogController extends BaseController{
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_NETFLOW, new Netflow().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DNS, new DNS().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DHCP, new DHCP().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_FILE, new App_file().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_APACHE, new App_file().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_UNKNOWN, new Unknown().toMapping());
 			
 			map.put("state", true);
@@ -604,6 +615,181 @@ public class LogController extends BaseController{
 		return replace;
 	}
 	
+	
+	/**
+	 * 查询+导出
+	 * @param requestt
+	 * @author jiyourui
+	 * @return 
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value="/exportLogList",produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="导出查询的日志数据")
+	public String exportLogList(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
+		
+		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
+		Object username = session.getAttribute(Constant.SESSION_USERNAME);
+		SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat timeformat = new SimpleDateFormat("yyyy-MM-dd'T'HHmmss");
+		
+		String hsData = request.getParameter("hsData");
+		Map<String, Object> allmap= new HashMap<>();
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, String> map = new HashMap<String, String>();
+		
+		map = removeMapEmptyValue(mapper.readValue(hsData, Map.class));
+		
+		Object pageo = map.get("page");
+		Object sizeo = map.get("size");
+		Object exportSizeo = map.get("exportSize");
+		
+		map.remove("page");
+		map.remove("size");
+		map.remove("exportSize");
+		
+		String page = pageo.toString();
+		String size = sizeo.toString();
+		String exportSize = exportSizeo.toString();
+		
+		
+		Integer sizeInt = Integer.valueOf(exportSize);
+		int filesizes = 10000;
+		
+		int forsize = sizeInt/filesizes;
+		int modsize = sizeInt%filesizes;
+		
+		int fileSize = 0;
+		
+		Map<String, Object> resultmap = new HashMap<>();
+		if (forsize>0&&modsize>0) {
+			fileSize = forsize+1;
+			resultmap.put("state", "doing");
+			resultmap.put("value", "0-"+fileSize);
+			setExportProcess(JSONArray.fromObject(resultmap).toString());
+		}else if (forsize>0&&modsize==0) {
+			fileSize = forsize;
+			resultmap.put("state", "doing");
+			resultmap.put("value", "0-"+fileSize);
+			setExportProcess(JSONArray.fromObject(resultmap).toString());
+		}else {
+			resultmap.put("state", "doing");
+			resultmap.put("value", "0-1");
+			setExportProcess(JSONArray.fromObject(resultmap).toString());
+		}
+		
+		try {
+			for(int i=1;i<=forsize;i++) {
+				
+				page = String.valueOf(i);
+				String filesize = String.valueOf(filesizes);
+				
+				ArrayList<String> arrayList = new ArrayList<>();
+				List<Map<String, Object>> list = null;
+				if (map.get("type")!=null&&!map.get("type").equals("")) {
+					arrayList.add(map.get("type"));
+					String [] types = arrayList.toArray(new String[arrayList.size()]);
+					if (userrole.equals("1")) {
+						System.out.println("10000条数据测试开始时间：     ---------"+timeformat.format(new Date()));
+						list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,filesize);
+						System.out.println("10000条数据测试结束时间：     ---------"+timeformat.format(new Date()));
+					}else {
+						list = logService.getListByBlend(configProperty.getEs_index(), types, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,filesize);
+					}
+				}else {
+					String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
+					if (userrole.equals("1")) {
+						System.out.println("10000条数据测试开始时间：     ---------"+timeformat.format(new Date()));
+						list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,filesize);
+						System.out.println("10000条数据测试结束时间：     ---------"+timeformat.format(new Date()));
+					}else {
+						list = logService.getListByBlend(configProperty.getEs_index(), types, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,filesize);
+					}
+				}
+				
+				// 设置表格头
+		        Object[] head = {"时间", "日志类型", "日志级别", "资产名称", "资产IP", "日志内容"};
+		        List<Object> headList = Arrays.asList(head);
+				Date date = new Date();
+		        CSVUtil.createCSVFile(headList, list, "D:\\Computer_Science\\exportfile\\"+username+"\\"+dateformat.format(date), "exportlog"+timeformat.format(date),null);
+		        
+		        if (i==forsize&&modsize==0) {
+		        	resultmap.put("state", "finished");
+					resultmap.put("value", i+"-"+fileSize);
+					setExportProcess(JSONArray.fromObject(resultmap).toString());
+				}else {
+					resultmap.put("state", "doing");
+					resultmap.put("value", i+"-"+fileSize);
+					setExportProcess(JSONArray.fromObject(resultmap).toString());
+				}
+		       
+			}
+			if (modsize>0) {
+				page = String.valueOf(forsize+1);
+				String filesize = String.valueOf(modsize);
+				
+				ArrayList<String> arrayList = new ArrayList<>();
+				List<Map<String, Object>> list = null;
+				
+				if (map.get("type")!=null&&!map.get("type").equals("")) {
+					arrayList.add(map.get("type"));
+					String [] types = arrayList.toArray(new String[arrayList.size()]);
+					if (userrole.equals("1")) {
+						System.out.println("10000条数据测试开始时间：     ---------"+timeformat.format(new Date()));
+						list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,filesize);
+						System.out.println("10000条数据测试结束时间：     ---------"+timeformat.format(new Date()));
+					}else {
+						list = logService.getListByBlend(configProperty.getEs_index(), types, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,filesize);
+					}
+				}else {
+					String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
+					if (userrole.equals("1")) {
+						System.out.println("10000条数据测试开始时间：     ---------"+timeformat.format(new Date()));
+						list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,filesize);
+						System.out.println("10000条数据测试结束时间：     ---------"+timeformat.format(new Date()));
+					}else {
+						list = logService.getListByBlend(configProperty.getEs_index(), types, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,filesize);
+					}
+				}
+				
+				// 设置表格头
+		        Object[] head = {"时间", "日志类型", "日志级别", "资产名称", "资产IP", "日志内容" };
+		        List<Object> headList = Arrays.asList(head);
+		        
+		        Date date = new Date();
+		        CSVUtil.createCSVFile(headList, list, "D:\\Computer_Science\\exportfile\\"+username+"\\"+dateformat.format(date), "exportlog"+timeformat.format(date),null);
+		        if (forsize>0) {
+		        	resultmap.put("state", "finished");
+					resultmap.put("value", fileSize+"-"+fileSize);
+					setExportProcess(JSONArray.fromObject(resultmap).toString());
+				}else {
+					resultmap.put("state", "finished");
+					resultmap.put("value", "1-1");
+					setExportProcess(JSONArray.fromObject(resultmap).toString());
+				}
+			}
+			allmap.put("state", true);
+			allmap.put("msg", "日志导出成功");
+		} catch (Exception e) {
+			allmap.put("state", false);
+			allmap.put("msg", "日志导出失败");
+			e.printStackTrace();
+		}
+		
+		String result = JSONArray.fromObject(allmap).toString();
+		
+		return result;
+	}
+	
+
+	public String Callback() {
+
+		return null;
+    }
+	
 	/*public static Map<String, String> mapRemoveWithNullByRecursion(Map<String, String> map){
 		Set<Entry<String, String>> set = map.entrySet();
 		Iterator<Entry<String, String>> it = set.iterator();
@@ -648,6 +834,7 @@ public class LogController extends BaseController{
 		System.out.println(map);
 		Object pageo = map.get("page");
 		Object sizeo = map.get("size");
+		
 		map.remove("page");
 		map.remove("size");
 		
