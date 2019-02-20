@@ -66,7 +66,7 @@ public class MascanCollector implements Runnable {
 			semaphore.acquire();
 			File file = new File("/opt/jzlog/masscan/bin");
 			String[] rgexs = { "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", "Discovered" };
-			Map<String, String> result = ExecuteCmd.execCmd("./masscan 192.168.0.8 -p10-1000", file, rgexs, true);
+			Map<String, String> result = ExecuteCmd.execCmd("./masscan "+IPS+" -p10-1000", file, rgexs, true);
 			System.out.println(result);
 			// 释放 信号量 许可
 			semaphore.release();

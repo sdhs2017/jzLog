@@ -114,7 +114,29 @@ public class CollectorController {
 	@ResponseBody
 	@RequestMapping(value = "/startMasscanCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启masscan扫描")
-	public String startMasscanCollector(List<String> list,String [] ports) {
+	public String startMasscanCollector() {
+		ArrayList<String> list = new ArrayList<String>();
+		list.add("192.168.0.1");
+		list.add("192.168.0.2");
+		list.add("192.168.0.3");
+		list.add("192.168.0.4");
+		list.add("192.168.0.5");
+		list.add("192.168.0.6");
+		list.add("192.168.0.7");
+		list.add("192.168.0.8");
+		list.add("192.168.0.9");
+		list.add("192.168.0.10");
+		list.add("192.168.0.11");
+		list.add("192.168.0.12");
+		list.add("192.168.0.13");
+		list.add("192.168.0.14");
+		list.add("192.168.0.15");
+		list.add("192.168.0.16");
+		list.add("192.168.0.17");
+		list.add("192.168.0.18");
+		list.add("192.168.0.19");
+		list.add("192.168.0.20");
+		String [] ports = {};
 		
 		boolean result = collectorService.startMasscanCollector(list, ports);
 		Map<String, Object> map = new HashMap<>();
