@@ -2,7 +2,6 @@ package com.jz.bigdata.business.logAnalysis.collector.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -137,18 +136,25 @@ public class CollectorController {
 		list.add("192.168.0.19");
 		list.add("192.168.0.20");
 		String [] ports = {};
-		
-		boolean result = collectorService.startMasscanCollector(list, ports);
+		boolean resultstate = collectorService.stateMasscanCollector();
 		Map<String, Object> map = new HashMap<>();
-		if (result) {
-			map.put("state", result);
-			map.put("msg", "数据采集器开启成功");
-			return JSONArray.fromObject(map).toString();
-		} else {
-			map.put("state", result);
+		if(resultstate==false){
+			map.put("state", resultstate);
 			map.put("msg", "数据采集器开启失败，请勿重复开启");
 			return JSONArray.fromObject(map).toString();
+		}else{
+			boolean result = collectorService.startMasscanCollector(list, ports);
+			if(result==true){
+				map.put("state", result);
+				map.put("msg", "数据采集器开启成功");
+				return JSONArray.fromObject(map).toString();
+			}else{
+				map.put("state", result);
+				map.put("msg", "数据采集器开启失败");
+				return JSONArray.fromObject(map).toString();
+			}
 		}
+		
 	}
 	
 	// 监听采集器状态

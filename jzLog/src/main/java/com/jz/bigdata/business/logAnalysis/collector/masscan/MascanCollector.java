@@ -1,6 +1,7 @@
 package com.jz.bigdata.business.logAnalysis.collector.masscan;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +9,15 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.Resource;
+
+import com.jz.bigdata.common.masscanip.entity.Masscanip;
+import com.jz.bigdata.common.masscanip.service.IMasscanipService;
 import com.jz.bigdata.util.ExecuteCmd;
+import com.jz.bigdata.util.Uuid;
 
 public class MascanCollector implements Runnable {
 
@@ -52,6 +61,9 @@ public class MascanCollector implements Runnable {
 		this.IPS = IPS;
 		this.ports = ports;
 	}
+	
+	@Resource(name="MasscanipService")
+	private IMasscanipService masscanipService;
 
 	/**
 	 * 重写线程执行内容
@@ -60,7 +72,7 @@ public class MascanCollector implements Runnable {
 	public void run() {
 
 		try {
-			Date starttime = new Date();
+//			Date starttime = new Date();
 
 			// 获取 信号量 执行许可
 			semaphore.acquire();
@@ -71,9 +83,16 @@ public class MascanCollector implements Runnable {
 			// 释放 信号量 许可
 			semaphore.release();
 			Date endtime = new Date();
+			String resultIp=result.get("./masscan "+IPS+" -p10-1000");
+			resultIp=getSubUtil(resultIp,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        String time = format.format(endtime.getTime());//这个就是把时间戳经过处理得到期望格式的时间
+	        Masscanip masscanip =new Masscanip();
+	        masscanip.setId(Uuid.getUUID());
+	        masscanip.setIp(resultIp);
+	        masscanip.setDate(time);
+	        masscanipService.insert(masscanip);
 
-			System.out.println("开始时间" + starttime.getTime() + ",结束时间" + endtime.getTime() + "    "
-					+ (endtime.getTime() - starttime.getTime()));
 
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -109,8 +128,7 @@ public class MascanCollector implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		// MascanCollector mascanCollector = new
-		// MascanCollector(ArrayList<String> list,String [] ports);
+		
 		ArrayList<String> list = new ArrayList<String>();
 		list.add("192.168.0.1");
 		list.add("192.168.0.2");
@@ -132,8 +150,11 @@ public class MascanCollector implements Runnable {
 		list.add("192.168.0.18");
 		list.add("192.168.0.19");
 		list.add("192.168.0.20");
-
 		String[] ports = { "1", "2" };
+		MascanCollector mascanCollector = new MascanCollector(list,ports);
+		
+
+		
 
 		// mascanCollector.execute(list,ports);
 		// mascanCollector.session.disconnect();
@@ -146,4 +167,19 @@ public class MascanCollector implements Runnable {
 	public Boolean getStarted() {
 		return threadPool.isTerminated();
 	}
+	
+	/**
+	 * 正则匹配
+	 * @param soap
+	 * @param rgex
+	 * @return 返回匹配的内容
+	 */
+ 	public static String getSubUtil(String soap,String rgex){  
+         Pattern pattern = Pattern.compile(rgex);// 匹配的模式  
+         Matcher m = pattern.matcher(soap);  
+         while(m.find()){
+             return m.group(0);
+         }  
+         return null;  
+    }
 }
