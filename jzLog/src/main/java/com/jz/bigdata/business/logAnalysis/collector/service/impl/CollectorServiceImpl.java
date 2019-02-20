@@ -137,26 +137,6 @@ public class CollectorServiceImpl implements ICollectorService{
 	}
 
 	
-	
-	
-	/**
-	 * @return
-	 * 初始化
-	 */
-	@SuppressWarnings("finally")
-	public boolean initMasscanCollector(List<String> list,String [] ports){
-		boolean result = false;
-		try{
-			Masscan = new MascanCollector(list,ports);
-			flagMasscan = true;
-			result = true;
-		}finally{
-			return result;
-		}
-
-		
-	}
-	
 	/**
 	 * @return
 	 * @description
@@ -166,15 +146,21 @@ public class CollectorServiceImpl implements ICollectorService{
 	public boolean startMasscanCollector(List<String> list,String [] ports) {
 		
 		boolean result = false;
-		//如果为true，则表示已经开启，反之，则为未开启，需要初始化
+		//如果为true，则表示已经开启
 		
-		initMasscanCollector(list,ports);
-		if(!Masscan.getStarted()){ 
-			masscanThread = new Thread(Masscan);
-			masscanThread.start();
-			result = true;
+		Masscan = new MascanCollector(list,ports);
+		if(!Masscan.getStarted()){
+			result=true;
 		}
 		
 		return result;
 	}
+
+	@Override
+	public boolean stateMasscanCollector() {
+		return Masscan.getStarted();
+	}
+	
+	
+	
 }

@@ -20,4 +20,5 @@ public interface ICollectorService {
 
 	
 	public boolean startMasscanCollector(List<String> list,String [] ports);
+	public boolean stateMasscanCollector() ;
 }

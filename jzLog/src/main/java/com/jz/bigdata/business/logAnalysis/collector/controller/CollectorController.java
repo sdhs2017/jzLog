@@ -114,7 +114,7 @@ public class CollectorController {
 	@ResponseBody
 	@RequestMapping(value = "/startMasscanCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启masscan扫描")
-	public String startMasscanCollector() {
+	public String startMasscanCollector(String stateip,String endip) {
 		ArrayList<String> list = new ArrayList<String>();
 		list.add("192.168.0.1");
 		list.add("192.168.0.2");
@@ -150,5 +150,17 @@ public class CollectorController {
 			return JSONArray.fromObject(map).toString();
 		}
 	}
+	
+	// 监听采集器状态
+	@ResponseBody
+	@RequestMapping(value = "/stateMasscanCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "监控Masscan状态")
+	public String stateMasscanCollector() {
+		Map<String, Object> map = new HashMap<>();
+		boolean result = collectorService.stateMasscanCollector();
+		map.put("state", result);
+		return JSONArray.fromObject(map).toString();
+	}
+	
 
 }
