@@ -49,6 +49,9 @@ public class ConfigProperty {
     
     @Value("#{prop.number}")
     private String number;
+    
+    @Value("#{prop.masscan_path}")
+    private String masscan_path;
 
 	public String getHost_user() {
 		return host_user;
@@ -160,6 +163,14 @@ public class ConfigProperty {
 
 	public void setNumber(String number) {
 		this.number = number;
+	}
+
+	public String getMasscan_path() {
+		return masscan_path;
+	}
+
+	public void setMasscan_path(String masscan_path) {
+		this.masscan_path = masscan_path;
 	}
 
     
