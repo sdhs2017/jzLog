@@ -53,17 +53,17 @@ public class MascanCollector implements Runnable {
 	}
 
 	final long awaitTime = 100 * 1000;
-	private ExecutorService threadPool;
+	private ExecutorService threadPool=Executors.newCachedThreadPool();
+	private IMasscanipService masscanipService;
 	
-	
-	public MascanCollector(Semaphore semaphore, String IPS, String[] ports) {
+	public MascanCollector(Semaphore semaphore, String IPS, String[] ports,IMasscanipService masscanipService) {
 		this.semaphore = semaphore;
 		this.IPS = IPS;
 		this.ports = ports;
+		this.masscanipService=masscanipService;
 	}
 	
-	@Resource(name="MasscanipService")
-	private IMasscanipService masscanipService;
+
 
 	/**
 	 * 重写线程执行内容
@@ -100,14 +100,12 @@ public class MascanCollector implements Runnable {
 		}
 	}
 
-	public MascanCollector(List<String> list, String[] ports) {
+	public MascanCollector(List<String> list, String[] ports,IMasscanipService masscanipService) {
 
 		final Semaphore semaphore = new Semaphore(5);
-		// 线程池（异步执行机制）
-		threadPool = Executors.newCachedThreadPool();
 
 		for (String ip : list) {
-			threadPool.execute(new MascanCollector(semaphore, ip, ports));
+			threadPool.execute(new MascanCollector(semaphore, ip, ports,masscanipService));
 		}
 		 threadPool.shutdown();
 
@@ -151,7 +149,7 @@ public class MascanCollector implements Runnable {
 		list.add("192.168.0.19");
 		list.add("192.168.0.20");
 		String[] ports = { "1", "2" };
-		MascanCollector mascanCollector = new MascanCollector(list,ports);
+//		MascanCollector mascanCollector = new MascanCollector(list,ports);
 		
 
 		

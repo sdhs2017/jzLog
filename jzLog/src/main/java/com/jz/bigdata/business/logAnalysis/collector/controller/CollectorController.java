@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
+import com.jz.bigdata.common.masscanip.service.IMasscanipService;
 import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.ConfigProperty;
@@ -45,6 +46,8 @@ public class CollectorController {
 
 //	@Resource
 //	private MascanCollector mascanCollector;
+	@Resource(name="MasscanipService")
+	private IMasscanipService masscanipService;
 
 	// 获取采集器开启或关闭状态，true为开启，false为关闭
 	@ResponseBody
@@ -143,7 +146,7 @@ public class CollectorController {
 			map.put("msg", "数据采集器开启失败，请勿重复开启");
 			return JSONArray.fromObject(map).toString();
 		}else{
-			boolean result = collectorService.startMasscanCollector(list, ports);
+			boolean result = collectorService.startMasscanCollector(list, ports,masscanipService);
 			if(result==true){
 				map.put("state", result);
 				map.put("msg", "数据采集器开启成功");
