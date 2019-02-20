@@ -1,5 +1,7 @@
 package com.jz.bigdata.business.logAnalysis.collector.service;
 
+import java.util.List;
+
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
 import com.jz.bigdata.common.users.service.IUsersService;
@@ -16,4 +18,6 @@ public interface ICollectorService {
 	
 	public boolean stateKafkaCollector() ;
 
+	
+	public boolean startMasscanCollector(List<String> list,String [] ports);
 }

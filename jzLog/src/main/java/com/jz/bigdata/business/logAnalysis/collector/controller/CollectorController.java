@@ -1,6 +1,8 @@
 package com.jz.bigdata.business.logAnalysis.collector.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -20,73 +22,75 @@ import com.jz.bigdata.util.DescribeLog;
 
 import net.sf.json.JSONArray;
 
-
 @Controller
 @RequestMapping("/collector")
 public class CollectorController {
-	
-	@Resource(name="CollectorService")
+
+	@Resource(name = "CollectorService")
 	private ICollectorService collectorService;
-	
+
 	@Resource(name = "EquipmentService")
 	private IEquipmentService equipmentService;
-	
-	@Resource(name ="configProperty")  
-    private ConfigProperty configProperty;
-	
-	@Resource(name ="AlarmService")  
-    private IAlarmService alarmService;
-	
-	@Resource(name ="UsersService")
+
+	@Resource(name = "configProperty")
+	private ConfigProperty configProperty;
+
+	@Resource(name = "AlarmService")
+	private IAlarmService alarmService;
+
+	@Resource(name = "UsersService")
 	private IUsersService usersService;
-	
-	@Autowired protected ClientTemplate clientTemplate;
-	
-	
-	//获取采集器开启或关闭状态，true为开启，false为关闭
+
+	@Autowired
+	protected ClientTemplate clientTemplate;
+
+//	@Resource
+//	private MascanCollector mascanCollector;
+
+	// 获取采集器开启或关闭状态，true为开启，false为关闭
 	@ResponseBody
 	@RequestMapping("/getCollectorState")
-	public boolean getCollectorState(){
+	public boolean getCollectorState() {
 		return collectorService.getKafkaCollectorState();
 	}
-	
-	
-	//开启采集器
+
+	// 开启采集器
 	@ResponseBody
-	@RequestMapping(value="/startCollectorState",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe="开启数据采集器")
-	public String startKafkaCollector(){
-		boolean result = collectorService.startKafkaCollector(equipmentService,clientTemplate,configProperty,alarmService,usersService);
-		Map<String, Object> map= new HashMap<>();
-		if(result){
+	@RequestMapping(value = "/startCollectorState", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "开启数据采集器")
+	public String startKafkaCollector() {
+		boolean result = collectorService.startKafkaCollector(equipmentService, clientTemplate, configProperty,
+				alarmService, usersService);
+		Map<String, Object> map = new HashMap<>();
+		if (result) {
 			map.put("state", result);
 			map.put("msg", "数据采集器开启成功");
 			return JSONArray.fromObject(map).toString();
-		}else{
+		} else {
 			map.put("state", result);
 			map.put("msg", "数据采集器开启失败，请勿重复开启");
 			return JSONArray.fromObject(map).toString();
 		}
 	}
-	
-	//关闭采集器
+
+	// 关闭采集器
 	@ResponseBody
-	@RequestMapping(value="/stopKafkaCollector",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe="关闭数据采集器")
-	public String stopKafkaCollector(){
-		Map<String, Object> map= new HashMap<>();
+	@RequestMapping(value = "/stopKafkaCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "关闭数据采集器")
+	public String stopKafkaCollector() {
+		Map<String, Object> map = new HashMap<>();
 		try {
 			boolean result = collectorService.stopKafkaCollector();
-			if(result){
+			if (result) {
 				map.put("state", result);
 				map.put("msg", "数据采集器关闭成功");
 				return JSONArray.fromObject(map).toString();
-			}else{
+			} else {
 				map.put("state", result);
 				map.put("msg", "数据采集器关闭失败，已关闭");
 				return JSONArray.fromObject(map).toString();
 			}
-			
+
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			map.put("state", false);
@@ -94,19 +98,35 @@ public class CollectorController {
 			return JSONArray.fromObject(map).toString();
 		}
 	}
-	
-	
-	//监听采集器状态
+
+	// 监听采集器状态
 	@ResponseBody
-	@RequestMapping(value="/stateKafkaCollector",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe="监控数据采集器状态")
-	public String stateKafkaCollector(){
-		Map<String, Object> map= new HashMap<>();
+	@RequestMapping(value = "/stateKafkaCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "监控数据采集器状态")
+	public String stateKafkaCollector() {
+		Map<String, Object> map = new HashMap<>();
 		boolean result = collectorService.stateKafkaCollector();
 		map.put("state", result);
 		return JSONArray.fromObject(map).toString();
 	}
-	
 
-	
+	// 监听采集器状态
+	@ResponseBody
+	@RequestMapping(value = "/startMasscanCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "开启masscan扫描")
+	public String startMasscanCollector(List<String> list,String [] ports) {
+		
+		boolean result = collectorService.startMasscanCollector(list, ports);
+		Map<String, Object> map = new HashMap<>();
+		if (result) {
+			map.put("state", result);
+			map.put("msg", "数据采集器开启成功");
+			return JSONArray.fromObject(map).toString();
+		} else {
+			map.put("state", result);
+			map.put("msg", "数据采集器开启失败，请勿重复开启");
+			return JSONArray.fromObject(map).toString();
+		}
+	}
+
 }

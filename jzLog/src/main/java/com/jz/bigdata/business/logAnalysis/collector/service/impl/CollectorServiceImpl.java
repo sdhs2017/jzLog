@@ -1,8 +1,12 @@
 package com.jz.bigdata.business.logAnalysis.collector.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.jz.bigdata.business.logAnalysis.collector.kafka.KafkaCollector;
+import com.jz.bigdata.business.logAnalysis.collector.masscan.MascanCollector;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
@@ -19,7 +23,12 @@ public class CollectorServiceImpl implements ICollectorService{
 	//kafka采集器
 	KafkaCollector kc = null;
 	
+	MascanCollector Masscan = null;
+	
+	boolean flagMasscan = false;
+	
 	Thread t;
+	Thread masscanThread;
 //	public Thread getT() {
 //		return t;
 //	}
@@ -125,5 +134,47 @@ public class CollectorServiceImpl implements ICollectorService{
 			return false;
 		}
 		return kc.isStarted();
+	}
+
+	
+	
+	
+	/**
+	 * @return
+	 * 初始化
+	 */
+	@SuppressWarnings("finally")
+	public boolean initMasscanCollector(List<String> list,String [] ports){
+		boolean result = false;
+		try{
+			Masscan = new MascanCollector(list,ports);
+			flagMasscan = true;
+			result = true;
+		}finally{
+			return result;
+		}
+
+		
+	}
+	
+	/**
+	 * @return
+	 * @description
+	 * 启动Masscan
+	 */
+	@Override
+	public boolean startMasscanCollector(List<String> list,String [] ports) {
+		
+		boolean result = false;
+		//如果为true，则表示已经开启，反之，则为未开启，需要初始化
+		
+		initMasscanCollector(list,ports);
+		if(!Masscan.getStarted()){ 
+			masscanThread = new Thread(Masscan);
+			masscanThread.start();
+			result = true;
+		}
+		
+		return result;
 	}
 }
