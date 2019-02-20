@@ -87,11 +87,14 @@ public class MascanCollector implements Runnable {
 			resultIp=getSubUtil(resultIp,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        String time = format.format(endtime.getTime());//这个就是把时间戳经过处理得到期望格式的时间
-	        Masscanip masscanip =new Masscanip();
-	        masscanip.setId(Uuid.getUUID());
-	        masscanip.setIp(resultIp);
-	        masscanip.setDate(time);
-	        masscanipService.insert(masscanip);
+	        if(null!=resultIp&&!resultIp.equals("")){
+	        	Masscanip masscanip =new Masscanip();
+	 	        masscanip.setId(Uuid.getUUID());
+	 	        masscanip.setIp(resultIp);
+	 	        masscanip.setDate(time);
+	 	        masscanipService.insert(masscanip);
+	        }
+	       
 
 
 		} catch (InterruptedException e) {
