@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
+import com.jz.bigdata.common.assets.service.IAssetsService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
-import com.jz.bigdata.common.masscanip.service.IMasscanipService;
 import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.ConfigProperty;
@@ -46,8 +46,8 @@ public class CollectorController {
 
 //	@Resource
 //	private MascanCollector mascanCollector;
-	@Resource(name="MasscanipService")
-	private IMasscanipService masscanipService;
+	@Resource(name="assetsService")
+	private IAssetsService masscanipService;
 
 	// 获取采集器开启或关闭状态，true为开启，false为关闭
 	@ResponseBody
@@ -116,7 +116,7 @@ public class CollectorController {
 	@ResponseBody
 	@RequestMapping(value = "/startMasscanCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启masscan扫描")
-	public String startMasscanCollector(String stateip,String endip) {
+	public String startMasscanCollector(String startip,String endip) {
 		ArrayList<String> list = new ArrayList<String>();
 		list.add("192.168.0.1");
 		list.add("192.168.0.2");

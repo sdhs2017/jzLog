@@ -12,10 +12,9 @@ import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.Resource;
 
-import com.jz.bigdata.common.masscanip.entity.Masscanip;
-import com.jz.bigdata.common.masscanip.service.IMasscanipService;
+import com.jz.bigdata.common.assets.entity.Assets;
+import com.jz.bigdata.common.assets.service.IAssetsService;
 import com.jz.bigdata.util.ExecuteCmd;
 import com.jz.bigdata.util.Uuid;
 
@@ -54,13 +53,13 @@ public class MascanCollector implements Runnable {
 
 	final long awaitTime = 100 * 1000;
 	private ExecutorService threadPool=Executors.newCachedThreadPool();
-	private IMasscanipService masscanipService;
+	private IAssetsService assetsService;
 	
-	public MascanCollector(Semaphore semaphore, String IPS, String[] ports,IMasscanipService masscanipService) {
+	public MascanCollector(Semaphore semaphore, String IPS, String[] ports,IAssetsService assetsService) {
 		this.semaphore = semaphore;
 		this.IPS = IPS;
 		this.ports = ports;
-		this.masscanipService=masscanipService;
+		this.assetsService=assetsService;
 	}
 	
 
@@ -88,11 +87,11 @@ public class MascanCollector implements Runnable {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        String time = format.format(endtime.getTime());//这个就是把时间戳经过处理得到期望格式的时间
 	        if(null!=resultIp&&!resultIp.equals("")){
-	        	Masscanip masscanip =new Masscanip();
-	 	        masscanip.setId(Uuid.getUUID());
-	 	        masscanip.setIp(resultIp);
-	 	        masscanip.setDate(time);
-	 	        masscanipService.insert(masscanip);
+	        	Assets assets =new Assets();
+	        	assets.setId(Uuid.getUUID());
+	        	assets.setIp(resultIp);
+	        	assets.setCreateTime(time);
+	 	        assetsService.insert(assets);
 	        }
 	       
 
@@ -103,12 +102,12 @@ public class MascanCollector implements Runnable {
 		}
 	}
 
-	public MascanCollector(List<String> list, String[] ports,IMasscanipService masscanipService) {
+	public MascanCollector(List<String> list, String[] ports,IAssetsService assetsService) {
 
 		final Semaphore semaphore = new Semaphore(5);
 
 		for (String ip : list) {
-			threadPool.execute(new MascanCollector(semaphore, ip, ports,masscanipService));
+			threadPool.execute(new MascanCollector(semaphore, ip, ports,assetsService));
 		}
 		 threadPool.shutdown();
 

@@ -9,8 +9,8 @@ import com.jz.bigdata.business.logAnalysis.collector.kafka.KafkaCollector;
 import com.jz.bigdata.business.logAnalysis.collector.masscan.MascanCollector;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
+import com.jz.bigdata.common.assets.service.IAssetsService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
-import com.jz.bigdata.common.masscanip.service.IMasscanipService;
 import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.ConfigProperty;
@@ -144,7 +144,7 @@ public class CollectorServiceImpl implements ICollectorService{
 	 * 启动Masscan
 	 */
 	@Override
-	public boolean startMasscanCollector(List<String> list,String [] ports,IMasscanipService masscanipService) {
+	public boolean startMasscanCollector(List<String> list,String [] ports,IAssetsService masscanipService) {
 		
 		boolean result = false;
 		//如果为true，则表示已经开启

@@ -3,8 +3,8 @@ package com.jz.bigdata.business.logAnalysis.collector.service;
 import java.util.List;
 
 import com.jz.bigdata.common.alarm.service.IAlarmService;
+import com.jz.bigdata.common.assets.service.IAssetsService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
-import com.jz.bigdata.common.masscanip.service.IMasscanipService;
 import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.ConfigProperty;
@@ -20,6 +20,6 @@ public interface ICollectorService {
 	public boolean stateKafkaCollector() ;
 
 	
-	public boolean startMasscanCollector(List<String> list,String [] ports,IMasscanipService masscanipService);
+	public boolean startMasscanCollector(List<String> list,String [] ports,IAssetsService masscanipService);
 	public boolean stateMasscanCollector() ;
 }
