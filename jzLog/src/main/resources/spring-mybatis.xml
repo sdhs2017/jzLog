@@ -442,11 +442,11 @@
    		</property> 
 	</bean>
 	
-	<!-- masscanip自定义词典业务mapper -->
-	<bean id="masscanipSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<!-- assets自定义词典业务mapper -->
+	<bean id="assetsSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
-		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/masscanip/**/*.xml"></property>
+		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/assets/**/*.xml"></property>
 		
 		<property name="plugins">  
        		<array>  
@@ -554,8 +554,8 @@
 	</bean>
 	<!--扫描ip表配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.jz.bigdata.common.masscanip" />
-		<property name="sqlSessionFactoryBeanName" value="masscanipSqlSessionFactory"></property>
+		<property name="basePackage" value="com.jz.bigdata.common.assets" />
+		<property name="sqlSessionFactoryBeanName" value="assetsSqlSessionFactory"></property>
 	</bean>
 	<!-- es spring官方封装测试 -->
 	<!-- 远程机器 -->
