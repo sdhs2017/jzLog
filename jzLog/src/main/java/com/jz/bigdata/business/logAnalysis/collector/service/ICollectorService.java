@@ -20,6 +20,6 @@ public interface ICollectorService {
 	public boolean stateKafkaCollector() ;
 
 	
-	public boolean startMasscanCollector(List<String> list,String [] ports,IAssetsService masscanipService);
+	public boolean startMasscanCollector(String startip,String endip,String [] ports,IAssetsService masscanipService);
 	public boolean stateMasscanCollector() ;
 }

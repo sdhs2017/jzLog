@@ -1,10 +1,10 @@
 package com.jz.bigdata.business.logAnalysis.collector.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -116,29 +116,31 @@ public class CollectorController {
 	@ResponseBody
 	@RequestMapping(value = "/startMasscanCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启masscan扫描")
-	public String startMasscanCollector(String startip,String endip) {
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("192.168.0.1");
-		list.add("192.168.0.2");
-		list.add("192.168.0.3");
-		list.add("192.168.0.4");
-		list.add("192.168.0.5");
-		list.add("192.168.0.6");
-		list.add("192.168.0.7");
-		list.add("192.168.0.8");
-		list.add("192.168.0.9");
-		list.add("192.168.0.10");
-		list.add("192.168.0.11");
-		list.add("192.168.0.12");
-		list.add("192.168.0.13");
-		list.add("192.168.0.14");
-		list.add("192.168.0.15");
-		list.add("192.168.0.16");
-		list.add("192.168.0.17");
-		list.add("192.168.0.18");
-		list.add("192.168.0.19");
-		list.add("192.168.0.20");
+	public String startMasscanCollector(HttpServletRequest request) {
+//		ArrayList<String> list = new ArrayList<String>();
+//		list.add("192.168.0.1");
+//		list.add("192.168.0.2");
+//		list.add("192.168.0.3");
+//		list.add("192.168.0.4");
+//		list.add("192.168.0.5");
+//		list.add("192.168.0.6");
+//		list.add("192.168.0.7");
+//		list.add("192.168.0.8");
+//		list.add("192.168.0.9");
+//		list.add("192.168.0.10");
+//		list.add("192.168.0.11");
+//		list.add("192.168.0.12");
+//		list.add("192.168.0.13");
+//		list.add("192.168.0.14");
+//		list.add("192.168.0.15");
+//		list.add("192.168.0.16");
+//		list.add("192.168.0.17");
+//		list.add("192.168.0.18");
+//		list.add("192.168.0.19");
+//		list.add("192.168.0.20");
 		String [] ports = {};
+		String startip=request.getParameter("startip");
+		String endip=request.getParameter("endip");
 		boolean resultstate = collectorService.stateMasscanCollector();
 		Map<String, Object> map = new HashMap<>();
 		if(resultstate==false){
@@ -146,7 +148,7 @@ public class CollectorController {
 			map.put("msg", "数据采集器开启失败，请勿重复开启");
 			return JSONArray.fromObject(map).toString();
 		}else{
-			boolean result = collectorService.startMasscanCollector(list, ports,masscanipService);
+			boolean result = collectorService.startMasscanCollector(startip,endip, ports,masscanipService);
 			if(result==true){
 				map.put("state", result);
 				map.put("msg", "数据采集器开启成功");
