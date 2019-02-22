@@ -61,10 +61,10 @@ public class AssetsServiceimpl implements IAssetsService{
 		// 总数添加到map
 		map.put("count", (listCount.get(0)));
 		// 查询所有数据
-		List<Assets> listEquipment = assetsDao.selectAllByPage(startRecord,pageSize);
+		List<Assets> listAssets = assetsDao.selectAllByPage(startRecord,pageSize);
 		// System.err.println(listEquipment.get(0).getCreateTime());
 		// 数据添加到map
-		map.put("equipment", listEquipment);
+		map.put("assets", listAssets);
 		return JSONArray.fromObject(map).toString();
 	}
 

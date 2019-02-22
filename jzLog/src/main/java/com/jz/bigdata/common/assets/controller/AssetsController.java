@@ -13,7 +13,9 @@ import com.jz.bigdata.common.Constant;
 import com.jz.bigdata.common.assets.entity.Assets;
 import com.jz.bigdata.common.assets.service.IAssetsService;
 import com.jz.bigdata.util.DescribeLog;
-@Controller(value="assets")
+
+@Controller
+@RequestMapping("/assets")
 public class AssetsController {
 	
 	@Resource(name="assetsService")
