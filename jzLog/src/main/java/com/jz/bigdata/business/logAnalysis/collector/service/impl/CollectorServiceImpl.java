@@ -162,9 +162,12 @@ public class CollectorServiceImpl implements ICollectorService{
 		List<Assets> assetsList=masscanipService.selectAll();
 		
 		for(int i=start;i<=end;i++){
-			if(!assetsList.contains(startips[0]+"."+startips[1]+"."+startips[2]+"."+i)){
-				list.add(startips[0]+"."+startips[1]+"."+startips[2]+"."+i);
+			for(Assets assets:assetsList){
+				if(assets.getIp().contains(startips[0]+"."+startips[1]+"."+startips[2]+"."+i)==false){
+					list.add(startips[0]+"."+startips[1]+"."+startips[2]+"."+i);
+				}	
 			}
+			
 		}
 		Masscan = new MascanCollector(list,ports,masscanipService);
 		if(!Masscan.getStarted()){
