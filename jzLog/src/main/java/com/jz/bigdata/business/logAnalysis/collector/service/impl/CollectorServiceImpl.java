@@ -12,6 +12,7 @@ import com.jz.bigdata.business.logAnalysis.collector.kafka.KafkaCollector;
 import com.jz.bigdata.business.logAnalysis.collector.masscan.MascanCollector;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
+import com.jz.bigdata.common.assets.entity.Assets;
 import com.jz.bigdata.common.assets.service.IAssetsService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
 import com.jz.bigdata.common.users.service.IUsersService;
@@ -158,12 +159,13 @@ public class CollectorServiceImpl implements ICollectorService{
 		
 		int start=Integer.valueOf(startips[3]);
 		int end=Integer.valueOf(endips[3]);
+		List<Assets> assetsList=masscanipService.selectAll();
 		
 		for(int i=start;i<=end;i++){
-			list.add(startips[0]+"."+startips[1]+"."+startips[2]+"."+i);
+			if(!assetsList.contains(startips[0]+"."+startips[1]+"."+startips[2]+"."+i)){
+				list.add(startips[0]+"."+startips[1]+"."+startips[2]+"."+i);
+			}
 		}
-		
-		
 		Masscan = new MascanCollector(list,ports,masscanipService);
 		if(!Masscan.getStarted()){
 			result=true;
