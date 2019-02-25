@@ -316,40 +316,17 @@
 	</select>
 	
 	
-	<!-- 根据id修改数据 -->
-	<update id="upRiskById" >
-		update assets  <set >
-			<if test="high_risk != null" >
-	        	high_risk = #{high_risk,jdbcType=VARCHAR},
-	      	</if>
-	      	<if test="moderate_risk != null" >
-	        	moderate_risk = #{moderate_risk,jdbcType=VARCHAR},
-	      	</if>
-	      	<if test="low_risk != null" >
-	        	low_risk = #{low_risk,jdbcType=VARCHAR},
-	      	</if>
-	    </set>
-	    where id = #{id,jdbcType=VARCHAR}
-
-	</update>
-	
-	
-	<!-- 查询所有数据 -->
-	<select id="selectAllAssetsByRisk" 	resultMap="BaseResultMapUserName">
-		<!-- <bind name="name" value="'%' + name + '%'" /> -->
-		select
-		<!-- 引用查询字段 -->
-		<include refid="Base_Column_List" /> 
-		from assets
-		
-	</select>
-	
-	
-	
-	<!--  查询总数量 -->
- 	<select id="count_Number"  >
+	 <!--   查询增量数据-->
+	<select id="selectByIncrement" resultMap="BaseResultMapUserName"  >
 <!--   <bind name="name" value="'%' + name + '%'" /> -->
-	    select count(*) as count from assets 
+	    select 
+		<!-- 引用查询字段 -->
+		<include refid="Base_Column_List" />
+		from assets where 1=1 
+	   <if test="oldDate != null and oldDate !=''" > and createTime  <![CDATA[>]]> #{oldDate,jdbcType=VARCHAR} </if>
+	   
+	   <if test="date != null and date !=''" > and createTime <![CDATA[<]]> #{date,jdbcType=VARCHAR} </if>
+		
 	</select>
 	
 

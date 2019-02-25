@@ -1,6 +1,8 @@
 package com.jz.bigdata.common.assets.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +14,6 @@ import org.springframework.stereotype.Service;
 import com.jz.bigdata.common.assets.dao.IAssetsDao;
 import com.jz.bigdata.common.assets.entity.Assets;
 import com.jz.bigdata.common.assets.service.IAssetsService;
-import com.jz.bigdata.common.equipment.entity.Equipment;
-
 import net.sf.json.JSONArray;
 
 
@@ -22,7 +22,9 @@ public class AssetsServiceimpl implements IAssetsService{
 	
 	@Resource
 	private IAssetsDao assetsDao;
-
+	
+	private String oldDate;
+	
 	@Override
 	public int insert(Assets assets) {
 		// TODO Auto-generated method stub
@@ -31,7 +33,6 @@ public class AssetsServiceimpl implements IAssetsService{
 
 	@Override
 	public List<Assets> selectAll() {
-		// TODO Auto-generated method stub
 		return assetsDao.selectAll();
 	}
 
@@ -78,6 +79,15 @@ public class AssetsServiceimpl implements IAssetsService{
 	public Assets selectOneAssets(Assets assets) {
 		// TODO Auto-generated method stub
 		return assetsDao.selectOneAssets(assets);
+	}
+
+	@Override
+	public List<Assets> selectByIncrement() {
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String date =format.format(new Date());
+		List<Assets> list  = assetsDao.selectByIncrement(oldDate, date);
+		oldDate=date;
+		return list;
 	}
 	
 

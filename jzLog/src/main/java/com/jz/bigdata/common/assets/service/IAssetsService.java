@@ -2,6 +2,7 @@ package com.jz.bigdata.common.assets.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 
 import com.jz.bigdata.common.assets.entity.Assets;
 
@@ -20,6 +21,8 @@ public interface IAssetsService {
 	List<String> count();
 	
 	Assets selectOneAssets(Assets assets);
+	
+	List<Assets> selectByIncrement();
 
 
 }

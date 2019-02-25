@@ -118,5 +118,17 @@ public class AssetsController {
 		return assetsService.selectOneAssets(assets);
 	}
 	
+	
+	/**
+	 * @param request
+	 * @param department
+	 * @return 查询信息
+	 */
+	@ResponseBody
+	@RequestMapping(value="/selectByIncrement",produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="查询所有增量资产信息")
+	public List<Assets> selectByIncrement(){
+		return assetsService.selectByIncrement();
+	}
 
 }

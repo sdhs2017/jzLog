@@ -22,7 +22,7 @@ public interface IAssetsDao {
 	
 	Assets selectOneAssets(Assets assets);
 
-	
+	List<Assets> selectByIncrement(@Param("oldDate")String oldDate,@Param("date")String date);
 	
 
 }
