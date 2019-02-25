@@ -153,8 +153,8 @@ public class CollectorServiceImpl implements ICollectorService{
 		//如果为true，则表示已经开启
 		List<String> list =new ArrayList<>();
 		
-		String[] startips= startip.split(".");
-		String[] endips= endip.split(".");
+		String[] startips= startip.split("\\.");
+		String[] endips= endip.split("\\.");
 		
 		int start=Integer.valueOf(startips[3]);
 		int end=Integer.valueOf(endips[3]);
