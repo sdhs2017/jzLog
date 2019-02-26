@@ -85,13 +85,13 @@ public class AssetsServiceimpl implements IAssetsService{
 	public List<Assets> selectByIncrement() {
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String date =format.format(new Date());
+		
 		if(oldDate==null||("").equals(oldDate)){
 			oldDate=date;
 		}
-		List<Assets> list  = assetsDao.selectByIncrement(oldDate, date);
-		System.out.println(list.size()+"时间："+oldDate);
+		String oldTime=oldDate;
+		List<Assets> list  = assetsDao.selectByIncrement(oldTime, date);
 		oldDate=date;
-		System.err.println(list.size()+"时间："+oldDate);
 		return list;
 	}
 	
