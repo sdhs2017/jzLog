@@ -160,12 +160,16 @@ public class CollectorServiceImpl implements ICollectorService{
 		int start=Integer.valueOf(startips[3]);
 		int end=Integer.valueOf(endips[3]);
 		List<Assets> assetsList=masscanipService.selectAll();
-		
+		Boolean isIn=false;
 		for(int i=start;i<=end;i++){
 			for(Assets assets:assetsList){
-				if(assets.getIp().contains(startips[0]+"."+startips[1]+"."+startips[2]+"."+i)==false){
-					list.add(startips[0]+"."+startips[1]+"."+startips[2]+"."+i);
-				}	
+				if(assets.getIp().equals((startips[0]+"."+startips[1]+"."+startips[2]+"."+i))==true){
+					isIn=true;
+					break;
+				}
+			}
+			if(isIn==false){
+				list.add((startips[0]+"."+startips[1]+"."+startips[2]+"."+i));
 			}
 			
 		}
