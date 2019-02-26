@@ -72,7 +72,6 @@
 							<input type="text" class="form-control endIp"  placeholder="结束IP">
 						</div>					
 						<button class="btn btn-primary scan_device" ><i class="glyphicon glyphicon-search"></i>扫描</button>
-						<button class="btn btn-primary check_device" ><i class="glyphicon glyphicon-dashboard"></i>检测</button>
 				  	</div>
 				</form>
 			</div> 
@@ -245,37 +244,22 @@
 				})
 			}
 			
-			//获取扫描的资产 pageIndex-当前页码
+			//获取扫描的资产 
 			function getScanDeviceData(url){
-				/* var sendObj = {};
-				sendObj.pageIndex = pageIndex;//
-				sendObj.pageSize = pageSize; */
-				var sfunc = function(data){
+				/* var sfunc = function(data){
 					jointDeviceList(data);
-					/* //设备数据
-					var deviceData = data[0].assets;
-					if(pageIndex == 1){
-						//定义第一次请求
-						num = false;
-						//总条数
-						var count = data[0].count.count;
-						//添加到页面中
-						$(".allCountBox>b").html(count);
-						//总页数
-						var pageCount = Math.ceil(count/pageSize);
-						//创建分页
-						creatPage(pageCount);
-						//拼接到页面
-						jointDeviceList(deviceData);
-						num = true;
-					}else{
-						//拼接到页面
-						jointDeviceList(deviceData);
-					} */
 					
 				}
 				//发送请求
-				ajaxPost(url,'',sfunc);
+				ajaxPost(url,'',sfunc); */			
+				$.ajax({
+					type:"post",
+					url:url,
+					data:"",
+					success:function(data){
+						jointDeviceList(data);
+					}
+				})
 			}
 			
 			//创建分页函数   pageCount-总页数
@@ -343,7 +327,7 @@
 				 	obj.upDateTime = obj.upDateTime.split(".")[0];
 				 	obj.endTime = obj.endTime.split(".")[0];
 				 	
-				 	html = '<tr>'   
+				 	html = '<tr class="item_tr">'   
 						+		 '<td> <input type="checkbox" name="'+obj.id+'"></td>'
 						+        '<td class="device_ip">'+obj.ip+'</td>'
 			            +        '<td class="device_name">'
@@ -375,7 +359,9 @@
 				 		 $("td[threat-id="+obj.id+"]").append('<span class="middleThreat" title="中危事件数量">'+obj.moderate_risk+'</span>')
 				 	 }
 				}
-				
+				//检测状态
+				checkDeviceStatus();
+				setInterval(checkDeviceStatus,300000);
 				//添加到页面中
 				//$(".device_list tbody").html(html);
 			}
@@ -394,7 +380,30 @@
 				location.href="updateDevice.html";
 			})
 			
-			
+			function checkDeviceStatus(){
+				//获取列表中的设备
+				var lists = $(".item_tr");
+				
+				var respose_time;
+				var className = '';
+				
+				
+				if(lists.length == 0){
+					
+				}else{
+					for(var i=0;i < lists.length;i++){
+						respose_time = Math.floor(1+Math.random()*(15-1))
+						$(lists[i]).children('.device_responseTime').html(respose_time+' min');
+						if(respose_time>10){
+							$(lists[i]).children('.device_status').html('<span class="label label-default">离线</span>');
+						}else if(respose_time>5 && respose_time<=10){
+							$(lists[i]).children('.device_status').html('<span class="label label-warning">超时</span>');
+						}else{
+							$(lists[i]).children('.device_status').html('<span class="label label-success">正常</span>');
+						}
+					}
+				}
+			}
 			
 			
 			//数据对象过滤  null/undefined  转为'-';
