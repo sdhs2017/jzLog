@@ -171,7 +171,7 @@ public class CollectorServiceImpl implements ICollectorService{
 			if(isIn==false){
 				list.add((startips[0]+"."+startips[1]+"."+startips[2]+"."+i));
 			}
-			
+			isIn=false;
 		}
 		Masscan = new MascanCollector(list,ports,masscanipService);
 		if(!Masscan.getStarted()){
