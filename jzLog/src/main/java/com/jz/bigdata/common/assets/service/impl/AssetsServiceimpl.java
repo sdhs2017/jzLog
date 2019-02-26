@@ -27,7 +27,6 @@ public class AssetsServiceimpl implements IAssetsService{
 	
 	@Override
 	public int insert(Assets assets) {
-		// TODO Auto-generated method stub
 		return assetsDao.insert(assets);
 	}
 
@@ -38,13 +37,11 @@ public class AssetsServiceimpl implements IAssetsService{
 
 	@Override
 	public int updateById(Assets assets) {
-		// TODO Auto-generated method stub
 		return assetsDao.updateById(assets);
 	}
 
 	@Override
 	public int delete(String[] ids) {
-		// TODO Auto-generated method stub
 		return assetsDao.delete(ids);
 	}
 
@@ -71,22 +68,30 @@ public class AssetsServiceimpl implements IAssetsService{
 
 	@Override
 	public List<String> count() {
-		// TODO Auto-generated method stub
 		return assetsDao.count();
 	}
 
 	@Override
 	public Assets selectOneAssets(Assets assets) {
-		// TODO Auto-generated method stub
 		return assetsDao.selectOneAssets(assets);
 	}
 
+	/**
+	 * @return
+	 * @description
+	 * 扫描增量数据 
+	 */
 	@Override
 	public List<Assets> selectByIncrement() {
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String date =format.format(new Date());
+		if(oldDate==null||("").equals(oldDate)){
+			oldDate=date;
+		}
 		List<Assets> list  = assetsDao.selectByIncrement(oldDate, date);
+		System.out.println(list.size()+"时间："+oldDate);
 		oldDate=date;
+		System.err.println(list.size()+"时间："+oldDate);
 		return list;
 	}
 	
