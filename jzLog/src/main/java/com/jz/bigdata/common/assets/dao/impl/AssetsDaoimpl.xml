@@ -28,6 +28,7 @@
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
+		<result column="ports" jdbcType="VARCHAR" property="ports" />
 		<association property="user" javaType="com.jz.bigdata.common.users.entity.User">
              <id property="userId" column="id"/>
              <result property="name" column="userName"/>
@@ -64,6 +65,7 @@
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
+		<result column="ports" jdbcType="VARCHAR" property="ports" />
 	</resultMap>
 	
 	
@@ -75,7 +77,7 @@
 	<sql id="Base_Column_List">
 		assets.id, assets.name, hostName, type, ip,createTime,assets.upDateTime,endTime,
 		startUp,userId,assets.departmentId,logType,macAdress,system,systemVersion,assetNum,
-		serialNum,assets.describe,valuation,log_level,high_risk,moderate_risk,low_risk,assets.departmentNodeId
+		serialNum,assets.describe,valuation,log_level,high_risk,moderate_risk,low_risk,assets.departmentNodeId,ports
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -165,7 +167,10 @@
 				log_level,
 			</if>
 			<if test="departmentNodeId !=null and  departmentNodeId !=''">
-				departmentNodeId
+				departmentNodeId,
+			</if>
+			<if test="ports !=null and  ports !=''">
+				ports
 			</if>
 		</trim> 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -230,7 +235,10 @@
 				#{log_level,jdbcType=VARCHAR},
 			</if>
 			<if test="departmentNodeId != null and  departmentNodeId !='' and  departmentNodeId !=0">
-				#{departmentNodeId,jdbcType=INTEGER}
+				#{departmentNodeId,jdbcType=INTEGER},
+			</if>
+			<if test="ports !=null and  ports !=''">
+				#{ports,jdbcType=INTEGER}
 			</if>
 		</trim>
 	</insert>
@@ -246,7 +254,7 @@
 		update assets set
 		name=#{name},hostName=#{hostName},type=#{type},ip=#{ip},startUp=#{startUp},logType=#{logType},
 		macAdress=#{macAdress},system=#{system},systemVersion=#{systemVersion},assetNum=#{assetNum},serialNum=#{serialNum},
-		assets.describe=#{describe},valuation=#{valuation},log_level=#{log_level},
+		assets.describe=#{describe},valuation=#{valuation},log_level=#{log_level},ports=#{ports},
 		<!-- if判断语句 -->
 		<choose>
 			<when test="upDateTime != null and upDateTime !='' and upDateTime !='null'">
