@@ -138,7 +138,7 @@ public class CollectorController {
 //		list.add("192.168.0.18");
 //		list.add("192.168.0.19");
 //		list.add("192.168.0.20");
-		String [] ports = {};
+		String  ports = configProperty.getMasscan_ports();
 		String startip=request.getParameter("startip");
 		String endip=request.getParameter("endip");
 		boolean resultstate = collectorService.stateMasscanCollector();

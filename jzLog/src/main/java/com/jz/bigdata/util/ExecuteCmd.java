@@ -5,8 +5,11 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +21,7 @@ import java.util.regex.Pattern;
 public class ExecuteCmd {
 
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	public static final String LINE_SEPARATO = "\\t";
 	
 	/**
 	 * 执行命令行，返回执行结果
@@ -29,23 +33,24 @@ public class ExecuteCmd {
 		
 		Map<String, String> result = new HashMap<>() ;
 		BufferedReader bufrIn = null;
-		BufferedReader bufrError = null;
+		//BufferedReader bufrError = null;
 		Process process = null;
 		try {
 			process = Runtime.getRuntime().exec(cmd);
 			
 			bufrIn = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
-			bufrError = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
+			//bufrError = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
 
 			StringBuilder stringBuffer = new StringBuilder();
 			// 读取输出
 			String line = null;
 			while ((line = bufrIn.readLine()) != null) {
 				stringBuffer.append(line).append('\n');
+				System.out.println(line);
 			}
-			while ((line = bufrError.readLine()) != null) {
+			/*while ((line = bufrError.readLine()) != null) {
 				stringBuffer.append(line).append('\n');
-			}
+			}*/
 			//每个命令存储自己返回数据-用于后续对返回数据进行处理
 			result.put(cmd, stringBuffer.toString());
 		} catch (IOException e) {
@@ -56,7 +61,7 @@ public class ExecuteCmd {
 			result.put(cmd, cmd+"命令行为空");
 		} finally {
 			closeStream(bufrIn);
-			closeStream(bufrError);
+			//closeStream(bufrError);
 			// 销毁进程
 			if (process!=null) {
 				process.destroy();
@@ -229,6 +234,94 @@ public class ExecuteCmd {
 	}
 	
 	/**
+	 * 执行命令行，返回与关键字匹配的执行结果
+	 * @param cmd 命令行
+	 * @param dir 执行命令进程需要的工作目录，null表示与当前主进程工作目录相同
+	 * @param rgexs 多个需要匹配的内容
+	 * @return
+	 */
+	public static Map<String, ArrayList<String>> execCmd(String cmd,File dir,String [] rgexs) {
+		
+		Map<String, ArrayList<String>> result = new HashMap<>();
+		ArrayList<String> list = new ArrayList<String>();
+		BufferedReader bufrIn = null;
+		Process process = null;
+		
+		try {
+			process = Runtime.getRuntime().exec(cmd, null, dir);
+			
+			bufrIn = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+
+			StringBuilder stringBuffer = new StringBuilder();
+			// 读取输出
+			String line = null;
+			while ((line = bufrIn.readLine()) != null) {
+				//stringBuffer.append(line.trim()).append(LINE_SEPARATO);
+				list.add(line.trim());
+			}
+			//每个命令存储自己返回数据-用于后续对返回数据进行处理
+			//result.put("masscan"+getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"), stringBuffer.toString());
+			result.put("masscan"+getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"), list);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  finally {
+			closeStream(bufrIn);
+			// 销毁进程
+			if (process!=null) {
+				process.destroy();
+			}
+		}
+		return result;
+		
+	}
+	
+	/**
+	 * 执行命令行，返回与关键字匹配的执行结果
+	 * @param cmd 命令行
+	 * @param dir 执行命令进程需要的工作目录，null表示与当前主进程工作目录相同
+	 * @param rgexs 多个需要匹配的内容
+	 * @return
+	 */
+	public static Map<String, Set<String>> execCmd(String cmd,String ss) {
+		
+		Map<String, Set<String>> result = new HashMap<>();
+		Set<String> list = new HashSet<String>();
+		BufferedReader bufrIn = null;
+		Process process = null;
+		
+		try {
+			process = Runtime.getRuntime().exec(cmd);
+			
+			bufrIn = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+
+			StringBuilder stringBuffer = new StringBuilder();
+			// 读取输出
+			String line = null;
+			while ((line = bufrIn.readLine()) != null) {
+				//stringBuffer.append(line.trim()).append(LINE_SEPARATO);
+				String ports = getSubUtilSimple(line.trim(), "port\\s+(.*?)[/]");
+				String ip = getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+				list.add(ip+"_"+ports);
+			}
+			//每个命令存储自己返回数据-用于后续对返回数据进行处理
+			//result.put("masscan"+getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"), stringBuffer.toString());
+			result.put("masscan"+getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"), list);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  finally {
+			closeStream(bufrIn);
+			// 销毁进程
+			if (process!=null) {
+				process.destroy();
+			}
+		}
+		return result;
+		
+	}
+	
+	/**
 	 * 关闭流
 	 * @param stream
 	 */
@@ -258,13 +351,33 @@ public class ExecuteCmd {
          return null;  
     }
  	
+ 	/**
+	 * 正则匹配
+	 * @param soap
+	 * @param rgex
+	 * @return 返回中括号的内容
+	 */
+ 	public static String getSubUtilSimple(String soap, String rgex) {
+ 		Pattern pattern = Pattern.compile(rgex);// 匹配的模式
+ 		Matcher m = pattern.matcher(soap);
+ 		while (m.find()) {
+ 			return m.group(1);
+ 		}
+ 		return null;
+ 	}
+ 	
  	public static void main(String [] args) {
- 		String [] sss = {"1","1","1","0","1"};
-		for(String s : sss) {
-			if (!s.equals("1")) {
-				break;
-			}
-			System.out.println(s);
-		}
+ 		
+ 		String startIP = "2.16.8.0";
+ 		String [] ips = startIP.split(".");
+ 		ArrayList<String> list = new ArrayList<String>();
+ 		for(int i = 0;i<=255;i++ ) {
+ 			//Integer.valueOf(ips[3]);
+ 			list.add(ips[0]+"."+ips[1]+"."+ips[2]+"."+i);
+ 		}
+		String[] rgexs = { "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", "Discovered" };
+		Map<String, String> result = ExecuteCmd.execCmd("D:/Computer_Science/IP探测/masscan/masscan 192.168.0.12 -p10-1000", null, rgexs, true);
+		System.out.println(result);
+ 		//executeCmd.execCmd(cmd);
 	}
 }
