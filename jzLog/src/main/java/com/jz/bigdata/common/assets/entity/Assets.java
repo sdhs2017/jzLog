@@ -29,6 +29,8 @@ public class Assets {
 	private int moderate_risk;//中危
 	private int low_risk;//低危
 	private int departmentNodeId;//部门最上级id
+	private String ports;
+	
 	public String getId() {
 		return id;
 	}
@@ -184,6 +186,12 @@ public class Assets {
 	}
 	public void setDepartmentNodeId(int departmentNodeId) {
 		this.departmentNodeId = departmentNodeId;
+	}
+	public String getPorts() {
+		return ports;
+	}
+	public void setPorts(String ports) {
+		this.ports = ports;
 	}
 	
 	

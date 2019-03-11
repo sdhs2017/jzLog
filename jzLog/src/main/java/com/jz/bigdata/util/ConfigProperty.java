@@ -52,6 +52,9 @@ public class ConfigProperty {
     
     @Value("#{prop.masscan_path}")
     private String masscan_path;
+    
+    @Value("#{prop.masscan_ports}")
+    private String masscan_ports;
 
 	public String getHost_user() {
 		return host_user;
@@ -171,6 +174,14 @@ public class ConfigProperty {
 
 	public void setMasscan_path(String masscan_path) {
 		this.masscan_path = masscan_path;
+	}
+
+	public String getMasscan_ports() {
+		return masscan_ports;
+	}
+
+	public void setMasscan_ports(String masscan_ports) {
+		this.masscan_ports = masscan_ports;
 	}
 
     
