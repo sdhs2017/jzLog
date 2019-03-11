@@ -352,6 +352,7 @@ $(".openSelect").click(function(){
 				} 
 			}(,)
 			ajaxPost('../../action/insert.do',sendObj,sfunc); */
+			console.log(logDetailArr[obj.eventDom.attr("data-index")])
 			//创建特征到页面中
 			$(".keywordsBox").append('<span>'+obj.selectedText+'<i class="glyphicon glyphicon-remove removeKeywords"></i></span>');
 			$(".keywordsBox").attr("log-type",logDetailArr[obj.eventDom.attr("data-index")].type);
@@ -434,7 +435,7 @@ $('[name="status"]').bootstrapSwitch({
 				  "sFunc":function(obj){
 					//创建特征到页面中
 					$(".keywordsBox").append('<span>'+obj.selectedText+'<i class="glyphicon glyphicon-remove removeKeywords"></i></span>');
-					$(".keywordsBox").attr("log-type",logDetailArr[obj.eventDom.attr("data-index")].type);
+					$(".keywordsBox").attr("log-type",logDetailArr[obj.eventDom.next().attr("data-index")].type);
 					//鼠标悬停在动作特征除 显示删除图表
 					$(".keywordsBox span").hover(function(){
 						$(this).children("i").css("display","block");
