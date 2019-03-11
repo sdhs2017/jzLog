@@ -283,15 +283,20 @@ public class ExecuteCmd {
 	 * @param rgexs 多个需要匹配的内容
 	 * @return
 	 */
-	public static Map<String, Set<String>> execCmd(String cmd,String ss) {
+	public static Map<String, Set<String>> execCmd(String cmd,String filepath) {
 		
 		Map<String, Set<String>> result = new HashMap<>();
 		Set<String> list = new HashSet<String>();
 		BufferedReader bufrIn = null;
 		Process process = null;
+		File file = null;
+		
+		if(filepath!=null&&!filepath.equals("")) {
+			file = new File(filepath);
+		}
 		
 		try {
-			process = Runtime.getRuntime().exec(cmd);
+			process = Runtime.getRuntime().exec(cmd, null, file);
 			
 			bufrIn = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 
