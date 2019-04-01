@@ -55,6 +55,9 @@ public class ConfigProperty {
     
     @Value("#{prop.masscan_ports}")
     private String masscan_ports;
+    
+    @Value("#{prop.protocol}")
+    private String protocol;
 
 	public String getHost_user() {
 		return host_user;
@@ -184,5 +187,12 @@ public class ConfigProperty {
 		this.masscan_ports = masscan_ports;
 	}
 
-    
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
 }

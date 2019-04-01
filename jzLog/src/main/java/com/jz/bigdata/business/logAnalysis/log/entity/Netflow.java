@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 import com.google.gson.Gson;
@@ -76,7 +78,8 @@ public class Netflow {
 	private String ipv4_next_hop;//下一个心跳
 	private int sampling_algorithm;//抽样算法
 	private int in_bytes;//容量
-	private int protocol;//协议
+	private String protocol;//协议值
+	private String protocol_name;//协议名称
 	private int tcp_flags;//tcp标志
 	private int src_as;//
 	private int output_snmp;//输出snmp
@@ -141,12 +144,20 @@ public class Netflow {
 		this.in_bytes = in_bytes;
 	}
 
-	public int getProtocol() {
+	public String getProtocol() {
 		return protocol;
 	}
 
-	public void setProtocol(int protocol) {
+	public void setProtocol(String protocol) {
 		this.protocol = protocol;
+	}
+
+	public String getProtocol_name() {
+		return protocol_name;
+	}
+
+	public void setProtocol_name(String protocol_name) {
+		this.protocol_name = protocol_name;
 	}
 
 	public int getTcp_flags() {
@@ -439,7 +450,7 @@ public class Netflow {
 		private int l4_src_port;//源端口
 		private int sampling_algorithm;//抽样算法
 		private int in_bytes;//容量
-		private int protocol;//协议
+		private String protocol;//协议
 		private int tcp_flags;//tcp标志
 		private int l4_dst_port;//目的端口
 		private int src_as;//
@@ -499,10 +510,10 @@ public class Netflow {
 		public void setIn_bytes(int in_bytes) {
 			this.in_bytes = in_bytes;
 		}
-		public int getProtocol() {
+		public String getProtocol() {
 			return protocol;
 		}
-		public void setProtocol(int protocol) {
+		public void setProtocol(String protocol) {
 			this.protocol = protocol;
 		}
 		public int getTcp_flags() {
@@ -613,7 +624,7 @@ public class Netflow {
 		
 	}
 	
-	public Netflow(String log, Calendar cal) {
+	public Netflow(String log, Calendar cal, Map<String, String> protocolmap) {
 		
 		StringBuilder sb = new StringBuilder(log);
 		sb =sb.replace(sb.indexOf("@timestamp"),sb.indexOf("@version") ,"");
@@ -658,6 +669,9 @@ public class Netflow {
 		this.sampling_algorithm=netflow.getNetflow().getSampling_algorithm();
 		this.in_bytes=netflow.getNetflow().getIn_bytes();
 		this.protocol=netflow.getNetflow().getProtocol();
+		if (this.protocol!=null) {
+			this.protocol_name = protocolmap.get(this.protocol);
+		}
 		this.tcp_flags=netflow.getNetflow().getTcp_flags();
 		this.src_as=netflow.getNetflow().getSrc_as();
 		this.output_snmp=netflow.getNetflow().getOutput_snmp();
@@ -704,13 +718,14 @@ public class Netflow {
 					|| fields[i].getName().equals("logtime_month") || fields[i].getName().equals("logtime_year")
 					|| fields[i].getName().equals("operation_level") || fields[i].getName().equals("ip")
 					|| fields[i].getName().equals("ipv4_dst_addr") || fields[i].getName().equals("ipv4_src_addr")
-					|| fields[i].getName().equals("l4_src_port")|| fields[i].getName().equals("l4_dst_port")) {
+					|| fields[i].getName().equals("l4_src_port")|| fields[i].getName().equals("l4_dst_port")
+					|| fields[i].getName().equals("protocol_name")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": " + "true" + "\n");
 			}
 			if (fields[i].getName().equals("operation_des") || fields[i].getName().equals("ip")
 					|| fields[i].getName().equals("equipmentname") || fields[i].getName().equals("ipv4_dst_addr")
 					|| fields[i].getName().equals("ipv4_src_addr") || fields[i].getName().equals("l4_src_port")
-					|| fields[i].getName().equals("l4_dst_port")) {
+					|| fields[i].getName().equals("l4_dst_port") || fields[i].getName().equals("protocol_name")) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");
 			}
@@ -784,27 +799,16 @@ public class Netflow {
 				"          \"tags\" : []\r\n" + 
 				"}";
 		Calendar cal = Calendar.getInstance();
-//		Netflow net =new Netflow();
-//		net=net.SetNetflow(log, cal);
-//		System.out.println(net.getNetflow());
-//		System.out.println(net.getLogtime_year());
 		
 		System.out.println(new Netflow().toMapping());
 		
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-//		sdf.setTimeZone(TimeZone.getTimeZone("UTC+8"));
-//		
-//		String date = "2018-12-10T01:48:26.999Z";
-//		
-//		try {
-//			Date dates =sdf.parse(date);
-//			System.out.println(sdf.parse(date));
-//			System.out.println(dates);
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		
+		String mapstring = "{1:ICMP,3:IGMP,6:TCP,8:EGP,9:IGP,17:UDP,41:IPv6,89:OSPF}";
+    	
+    	Gson gson = new Gson();
+    	Map<String, String> map = new HashMap<String, String>();
+    	map = gson.fromJson(mapstring, map.getClass());
+		new Netflow(log, cal, map);
 		
 	}
 	

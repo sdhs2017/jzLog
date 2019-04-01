@@ -53,6 +53,8 @@ public class KafkaCollector implements Runnable {
     private IUsersService usersService;
 	public static Map<String,Object> map=new HashMap<String,Object>();
 	
+	Map<String, String> protocolmap = new HashMap<String, String>();
+	
 	public static List<Object> list=new ArrayList<Object>();
 	
 	
@@ -144,6 +146,10 @@ public class KafkaCollector implements Runnable {
 		equipmentLogType = equipmentService.selectLog_level();
 		
 		eventType = alarmService.selectByEmailState();
+		
+		Gson gson = new Gson();
+    	
+		protocolmap = gson.fromJson(this.configProperty.getProtocol(), protocolmap.getClass());
 		
 		
 		Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
@@ -405,7 +411,7 @@ public class KafkaCollector implements Runnable {
 				}else if(netflowmatcher.find()){
 					logType = LogType.LOGTYPE_NETFLOW;
 					try {
-						netflow = new Netflow(log, cal);
+						netflow = new Netflow(log, cal, protocolmap);
 //						netflow=netflow.SetNetflow(log, cal);
 						equipment = equipmentMap.get(netflow.getIp()+logType);
 						if (equipment!=null) {
