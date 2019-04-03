@@ -138,6 +138,19 @@ public class AssetCollector implements Callable<Set<String>>{
 		if (threadPool.isTerminated()) {
 			threadPool.shutdownNow();
 		}
+		try {
+			for(String ip_ports : future.get()) {
+				String[] ip_port = ip_ports.split("_");
+				ExecuteCmd.execCmd("nmap -p "+ip_port[1]+" "+ip_port[0]);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }
