@@ -32,6 +32,7 @@ public class Assets {
 	private String ports;
 	private String protocol;
 	private String state;
+	private String responseDate;
 	
 	public String getId() {
 		return id;
@@ -206,6 +207,12 @@ public class Assets {
 	}
 	public void setState(String state) {
 		this.state = state;
+	}
+	public String getResponseDate() {
+		return responseDate;
+	}
+	public void setResponseDate(String responseDate) {
+		this.responseDate = responseDate;
 	}
 	
 

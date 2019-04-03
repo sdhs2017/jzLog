@@ -31,6 +31,7 @@
 		<result column="ports" jdbcType="VARCHAR" property="ports" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
 		<result column="state" jdbcType="VARCHAR" property="state" />
+		<result column="responseDate" jdbcType="VARCHAR" property="responseDate" />
 		<association property="user" javaType="com.jz.bigdata.common.users.entity.User">
              <id property="userId" column="id"/>
              <result property="name" column="userName"/>
@@ -70,6 +71,7 @@
 		<result column="ports" jdbcType="VARCHAR" property="ports" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
 		<result column="state" jdbcType="VARCHAR" property="state" />
+		<result column="responseDate" jdbcType="VARCHAR" property="responseDate" />
 	</resultMap>
 	
 	
@@ -82,7 +84,7 @@
 		assets.id, assets.name, hostName, type, ip,createTime,assets.upDateTime,endTime,
 		startUp,userId,assets.departmentId,logType,macAdress,system,systemVersion,assetNum,
 		serialNum,assets.describe,valuation,log_level,high_risk,moderate_risk,low_risk,assets.departmentNodeId,ports
-		,protocol,assets.state
+		,protocol,assets.state,responseDate
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -181,7 +183,10 @@
 				protocol,
 			</if>
 			<if test="state !=null and  state !=''">
-				state
+				state,
+			</if>
+			<if test="responseDate !=null and  responseDate !=''">
+				responseDate
 			</if>
 		</trim> 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -255,8 +260,13 @@
 				#{protocol,jdbcType=VARCHAR},
 			</if>
 			<if test="state !=null and  state !=''">
-				#{state,jdbcType=VARCHAR}
+				#{state,jdbcType=VARCHAR},
 			</if>
+			<if test="responseDate !=null and  responseDate !=''">
+				#{responseDate,jdbcType=VARCHAR}
+			</if>
+			
+			
 		</trim>
 	</insert>
 	<!-- 删除数据 -->
@@ -360,11 +370,11 @@
 		update assets set state=#{state}
 		<!-- if判断语句 -->
 		<choose>
-			<when test="upDateTime != null and upDateTime !='' and upDateTime !='null'">
-				assets.upDateTime = #{upDateTime},
+			<when test="responseDate != null and responseDate !='' and responseDate !='null'">
+				assets.responseDate = #{responseDate},
 			</when>
 			<otherwise>
-				assets.upDateTime =  null 
+				assets.responseDate =  null 
 			</otherwise>
 		</choose>
 		where assets.id=#{id}
