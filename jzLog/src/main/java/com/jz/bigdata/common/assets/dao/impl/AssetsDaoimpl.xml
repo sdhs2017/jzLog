@@ -369,14 +369,15 @@
 	<update id="updateState" parameterType="java.lang.String">
 		update assets set state=#{state}
 		<!-- if判断语句 -->
-		<choose>
+		<if test="responseDate !=null and  responseDate !=''">
+			assets.responseDate = #{responseDate}
+		</if>
+		<!-- <choose>
 			<when test="responseDate != null and responseDate !='' and responseDate !='null'">
 				assets.responseDate = #{responseDate},
 			</when>
-			<otherwise>
-				assets.responseDate =  null 
-			</otherwise>
-		</choose>
+			
+		</choose> -->
 		where assets.id=#{id}
 	</update>
 	
