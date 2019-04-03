@@ -367,7 +367,7 @@
 	
 	<!-- 根据id修改数据 -->
 	<update id="updateState" parameterType="java.lang.String">
-		update assets set state=#{state}
+		update assets set state=#{state},
 		<!-- if判断语句 -->
 		<if test="responseDate !=null and  responseDate !=''">
 			assets.responseDate = #{responseDate}
