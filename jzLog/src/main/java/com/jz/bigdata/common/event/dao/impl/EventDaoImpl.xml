@@ -43,7 +43,7 @@
 	</sql> 
 
 	<!-- 查询所有数据 -->
-	<select id="selectAll" parameterType="com.jz.bigdata.common.event.entity.Event"
+	<select id="selectAll" parameterType="java.lang.String"
 		resultMap="BaseResultMap">
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
 		select event.id, event.name, event.userId,event_classify,
@@ -51,6 +51,10 @@
 		event
 		LEFT JOIN user AS a
 		on event.userId=a.id
+		where 1=1 and deleteState=1
+		<if test='role=="2"'>
+			 and event.userId=#{userId,jdbcType=VARCHAR}
+		</if>
 
 	</select>
 
@@ -92,7 +96,10 @@
 				time_interval,
 			</if>
 			<if test="event_classify != null ">
-				event_classify
+				event_classify,
+			</if>
+			<if test="deleteState != null ">
+				deleteState
 			</if>
 			
 		</trim>
@@ -128,17 +135,19 @@
 				#{time_interval,jdbcType=VARCHAR},
 			</if>
 			<if test="event_classify != null ">
-				#{event_classify,jdbcType=INTEGER}
+				#{event_classify,jdbcType=INTEGER},
+			</if>
+			<if test="deleteState != null ">
+				#{deleteState,jdbcType=INTEGER}
 			</if>
 			
 		</trim>
 	</insert>
 	<!-- 删除数据 -->
-	<delete id="delete" parameterType="java.lang.String">
-		delete from event where
-		id =
-		#{id,jdbcType=VARCHAR}
-	</delete>
+	<update id="delete" parameterType="java.lang.String">
+		update event set deleteState=0  where
+		id =#{id,jdbcType=VARCHAR}
+	</update>
 
 	<!-- 根据id修改信息 -->
 	<update id="updataById" parameterType="com.jz.bigdata.common.event.entity.Event">

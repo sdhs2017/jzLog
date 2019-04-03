@@ -15,7 +15,7 @@ public interface IEquipmentDao {
 	
 	int insert(Equipment equipment);
 	
-	List<Equipment> selectAll(Equipment equipment);
+	List<Equipment> selectAll(Equipment equipment,@Param("role")String role,@Param("userId")String userId);
 	
 	int updateById(Equipment equipment);
 	
@@ -23,9 +23,9 @@ public interface IEquipmentDao {
 	
 	List<Equipment> selectEquipment(Equipment equipment);
 	
-	List<Equipment> selectAllByPage(@Param("hostName")String hostName,@Param("name")String name,@Param("ip")String ip,@Param("logType")String logType,@Param("startRecord")int startRecord,@Param("pageSize")int pageSize);
+	List<Equipment> selectAllByPage(@Param("hostName")String hostName,@Param("name")String name,@Param("ip")String ip,@Param("logType")String logType,@Param("role")String role,@Param("userId")String userId,@Param("startRecord")int startRecord,@Param("pageSize")int pageSize);
 
-	List<String> count(@Param("hostName")String hostName,@Param("name")String name,@Param("ip")String ip,@Param("logType")String logType);
+	List<String> count(@Param("hostName")String hostName,@Param("name")String name,@Param("ip")String ip,@Param("logType")String logType,@Param("role")String role,@Param("userId")String userId);
 	
 	Equipment selectOneEquipment(Equipment equipment);
 	
@@ -38,4 +38,7 @@ public interface IEquipmentDao {
 	List<Object> count_Number();
 	
 	List<Equipment> selectEquipmentByEventId(String eventId);
+	
+	Equipment selectByNameIp(Equipment equipment);
+	
 }

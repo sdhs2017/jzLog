@@ -2,13 +2,15 @@ package com.jz.bigdata.common.action.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import com.jz.bigdata.common.action.entity.Action;
 
 public interface IActionService {
 	
 	int insert(Action action);
 
-	List<Action> selectAll();
+	List<Action> selectAll(HttpSession session);
 
 	int updateById(Action action);
 

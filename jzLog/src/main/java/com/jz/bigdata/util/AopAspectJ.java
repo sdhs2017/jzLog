@@ -235,7 +235,7 @@ public class AopAspectJ {
 				note.setDescribe(describeSrt);
 				noteService.insert(note);
 				// 登陆成功
-			} else if (result.toString().equals("{\"success\":\"true\",\"message\":\"登陆成功\"}")) {
+			} else if (result.toString().equals("{\"success\":\"true\",\"message\":\"登录成功\"}")) {
 				note.setResult(1);
 				// note.setError("登录成功");
 				describeSrt = "用户账号:" + user.getPhone() + "    " + "操作:" + describe + "    " + "操作状态:成功";

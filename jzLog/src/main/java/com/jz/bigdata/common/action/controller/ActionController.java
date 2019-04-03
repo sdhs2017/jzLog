@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,12 +50,12 @@ public class ActionController {
 //	@RequestMapping("/selectAll")
 	@RequestMapping(value="/selectAll",produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="查询所有动作信息")
-	public List<Action> selectAll(HttpServletRequest request){
+	public List<Action> selectAll(HttpServletRequest request,HttpSession session){
 
 		//结果一般命名为result
 //		int result = 0;
 //		result=departmentService.insert(department);
-		return actionService.selectAll();
+		return actionService.selectAll(session);
 	}
 	
 	/**

@@ -35,4 +35,40 @@
 	   from function
 	  
 	</select>
+	
+	<!-- 添加权限-->
+	<insert id="insert" parameterType="com.jz.bigdata.common.function.entity.Function">
+	insert into function
+	<!-- 格式化 -->
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- 判断参数是否为空 -->
+			<if test="id != null">
+				id,
+			</if>
+			<if test="resource != null">
+				resource,
+			</if>
+			<if test="describes != null">
+				describes,
+			</if>
+			<if test="role != null ">
+				role
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="resource != null">
+				#{resource,jdbcType=VARCHAR},
+			</if>
+			<if test="describes != null">
+				#{describes,jdbcType=VARCHAR},
+			</if>
+			<if test="role != null ">
+				#{role,jdbcType=INTEGER}
+			</if>
+		</trim>
+	</insert>
+	
 </mapper>

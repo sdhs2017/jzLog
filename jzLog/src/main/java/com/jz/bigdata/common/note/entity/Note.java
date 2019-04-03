@@ -1,6 +1,5 @@
 package com.jz.bigdata.common.note.entity;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -33,6 +32,8 @@ public class Note {
 	
 	String ip;//登录ip
 	String tableName;//表名
+	
+	int state; //状态
 	
 	
 	
@@ -130,6 +131,13 @@ public class Note {
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
 	}
+	public int getState() {
+		return state;
+	}
+	public void setState(int state) {
+		this.state = state;
+	}
+	
 
 
 }

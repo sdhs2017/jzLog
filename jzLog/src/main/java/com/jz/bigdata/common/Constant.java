@@ -168,4 +168,20 @@ public class Constant {
 	public static String loginMessage(Boolean bool,int num,String message){
 		return message(bool,num,message);
 	}
+	/**
+	 * @return {success:false,message:资产达到上限，无法添加！,state:2}
+	 * @description 默认成功返回json信息
+	 */
+	public static String equipmentMaxInsertMessage(){
+		return message(false,2,"资产达到上限，无法添加！");
+	}
+	/**
+	 * @return {success:false,message:资产名,ip重复,无法添加!,state:2}
+	 * @description 默认成功返回json信息
+	 */
+	public static String equipmentNameIpInsertMessage(){
+		return message(false,2,"资产名,ip重复,无法添加！");
+	}
+	
 }
+

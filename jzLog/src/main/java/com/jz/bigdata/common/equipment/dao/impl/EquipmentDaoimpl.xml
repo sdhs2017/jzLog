@@ -28,6 +28,7 @@
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
+		<result column="state" jdbcType="INTEGER" property="state" />
 		<association property="user" javaType="com.jz.bigdata.common.users.entity.User">
              <id property="userId" column="id"/>
              <result property="name" column="userName"/>
@@ -64,6 +65,7 @@
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
+		<result column="state" jdbcType="INTEGER" property="state" />
 	</resultMap>
 	
 	
@@ -75,7 +77,8 @@
 	<sql id="Base_Column_List">
 		equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
-		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId
+		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId,
+		equipment.state
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -93,6 +96,10 @@
 			#{hostName}, '%') </if>	
 		<if test="ip != null and ip !=''">
 			and ip = #{ip,jdbcType=VARCHAR}
+		</if>
+		<if test='role=="2"'>
+			 and equipment.userId=#{userId,jdbcType=VARCHAR}
+			 and state=1
 		</if>
 	</select>
 <!-- 查询所有数据 -->
@@ -173,7 +180,10 @@
 				log_level,
 			</if>
 			<if test="departmentNodeId !=null and  departmentNodeId !=''">
-				departmentNodeId
+				departmentNodeId,
+			</if>
+			<if test="state !=null and  state !=''">
+				state
 			</if>
 		</trim> 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -238,17 +248,21 @@
 				#{log_level,jdbcType=VARCHAR},
 			</if>
 			<if test="departmentNodeId != null and  departmentNodeId !='' and  departmentNodeId !=0">
-				#{departmentNodeId,jdbcType=INTEGER}
+				#{departmentNodeId,jdbcType=INTEGER},
+			</if>
+			<if test="state != null and  state !=''">
+				#{state,jdbcType=INTEGER}
 			</if>
 		</trim>
 	</insert>
 	<!-- 删除数据 -->
-	<delete id="delete" parameterType="java.lang.String">
-		delete from equipment where id in 
+	<update id="delete" parameterType="java.lang.String">
+		<!-- delete from equipment where id in  -->
+		update equipment set state =0 where id in
 		<foreach item="ids" index="index" collection="array" open="(" separator="," close=")">  
 	 		#{ids}
 		</foreach>
-	</delete>
+	</update>
 	<!-- 根据id修改数据 -->
 	<update id="updateById" parameterType="com.jz.bigdata.common.equipment.entity.Equipment">
 		update equipment set
@@ -290,8 +304,8 @@
 		select
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />,user.`name` AS userName
-		from equipment,user
-		where equipment.id=#{id} and user.id=equipment.userId
+		FROM equipment LEFT JOIN `user` ON equipment.userId=`user`.id
+		where equipment.id=#{id} 
 	</select>
 	
  <!-- 查询单个数据 -->
@@ -322,7 +336,10 @@
 		<if test="logType != null and logType !='' ">
 			and logType = #{logType,jdbcType=VARCHAR}
 		</if>
-		
+		<if test='role=="2"'>
+			 and equipment.userId=#{userId,jdbcType=VARCHAR}
+			 and state=1
+		</if>
 	    limit #{startRecord},#{pageSize}
 	</select>
  
@@ -341,7 +358,10 @@
 	  	and ip = #{ip,jdbcType=VARCHAR}
 	  </if>
 	  <if test="logType != null and logType !='' ">
-			and logType = #{logType,jdbcType=VARCHAR}
+		and logType = #{logType,jdbcType=VARCHAR}
+	  </if>
+	  <if test='role=="2"'>
+		and equipment.userId=#{userId,jdbcType=VARCHAR}
 	  </if>
 	</select>
 	
@@ -394,6 +414,17 @@
 		WHERE equipment_event.eventId=#{eventId,jdbcType=VARCHAR}
 	</select>
 	
+	
+	<!-- 查询单个数据 -->
+	<select id="selectByNameIp" parameterType="com.jz.bigdata.common.equipment.entity.Equipment"
+		resultMap="BaseResultMapUserName">
+		<!-- <bind name="name" value="'%' + name + '%'" /> -->
+		select
+		<!-- 引用查询字段 -->
+		<include refid="Base_Column_List" />
+		from equipment
+		where name=#{name}  and ip=#{ip}
+	</select>
 	
 	
 </mapper>

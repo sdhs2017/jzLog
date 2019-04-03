@@ -3,12 +3,14 @@ package com.jz.bigdata.common.action.service.impl;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.NlpAnalysis;
 import org.springframework.stereotype.Service;
 
+import com.jz.bigdata.common.Constant;
 import com.jz.bigdata.common.action.dao.IActionDao;
 import com.jz.bigdata.common.action.entity.Action;
 import com.jz.bigdata.common.action.service.IActionService;
@@ -47,6 +49,7 @@ public class ActionServiceImpl implements IActionService{
 	public int insert(Action action) {
 		action.setId(Uuid.getUUID());
 		action.setState(1);
+		action.setDeleteState(1);
 		int result =actionDao.insert(action);
 		if(result>0) {
 			Result NLP =  NlpAnalysis.parse(action.getName());
@@ -84,8 +87,10 @@ public class ActionServiceImpl implements IActionService{
 	 * 查询数据
 	 */
 	@Override
-	public List<Action> selectAll() {
-		return actionDao.selectAll();
+	public List<Action> selectAll(HttpSession session) {
+		String role =(String) session.getAttribute(Constant.SESSION_USERROLE);
+		String userId=(String) session.getAttribute(Constant.SESSION_USERID);
+		return actionDao.selectAll(role,userId);
 	}
 
 	/**
@@ -96,7 +101,6 @@ public class ActionServiceImpl implements IActionService{
 	 */
 	@Override
 	public int updateById(Action action) {
-		// TODO Auto-generated method stub
 		return actionDao.updateById(action);
 	}
 

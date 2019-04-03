@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 
-import com.jz.bigdata.common.equipment.entity.Equipment;
+import com.jz.bigdata.common.Constant;
 import com.jz.bigdata.common.note.dao.INoteDao;
 import com.jz.bigdata.common.note.entity.Note;
 import com.jz.bigdata.common.note.service.INoteService;
@@ -37,6 +38,7 @@ public class NoteService implements INoteService {
 	 */
 	@Override
 	public int insert(Note note) {
+		note.setState(1);
 		return noteDao.insert(note);
 	}
 

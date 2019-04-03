@@ -78,8 +78,14 @@ public class FunctionServiceImpl implements IFunctionService {
 
 			}
 
+			
 		}
 		return roleMap;
+	}
+
+	@Override
+	public int insert(Function function) {
+		return functionDao.insert(function);
 	}
 
 }

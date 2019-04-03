@@ -24,6 +24,8 @@ public class Event {
 	private String time_interval;//时间拼接
 	private int event_classify;
 	private String equipmentIds;
+	private int deleteState;
+	private int role;
 	
 	
 	public String getId() {
@@ -148,6 +150,18 @@ public class Event {
 	}
 	public void setEquipmentIds(String equipmentIds) {
 		this.equipmentIds = equipmentIds;
+	}
+	public int getDeleteState() {
+		return deleteState;
+	}
+	public void setDeleteState(int deleteState) {
+		this.deleteState = deleteState;
+	}
+	public int getRole() {
+		return role;
+	}
+	public void setRole(int role) {
+		this.role = role;
 	}
 	
 	

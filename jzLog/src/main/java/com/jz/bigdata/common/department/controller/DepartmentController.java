@@ -57,7 +57,7 @@ public class DepartmentController {
 		//结果一般命名为result
 //		int result = 0;
 //		result=departmentService.insert(department);
-		return departmentService.selectAll(department);
+		return departmentService.selectAll(department,session);
 	}
 	
 	/**

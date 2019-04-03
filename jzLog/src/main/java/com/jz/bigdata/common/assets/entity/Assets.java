@@ -30,6 +30,7 @@ public class Assets {
 	private int low_risk;//低危
 	private int departmentNodeId;//部门最上级id
 	private String ports;
+	private String protocol;
 	
 	public String getId() {
 		return id;
@@ -192,6 +193,12 @@ public class Assets {
 	}
 	public void setPorts(String ports) {
 		this.ports = ports;
+	}
+	public String getProtocol() {
+		return protocol;
+	}
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
 	}
 	
 	
