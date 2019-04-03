@@ -31,6 +31,7 @@ public class Assets {
 	private int departmentNodeId;//部门最上级id
 	private String ports;
 	private String protocol;
+	private String state;
 	
 	public String getId() {
 		return id;
@@ -200,7 +201,12 @@ public class Assets {
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
-	
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
 	
 
 }
