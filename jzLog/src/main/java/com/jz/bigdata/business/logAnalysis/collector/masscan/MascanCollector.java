@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import com.jz.bigdata.common.assets.entity.Assets;
 import com.jz.bigdata.common.assets.service.IAssetsService;
+import com.jz.bigdata.util.ConfigProperty;
 import com.jz.bigdata.util.ExecuteCmd;
 import com.jz.bigdata.util.Uuid;
 
@@ -54,12 +55,14 @@ public class MascanCollector implements Runnable {
 	final long awaitTime = 100 * 1000;
 	private ExecutorService threadPool=Executors.newCachedThreadPool();
 	private IAssetsService assetsService;
+	private ConfigProperty configProperty;
 	
-	public MascanCollector(Semaphore semaphore, String IPS, String ports,IAssetsService assetsService) {
+	public MascanCollector(Semaphore semaphore, String IPS, String ports,IAssetsService assetsService,ConfigProperty configProperty) {
 		this.semaphore = semaphore;
 		this.IPS = IPS;
 		this.ports = ports;
 		this.assetsService=assetsService;
+		this.configProperty = configProperty;
 	}
 	public MascanCollector(Semaphore semaphore, String IPS, String ports) {
 		this.semaphore = semaphore;
@@ -72,21 +75,22 @@ public class MascanCollector implements Runnable {
 	/**
 	 * 重写线程执行内容
 	 */
-	/*@Override
+	@Override
 	public void run() {
 
 		try {
 
 			// 获取 信号量 执行许可
 			semaphore.acquire();
-			File file = new File("/opt/jzlog/masscan/bin");
+			String filepath = configProperty.getMasscan_path();
+			File file = new File(filepath);
 			String[] rgexs = { "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", "Discovered" };
-			Map<String, String> result = ExecuteCmd.execCmd("./masscan "+IPS+" -p10-1000", file, rgexs, true);
+			Map<String, String> result = ExecuteCmd.execCmd("./masscan "+IPS+" -p"+ports, file, rgexs, true);
 			System.out.println(result);
 			// 释放 信号量 许可
 			semaphore.release();
 			Date endtime = new Date();
-			String resultIp=result.get("./masscan "+IPS+" -p10-1000");
+			String resultIp=result.get("./masscan "+IPS+" -p"+ports);
 			resultIp=getSubUtil(resultIp,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        String time = format.format(endtime.getTime());//这个就是把时间戳经过处理得到期望格式的时间
@@ -103,12 +107,12 @@ public class MascanCollector implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}*/
+	}
 	
 	/**
 	 * 重写线程执行内容
 	 */
-	@Override
+	/*@Override
 	public void run() {
 		
 		try {
@@ -137,7 +141,7 @@ public class MascanCollector implements Runnable {
 				};
 				System.out.println(stringports);
 				
-				/*Date endtime = new Date();
+				Date endtime = new Date();
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String time = format.format(endtime.getTime());//这个就是把时间戳经过处理得到期望格式的时间
 				Assets assets =new Assets();
@@ -145,7 +149,7 @@ public class MascanCollector implements Runnable {
 				assets.setIp(IPS);
 				assets.setPorts(stringports.toString());
 				assets.setCreateTime(time);
-				assetsService.insert(assets);*/
+				assetsService.insert(assets);
 			}
 			
 			
@@ -155,14 +159,14 @@ public class MascanCollector implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
-	public MascanCollector(List<String> list, String ports,IAssetsService assetsService) {
+	public MascanCollector(List<String> list, String ports,IAssetsService assetsService,ConfigProperty configProperty) {
 
 		final Semaphore semaphore = new Semaphore(5);
 
 		for (String ip : list) {
-			threadPool.execute(new MascanCollector(semaphore, ip, ports,assetsService));
+			threadPool.execute(new MascanCollector(semaphore, ip, ports,assetsService,configProperty));
 		}
 		 threadPool.shutdown();
 

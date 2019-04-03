@@ -148,7 +148,7 @@ public class CollectorController {
 			map.put("msg", "数据采集器开启失败，请勿重复开启");
 			return JSONArray.fromObject(map).toString();
 		}else{
-			boolean result = collectorService.startMasscanCollector(startip,endip, ports,masscanipService);
+			boolean result = collectorService.startMasscanCollector(startip,endip, ports,masscanipService,configProperty);
 			if(result==true){
 				map.put("state", result);
 				map.put("msg", "数据采集器开启成功");

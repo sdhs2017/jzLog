@@ -148,7 +148,7 @@ public class CollectorServiceImpl implements ICollectorService{
 	 * 启动Masscan
 	 */
 	@Override
-	public boolean startMasscanCollector(String startip,String endip,String ports,IAssetsService masscanipService) {
+	public boolean startMasscanCollector(String startip,String endip,String ports,IAssetsService masscanipService,ConfigProperty configProperty) {
 		
 		boolean result = false;
 		//如果为true，则表示已经开启
@@ -173,7 +173,7 @@ public class CollectorServiceImpl implements ICollectorService{
 			}
 			isIn=false;
 		}
-		Masscan = new MascanCollector(list,ports,masscanipService);
+		Masscan = new MascanCollector(list,ports,masscanipService,configProperty);
 		if(!Masscan.getStarted()){
 			result=true;
 		}
