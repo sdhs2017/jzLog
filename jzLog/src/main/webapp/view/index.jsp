@@ -411,7 +411,7 @@ $(function(){
 					  content: '您的登陆信息已经超时，请重新登陆！',
 					  closeBtn: 0, //取消关闭按钮
 					  yes: function(index, layero){
-						  window.location.href="../Login.jsp";
+						  window.location.href="../Login-scan.jsp";
 					  }
 				}); 
 			}
