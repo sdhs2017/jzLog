@@ -678,12 +678,34 @@
             <value>0 */5 * * * ?</value>
         </property>
 	</bean>
+	<!-- 资产心跳机制定时任务 -->
+	<bean id="assetsHeartBeatJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    	<!-- 调用类 -->
+	    <property name="targetObject">  
+	        <ref bean="CollectorService"/>  
+	    </property>
+	   <!--  调用类方法 -->
+	    <property name="targetMethod">  
+	        <value>assetsHeartBeat</value>  
+	    </property>  
+	</bean>
+	<!-- 调度任务时间配置 -->
+	<bean id="assetsHeartBeatJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="assetsHeartBeatJob"/>
+		</property>
+		<!-- 设置触发时间 -->
+		<property name="cronExpression">
+            <value>0 */5 * * * ?</value>
+        </property>
+	</bean>
 	<!-- 触发器启动 -->
 	<bean name="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="createSnapshotJobTrigger" />
                 <ref bean="updateRiskJobTrigger" />
+                <ref bean="assetsHeartBeatJobTrigger" />
             </list>
         </property>
         <property name="autoStartup" value="true" />

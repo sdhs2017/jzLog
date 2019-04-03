@@ -91,6 +91,7 @@ public class MascanCollector implements Runnable {
 			semaphore.release();
 			Date endtime = new Date();
 			String resultIp=result.get("./masscan "+IPS+" -p"+ports);
+			String ports = getSubUtilSimple(resultIp, "port\\s+(.*?)[/]");
 			resultIp=getSubUtil(resultIp,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        String time = format.format(endtime.getTime());//这个就是把时间戳经过处理得到期望格式的时间
@@ -98,6 +99,7 @@ public class MascanCollector implements Runnable {
 	        	Assets assets =new Assets();
 	        	assets.setId(Uuid.getUUID());
 	        	assets.setIp(resultIp);
+	        	assets.setPorts(ports);
 	        	assets.setCreateTime(time);
 	 	        assetsService.insert(assets);
 	        }
