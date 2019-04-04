@@ -3,7 +3,6 @@ package com.jz.bigdata.common.event.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-import org.junit.runners.Parameterized.Parameters;
 
 import com.jz.bigdata.common.event.entity.Event;
 
