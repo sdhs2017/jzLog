@@ -705,7 +705,7 @@
             <list>
                 <ref bean="createSnapshotJobTrigger" />
                 <ref bean="updateRiskJobTrigger" />
-                <ref bean="assetsHeartBeatJobTrigger" />
+               <!--  <ref bean="assetsHeartBeatJobTrigger" /> -->
             </list>
         </property>
         <property name="autoStartup" value="true" />
