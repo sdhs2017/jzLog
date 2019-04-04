@@ -125,17 +125,17 @@ public class CollectorController {
 		Map<String, Object> map = new HashMap<>();
 		if(resultstate==false){
 			map.put("state", resultstate);
-			map.put("msg", "数据采集器开启失败，请勿重复开启");
+			map.put("msg", "资产扫描器开启失败，请勿重复开启");
 			return JSONArray.fromObject(map).toString();
 		}else{
 			boolean result = collectorService.startMasscanCollector(startip,endip, ports,masscanipService,configProperty);
 			if(result==true){
 				map.put("state", result);
-				map.put("msg", "数据采集器开启成功");
+				map.put("msg", "资产扫描器开启成功");
 				return JSONArray.fromObject(map).toString();
 			}else{
 				map.put("state", result);
-				map.put("msg", "数据采集器开启失败");
+				map.put("msg", "资产扫描器开启失败");
 				return JSONArray.fromObject(map).toString();
 			}
 		}
