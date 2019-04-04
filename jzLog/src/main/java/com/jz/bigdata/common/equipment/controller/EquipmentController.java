@@ -18,7 +18,6 @@ import com.jz.bigdata.components.kafka.logAnalysis.SysLogKafkaConsumer;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.DescribeLog;
 
-
 /**
  * @author shichengyu
  * @date 2017年8月16日 下午2:40:21
@@ -37,19 +36,24 @@ public class EquipmentController {
 
 	
 	@ResponseBody
-	@RequestMapping("/insert")
+//	@RequestMapping("/insert")
+	@RequestMapping(value="/insert.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="添加或修改资产")
 	public String insert(HttpServletRequest request, Equipment equipment,HttpSession session) {
 	
+		
 		// 结果一般命名为result
-		int result = 0;
-		// 如果id为空，进行添加操作
-		if (equipment.getId() == null || equipment.getId().isEmpty()) {
-			result = this.equipmentService.insert(equipment,session);
-		} else {// 更新操作
-			result = this.equipmentService.updateById(equipment,session);
+		int	result = this.equipmentService.insert(equipment,session);
+		if(result==0){
+			return Constant.equipmentMaxInsertMessage();
+		}else if(result==1){
+			return Constant.equipmentNameIpInsertMessage();
+		}else{
+			return Constant.successMessage();
 		}
-		return result >= 1 ? Constant.successMessage() : Constant.failureMessage();
+//		} else {// 更新操作
+//			result = this.equipmentService.updateById(equipment,session);
+//		}
 	}
 
 	/**
@@ -57,7 +61,8 @@ public class EquipmentController {
 	 * @return 根据id删除数据
 	 */
 	@ResponseBody
-	@RequestMapping("/delete")
+//	@RequestMapping("/delete")
+	@RequestMapping(value="/delete.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="删除资产")
 	public String delete(HttpServletRequest request) {
 		int result = 0;
@@ -77,10 +82,11 @@ public class EquipmentController {
 	 * @return 查询数据
 	 */
 	@ResponseBody
-	@RequestMapping("/selectAll")
+//	@RequestMapping("/selectAll")
+	@RequestMapping(value="/selectAll.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="查询所有资产")
-	public String selectAll(HttpServletRequest request, Equipment equipment){
-		return equipmentService.selectAll(equipment);
+	public String selectAll(HttpServletRequest request, Equipment equipment,HttpSession session){
+		return equipmentService.selectAll(equipment,session);
 	}
 	
 	/**
@@ -90,7 +96,8 @@ public class EquipmentController {
 	 * 查询单个实体
 	 */
 	@ResponseBody
-	@RequestMapping("/selectEquipment")
+//	@RequestMapping("/selectEquipment")
+	@RequestMapping(value="/selectEquipment.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="查询单个资产")
 	public List<Equipment> selectEquipment(HttpServletRequest request, Equipment equipment) {
 		List<Equipment> list=this.equipmentService.selectEquipment(equipment);
@@ -107,7 +114,7 @@ public class EquipmentController {
 //	@RequestMapping("/selectPage")
 	@RequestMapping(value="/selectPage.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="分页查询资产")
-	public String selectPage(HttpServletRequest request) {
+	public String selectPage(HttpServletRequest request,HttpSession session) {
 		//页码数
 		int pageIndex=Integer.parseInt(request.getParameter("pageIndex"));
 		//每页显示的数量
@@ -120,8 +127,23 @@ public class EquipmentController {
 		String ip=request.getParameter("ip");
 		//日志类型
 		String logType =request.getParameter("logType");
-		return equipmentService.selectAllByPage(hostName,name,ip,logType, pageIndex, pageSize);
+		return equipmentService.selectAllByPage(hostName,name,ip,logType, pageIndex, pageSize,session);
 	}
+	
+	
+	@ResponseBody
+//	@RequestMapping("/insert")
+	@RequestMapping(value="/update.do", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="修改资产")
+	public String update(HttpServletRequest request, Equipment equipment,HttpSession session) {
+		
+		// 结果一般命名为result
+		int	result = 0;
+		result = this.equipmentService.updateById(equipment,session);
+		return result >= 1 ? Constant.successMessage() : Constant.failureMessage();
+	}
+	
+	
 	/**
 	 * 获取id
 	 * @param request

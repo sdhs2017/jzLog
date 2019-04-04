@@ -100,9 +100,11 @@ public class UsersServiceImpl implements IUsersService{
 	 * 分页查询
 	 */
 	@Override
-	public Map<String,Object> selectPage(Page page) {
+	public Map<String,Object> selectPage(Page page,HttpSession session) {
 //		开始数
 		page.setStartRecord(page.getPageSize()*(page.getPageIndex()-1));
+		page.setRole(Integer.valueOf((String) session.getAttribute(Constant.SESSION_USERROLE)));
+		page.setId((String) session.getAttribute(Constant.SESSION_USERID));
 //		总数
 		List<String> count=userDao.count(page);
 		Map<String,Object> map =new HashMap<String,Object>();

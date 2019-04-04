@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jz.bigdata.common.Constant;
 //import org.springframework.transaction.annotation;
 //import org.springframework.transaction.annotation;
 import com.jz.bigdata.common.department.dao.IDepartmentDao;
@@ -76,13 +78,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
 	 * @description 查询部门列表
 	 */
 	@Override
-	public Map<String,Object> selectAll(Department department) {
+	public Map<String,Object> selectAll(Department department,HttpSession session) {
 		
 		Map<String,Object> map=new HashMap<String,Object>();
 //		根据部门id查询用户
 		if(department.getId()!=0){
 			User user=new User();
 			user.setDepartmentId(department.getId());
+			user.setRole(Integer.valueOf((String) session.getAttribute(Constant.SESSION_USERROLE)));
+			user.setId((String) session.getAttribute(Constant.SESSION_USERID));
 			List<User> listUser= userDao.selectAll(user);
 			map.put("user", listUser);
 			

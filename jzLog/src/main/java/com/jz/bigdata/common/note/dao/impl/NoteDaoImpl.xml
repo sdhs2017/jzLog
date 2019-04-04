@@ -17,12 +17,13 @@
 		<result column="departmentName" jdbcType="VARCHAR" property="departmentName" />
 		<result column="ip" jdbcType="VARCHAR" property="ip" />
 		<result column="tableName" jdbcType="VARCHAR" property="tableName" />
+		<result column="state" jdbcType="INTEGER" property="state" />
 	</resultMap>
 
 	<!-- 查询字段设置可重复调用 -->
 	<!-- 部门id,name:部门名称,level:部门层级,superiorId:上级id,subordinate:是否有下级（1有0没有）,orderId:位置排序,comment:简介 -->
 	<sql id="Base_Column_List">
-		id, result, note.`describe`, time, userId,departmentId,account,error,ip
+		id, result, note.`describe`, time, userId,departmentId,account,error,ip,state
 	</sql>
 	<sql id="Base_Column_List_name">
 		id, result, note.`describe`, time, userId,departmentId,account,error,userName,departmentName,ip
@@ -131,7 +132,10 @@
 				departmentId,
 			</if>
 			<if test="ip !=null and  ip !=''">
-				ip
+				ip,
+			</if>
+			<if test="state !=null and  state !=''">
+				state
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -160,20 +164,24 @@
 				#{departmentId,jdbcType=INTEGER},
 			</if>
 			<if test="ip !=null and  ip !=''">
-				#{ip,jdbcType=VARCHAR}
+				#{ip,jdbcType=VARCHAR},
+			</if>
+			<if test="state !=null and  state !=''">
+				#{state,jdbcType=INTEGER}
 			</if>
 		</trim>
 	</insert>
 	
 	
 	<!--   删除数据 -->
-	<delete id="delete" parameterType="java.lang.String">
-		delete from note where id in 
+	<update id="delete" parameterType="java.lang.String">
+		<!-- delete from note where id in  -->
+		update note set state=0 where id in
 		<!-- 循环格式化 -->
 		<foreach item="ids" index="index" collection="array" open="(" separator="," close=")">  
 	 		#{ids}
 		</foreach>
-	</delete>
+	</update>
 	
 	<!--   删除所有数据 -->
 	<delete id="deleteAll" >
@@ -232,6 +240,7 @@
 		  <if test="ip != null and ip !=''" >
 		  	and ip =  #{ip,jdbcType=VARCHAR}
 		  </if>
+		  and note.state =1
 		 ORDER BY time DESC  limit #{startRecord},#{pageSize}
 	</select>
 	
@@ -265,6 +274,8 @@
 		  <if test="ip != null and ip !=''" >
 		  	and ip =  #{ip,jdbcType=VARCHAR}
 		  </if>
+		  and note.state =1
+		  
 		 ORDER BY time DESC 
 	</select>
 	

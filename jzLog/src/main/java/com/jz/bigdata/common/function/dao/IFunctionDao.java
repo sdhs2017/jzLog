@@ -15,4 +15,6 @@ public interface IFunctionDao {
 	 List<Function> selectAllByRole(int role);
 	
 	 List<Function> selectAll();
+	 
+	 int insert(Function function);
 }

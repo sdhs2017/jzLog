@@ -26,7 +26,7 @@ public interface IUsersService {
 	 
 	 int updateById(User user);
 	 
-	 Map<String,Object> selectPage(Page page);
+	 Map<String,Object> selectPage(Page page,HttpSession session);
 	 
 	 List<User> selectUser(String id);
 	 

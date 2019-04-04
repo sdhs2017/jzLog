@@ -56,6 +56,10 @@
 	    <if test="departmentId != null and departmentId !=''" >
 	        and departmentId = #{departmentId,jdbcType=INTEGER} 
 	    </if>
+	    <if test='role==2'>
+			and user.id=#{id,jdbcType=VARCHAR}
+			and state=1
+	 	 </if>
   	</select>
   
   <!--   查询用户数据 -->
@@ -105,6 +109,10 @@
 	    <if test="departmentId != null and departmentId !='' and departmentId !=0" >
 	        and departmentId = #{departmentId,jdbcType=INTEGER} 
 	    </if>
+	    <if test='role==2'>
+			and user.id=#{id,jdbcType=VARCHAR}
+			and state=1
+	 	 </if>
 	    limit #{startRecord},#{pageSize}
 	</select>
   
@@ -125,6 +133,10 @@
 	    <if test="departmentId != null and departmentId !=''" >
 	        and departmentId = #{departmentId,jdbcType=VARCHAR} 
 	    </if>
+	    <if test='role==2'>
+			and user.id=#{id,jdbcType=VARCHAR}
+			and state=1
+	 	 </if>
 	</select>
   
   
@@ -213,13 +225,14 @@
 	    </trim>
 	</insert>
 <!--   删除数据 -->
-	<delete id="delete" parameterType="java.lang.String">
-		delete from user where id in 
+	<update id="delete" parameterType="java.lang.String">
+		<!-- delete from user where id in  -->
+		update user set state=0 where id in 
 		<!-- 循环格式化 -->
 		<foreach item="ids" index="index" collection="array" open="(" separator="," close=")">  
 	 		#{ids}
 		</foreach>
-	</delete>
+	</update>
 <!--     修改数据 -->
  <!--  <update id="updateById" parameterType="com.jz.bigdata.common.users.entity.User" >
 	    update user

@@ -12,6 +12,7 @@ public class Action {
 	private String feature;
 	private User user;
 	private Equipment equipment;
+	private int deleteState;
 	
 	public String getId() {
 		return id;
@@ -62,6 +63,12 @@ public class Action {
 	}
 	public void setEquipment(Equipment equipment) {
 		this.equipment = equipment;
+	}
+	public int getDeleteState() {
+		return deleteState;
+	}
+	public void setDeleteState(int deleteState) {
+		this.deleteState = deleteState;
 	}
 
 	

@@ -303,7 +303,7 @@ public class Syslog {
 		Pattern loginpattern = Pattern.compile("systemd-logind",Pattern.CASE_INSENSITIVE);
 		Matcher loginmatcher = loginpattern.matcher(syslog);
 		
-		Pattern supattern = Pattern.compile("su",Pattern.CASE_INSENSITIVE);
+		Pattern supattern = Pattern.compile("su:",Pattern.CASE_INSENSITIVE);
 		Matcher sumatcher = supattern.matcher(syslog);
 		
 		Pattern rh7sessionpattern = Pattern.compile("Starting Session",Pattern.CASE_INSENSITIVE);

@@ -20,9 +20,14 @@ public interface IAssetsService {
 
 	List<String> count();
 	
+	//查询单个数据
 	Assets selectOneAssets(Assets assets);
 	
+	//扫描增量数据 
 	List<Assets> selectByIncrement();
+	
+	//修改状态
+	int updateState(String id,String state,String upDateTime);
 
 
 }

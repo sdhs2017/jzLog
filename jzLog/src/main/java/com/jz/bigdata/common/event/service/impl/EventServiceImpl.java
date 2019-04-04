@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
+import com.jz.bigdata.common.Constant;
 import com.jz.bigdata.common.action.dao.IActionDao;
 import com.jz.bigdata.common.action.entity.Action;
 import com.jz.bigdata.common.action_event.dao.IAction_eventDao;
@@ -64,6 +66,7 @@ public class EventServiceImpl implements IEventService {
 			action_event.setOrder(Integer.valueOf(parm[1]));
 			action_event.setNumber(Integer.valueOf(parm[2]));
 			action_event.setEventId(eventId);
+			
 			list.add(action_event);
 		}
 		int time = 0;
@@ -75,6 +78,7 @@ public class EventServiceImpl implements IEventService {
 		time_interval = event.getMonth() + "-" + event.getDay() + "-" + event.getHour() + "-" + event.getMinute();
 		event.setTime(time + "");
 		event.setTime_interval(time_interval);
+		event.setDeleteState(1);
 		// 判断时间类型是否是资产类型
 		if (event.getEvent_classify() == 1) {
 			//分割资产id
@@ -102,13 +106,15 @@ public class EventServiceImpl implements IEventService {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Event> selectAll() {
+	public List<Event> selectAll(HttpSession session) {
 		// 查询数据Action_event
 		List<Action_event> actionList = action_eventDao.selectAll();
 		// 获取第一层
 		List<Action_event> action = (List<Action_event>) actionList.get(0);
 		// 查询数据Event
-		List<Event> eventList = eventDao.selectAll();
+		String userId=session.getAttribute(Constant.SESSION_USERID).toString();
+		String role=session.getAttribute(Constant.SESSION_USERROLE).toString();
+		List<Event> eventList = eventDao.selectAll(role,userId);
 		// 获取第一层
 		List<Event> eve = (List<Event>) eventList.get(0);
 		Map eventMap = new HashMap<>();

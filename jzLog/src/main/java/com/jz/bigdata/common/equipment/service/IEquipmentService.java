@@ -17,7 +17,7 @@ public interface IEquipmentService {
 
 	int insert(Equipment equipment,HttpSession session);
 	
-	String selectAll(Equipment equipment);
+	String selectAll(Equipment equipment,HttpSession session);
 	
 	int updateById(Equipment equipment,HttpSession session);
 	
@@ -25,7 +25,7 @@ public interface IEquipmentService {
 	
 	List<Equipment> selectEquipment(Equipment equipment);
 	
-	String selectAllByPage(String hostName,String name,String ip,String logType,int pageIndex,int pageSize);
+	String selectAllByPage(String hostName,String name,String ip,String logType,int pageIndex,int pageSize,HttpSession session);
 	
 	Equipment selectOneEquipment(Equipment equipment);
 	

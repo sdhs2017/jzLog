@@ -2,12 +2,15 @@ package com.jz.bigdata.common.event.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+import org.junit.runners.Parameterized.Parameters;
+
 import com.jz.bigdata.common.event.entity.Event;
 
 public interface IEventDao {
 	int insert(Event event);
 
-	List<Event> selectAll();
+	List<Event> selectAll(@Param("role")String role,@Param("userId")String userId);
 
 	int updataById(Event event);
 

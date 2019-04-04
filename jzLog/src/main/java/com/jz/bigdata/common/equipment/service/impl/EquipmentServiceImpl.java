@@ -53,7 +53,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 
 		// 获取总数
 		List<Object> count = equipmentDao.count_Number();
-		// 获取总数集合
+		// 获取总数集合6
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		resultList = (List<Map<String, Object>>) count.get(0);
@@ -62,16 +62,25 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		// 判断资产数是否超过限定
 		if (Integer.valueOf((String) resultList.get(0).get("count")) < Integer
 				.valueOf(base64Util.decode(configProperty.getNumber()).trim())) {
-			// 获取uuid
-			equipment.setId(Uuid.getUUID());
-			User user = userDao.selectById(session.getAttribute(Constant.SESSION_USERID).toString());
-			equipment.setDepartmentId(user.getDepartmentId());
-			equipment.setUserId(session.getAttribute(Constant.SESSION_USERID).toString());
-			equipment.setDepartmentNodeId((int) session.getAttribute(Constant.SESSION_DEPARTMENTNODEID));
-			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
-			// 获取日期
-			equipment.setCreateTime(df.format(new Date()));
-			return equipmentDao.insert(equipment);
+			
+			
+			Equipment equ= equipmentDao.selectByNameIp(equipment);
+			//判断资产是否存在
+			if(equ ==null){
+				// 获取uuid
+				equipment.setId(Uuid.getUUID());
+				User user = userDao.selectById(session.getAttribute(Constant.SESSION_USERID).toString());
+				equipment.setDepartmentId(user.getDepartmentId());
+				equipment.setUserId(session.getAttribute(Constant.SESSION_USERID).toString());
+				equipment.setDepartmentNodeId((int) session.getAttribute(Constant.SESSION_DEPARTMENTNODEID));
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
+				// 获取日期
+				equipment.setCreateTime(df.format(new Date()));
+				equipment.setState(1);
+				equipmentDao.insert(equipment);
+				return 2;
+			}
+			return 1;
 		} else {
 			return 0;
 		}
@@ -83,8 +92,10 @@ public class EquipmentServiceImpl implements IEquipmentService {
 	 * @return 查询数据
 	 */
 	@Override
-	public String selectAll(Equipment equipment) {
-		List<Equipment> list = equipmentDao.selectAll(equipment);
+	public String selectAll(Equipment equipment,HttpSession session) {
+		String userId=session.getAttribute(Constant.SESSION_USERID).toString();
+		String role=session.getAttribute(Constant.SESSION_USERROLE).toString();
+		List<Equipment> list = equipmentDao.selectAll(equipment,role,userId);
 
 		// list转json
 		return JSONArray.fromObject(list).toString();
@@ -137,11 +148,11 @@ public class EquipmentServiceImpl implements IEquipmentService {
 	 * @description 分页查询数据
 	 */
 	@Override
-	public String selectAllByPage(String hostName, String name, String ip, String logType, int pageIndex, int pageSize) {
+	public String selectAllByPage(String hostName, String name, String ip, String logType, int pageIndex, int pageSize,HttpSession session) {
 		// 获取起始数
 		int startRecord = (pageSize * (pageIndex - 1));
 		// 获取总数
-		List count = equipmentDao.count(hostName, name, ip, logType);
+		List count = equipmentDao.count(hostName, name, ip, logType,session.getAttribute(Constant.SESSION_USERROLE).toString(),session.getAttribute(Constant.SESSION_USERID).toString());
 		List listCount = new ArrayList<>();
 		// 获取总数集合
 		listCount = (List) count.get(0);
@@ -150,7 +161,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		// 总数添加到map
 		map.put("count", (listCount.get(0)));
 		// 查询所有数据
-		List<Equipment> listEquipment = equipmentDao.selectAllByPage(hostName, name, ip, logType, startRecord,pageSize);
+		List<Equipment> listEquipment = equipmentDao.selectAllByPage(hostName, name, ip, logType,session.getAttribute(Constant.SESSION_USERROLE).toString(),session.getAttribute(Constant.SESSION_USERID).toString(), startRecord,pageSize);
 		// System.err.println(listEquipment.get(0).getCreateTime());
 		// 数据添加到map
 		map.put("equipment", listEquipment);

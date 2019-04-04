@@ -3,6 +3,8 @@ package com.jz.bigdata.common.department.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import com.jz.bigdata.common.department.entity.Department;
 
 /**
@@ -14,7 +16,7 @@ public interface IDepartmentService {
 	
 	int insert(Department department);
 	
-	Map<String,Object> selectAll(Department department);
+	Map<String,Object> selectAll(Department department,HttpSession session);
 	
 	int updateById(Department department);
 	

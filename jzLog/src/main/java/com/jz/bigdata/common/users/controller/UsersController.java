@@ -46,8 +46,8 @@ public class UsersController {
 	@ResponseBody
 	@RequestMapping("/selectAlls")
 	@DescribeLog(describe="查询所有用户")
-	public  Map<String,Object> selectAll(Page page) {
-		return userService.selectPage(page);
+	public  Map<String,Object> selectAll(Page page,HttpSession session) {
+		return userService.selectPage(page,session);
 	}
 
 	/**
@@ -109,8 +109,8 @@ public class UsersController {
 	@ResponseBody
 	@RequestMapping("/selectPage")
 	@DescribeLog(describe="分页查询用户")
-	public  Map<String,Object> selectPage(HttpServletRequest request, Page page) {
-		return userService.selectPage(page);
+	public  Map<String,Object> selectPage(HttpServletRequest request, Page page,HttpSession session) {
+		return userService.selectPage(page,session);
 	}
 
 	/**

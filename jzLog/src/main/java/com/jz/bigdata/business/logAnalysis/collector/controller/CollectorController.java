@@ -117,27 +117,7 @@ public class CollectorController {
 	@RequestMapping(value = "/startMasscanCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启masscan扫描")
 	public String startMasscanCollector(HttpServletRequest request) {
-//		ArrayList<String> list = new ArrayList<String>();
-//		list.add("192.168.0.1");
-//		list.add("192.168.0.2");
-//		list.add("192.168.0.3");
-//		list.add("192.168.0.4");
-//		list.add("192.168.0.5");
-//		list.add("192.168.0.6");
-//		list.add("192.168.0.7");
-//		list.add("192.168.0.8");
-//		list.add("192.168.0.9");
-//		list.add("192.168.0.10");
-//		list.add("192.168.0.11");
-//		list.add("192.168.0.12");
-//		list.add("192.168.0.13");
-//		list.add("192.168.0.14");
-//		list.add("192.168.0.15");
-//		list.add("192.168.0.16");
-//		list.add("192.168.0.17");
-//		list.add("192.168.0.18");
-//		list.add("192.168.0.19");
-//		list.add("192.168.0.20");
+		
 		String  ports = configProperty.getMasscan_ports();
 		String startip=request.getParameter("startip");
 		String endip=request.getParameter("endip");
@@ -145,17 +125,17 @@ public class CollectorController {
 		Map<String, Object> map = new HashMap<>();
 		if(resultstate==false){
 			map.put("state", resultstate);
-			map.put("msg", "数据采集器开启失败，请勿重复开启");
+			map.put("msg", "资产扫描器开启失败，请勿重复开启");
 			return JSONArray.fromObject(map).toString();
 		}else{
-			boolean result = collectorService.startMasscanCollector(startip,endip, ports,masscanipService);
+			boolean result = collectorService.startMasscanCollector(startip,endip, ports,masscanipService,configProperty);
 			if(result==true){
 				map.put("state", result);
-				map.put("msg", "数据采集器开启成功");
+				map.put("msg", "资产扫描器开启成功");
 				return JSONArray.fromObject(map).toString();
 			}else{
 				map.put("state", result);
-				map.put("msg", "数据采集器开启失败");
+				map.put("msg", "资产扫描器开启失败");
 				return JSONArray.fromObject(map).toString();
 			}
 		}

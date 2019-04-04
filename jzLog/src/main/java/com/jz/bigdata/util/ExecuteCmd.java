@@ -29,7 +29,7 @@ public class ExecuteCmd {
 	 * @param dir 执行命令进程需要的工作目录，null表示与当前主进程工作目录相同
 	 * @return
 	 */
-	public Map<String, String> execCmd(String cmd) {
+	public static Map<String, String> execCmd(String cmd) {
 		
 		Map<String, String> result = new HashMap<>() ;
 		BufferedReader bufrIn = null;
@@ -283,15 +283,20 @@ public class ExecuteCmd {
 	 * @param rgexs 多个需要匹配的内容
 	 * @return
 	 */
-	public static Map<String, Set<String>> execCmd(String cmd,String ss) {
+	public static Map<String, Set<String>> execCmd(String cmd,String filepath) {
 		
 		Map<String, Set<String>> result = new HashMap<>();
 		Set<String> list = new HashSet<String>();
 		BufferedReader bufrIn = null;
 		Process process = null;
+		File file = null;
+		
+		if(filepath!=null&&!filepath.equals("")) {
+			file = new File(filepath);
+		}
 		
 		try {
-			process = Runtime.getRuntime().exec(cmd);
+			process = Runtime.getRuntime().exec(cmd, null, file);
 			
 			bufrIn = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 
@@ -368,7 +373,7 @@ public class ExecuteCmd {
  	
  	public static void main(String [] args) {
  		
- 		String startIP = "2.16.8.0";
+ 		/*String startIP = "2.16.8.0";
  		String [] ips = startIP.split(".");
  		ArrayList<String> list = new ArrayList<String>();
  		for(int i = 0;i<=255;i++ ) {
@@ -377,7 +382,7 @@ public class ExecuteCmd {
  		}
 		String[] rgexs = { "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", "Discovered" };
 		Map<String, String> result = ExecuteCmd.execCmd("D:/Computer_Science/IP探测/masscan/masscan 192.168.0.12 -p10-1000", null, rgexs, true);
-		System.out.println(result);
- 		//executeCmd.execCmd(cmd);
+		System.out.println(result);*/
+ 		ExecuteCmd.execCmd("nmap -p 443 192.168.0.11");
 	}
 }

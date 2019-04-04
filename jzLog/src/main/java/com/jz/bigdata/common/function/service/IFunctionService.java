@@ -15,5 +15,7 @@ public interface IFunctionService {
 	List<Function> selectAllByRole(int role);
 	
 	Map<String, List<Function>> selectAll();
+	
+	int insert(Function function);
 
 }
