@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -240,10 +241,10 @@ public class ExecuteCmd {
 	 * @param rgexs 多个需要匹配的内容
 	 * @return
 	 */
-	public static Map<String, ArrayList<String>> execCmd(String cmd,File dir,String [] rgexs) {
+	public static Map<String, Vector<String>> execCmd(String cmd,File dir,String [] rgexs) {
 		
-		Map<String, ArrayList<String>> result = new HashMap<>();
-		ArrayList<String> list = new ArrayList<String>();
+		Map<String, Vector<String>> result = new HashMap<>();
+		Vector<String> vector = new Vector<String>();
 		BufferedReader bufrIn = null;
 		Process process = null;
 		
@@ -252,16 +253,16 @@ public class ExecuteCmd {
 			
 			bufrIn = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
 
-			StringBuilder stringBuffer = new StringBuilder();
 			// 读取输出
 			String line = null;
 			while ((line = bufrIn.readLine()) != null) {
 				//stringBuffer.append(line.trim()).append(LINE_SEPARATO);
-				list.add(line.trim());
+				String ports = getSubUtilSimple(line.trim(), "port\\s+(.*?)[/]");
+				String ip = getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+				vector.add(ip+":"+ports);
 			}
 			//每个命令存储自己返回数据-用于后续对返回数据进行处理
-			//result.put("masscan"+getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"), stringBuffer.toString());
-			result.put("masscan"+getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"), list);
+			result.put("masscan"+getSubUtil(cmd,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"), vector);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -280,7 +281,6 @@ public class ExecuteCmd {
 	 * 执行命令行，返回与关键字匹配的执行结果
 	 * @param cmd 命令行
 	 * @param dir 执行命令进程需要的工作目录，null表示与当前主进程工作目录相同
-	 * @param rgexs 多个需要匹配的内容
 	 * @return
 	 */
 	public static Map<String, Set<String>> execCmd(String cmd,String filepath) {
@@ -353,7 +353,7 @@ public class ExecuteCmd {
          while(m.find()){
              return m.group(0);
          }  
-         return null;  
+         return "";  
     }
  	
  	/**
@@ -368,7 +368,7 @@ public class ExecuteCmd {
  		while (m.find()) {
  			return m.group(1);
  		}
- 		return null;
+ 		return "";
  	}
  	
  	public static void main(String [] args) {
