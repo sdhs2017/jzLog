@@ -25,26 +25,56 @@ public class AssetsServiceimpl implements IAssetsService{
 	
 	private String oldDate;
 	
+	/**
+	 * @param assets
+	 * @return
+	 * @description
+	 * 添加数据
+	 */
 	@Override
 	public int insert(Assets assets) {
 		return assetsDao.insert(assets);
 	}
 
+	/**
+	 * @return
+	 * @description
+	 * 查询所有数据
+	 */
 	@Override
 	public List<Assets> selectAll() {
 		return assetsDao.selectAll();
 	}
 
+	/**
+	 * @param assets
+	 * @return
+	 * @description
+	 * 更新数据
+	 */
 	@Override
 	public int updateById(Assets assets) {
 		return assetsDao.updateById(assets);
 	}
 
+	/**
+	 * @param ids
+	 * @return
+	 * @description
+	 * 删除数据
+	 */
 	@Override
 	public int delete(String[] ids) {
 		return assetsDao.delete(ids);
 	}
 
+	/**
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return
+	 * @description
+	 * 分页查询
+	 */
 	@Override
 	public String selectAllByPage(int pageIndex, int pageSize) {
 		// 获取起始数
@@ -71,6 +101,12 @@ public class AssetsServiceimpl implements IAssetsService{
 		return assetsDao.count();
 	}
 
+	/**
+	 * @param assets
+	 * @return
+	 * @description
+	 * 查询单个数据
+	 */
 	@Override
 	public Assets selectOneAssets(Assets assets) {
 		return assetsDao.selectOneAssets(assets);
@@ -93,6 +129,19 @@ public class AssetsServiceimpl implements IAssetsService{
 		List<Assets> list  = assetsDao.selectByIncrement(oldTime, date);
 		oldDate=date;
 		return list;
+	}
+
+	/**
+	 * @param id
+	 * @param state
+	 * @param upDateTime
+	 * @return
+	 * @description
+	 * 修改状态
+	 */
+	@Override
+	public int updateState(String id, String state, String upDateTime) {
+		return assetsDao.updateState(id, state, upDateTime);
 	}
 	
 

@@ -24,5 +24,6 @@ public interface IAssetsDao {
 
 	List<Assets> selectByIncrement(@Param("oldDate")String oldDate,@Param("date")String date);
 	
+	int updateState(@Param("id")String id,@Param("state")String state,@Param("responseDate")String responseDate);
 
 }

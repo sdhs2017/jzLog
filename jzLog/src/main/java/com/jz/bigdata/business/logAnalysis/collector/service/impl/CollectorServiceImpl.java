@@ -6,9 +6,12 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.jz.bigdata.business.logAnalysis.collector.kafka.KafkaCollector;
+import com.jz.bigdata.business.logAnalysis.collector.masscan.HeartbeatCollector;
 import com.jz.bigdata.business.logAnalysis.collector.masscan.MascanCollector;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
@@ -34,6 +37,9 @@ public class CollectorServiceImpl implements ICollectorService{
 	
 	Thread t;
 	Thread masscanThread;
+	
+	@Resource(name="assetsService")
+	private IAssetsService assetsService;
 //	public Thread getT() {
 //		return t;
 //	}
@@ -191,5 +197,16 @@ public class CollectorServiceImpl implements ICollectorService{
 		
 	}
 	
-	
+	/**
+	 * 资产心跳机制
+	 */
+	public void assetsHeartBeat() {
+		List<Assets> list = assetsService.selectAll();
+		if (!list.isEmpty()) {
+			new HeartbeatCollector(list,assetsService);
+		}else {
+			System.out.println("资产表中暂无数据.....");
+		}
+		
+	}
 }
