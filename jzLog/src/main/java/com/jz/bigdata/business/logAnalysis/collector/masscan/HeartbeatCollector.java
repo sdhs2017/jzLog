@@ -21,6 +21,8 @@ import com.jz.bigdata.util.Uuid;
 public class HeartbeatCollector implements Runnable {
 
 	private Semaphore semaphore;
+	
+	private String id;
 
 	private String IPS;
 
@@ -67,6 +69,13 @@ public class HeartbeatCollector implements Runnable {
 	
 	public HeartbeatCollector(Semaphore semaphore, String IPS, String ports,IAssetsService assetsService) {
 		this.semaphore = semaphore;
+		this.IPS = IPS;
+		this.ports = ports;
+		this.assetsService=assetsService;
+	}
+	public HeartbeatCollector(Semaphore semaphore,String id, String IPS, String ports,IAssetsService assetsService) {
+		this.semaphore = semaphore;
+		this.id = id;
 		this.IPS = IPS;
 		this.ports = ports;
 		this.assetsService=assetsService;
@@ -131,6 +140,21 @@ public class HeartbeatCollector implements Runnable {
 
 	}
 	
+	public HeartbeatCollector(List<Assets> list,IAssetsService assetsService) {
+		
+		final Semaphore semaphore = new Semaphore(5);
+		
+		for (Assets asset : list) {
+			threadPool.execute(new HeartbeatCollector(semaphore, asset.getId(), asset.getIp(), asset.getPorts(),assetsService));
+		}
+		threadPool.shutdown();
+		
+		if (threadPool.isTerminated()) {
+			threadPool.shutdownNow();
+		}
+		
+	}
+	
 	
 	/**
 	 * 重写线程执行内容
@@ -144,41 +168,20 @@ public class HeartbeatCollector implements Runnable {
 			semaphore.acquire();
 			String[] rgexs = { "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", "Discovered" };
 			System.out.println("/opt/jzlog/masscan/bin/masscan "+IPS+" -p"+ports);
-			Map<String, Set<String>> result = ExecuteCmd.execCmd("/opt/jzlog/masscan/bin/masscan "+IPS+" -p"+ports+" --rate 200", "");
+			Map<String, Set<String>> result = ExecuteCmd.execCmd("./masscan "+IPS+" -p"+ports+" --rate 200", "/opt/jzlog/masscan/bin/");
 			System.out.println(result);
 			// 释放 信号量 许可
 			semaphore.release();
 			
-			StringBuilder stringports = new StringBuilder();
 			Set<String> list = result.get("masscan"+IPS);
-			/*if (!list.isEmpty()) {
-				for(int i=0; i<list.size();i++) {
-					String ports = getSubUtilSimple(list.get(i), "port\\s+(.*?)[/]");
-					if ((i+1)<list.size()) {
-						stringports.append(ports+",");
-					}else{
-						stringports.append(ports);
-					}
-					
-					String protocol = getSubUtilSimple(list.get(i), "[/](.*?)\\s+on");
-					System.out.println(ports+"   "+protocol);
-				};
-				System.out.println(stringports);
-				
-				Date endtime = new Date();
+			
+			if (list.isEmpty()) {
+				assetsService.updateState(id, "超时", null);
+				System.out.println(id+" "+IPS+" "+ports+" "+"超时"+new Date());
+			}else {
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String time = format.format(endtime.getTime());//这个就是把时间戳经过处理得到期望格式的时间
-				Assets assets =new Assets();
-				assets.setId(Uuid.getUUID());
-				assets.setIp(IPS);
-				assets.setPorts(stringports.toString());
-				assets.setCreateTime(time);
-				assetsService.insert(assets);
-			}*/
-			if (!list.isEmpty()) {
-				ipports.addAll(list);
-				System.out.println(ipports);
-				
+				assetsService.updateState(id,"正常",format.format(new Date()));
+				System.out.println(id+" "+IPS+" "+ports+" "+"正常"+new Date());
 			}
 			
 		} catch (InterruptedException e) {
