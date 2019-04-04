@@ -1,4 +1,4 @@
-package com.jz.bigdata.business.logAnalysis.collector.masscan;
+/*package com.jz.bigdata.business.logAnalysis.collector.masscan;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -154,3 +154,4 @@ public class AssetCollector implements Callable<Set<String>>{
 	}
 
 }
+*/
