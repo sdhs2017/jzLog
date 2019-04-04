@@ -202,7 +202,11 @@ public class CollectorServiceImpl implements ICollectorService{
 	 */
 	public void assetsHeartBeat() {
 		List<Assets> list = assetsService.selectAll();
+		if (!list.isEmpty()) {
+			new HeartbeatCollector(list,assetsService);
+		}else {
+			System.out.println("资产表中暂无数据.....");
+		}
 		
-		new HeartbeatCollector(list,assetsService);
 	}
 }

@@ -176,10 +176,11 @@ public class HeartbeatCollector implements Runnable {
 			Set<String> list = result.get("masscan"+IPS);
 			
 			if (list.isEmpty()) {
-				//assetsService.updateById(id,"正常");
+				assetsService.updateState(id, "超时", null);
 				System.out.println(id+" "+IPS+" "+ports+" "+"超时"+new Date());
 			}else {
-				//assetsService.updateById(id,"超时");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				assetsService.updateState(id,"正常",format.format(new Date()));
 				System.out.println(id+" "+IPS+" "+ports+" "+"正常"+new Date());
 			}
 			/*if (!list.isEmpty()) {

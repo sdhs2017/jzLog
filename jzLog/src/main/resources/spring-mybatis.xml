@@ -696,7 +696,7 @@
 		</property>
 		<!-- 设置触发时间 -->
 		<property name="cronExpression">
-            <value>0 */5 * * * ?</value>
+            <value>0 */2 * * * ?</value>
         </property>
 	</bean>
 	<!-- 触发器启动 -->

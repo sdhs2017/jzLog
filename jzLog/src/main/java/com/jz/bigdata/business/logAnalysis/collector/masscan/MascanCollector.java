@@ -71,7 +71,6 @@ public class MascanCollector implements Runnable {
 	}
 	
 
-
 	/**
 	 * 重写线程执行内容
 	 */
@@ -100,6 +99,8 @@ public class MascanCollector implements Runnable {
 	        	assets.setId(Uuid.getUUID());
 	        	assets.setIp(resultIp);
 	        	assets.setPorts(ports);
+	        	assets.setState("正常");
+	        	assets.setResponseDate(format.format(new Date()));;
 	        	assets.setCreateTime(time);
 	 	        assetsService.insert(assets);
 	        }
