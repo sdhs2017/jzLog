@@ -7,15 +7,26 @@
 		<link src="../../css/layer.css" type="text/javascript" charset="utf-8"></link>
 		<link rel="stylesheet" href="css/bootstrap-wizard.css" />
 		<!-- <link rel="stylesheet" type="text/css" href="../../js/bootstrap/css/bootstrap-switch.css"/> -->
+		<link rel="stylesheet" type="text/css" href="../../css/animate.min.css"/>
 		<link rel="stylesheet" type="text/css" href="css/device.css"/>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 		<style type="text/css">
+			.device_box{
+				height:600px;
+				overflow:auto;
+			}
 			.scan_device,.check_device{
 				border-color: #386c9a;
 			    background: #386c9a;
-			    box-shadow: 0px 0px 7px 1px #386c9a;
+			    /* box-shadow: 0px 0px 7px 1px #386c9a; */
 			    height: 32px;
 			    border-radius: 0;
+			}
+			.searchDeviceNameBox{
+				border-left:1px solid #ccc;
+			}
+			.device_tools>form div{
+				line-height:30px;
 			}
 			.check_device{
 				margin-left:3px;
@@ -42,6 +53,7 @@
 				width:400px;
 			} */
 		</style>
+	
 	</head>
 	
 	<body>
@@ -257,6 +269,10 @@
 					url:url,
 					data:"",
 					success:function(data){
+						if(url=='../../assets/selectAll.do'){
+							$(".device_list tbody").html('')
+						}
+							
 						jointDeviceList(data);
 					}
 				})
@@ -326,8 +342,17 @@
 				 	obj.createTime = obj.createTime.split(".")[0];
 				 	obj.upDateTime = obj.upDateTime.split(".")[0];
 				 	obj.endTime = obj.endTime.split(".")[0];
+				 	//状态
+				 	if(obj.state == '正常'){
+				 		obj.state = '<span class="label label-success">正常</span>'
+				 	}else{
+				 		obj.state = '<span class="label label-warning">超时</span>'
+				 	}
+				 	//响应时间
+				 	var responseTime = (Number((new Date() - new Date(obj.responseDate))/1000/60)).toFixed(2);
 				 	
-				 	html = '<tr class="item_tr">'   
+				 	
+				 	html = '<tr class="animated item_tr">'   
 						+		 '<td> <input type="checkbox" name="'+obj.id+'"></td>'
 						+        '<td class="device_ip">'+obj.ip+'</td>'
 			            +        '<td class="device_name">'
@@ -340,28 +365,21 @@
 			            +        '<td class="device_updatetime">'+obj.upDateTime+'</td>' 
 			            +        '<td class="device_endtime">'+obj.endTime+'</td>'
 			            +        '<td class="device_iswork">'+obj.startUp+'</td>' 
-			            +        '<td class="device_responseTime">-</td>' 
-			            +        '<td class="device_status">-</td>' 
+			            +        '<td class="device_responseTime">'+responseTime+' min</td>' 
+			            +        '<td class="device_status">'+obj.state+'</td>' 
 			            +       	'<td class="td_tools">'
 			            +       		'<i class="glyphicon glyphicon-edit device_revise" title="修改"> </i>'
 			            +       	'</td>'
 			            +		'<td class="device_threat" threat-id="'+obj.id+'"></td>'
 			            +    '</tr>'
-			          
 			          //添加到页面中
 			          $(".device_list tbody").prepend(html);
-				 	  //判断有没有高危事件
-				 	 if(obj.high_risk != 0 && obj.high_risk != "-"){//高危事件
-				 		 $("td[threat-id="+obj.id+"]").append('<span class="higeThreat" title="高危事件数量">'+obj.high_risk+'</span>')
-				 	 }
-				 	//判断有没有中危事件
-				 	 if(obj.moderate_risk != 0 && obj.moderate_risk != "-"){//中危事件
-				 		 $("td[threat-id="+obj.id+"]").append('<span class="middleThreat" title="中危事件数量">'+obj.moderate_risk+'</span>')
-				 	 }
 				}
 				//检测状态
-				checkDeviceStatus();
-				setInterval(checkDeviceStatus,300000);
+				//checkDeviceStatus();
+				setInterval(function(){
+					getScanDeviceData("../../assets/selectAll.do");
+				},300000);
 				//添加到页面中
 				//$(".device_list tbody").html(html);
 			}
