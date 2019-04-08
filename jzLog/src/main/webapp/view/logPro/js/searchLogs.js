@@ -93,6 +93,7 @@
     	//将object对象转换成字符串
     	var hsObj = {};
     	hsObj.hsData = JSON.stringify(param);
+    	console.log(typeof hsObj.hsData)
 	    //获取数据并通过回调函数进行数据加载。
 	    ajaxPost(url,hsObj,sFunc); 		
 	}
@@ -500,6 +501,7 @@
 			logListTittle += '<th width="200">时间</th>'
 						  +	 '<th width="100">级别</th>'
 						  +	 '<th width="100">日志类型</th>'
+						  +	 '<th width="100">协议名称</th>'
 						  +	 '<th width="120">资产名称</th>'
 						  +	 '<th width="125">IP</th>'
 						  +	 '<th>日志内容</th>'
@@ -538,6 +540,7 @@
 					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
 					         +       '<td class="logs_level">'+obj.operation_level+'</td>'
 					         +       '<td class="logs_type">'+obj.type+'</td>'
+					         +       '<td class="logs_protocol_name">'+obj.protocol_name+'</td>'
 					         +       '<td class="property_name" data-eId="'+obj.equipmentid+'"><a href="javascript:void(0)" title="点击查看资产详情">'+obj.equipmentname+'</a></td>'
 					         +       '<td class="logs_ip">'+obj.ip+'</td>'
 					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
@@ -1060,6 +1063,10 @@
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">IP协议:</div>'
 					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].protocol+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">协议名称:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].protocol_name+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">源IP:</div>'
