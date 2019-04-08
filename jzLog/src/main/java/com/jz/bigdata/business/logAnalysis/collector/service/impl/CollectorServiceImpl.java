@@ -2,9 +2,6 @@ package com.jz.bigdata.business.logAnalysis.collector.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 

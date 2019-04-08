@@ -1,5 +1,6 @@
 package com.jz.bigdata.business.logAnalysis.collector.masscan;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -168,14 +170,15 @@ public class HeartbeatCollector implements Runnable {
 			semaphore.acquire();
 			String[] rgexs = { "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", "Discovered" };
 			System.out.println("/opt/jzlog/masscan/bin/masscan "+IPS+" -p"+ports);
-			Map<String, Set<String>> result = ExecuteCmd.execCmd("./masscan "+IPS+" -p"+ports+" --rate 200", "/opt/jzlog/masscan/bin/");
+			File file = new File("/opt/jzlog/masscan/bin/");
+			Map<String, Vector<String>> result = ExecuteCmd.execCmd("./masscan "+IPS+" -p"+ports+" --rate 200",file, rgexs);
 			System.out.println(result);
 			// 释放 信号量 许可
 			semaphore.release();
 			
-			Set<String> list = result.get("masscan"+IPS);
+			Vector<String> vector = result.get("masscan"+IPS);
 			
-			if (list.isEmpty()) {
+			if (vector.isEmpty()) {
 				assetsService.updateState(id, "超时", null);
 				System.out.println(id+" "+IPS+" "+ports+" "+"超时"+new Date());
 			}else {
@@ -206,11 +209,6 @@ public class HeartbeatCollector implements Runnable {
 				assets.setPorts(stringports.toString());
 				assets.setCreateTime(time);
 				assetsService.insert(assets);
-			}*/
-			/*if (!list.isEmpty()) {
-				ipports.addAll(list);
-				System.out.println(ipports);
-				
 			}*/
 			
 		} catch (InterruptedException e) {
