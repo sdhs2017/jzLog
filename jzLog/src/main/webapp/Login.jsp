@@ -197,7 +197,7 @@ $(function() {
                 <a class="register" href="register.html">没有账号？点击注册</a>&nbsp;
             </form>
         </div>				
-		<a class="certificate" >证书更新</a>
+		<a class="certificate" >许可证更新</a>
     </div>
     <!-- 粒子效果 -->
     <script type="text/javascript" color="255,255,255" opacity='1' zIndex="2" count="50" src="js/canvas-nest.js"></script>
