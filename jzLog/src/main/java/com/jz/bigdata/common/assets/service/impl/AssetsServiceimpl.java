@@ -16,20 +16,18 @@ import com.jz.bigdata.common.assets.entity.Assets;
 import com.jz.bigdata.common.assets.service.IAssetsService;
 import net.sf.json.JSONArray;
 
-
 @Service(value = "assetsService")
-public class AssetsServiceimpl implements IAssetsService{
-	
+public class AssetsServiceimpl implements IAssetsService {
+
 	@Resource
 	private IAssetsDao assetsDao;
-	
+
 	private String oldDate;
-	
+
 	/**
 	 * @param assets
 	 * @return
-	 * @description
-	 * 添加数据
+	 * @description 添加数据
 	 */
 	@Override
 	public int insert(Assets assets) {
@@ -38,8 +36,7 @@ public class AssetsServiceimpl implements IAssetsService{
 
 	/**
 	 * @return
-	 * @description
-	 * 查询所有数据
+	 * @description 查询所有数据
 	 */
 	@Override
 	public List<Assets> selectAll() {
@@ -49,19 +46,21 @@ public class AssetsServiceimpl implements IAssetsService{
 	/**
 	 * @param assets
 	 * @return
-	 * @description
-	 * 更新数据
+	 * @description 更新数据
 	 */
 	@Override
 	public int updateById(Assets assets) {
+		// 设置日期格式
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// 获取日期
+		assets.setUpDateTime(df.format(new Date()));
 		return assetsDao.updateById(assets);
 	}
 
 	/**
 	 * @param ids
 	 * @return
-	 * @description
-	 * 删除数据
+	 * @description 删除数据
 	 */
 	@Override
 	public int delete(String[] ids) {
@@ -72,8 +71,7 @@ public class AssetsServiceimpl implements IAssetsService{
 	 * @param pageIndex
 	 * @param pageSize
 	 * @return
-	 * @description
-	 * 分页查询
+	 * @description 分页查询
 	 */
 	@Override
 	public String selectAllByPage(int pageIndex, int pageSize) {
@@ -89,7 +87,7 @@ public class AssetsServiceimpl implements IAssetsService{
 		// 总数添加到map
 		map.put("count", (listCount.get(0)));
 		// 查询所有数据
-		List<Assets> listAssets = assetsDao.selectAllByPage(startRecord,pageSize);
+		List<Assets> listAssets = assetsDao.selectAllByPage(startRecord, pageSize);
 		// System.err.println(listEquipment.get(0).getCreateTime());
 		// 数据添加到map
 		map.put("assets", listAssets);
@@ -104,8 +102,7 @@ public class AssetsServiceimpl implements IAssetsService{
 	/**
 	 * @param assets
 	 * @return
-	 * @description
-	 * 查询单个数据
+	 * @description 查询单个数据
 	 */
 	@Override
 	public Assets selectOneAssets(Assets assets) {
@@ -114,20 +111,19 @@ public class AssetsServiceimpl implements IAssetsService{
 
 	/**
 	 * @return
-	 * @description
-	 * 扫描增量数据 
+	 * @description 扫描增量数据
 	 */
 	@Override
 	public List<Assets> selectByIncrement() {
-		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String date =format.format(new Date());
-		
-		if(oldDate==null||("").equals(oldDate)){
-			oldDate=date;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String date = format.format(new Date());
+
+		if (oldDate == null || ("").equals(oldDate)) {
+			oldDate = date;
 		}
-		String oldTime=oldDate;
-		List<Assets> list  = assetsDao.selectByIncrement(oldTime, date);
-		oldDate=date;
+		String oldTime = oldDate;
+		List<Assets> list = assetsDao.selectByIncrement(oldTime, date);
+		oldDate = date;
 		return list;
 	}
 
@@ -136,14 +132,11 @@ public class AssetsServiceimpl implements IAssetsService{
 	 * @param state
 	 * @param upDateTime
 	 * @return
-	 * @description
-	 * 修改状态
+	 * @description 修改状态
 	 */
 	@Override
 	public int updateState(String id, String state, String upDateTime) {
 		return assetsDao.updateState(id, state, upDateTime);
 	}
-	
-
 
 }
