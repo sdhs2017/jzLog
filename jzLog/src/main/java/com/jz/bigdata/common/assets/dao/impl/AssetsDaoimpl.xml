@@ -281,7 +281,7 @@
 		update assets set
 		name=#{name},hostName=#{hostName},type=#{type},ip=#{ip},startUp=#{startUp},logType=#{logType},
 		macAdress=#{macAdress},system=#{system},systemVersion=#{systemVersion},assetNum=#{assetNum},serialNum=#{serialNum},
-		assets.describe=#{describe},valuation=#{valuation},log_level=#{log_level},ports=#{ports},protocol=#{protocol},
+		assets.describe=#{describe},valuation=#{valuation},log_level=#{log_level},
 		<!-- if判断语句 -->
 		<choose>
 			<when test="upDateTime != null and upDateTime !='' and upDateTime !='null'">

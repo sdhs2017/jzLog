@@ -54,6 +54,9 @@ public class AssetsServiceimpl implements IAssetsService{
 	 */
 	@Override
 	public int updateById(Assets assets) {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// 获取日期
+		assets.setUpDateTime(df.format(new Date()));
 		return assetsDao.updateById(assets);
 	}
 
