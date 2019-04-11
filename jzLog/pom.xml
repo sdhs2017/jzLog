@@ -800,6 +800,18 @@
 	        <artifactId>ehcache-spring-annotations</artifactId>
 	        <version>1.2.0</version>
 	  	</dependency>
+	  	
+	  	<!-- pcap4j抓取网络数据包 -->
+	  	<dependency>
+	      <groupId>org.pcap4j</groupId>
+	      <artifactId>pcap4j-core</artifactId>
+	      <version>1.7.5</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.pcap4j</groupId>
+	      <artifactId>pcap4j-packetfactory-static</artifactId>
+	      <version>1.7.5</version>
+	    </dependency>
 		
 	</dependencies>
 	<build>
