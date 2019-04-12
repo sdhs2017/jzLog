@@ -70,6 +70,8 @@ public class CollectorController {
 	
 	
 	String client ="";
+	
+	Thread pcap4jthread = null;
 
 	// 获取采集器开启或关闭状态，true为开启，false为关闭
 	@ResponseBody
@@ -185,8 +187,14 @@ public class CollectorController {
 		
 		HashMap<String, TcpStream> tcpStreamList=new HashMap<String, TcpStream>();
 		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.200.158");
-    	System.out.println("--------------------------");
-    	System.out.println(nif.getAddresses());
+		
+		if(nif==null)
+        {
+        	map.put("state", false);
+			map.put("msg", "网卡获取失败！数据包采集器开启失败！");
+			return JSONArray.fromObject(map).toString();
+        }
+		
     	for(PcapAddress a:nif.getAddresses())
         {
         	if(a instanceof PcapIpV4Address)
@@ -197,8 +205,9 @@ public class CollectorController {
         }
         if(client.equals(""))
         {
-        	// 返回内容待定
-        	return null;
+        	map.put("state", false);
+			map.put("msg", "网卡获取失败！数据包采集器开启失败！");
+			return JSONArray.fromObject(map).toString();
         }
         // 抓取包长度
         int snaplen = 64 * 1024;
@@ -284,46 +293,75 @@ public class CollectorController {
 		
         };
 		
-		
-		
-		
-		
-		
-		
-		
-		/*Thread thread = new Thread((Runnable) new Pcap4jCollector("192.168.200.158",handle,listener));
-		boolean result = true;
-		thread.start();*/
-        boolean result = true;
-        Pcap4jCollector td = new Pcap4jCollector("192.168.200.158",handle,listener);
-		FutureTask<String> futureTask = new FutureTask<>(td);
-		 
-        new Thread(futureTask).start();
-		
-		
-        
-		
-		
-		if(result==true){
-			map.put("state", result);
-			map.put("msg", "资产扫描器开启成功");
-			return JSONArray.fromObject(map).toString();
-		}else{
-			map.put("state", result);
-			map.put("msg", "资产扫描器开启失败");
+		try {
+			Pcap4jCollector td = new Pcap4jCollector("192.168.200.158",handle,listener);
+			FutureTask<String> futureTask = new FutureTask<>(td);
+			pcap4jthread = new Thread(futureTask);
+			pcap4jthread.start();
+			
+			if(pcap4jthread.isAlive()==true){
+				map.put("state", pcap4jthread.isAlive());
+				map.put("msg", "数据包采集器开启成功");
+				return JSONArray.fromObject(map).toString();
+			}else{
+				map.put("state", pcap4jthread.isAlive());
+				map.put("msg", "数据包采集器开启失败");
+				return JSONArray.fromObject(map).toString();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			map.put("state", false);
+			map.put("msg", "数据包采集器开启失败");
 			return JSONArray.fromObject(map).toString();
 		}
 		
-		
 	}
 	
+	// 监控pcap4j抓取数据包运行状态
+	@ResponseBody
+	@RequestMapping(value = "/statePcap4jCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "监控pcap4j抓取数据包运行状态")
+	public String statePcap4jCollector(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<>();
+		if (pcap4jthread!=null) {
+			map.put("state", pcap4jthread.isAlive());
+		}else {
+			map.put("state", false);
+		}
+		
+		return JSONArray.fromObject(map).toString();
+	}
+	
+	// 停止pcap4j抓取数据包
+	@ResponseBody
+	@RequestMapping(value = "/stopPcap4jCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "停止pcap4j抓取数据包")
+	public String stopPcap4jCollector(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<>();
+		if (pcap4jthread!=null) {
+			if (pcap4jthread.isAlive()) {
+				pcap4jthread.stop();
+				map.put("state", true);
+				map.put("msg", "数据包采集器关闭成功");
+			}else {
+				map.put("state", true);
+				map.put("msg", "数据包采集器已经关闭");
+			}
+		}else {
+			map.put("state", false);
+			map.put("msg", "数据包采集器未启动");
+		}
+		
+		return JSONArray.fromObject(map).toString();
+	}
+		
 	/**
      * 根据IP获取指定网卡设备
 	* @param localHost 网卡IP
 	* 
 	* @return 指定的设备对象
 	*/
-	public PcapNetworkInterface getCaptureNetworkInterface(String localHost) {
+	public static PcapNetworkInterface getCaptureNetworkInterface(String localHost) {
 		List<PcapNetworkInterface> allDevs;
 		try {
 			// 获取全部的网卡设备列表，Windows如果获取不到网卡信息，输入：net start npf  启动网卡服务
