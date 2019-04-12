@@ -37,6 +37,9 @@ public class CollectorServiceImpl implements ICollectorService{
 	
 	@Resource(name="assetsService")
 	private IAssetsService assetsService;
+	
+	@Resource(name ="configProperty")  
+    private ConfigProperty configProperty;
 //	public Thread getT() {
 //		return t;
 //	}
@@ -200,7 +203,7 @@ public class CollectorServiceImpl implements ICollectorService{
 	public void assetsHeartBeat() {
 		List<Assets> list = assetsService.selectAll();
 		if (!list.isEmpty()) {
-			new HeartbeatCollector(list,assetsService);
+			new HeartbeatCollector(list,assetsService,configProperty);
 		}else {
 			System.out.println("资产表中暂无数据.....");
 		}
