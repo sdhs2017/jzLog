@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 import com.jz.bigdata.common.assets.entity.Assets;
 import com.jz.bigdata.common.assets.service.IAssetsService;
+import com.jz.bigdata.util.ConfigProperty;
 import com.jz.bigdata.util.ExecuteCmd;
 import com.jz.bigdata.util.Uuid;
 
@@ -68,6 +69,7 @@ public class HeartbeatCollector implements Runnable {
 	final long awaitTime = 100 * 1000;
 	private ExecutorService threadPool=Executors.newCachedThreadPool();
 	private IAssetsService assetsService;
+	private ConfigProperty configProperty;
 	
 	public HeartbeatCollector(Semaphore semaphore, String IPS, String ports,IAssetsService assetsService) {
 		this.semaphore = semaphore;
@@ -75,12 +77,13 @@ public class HeartbeatCollector implements Runnable {
 		this.ports = ports;
 		this.assetsService=assetsService;
 	}
-	public HeartbeatCollector(Semaphore semaphore,String id, String IPS, String ports,IAssetsService assetsService) {
+	public HeartbeatCollector(Semaphore semaphore,String id, String IPS, String ports,IAssetsService assetsService,ConfigProperty configProperty) {
 		this.semaphore = semaphore;
 		this.id = id;
 		this.IPS = IPS;
 		this.ports = ports;
-		this.assetsService=assetsService;
+		this.assetsService = assetsService;
+		this.configProperty = configProperty;
 	}
 	public HeartbeatCollector(Semaphore semaphore, String IPS, String ports) {
 		this.semaphore = semaphore;
@@ -142,12 +145,12 @@ public class HeartbeatCollector implements Runnable {
 
 	}
 	
-	public HeartbeatCollector(List<Assets> list,IAssetsService assetsService) {
+	public HeartbeatCollector(List<Assets> list,IAssetsService assetsService,ConfigProperty configProperty) {
 		
 		final Semaphore semaphore = new Semaphore(5);
 		
 		for (Assets asset : list) {
-			threadPool.execute(new HeartbeatCollector(semaphore, asset.getId(), asset.getIp(), asset.getPorts(),assetsService));
+			threadPool.execute(new HeartbeatCollector(semaphore, asset.getId(), asset.getIp(), asset.getPorts(),assetsService,configProperty));
 		}
 		threadPool.shutdown();
 		
@@ -169,8 +172,8 @@ public class HeartbeatCollector implements Runnable {
 			// 获取 信号量 执行许可
 			semaphore.acquire();
 			String[] rgexs = { "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", "Discovered" };
-			System.out.println("/opt/jzlog/masscan/bin/masscan "+IPS+" -p"+ports);
-			File file = new File("/opt/jzlog/masscan/bin/");
+			System.out.println(configProperty.getMasscan_path()+" "+IPS+" -p"+ports);
+			File file = new File(configProperty.getMasscan_path());
 			Map<String, Vector<String>> result = ExecuteCmd.execCmd("./masscan "+IPS+" -p"+ports+" --rate 200",file, rgexs);
 			System.out.println(result);
 			// 释放 信号量 许可

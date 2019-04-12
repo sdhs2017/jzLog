@@ -1,16 +1,35 @@
 package com.jz.bigdata.business.logAnalysis.collector.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.pcap4j.core.PacketListener;
+import org.pcap4j.core.PcapAddress;
+import org.pcap4j.core.PcapHandle;
+import org.pcap4j.core.PcapIpV4Address;
+import org.pcap4j.core.PcapNativeException;
+import org.pcap4j.core.PcapNetworkInterface;
+import org.pcap4j.core.Pcaps;
+import org.pcap4j.core.BpfProgram.BpfCompileMode;
+import org.pcap4j.core.NotOpenException;
+import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
+import org.pcap4j.packet.IpV4Packet;
+import org.pcap4j.packet.Packet;
+import org.pcap4j.packet.TcpPacket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.jz.bigdata.business.logAnalysis.collector.pcap4j.Pcap4jCollector;
+import com.jz.bigdata.business.logAnalysis.collector.pcap4j.TcpStream;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.assets.service.IAssetsService;
@@ -48,6 +67,9 @@ public class CollectorController {
 //	private MascanCollector mascanCollector;
 	@Resource(name="assetsService")
 	private IAssetsService masscanipService;
+	
+	
+	String client ="";
 
 	// 获取采集器开启或关闭状态，true为开启，false为关闭
 	@ResponseBody
@@ -112,7 +134,7 @@ public class CollectorController {
 		return JSONArray.fromObject(map).toString();
 	}
 
-	// 监听采集器状态
+	// 开启masscan扫描
 	@ResponseBody
 	@RequestMapping(value = "/startMasscanCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启masscan扫描")
@@ -142,7 +164,7 @@ public class CollectorController {
 		
 	}
 	
-	// 监听采集器状态
+	// 监控Masscan状态
 	@ResponseBody
 	@RequestMapping(value = "/stateMasscanCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "监控Masscan状态")
@@ -153,5 +175,180 @@ public class CollectorController {
 		return JSONArray.fromObject(map).toString();
 	}
 	
+	// pcap4j抓取数据包
+	@ResponseBody
+	@RequestMapping(value = "/startPcap4jCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "开启pcap4j抓取数据包")
+	public String startPcap4jCollector(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<>();
+		
+		
+		HashMap<String, TcpStream> tcpStreamList=new HashMap<String, TcpStream>();
+		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.200.158");
+    	System.out.println("--------------------------");
+    	System.out.println(nif.getAddresses());
+    	for(PcapAddress a:nif.getAddresses())
+        {
+        	if(a instanceof PcapIpV4Address)
+        	{
+        		client = a.getAddress().toString();
+        		break;
+        	}
+        }
+        if(client.equals(""))
+        {
+        	// 返回内容待定
+        	return null;
+        }
+        // 抓取包长度
+        int snaplen = 64 * 1024;
+        // 超时50ms
+        int timeout = 50;
+        // 初始化抓包器
+        PcapHandle.Builder phb = new PcapHandle.Builder(nif.getName()).snaplen(snaplen)
+            .promiscuousMode(PromiscuousMode.PROMISCUOUS).timeoutMillis(timeout)
+            .bufferSize(1 * 1024 * 1024);
+        PcapHandle handle = null;
+		try {
+			handle = phb.build();
+		} catch (PcapNativeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        // handle = nif.openLive(snaplen, PromiscuousMode.NONPROMISCUOUS, timeout);
+
+        /** 设置TCP过滤规则 */
+        //String filter = "ip and tcp and (port 443)";
+        /** 设置TCP过滤规则 */
+        String filter = "ip and tcp and (port 8080)";
+        
+            
+        // 设置过滤器
+        try {
+			handle.setFilter(filter, BpfCompileMode.OPTIMIZE);
+		} catch (PcapNativeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotOpenException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        //初始化listener
+        PacketListener listener = new PacketListener() {
+        	
+        	 public void gotPacket(Packet packet) {
+        		 // public void gotPacket(PcapPacket packet) {
+            	
+            	
+            	TcpPacket tcppacket =packet.getBuilder().getPayloadBuilder().build().get(TcpPacket.class);
+    			IpV4Packet ip4packet =packet.get(IpV4Packet.class);
+    			
+    			String server = "";
+    			String serverPort ="";
+    			if(ip4packet.getHeader().getDstAddr().toString().contains(client))
+    			{
+    				server=ip4packet.getHeader().getSrcAddr().toString();
+    				serverPort = tcppacket.getHeader().getSrcPort().valueAsString();
+    				
+    			}else if(ip4packet.getHeader().getSrcAddr().toString().contains(client))
+    			{
+    				server=ip4packet.getHeader().getDstAddr().toString();
+    				serverPort = tcppacket.getHeader().getDstPort().valueAsString();
+    			}else
+    			{
+    				return;
+    			}
+    			
+    			TcpStream tps =null;
+            	if(tcpStreamList.get(server+serverPort) == null)
+            	{
+            		tps= new TcpStream(server,client);
+            		tcpStreamList.put(server+serverPort, tps);
+            		tps.gotPacket(packet);
+
+            	}else
+            	{
+            		tps = tcpStreamList.get(server+serverPort);
+            		tps.gotPacket(packet);
+            	}
+            	
+            	if(tps.enDestroy())
+            	{
+            		tps = null;
+            		tcpStreamList.put(server+serverPort, tps);
+            		tcpStreamList.remove(server+serverPort);
+            		
+            	}
+            }
+		
+        };
+		
+		
+		
+		
+		
+		
+		
+		
+		/*Thread thread = new Thread((Runnable) new Pcap4jCollector("192.168.200.158",handle,listener));
+		boolean result = true;
+		thread.start();*/
+        boolean result = true;
+        Pcap4jCollector td = new Pcap4jCollector("192.168.200.158",handle,listener);
+		FutureTask<String> futureTask = new FutureTask<>(td);
+		 
+        new Thread(futureTask).start();
+		
+		
+        
+		
+		
+		if(result==true){
+			map.put("state", result);
+			map.put("msg", "资产扫描器开启成功");
+			return JSONArray.fromObject(map).toString();
+		}else{
+			map.put("state", result);
+			map.put("msg", "资产扫描器开启失败");
+			return JSONArray.fromObject(map).toString();
+		}
+		
+		
+	}
+	
+	/**
+     * 根据IP获取指定网卡设备
+	* @param localHost 网卡IP
+	* 
+	* @return 指定的设备对象
+	*/
+	public PcapNetworkInterface getCaptureNetworkInterface(String localHost) {
+		List<PcapNetworkInterface> allDevs;
+		try {
+			// 获取全部的网卡设备列表，Windows如果获取不到网卡信息，输入：net start npf  启动网卡服务
+			allDevs = Pcaps.findAllDevs();
+		
+			 for (PcapNetworkInterface networkInterface : allDevs) {
+			     List<PcapAddress> addresses = networkInterface.getAddresses();
+			     for (PcapAddress pcapAddress : addresses) {
+			         // 获取网卡IP地址
+			         String ip = pcapAddress.getAddress().getHostAddress();
+			//         System.out.println(ip);
+			         if (ip != null && ip.contains(localHost)) {
+			             // 返回指定的设备对象
+			//         	System.out.println("filter:"+ip);
+			         	
+			             return networkInterface;
+			         }
+			
+			     }
+			 }
+		} catch (PcapNativeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			return null;
+	}
 
 }
