@@ -186,7 +186,7 @@ public class CollectorController {
 		
 		
 		HashMap<String, TcpStream> tcpStreamList=new HashMap<String, TcpStream>();
-		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.200.112");
+		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.200.158");
 		
 		if(nif==null)
         {
@@ -317,6 +317,44 @@ public class CollectorController {
 		
 	}
 	
+	// 监控pcap4j抓取数据包运行状态
+	@ResponseBody
+	@RequestMapping(value = "/statePcap4jCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "监控pcap4j抓取数据包运行状态")
+	public String statePcap4jCollector(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<>();
+		if (pcap4jthread!=null) {
+			map.put("state", pcap4jthread.isAlive());
+		}else {
+			map.put("state", false);
+		}
+		
+		return JSONArray.fromObject(map).toString();
+	}
+	
+	// 停止pcap4j抓取数据包
+	@ResponseBody
+	@RequestMapping(value = "/stopPcap4jCollector", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "停止pcap4j抓取数据包")
+	public String stopPcap4jCollector(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<>();
+		if (pcap4jthread!=null) {
+			if (pcap4jthread.isAlive()) {
+				pcap4jthread.stop();
+				map.put("state", true);
+				map.put("msg", "数据包采集器关闭成功");
+			}else {
+				map.put("state", true);
+				map.put("msg", "数据包采集器已经关闭");
+			}
+		}else {
+			map.put("state", false);
+			map.put("msg", "数据包采集器未启动");
+		}
+		
+		return JSONArray.fromObject(map).toString();
+	}
+		
 	/**
      * 根据IP获取指定网卡设备
 	* @param localHost 网卡IP
