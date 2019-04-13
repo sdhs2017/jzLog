@@ -11,10 +11,17 @@ import org.pcap4j.packet.IpV4Packet;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.TcpPacket;
 
+import com.jz.bigdata.business.logAnalysis.log.entity.Http;
+import com.jz.bigdata.business.logAnalysis.log.entity.Https;
+import com.jz.bigdata.business.logAnalysis.log.entity.Tcp;
+
 public class TcpStream {
 
 	private String server = "";
 	private String client = "";
+	private Http http;
+	private Https https;
+	private Tcp tcp;
 	boolean iDestroy = false;
 	
 	private int serverAck=0;
@@ -28,6 +35,7 @@ public class TcpStream {
 	private HashMap<String,LinkedList<TcpPacket>> ackRecvBuffer=new HashMap<String,LinkedList<TcpPacket>>();
 	private HashMap<String,TcpPacket> sendpacketBuffer=new HashMap<String,TcpPacket>();
 	private HashMap<String,TcpPacket> recvpacketBuffer=new HashMap<String,TcpPacket>();
+	
 	
 	public TcpStream(String server,String client)
 	{
@@ -48,96 +56,41 @@ public class TcpStream {
 		/*String https = "HTTPS";
 		String ssl = "SSL";
 		String tls = "TLS";*/
-		
-		System.out.println("源地址：    "+ip4packet.getHeader().getSrcAddr()+" 源端口: "+tcpPacket.getHeader().getSrcPort().value().toString());
-		System.out.println("目标地址："+ip4packet.getHeader().getDstAddr()+" 目的端口:"+tcpPacket.getHeader().getDstPort().value().toString());
-		System.out.println(tcpPacket.toString());
-		if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!=""||getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="") {
-			
-			System.out.println("源地址：    "+ip4packet.getHeader().getSrcAddr()+" 源端口: "+tcpPacket.getHeader().getSrcPort().value().toString());
-			System.out.println("目标地址："+ip4packet.getHeader().getDstAddr()+" 目的端口:"+tcpPacket.getHeader().getDstPort().value().toString());
-			//System.out.println(tcpPacket.toString());
-			String httphex = tcpPacket.getPayload().toString().substring(tcpPacket.getPayload().toString().indexOf(":")+1).trim();
-			/*System.out.println("TCP-16进制数据"+tcpPacket.toHexString());
-			System.out.println("TCP-16进制数据解析内容"+hexStringToString(tcpPacket.toHexString()));*/
-			
-			if (httphex!=null&&!httphex.equals("")) {
-				/*System.out.println("http-16进制数据"+httphex);
-				System.out.println("http-16进制数据解析内容"+hexStringToString(httphex));*/
-				
-				// http请求报文解析
-				if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!="") {
-					System.out.println("seq:"+tcpPacket.getHeader().getAcknowledgmentNumberAsLong()+"		ack:"+tcpPacket.getHeader().getAcknowledgmentNumberAsLong());
-					String [] httpcontent = hexStringToString(httphex).split("\r\n");
-					for(String httpString : httpcontent) {
-						System.out.println(httpString);
-					}
-				// http返回报文解析
-				}else if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="") {
-					System.out.println("seq:"+tcpPacket.getHeader().getSequenceNumberAsLong()+"		ack:"+tcpPacket.getHeader().getAcknowledgmentNumberAsLong());
-					String [] httpcontent = hexStringToString(httphex).split("\r\n");
-					for(String httpString : httpcontent) {
-						System.out.println(httpString);
-					}
-				}
-				System.out.println("----------------------------------------------------");
-			}
-			
-			
-		}
-		
-		String dstaddr = ip4packet.getHeader().getDstAddr().toString();
-		String srcaddr = ip4packet.getHeader().getSrcAddr().toString();
-		
-		if (srcaddr.equals("/61.135.169.121")||dstaddr.equals("/61.135.169.121")) {}
-
-		
-		/*if (tcpPacket.getPayload()!=null) {
-			String hexstring = tcpPacket.toHexString().replaceAll(" ", "");
-			if (hexstring.contains("170303")||hexstring.contains("160301")||hexstring.contains("150303")||hexstring.contains("160303")||hexstring.contains("140303")) {
-				if (tcpPacket.getHeader().getAck()&&tcpPacket.getHeader().getPsh()) {
-					System.out.println(tcpPacket.toString());
-				}else if (tcpPacket.getHeader().getAck()&&hexstring.indexOf("170303")>40) {
-					System.out.println(tcpPacket.toString());
-				}else {
-					System.out.println("---------start------------");
-					System.out.println(tcpPacket.toString());
-					System.out.println("---------end------------");
-					System.out.println(hexstring.indexOf("170303"));
-					System.out.println(hexstring.indexOf("160301"));
-					System.out.println(hexstring.indexOf("150303"));
-					System.out.println(hexstring.indexOf("160303"));
-					System.out.println(hexstring.indexOf("140303"));
-				}
-				
-			}
-		}*/
-
 		String hexstring = tcpPacket.toHexString().replaceAll(" ", "");
-		if (hexstring.contains("170303")||hexstring.contains("160301")||hexstring.contains("150303")||hexstring.contains("160303")||hexstring.contains("140303")) {
+		if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!=""||getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="") {
+			http =new Http(packet);
+			System.out.println(http.getSource_ip());
+		}else if (hexstring.contains("170303")||hexstring.contains("160301")||hexstring.contains("150303")||hexstring.contains("160303")||hexstring.contains("140303")) {
 			if (tcpPacket.getHeader().getAck()&&tcpPacket.getHeader().getPsh()) {
-				System.out.println(tcpPacket.length());
-				System.out.println(tcpPacket.toString());
-				System.out.println("TCP-16进制数据解析内容"+hexStringToString(tcpPacket.toHexString()));
+				https=new Https(packet);
+				System.out.println(https.getSource_ip());
 			}else if (tcpPacket.getHeader().getAck()&&hexstring.indexOf("170303")>40) {
-				System.out.println(tcpPacket.length());
-				System.out.println(tcpPacket.toString());
-				System.out.println("TCP-16进制数据解析内容"+hexStringToString(tcpPacket.toHexString()));
-			}else {
-				System.out.println("---------start------------");
-				System.out.println(tcpPacket.length());
-				System.out.println(tcpPacket.toString());
-				System.out.println("TCP-16进制数据解析内容"+hexStringToString(tcpPacket.toHexString()));
-				
-				System.out.println(hexstring.indexOf("170303"));
-				System.out.println(hexstring.indexOf("160301"));
-				System.out.println(hexstring.indexOf("150303"));
-				System.out.println(hexstring.indexOf("160303"));
-				System.out.println(hexstring.indexOf("140303"));
-				System.out.println("---------end------------");
+				https=new Https(packet);
+				System.out.println(https.getSource_ip());
+			}else{
+				tcp=new Tcp(packet);
+				System.out.println(tcp.getSource_ip());
 			}
+//			}else {
+//				System.out.println("---------start------------");
+//				System.out.println(tcpPacket.length());
+//				System.out.println(tcpPacket.toString());
+//				System.out.println("TCP-16进制数据解析内容"+hexStringToString(tcpPacket.toHexString()));
+//				
+//				System.out.println(hexstring.indexOf("170303"));
+//				System.out.println(hexstring.indexOf("160301"));
+//				System.out.println(hexstring.indexOf("150303"));
+//				System.out.println(hexstring.indexOf("160303"));
+//				System.out.println(hexstring.indexOf("140303"));
+//				System.out.println("---------end------------");
+//			}
 			
 		}
+	
+		
+
+
+
 	
 	
 		
