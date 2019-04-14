@@ -695,6 +695,10 @@ public class LogServiceImpl implements IlogService {
 		if (pamap.get("l4_dst_port")!=null) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("l4_dst_port", pamap.get("l4_dst_port")));
 		}
+		// 协议名
+		if (pamap.get("protocol_name")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("protocol_name", pamap.get("protocol_name")));
+		}
 		// equipmentid
 		if (pamap.get("equipmentid")!=null) {
 			boolQueryBuilder.must(QueryBuilders.matchQuery("equipmentid", pamap.get("equipmentid")));
