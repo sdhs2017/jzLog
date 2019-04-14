@@ -72,6 +72,8 @@ public class CollectorController {
 	String client ="";
 	
 	Thread pcap4jthread = null;
+	FutureTask<String> futureTask = null;
+	Pcap4jCollector td  = null;
 
 	// 获取采集器开启或关闭状态，true为开启，false为关闭
 	@ResponseBody
@@ -181,12 +183,29 @@ public class CollectorController {
 	@ResponseBody
 	@RequestMapping(value = "/startPcap4jCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启pcap4j抓取数据包")
+	/*public String startPcap4jCollector(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<>();
+		
+		try {
+			pca = new Pcap4jCollectorTmp("192.168.0.103","true");
+			
+			map.put("state", pcap4jthread.isAlive());
+			map.put("msg", "数据包采集器开启成功");
+			return JSONArray.fromObject(map).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			map.put("state", false);
+			map.put("msg", "数据包采集器开启失败");
+			return JSONArray.fromObject(map).toString();
+		}
+		
+	}*/
 	public String startPcap4jCollector(HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<>();
 		
 		
 		HashMap<String, TcpStream> tcpStreamList=new HashMap<String, TcpStream>();
-		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.200.158");
+		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.0.103");
 		
 		if(nif==null)
         {
@@ -229,7 +248,7 @@ public class CollectorController {
         /** 设置TCP过滤规则 */
         //String filter = "ip and tcp and (port 443)";
         /** 设置TCP过滤规则 */
-        String filter = "ip and tcp and (port 8080)";
+        String filter = "ip and tcp and (port 443)";
         
             
         // 设置过滤器
@@ -294,8 +313,9 @@ public class CollectorController {
         };
 		
 		try {
-			Pcap4jCollector td = new Pcap4jCollector("192.168.200.158",handle,listener);
-			FutureTask<String> futureTask = new FutureTask<>(td);
+			td = new Pcap4jCollector("192.168.200.158",handle,listener);
+			futureTask = new FutureTask<>(td);
+			
 			pcap4jthread = new Thread(futureTask);
 			pcap4jthread.start();
 			
@@ -317,14 +337,15 @@ public class CollectorController {
 		
 	}
 	
+	
 	// 监控pcap4j抓取数据包运行状态
 	@ResponseBody
 	@RequestMapping(value = "/statePcap4jCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "监控pcap4j抓取数据包运行状态")
 	public String statePcap4jCollector(HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<>();
-		if (pcap4jthread!=null) {
-			map.put("state", pcap4jthread.isAlive());
+		if (td!=null) {
+			map.put("state", td.getPcap4jStatus());
 		}else {
 			map.put("state", false);
 		}
@@ -333,14 +354,15 @@ public class CollectorController {
 	}
 	
 	// 停止pcap4j抓取数据包
+	@SuppressWarnings("deprecation")
 	@ResponseBody
 	@RequestMapping(value = "/stopPcap4jCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "停止pcap4j抓取数据包")
 	public String stopPcap4jCollector(HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<>();
-		if (pcap4jthread!=null) {
-			if (pcap4jthread.isAlive()) {
-				pcap4jthread.stop();
+		if (td!=null) {
+			if (td.getPcap4jStatus()) {
+				td.closePcap4j();
 				map.put("state", true);
 				map.put("msg", "数据包采集器关闭成功");
 			}else {

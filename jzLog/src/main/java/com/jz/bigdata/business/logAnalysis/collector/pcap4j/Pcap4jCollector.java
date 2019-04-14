@@ -49,7 +49,18 @@ public class Pcap4jCollector implements Callable<String>{
 		return null;
 	}
 	
-	
+	public boolean getPcap4jStatus() {
+		return handle.isOpen();
+	}
 
+	public void closePcap4j() {
+		try {
+			handle.breakLoop();
+		} catch (NotOpenException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		handle.close();
+	}
 
 }
