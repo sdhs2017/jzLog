@@ -16,6 +16,10 @@ public class LogType {
 	public static final String LOGTYPE_DHCP = "dhcp";
 	public static final String LOGTYPE_APP_FILE = "app_file";
 	public static final String LOGTYPE_APP_APACHE = "app_apache";
+	
+	public static final String LOGTYPE_HTTP = "http";
+	public static final String LOGTYPE_HTTPS = "https";
+	public static final String LOGTYPE_TCP = "TCP";
 
 	public static final String LOGTYPE_UNKNOWN = "unknown";	
 

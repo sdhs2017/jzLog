@@ -30,30 +30,30 @@ public class Https {
 	private String id;
 	/**
 	 * userid
-	 */
+	 *//*
 	private String userid;
-	/**
+	*//**
 	 * deptid
-	 */
+	 *//*
 	private String deptid;
-	/**
+	*//**
 	 * equipmentid
-	 */
+	 *//*
 	private String equipmentid;
-	/**
+	*//**
 	 * equipmentname
-	 */
+	 *//*
 	private String equipmentname;
-	/**
+	*//**
 	 * 日志时间
-	 */
+	 *//*
 	private Date logdate;
 	private String logtime;
 	private String logtime_minute;
 	private String logtime_hour;
 	private String logtime_day;
 	private String logtime_month;
-	private String logtime_year;
+	private String logtime_year;*/
 
 	/**
 	 * 操作描述
@@ -108,7 +108,7 @@ public class Https {
 		this.id = id;
 	}
 
-	public String getUserid() {
+	/*public String getUserid() {
 		return userid;
 	}
 
@@ -194,7 +194,7 @@ public class Https {
 
 	public void setLogtime_year(String logtime_year) {
 		this.logtime_year = logtime_year;
-	}
+	}*/
 
 	public String getOperation_des() {
 		return operation_des;
