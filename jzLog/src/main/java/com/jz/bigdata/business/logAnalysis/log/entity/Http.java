@@ -1,6 +1,7 @@
 package com.jz.bigdata.business.logAnalysis.log.entity;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -252,6 +253,19 @@ public class Http {
 		
 //		Pattern source_portPattern = Pattern.compile("Source port:");  
 //        Matcher source_portmatcher = source_portPattern.matcher(log);
+		Date currentTime = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		this.logdate=currentTime;
+		this.logtime =formatter.format(currentTime);
+    	String [] tmp = this.logtime.split(" ");
+    	String [] date = tmp[0].split("-");
+    	String [] time = tmp[1].split(":");
+    	this.logtime_year = date[0];
+    	this.logtime_month = date[1];
+    	this.logtime_day = date[2];
+    	this.logtime_hour = time[0];
+    	this.logtime_minute = time[1];
+		
 		this.source_ip=ip4packet.getHeader().getSrcAddr().toString();
 		this.source_port=tcpPacket.getHeader().getSrcPort().valueAsInt()+"";
 		this.des_ip=ip4packet.getHeader().getDstAddr().toString();
