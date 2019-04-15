@@ -258,6 +258,7 @@ public class Http {
 		this.des_port=tcpPacket.getHeader().getDstPort().valueAsInt()+"";
 		this.protocol="http";
 		String httphex = tcpPacket.getPayload().toString().substring(tcpPacket.getPayload().toString().indexOf(":")+1).trim();
+		System.out.println(hexStringToString(httphex));
 		this.operation_des=hexStringToString(httphex);
 		//httprequest
 		String httpRequest = "[a-zA-Z]{3,7} .* HTTP/1.[0,1]";
@@ -270,10 +271,9 @@ public class Http {
 			// http请求报文解析
 			if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!="") {
 				this.requestorresponse="request";
-//				this.operation_des=hexStringToString(httphex);
-				String [] httpcontent = hexStringToString(httphex).split("\r\n");
 				//根据空格分割数据
-				String[] message=httpcontent[0].split("\\s+");
+				String httpcontent=getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest);
+				String[] message=httpcontent.split("\\s+");
 				//循环添加数据
 				for(int i=0;i<message.length;i++){
 					if(i==0){
@@ -286,9 +286,9 @@ public class Http {
 			// http返回报文解析
 			}else if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="") {
 				this.requestorresponse="response";
-				String [] httpcontent = hexStringToString(httphex).split("\r\n");
+				String httpRespons=getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse);
 				//根据空格分割数据
-				String[] message=httpcontent[0].split("\\s+");
+				String[] message=httpRespons.split("\\s+");
 				this.response_state=message[1];
 			}
 			
