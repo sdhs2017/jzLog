@@ -567,6 +567,7 @@
 						  +	 '<th>源端口</th>'
 						  +	 '<th>目的端口</th>'
 						  +	 '<th>协议</th>'
+						  +	 '<th>网路数据来源</th>'
 						  +	 '<th>加密协议</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
@@ -605,6 +606,7 @@
 					         +       '<td class="logs_l4_src_port">'+obj.l4_src_port+'</td>'				     
 					         +       '<td class="logs_l4_dst_port">'+obj.l4_dst_port+'</td>'
 					         +       '<td class="logs_protocol_name">'+obj.protocol_name+'</td>'
+					         +       '<td class="logs_protocol_name">'+obj.packet_source+'</td>'
 					         +       '<td class="logs_protocol_name">-</td>'
 					         +   '</tr>'
 					 logDesArrIndex++;

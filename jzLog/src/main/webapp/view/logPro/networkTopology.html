@@ -24,7 +24,7 @@
 	<body>
 		<div id="box">
 			<div class="top_title">
-				网络拓扑图
+				业务流分析
 			</div>
 			<div class="content">
 				<div id="cy"></div>
@@ -79,14 +79,14 @@
 		            container: document.getElementById('cy'),
 //		            boxSelectionEnabled: true,
 		            autounselectify: true,//默认情况下节点是否应该是未分类的
-		            maxZoom:2.5,//最大缩放
-		            minZoom:.4,//最小缩放
+		            maxZoom:4,//最大缩放
+		            minZoom:0.7,//最小缩放 
 		            wheelSensitivity:.1,//滑动滚轮一次缩放大小
 		            style: cytoscape.stylesheet()
 		            	.selector('node')
 		            		.css({
 		            			"content": function (ele) { //文本内容
-		                            return ele.data('label') || ele.data('id')+'\n 次数:'+ele.data('count')
+		                            return ele.data('label') || ele.data('id')+'\n 活跃度:'+ele.data('count')
 		                        },
 		                        "text-valign": 'center', //文本对齐  center-居中
 		                        "width": function (a) { //宽度
@@ -101,9 +101,9 @@
 		                        },
 		                        "background-color": function (a) { //背景颜色
 		                           /* return !a.data('target') ? '#47D2AC' : "Company" == a.data('type') ?
-		                                '#2196F4' : '#EAA829'*/
+		                                '#2196F4' : '#EAA829'  de9325  #47D2AC*/
 		                            //return '#47D2AC'; 
-		                        	return a.data('count') == maxNodesCount ? '#de9325' : '#47D2AC';
+		                        	return a.data('count') == maxNodesCount ? '#E49273' : '#59C9A5';
 		                        },
 		                        "color": '#fff', //文本颜色
 		                        "border-color": function (a) { //边框颜色
@@ -113,18 +113,20 @@
 		                        },
 		                        "border-width": 2, //边框宽度
 		                        "text-wrap": "wrap", //文本换行
-		                        "font-size": 11, //字体大小
+		                        "font-size": 10, //字体大小
 		                        "font-weight":600,
 		                        "font-family": "microsoft yahei",//字体
 		                        "overlay-color": "#fff",
 		                        "overlay-opacity": 0,
+		                        'text-outline-width': 1,
+		                        'text-outline-color': '#316383',//颜色设置
 		                        "background-opacity": 1, //透明度
 		                        "shape": "ellipse",//节点形状    ellipse-圆形  rectangle-矩形
 		                        "z-index-compare": "manual",
 		                        "z-index": 20,
 		                        "padding": function (a) { 
 //		                            return "Company" == a.data("type") ? 3 : 0
-									return 3; 
+									return 20; 
 		                        }
 		            		})
 		            	.selector('edge')
@@ -142,12 +144,12 @@
 		                        "target-arrow-shape": "triangle",
 		                        "target-arrow-color": function (a) {
 		                            // return a.data("color")
-		                            return '#DCDCDC'
+		                            return '#A8D0DB'
 		                        },
 		                        "arrow-scale": .8,
 		                        "line-color": function (a) {//线颜色
 		                            // return a.data("color")
-		                            return '#DCDCDC'
+		                            return '#A8D0DB'
 		                        },
 		                        "label": function (a) {
 		                            return a.data("label")
@@ -237,8 +239,8 @@
 		            },
 		            layout: {
 		                name: 'cose',//用哪种方式排列，可选：breadthfirst(广度优先)、cose(缝制，乱交)、preset(预设)、circle(圆形)、grid(矩形)
-		                animate:true//出来动画
-		                /*idealEdgeLength: 60,
+		                animate:true,//出来动画
+		                idealEdgeLength: 60,
 		                nodeOverlap: 20,
 		                refresh: 20,
 		                fit: true,
@@ -253,30 +255,17 @@
 		                numIter: 1000,
 		                initialTemp: 200,
 		                coolingFactor: 0.95,
-		                minTemp: 1.0 */
+		                minTemp: 1.0
 		            }
 		        })
 		        cy.collection("edge").addClass("edgeShow");
 		        cy.on("mouseover", "node", function (a) {
-		            $('#cy').css('cursor', 'move');
+		           /*  $('#cy').css('cursor', 'move');
 		            let c = a.target;
 		            c.addClass("nodeHover");
 		            // cy.collection("edge").removeClass("edgeShow");
 		            cy.collection("edge").removeClass("edgeActive");
-		            c.neighborhood("edge").addClass("edgeActive");
-		        })
-		        cy.on("mouseout", "node", function (a) {
-		            $('#cy').css('cursor', 'default');
-		            let c = a.target;
-		            c.removeClass("nodeHover");
-		            cy.collection("edge").removeClass("edgeActive");
-		        })
-		        cy.on("click", "node", function (a) {
-		            let c = a.target;
-		            c.removeClass("nodeActive");
-		            cy.collection("edge").removeClass("edgeActive");
-		        })
-		        cy.on("vmousedown", "node", function (a) { //监听鼠标左键按下
+		            c.neighborhood("edge").addClass("edgeActive"); */
 		            let c = a.target;
 		            cy.collection("edge").addClass('dull');
 		            cy.collection("node").addClass('dull');
@@ -286,12 +275,38 @@
 		            c.neighborhood("edge").connectedNodes().removeClass("dull"); //当前节点的邻域边的边缘节点！
 		            // c.neighborhood("node").removeClass("dull");//与上面意义相同
 		        })
-		        cy.on("tapend", "node", function (a) { //监听鼠标左键释放
+		        cy.on("mouseout", "node", function (a) {
+		           /*  $('#cy').css('cursor', 'default');
 		            let c = a.target;
+		            c.removeClass("nodeHover");
+		            cy.collection("edge").removeClass("edgeActive"); */
+		        	let c = a.target;
 		            cy.collection("edge").removeClass('dull');
 		            cy.collection("node").removeClass('dull');
 		            c.neighborhood("edge").removeClass("edgeActive");
 		            c.neighborhood("node").removeClass("nodeActive");
+		        })
+		        cy.on("click", "node", function (a) {
+		            let c = a.target;
+		            c.removeClass("nodeActive");
+		            cy.collection("edge").removeClass("edgeActive");
+		        })
+		        cy.on("vmousedown", "node", function (a) { //监听鼠标左键按下
+		           /*  let c = a.target;
+		            cy.collection("edge").addClass('dull');
+		            cy.collection("node").addClass('dull');
+		            c.removeClass("dull");
+		            c.neighborhood("edge").removeClass("dull");
+		            c.neighborhood("edge").addClass("edgeActive");
+		            c.neighborhood("edge").connectedNodes().removeClass("dull"); //当前节点的邻域边的边缘节点！
+		            // c.neighborhood("node").removeClass("dull");//与上面意义相同 */
+		        })
+		        cy.on("tapend", "node", function (a) { //监听鼠标左键释放
+		           /*  let c = a.target;
+		            cy.collection("edge").removeClass('dull');
+		            cy.collection("node").removeClass('dull');
+		            c.neighborhood("edge").removeClass("edgeActive");
+		            c.neighborhood("node").removeClass("nodeActive"); */
 		        })
 		
 		        //线
