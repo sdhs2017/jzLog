@@ -1,28 +1,42 @@
 package com.jz.bigdata.business.logAnalysis.collector.pcap4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.elasticsearch.action.index.IndexRequest;
 import org.pcap4j.packet.IpV4Packet;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.TcpPacket;
 
+import com.google.gson.Gson;
+import com.jz.bigdata.business.logAnalysis.log.LogType;
 import com.jz.bigdata.business.logAnalysis.log.entity.Http;
 import com.jz.bigdata.business.logAnalysis.log.entity.Https;
 import com.jz.bigdata.business.logAnalysis.log.entity.Tcp;
+import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
+import com.jz.bigdata.util.ConfigProperty;
 
 public class TcpStream {
 
 	private String server = "";
 	private String client = "";
+	
 	private Http http;
 	private Https https;
 	private Tcp tcp;
+	
 	boolean iDestroy = false;
+	
+	ConfigProperty configProperty;
+	ClientTemplate clientTemplate;
+	Gson gson;
+	String json;
 	
 	private int serverAck=0;
 	private int clientAck=0;
@@ -37,11 +51,16 @@ public class TcpStream {
 	private HashMap<String,TcpPacket> recvpacketBuffer=new HashMap<String,TcpPacket>();
 	
 	
-	public TcpStream(String server,String client)
+	public TcpStream(String server,String client,ConfigProperty configProperty,ClientTemplate clientTemplate,Gson gson)
 	{
 		this.server = server;
 		this.client = client;
+		this.configProperty = configProperty;
+		this.clientTemplate = clientTemplate;
+		this.gson = gson;
 	}
+	
+	List<IndexRequest> requests = new ArrayList<IndexRequest>();
 	
 	public void gotPacket(Packet packet)
 	{
@@ -59,16 +78,28 @@ public class TcpStream {
 		String hexstring = tcpPacket.toHexString().replaceAll(" ", "");
 		if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!=""||getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="") {
 			http =new Http(packet);
+			json = gson.toJson(http);
+			//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTP, json));
+			requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_HTTP, json));
 			System.out.println(http.getSource_ip());
 		}else if (hexstring.contains("170303")||hexstring.contains("160301")||hexstring.contains("150303")||hexstring.contains("160303")||hexstring.contains("140303")) {
 			if (tcpPacket.getHeader().getAck()&&tcpPacket.getHeader().getPsh()) {
 				https=new Https(packet);
+				json = gson.toJson(https);
+				//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTPS, json));
+				requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_HTTPS, json));
 				System.out.println(https.getSource_ip());
 			}else if (tcpPacket.getHeader().getAck()&&hexstring.indexOf("170303")>40) {
 				https=new Https(packet);
+				json = gson.toJson(https);
+				//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTPS, json));
+				requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_HTTPS, json));
 				System.out.println(https.getSource_ip());
 			}else{
 				tcp=new Tcp(packet);
+				json = gson.toJson(tcp);
+				//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_TCP, json));
+				requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_TCP, json));
 				System.out.println(tcp.getSource_ip());
 			}
 //			}else {
@@ -85,9 +116,17 @@ public class TcpStream {
 //				System.out.println("---------end------------");
 //			}
 			
+		}else {
+			tcp=new Tcp(packet);
+			json = gson.toJson(tcp);
+			//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_TCP, json));
+			requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_TCP, json));
 		}
 	
-		
+		if (requests.size()==configProperty.getEs_bulk()) {
+			clientTemplate.bulk(requests);
+			requests.clear();
+		}
 
 
 

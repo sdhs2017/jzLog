@@ -15,15 +15,15 @@ import org.pcap4j.packet.TcpPacket;
  */
 public class Https {
 	
-	private String source_port;
-	private String des_port;
-	private String source_ip;
-	private String des_ip;
-	private String protocol;
+	private String source_port;//源端口
+	private String des_port;//目标端口
+	private String source_ip;//源ip
+	private String des_ip;//目标ip
+	private String protocol;//协议
 //	private String requestorresponse;
 //	private String request_url;
 //	private String response_state;
-	private String protocol_type;
+	private String protocol_type;//协议类型
 	/**
 	 * id
 	 */

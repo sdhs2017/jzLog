@@ -28,6 +28,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jz.bigdata.business.logAnalysis.collector.pcap4j.Pcap4jCollector;
 import com.jz.bigdata.business.logAnalysis.collector.pcap4j.TcpStream;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
@@ -205,7 +207,7 @@ public class CollectorController {
 		
 		
 		HashMap<String, TcpStream> tcpStreamList=new HashMap<String, TcpStream>();
-		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.0.103");
+		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.200.158");
 		
 		if(nif==null)
         {
@@ -248,7 +250,7 @@ public class CollectorController {
         /** 设置TCP过滤规则 */
         //String filter = "ip and tcp and (port 443)";
         /** 设置TCP过滤规则 */
-        String filter = "ip and tcp and (port 443)";
+        String filter = "ip and tcp";
         
             
         // 设置过滤器
@@ -261,6 +263,9 @@ public class CollectorController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        Gson gson = new GsonBuilder()
+				 .setDateFormat("yyyy-MM-dd HH:mm:ss")  
+				 .create(); 
         
         //初始化listener
         PacketListener listener = new PacketListener() {
@@ -291,7 +296,7 @@ public class CollectorController {
     			TcpStream tps =null;
             	if(tcpStreamList.get(server+serverPort) == null)
             	{
-            		tps= new TcpStream(server,client);
+            		tps= new TcpStream(server,client,configProperty,clientTemplate,gson);
             		tcpStreamList.put(server+serverPort, tps);
             		tps.gotPacket(packet);
 

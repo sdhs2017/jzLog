@@ -40,11 +40,14 @@ import com.jz.bigdata.business.logAnalysis.log.LogType;
 import com.jz.bigdata.business.logAnalysis.log.entity.App_file;
 import com.jz.bigdata.business.logAnalysis.log.entity.DHCP;
 import com.jz.bigdata.business.logAnalysis.log.entity.DNS;
+import com.jz.bigdata.business.logAnalysis.log.entity.Http;
+import com.jz.bigdata.business.logAnalysis.log.entity.Https;
 import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
 import com.jz.bigdata.business.logAnalysis.log.entity.Mysql;
 import com.jz.bigdata.business.logAnalysis.log.entity.Netflow;
 import com.jz.bigdata.business.logAnalysis.log.entity.PacketFilteringFirewal;
 import com.jz.bigdata.business.logAnalysis.log.entity.Syslog;
+import com.jz.bigdata.business.logAnalysis.log.entity.Tcp;
 import com.jz.bigdata.business.logAnalysis.log.entity.Unknown;
 import com.jz.bigdata.business.logAnalysis.log.entity.Winlog;
 import com.jz.bigdata.business.logAnalysis.log.service.IlogService;
@@ -169,11 +172,16 @@ public class LogController extends BaseController{
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_MYSQLLOG, new Mysql().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG, new PacketFilteringFirewal().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_NETFLOW, new Netflow().toMapping());
-			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DNS, new DNS().toMapping());
-			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DHCP, new DHCP().toMapping());
-			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_FILE, new App_file().toMapping());
-			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_APACHE, new App_file().toMapping());
+			//logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DNS, new DNS().toMapping());
+			//logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DHCP, new DHCP().toMapping());
+			//logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_FILE, new App_file().toMapping());
+			//logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_APACHE, new App_file().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_UNKNOWN, new Unknown().toMapping());
+			
+			// 网络数据包
+			logService.createIndexAndmapping("eslog-test",LogType.LOGTYPE_HTTP, new Http().toMapping());
+			logService.createIndexAndmapping("eslog-test",LogType.LOGTYPE_HTTPS, new Https().toMapping());
+			logService.createIndexAndmapping("eslog-test",LogType.LOGTYPE_TCP, new Tcp().toMapping());
 			
 			map.put("state", true);
 			map.put("msg", "数据结构初始化成功！");

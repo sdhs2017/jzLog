@@ -93,11 +93,11 @@
             <scope>test</scope>
         </dependency>
         
-        <dependency>
+        <!-- <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>3.0.9</version>
-        </dependency>
+        </dependency> -->
         
         <!-- lombok，这个库比较有意思，它通过注解的方式为java类自动生成构造函数，为成员变量生成get、set方法，并且按照建造者模式提供java类的访问接口，省去了苦憋呵呵的写各类方法 -->
         <dependency>
@@ -812,6 +812,12 @@
 	      <artifactId>pcap4j-packetfactory-static</artifactId>
 	      <version>1.7.5</version>
 	    </dependency>
+	    
+	    <!-- <dependency>
+		    <groupId>net.java.dev.jna</groupId>
+		    <artifactId>jna</artifactId>
+		    <version>4.1.0</version>
+		</dependency> -->
 		
 	</dependencies>
 	<build>
