@@ -81,10 +81,10 @@
 					//创建分页函数
 					createPage("pageBox",allCount,pageTotle);
 				}
-				//判断到处日志状态
+				/*//判断到处日志状态
 				if(exportStatus){
 					exportLogs();
-				}
+				}*/
 				
 			}else{
 				//显示数据
@@ -551,6 +551,62 @@
 					         +   '</tr>'
 
 					
+					 logDesArrIndex++;
+				}
+			}
+			 //添加 日志列表到页面中    
+		    $("#logs_list>tbody").html(logLists);
+		}else if(logType == "flow"){
+			/****************1 flow 日志列表格式*******************/
+			var logLists = "<b>暂无日志数据</b>";//日志列表
+			var logListTittle = "";//日志列名
+			//拼接日志列名 只需拼接一次	
+			logListTittle += '<th width="200">时间</th>'
+						  +	 '<th>源IP</th>'
+						  +	 '<th>目的IP</th>'
+						  +	 '<th>源端口</th>'
+						  +	 '<th>目的端口</th>'
+						  +	 '<th>协议</th>'
+						  +	 '<th>加密协议</th>'
+			//添加日志表头到页面
+			$(".con_title").html(logListTittle);
+			//判断日志是否为空  不为空则删除“暂无日志数据”提示
+			if(logsArr != ''){
+				logLists = '';
+				var logDesArrIndex = 0;
+				for(var i in logsArr){
+					
+					var obj =  filterObj(logsArr[i]);	
+					if(obj.logtime == undefined){
+						obj.logtime = "-"
+					}
+					if(obj.operation_level == undefined){
+						obj.operation_level = "-"
+					}
+					if(obj.operation_des == undefined){
+						obj.operation_des = "-"
+					}
+					//替换风险状态
+					/*var level = '';
+					if(obj.operation_level == "INFO"){
+						level = '<span class="label label-info">INFO</span>'
+					}else if(obj.operation_level == "ERROR"){
+						level = '<span class="label label-danger">ERROR</span>'
+					}	
+					*/
+					//删除日志内容的<br/>标签
+					logDesArr.push(obj.operation_des);				
+					var reg = new RegExp("<br/>","g");
+					var logCon = obj.operation_des.replace(reg,"");
+					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
+					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
+					         +       '<td class="logs_ipv4_src_addr">'+obj.ipv4_src_addr+'</td>'
+					         +       '<td class="logs_ipv4_dst_addr">'+obj.ipv4_dst_addr+'</td>'
+					         +       '<td class="logs_l4_src_port">'+obj.l4_src_port+'</td>'				     
+					         +       '<td class="logs_l4_dst_port">'+obj.l4_dst_port+'</td>'
+					         +       '<td class="logs_protocol_name">'+obj.protocol_name+'</td>'
+					         +       '<td class="logs_protocol_name">-</td>'
+					         +   '</tr>'
 					 logDesArrIndex++;
 				}
 			}
