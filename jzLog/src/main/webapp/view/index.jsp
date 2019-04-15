@@ -363,8 +363,8 @@
         <!--右侧边栏开始-->
         <!--右侧边栏结束-->
          <div class="footer">       
-         	<div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2018-2019 &nbsp;济南迪讯信息技术有限公司 &nbsp;</div>    	
-         	<!-- <div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2018-2019 &nbsp;山东九州信泰信息科技股份有限公司 &nbsp;</div> -->
+         	<!-- <div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2018-2019 &nbsp;济南迪讯信息技术有限公司 &nbsp;</div>  -->   	
+         	<div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2018-2019 &nbsp;山东九州信泰信息科技股份有限公司 &nbsp;</div>
             <!-- <div class="pull-right">&nbsp;版权所有 &nbsp;&copy; 2017-2018 &nbsp;山东中网云安智能科技有限公司 &nbsp;</div> -->
             <span class="threshold"></span>
             <a class="threshold_setting">（阈值设置）</a>
@@ -665,6 +665,7 @@ function getMenuData(){
   	data:{},
   	async:true,
   	success:function(data){
+  		console.log(data)
   		//清空加载动画
  		$("#side-menu").html('');
   		//判断请求是否正确
