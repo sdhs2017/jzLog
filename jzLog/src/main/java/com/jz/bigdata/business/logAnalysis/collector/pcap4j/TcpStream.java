@@ -90,14 +90,14 @@ public class TcpStream {
 			TcpStream tcpStream=new TcpStream();
 			if (tcpPacket.getHeader().getAck()&&tcpPacket.getHeader().getPsh()) {
 				https=new Https(packet);
-				https.setProtocol_type(tcpStream.test(packet));
+				https.setProtocol_type(tcpStream.GetEncryptionProtocol(packet));
 				json = gson.toJson(https);
 				//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTPS, json));
 				requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_HTTPS, json));
 				System.out.println(https.getSource_ip());
 			}else if (tcpPacket.getHeader().getAck()&&hexstring.indexOf("170303")>40) {
 				https=new Https(packet);
-				https.setProtocol_type(tcpStream.test(packet));
+				https.setProtocol_type(tcpStream.GetEncryptionProtocol(packet));
 				json = gson.toJson(https);
 				//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTPS, json));
 				requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_HTTPS, json));
@@ -211,7 +211,12 @@ public class TcpStream {
  	    return s;
  	}
  	
- 	public  String test(Packet packet){
+ 	/**
+ 	 * @param packet
+ 	 * @return
+ 	 * 获取加密协议
+ 	 */
+ 	public  String GetEncryptionProtocol(Packet packet){
 		TcpPacket tcppacket = packet.getBuilder().getPayloadBuilder().build().get(TcpPacket.class);
 		IpV4Packet ip4packet = packet.get(IpV4Packet.class);
 		//定义seq
