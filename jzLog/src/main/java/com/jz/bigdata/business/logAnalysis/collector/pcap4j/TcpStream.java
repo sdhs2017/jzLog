@@ -83,8 +83,7 @@ public class TcpStream {
 		if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!=""||getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="") {
 			http =new Http(packet);
 			json = gson.toJson(http);
-			//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTP, json));
-			requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_HTTP, json));
+			requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTP, json));
 			System.out.println(http.getSource_ip());
 		}else if (hexstring.contains("170303")||hexstring.contains("160301")||hexstring.contains("150303")||hexstring.contains("160303")||hexstring.contains("140303")) {
 			TcpStream tcpStream=new TcpStream();
@@ -92,21 +91,18 @@ public class TcpStream {
 				https=new Https(packet);
 				https.setProtocol_type(tcpStream.GetEncryptionProtocol(packet));
 				json = gson.toJson(https);
-				//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTPS, json));
-				requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_HTTPS, json));
+				requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTPS, json));
 				System.out.println(https.getSource_ip());
 			}else if (tcpPacket.getHeader().getAck()&&hexstring.indexOf("170303")>40) {
 				https=new Https(packet);
 				https.setProtocol_type(tcpStream.GetEncryptionProtocol(packet));
 				json = gson.toJson(https);
-				//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTPS, json));
-				requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_HTTPS, json));
+				requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTPS, json));
 				System.out.println(https.getSource_ip());
 			}else{
 				tcp=new Tcp(packet);
 				json = gson.toJson(tcp);
-				//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_TCP, json));
-				requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_TCP, json));
+				requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_TCP, json));
 				System.out.println(tcp.getSource_ip());
 			}
 //			}else {
@@ -126,8 +122,7 @@ public class TcpStream {
 		}else {
 			tcp=new Tcp(packet);
 			json = gson.toJson(tcp);
-			//requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_TCP, json));
-			requests.add(clientTemplate.insertNo("eslog-test", LogType.LOGTYPE_TCP, json));
+			requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_TCP, json));
 		}
 	
 		if (requests.size()==configProperty.getEs_bulk()) {
