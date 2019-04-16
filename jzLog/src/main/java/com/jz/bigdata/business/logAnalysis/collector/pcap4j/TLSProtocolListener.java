@@ -114,19 +114,21 @@ public class TLSProtocolListener extends ProtocolListener {
 	}
 	
 	@Override
-	public void onSend(String seq, byte[] data) {
+	public String onSend(String seq, byte[] data) {
 		super.onSend(seq, data);
 		List<TLSRecord> tls = handleTlsList(data);
-		String out = JSON.toJSONString(tls);
-		System.out.println("on send "+data.length+" tls:"+out);
+//		String out = JSON.toJSONString(tls);
+//		System.out.println("on send "+data.length+" tls:"+out);
+		return tls.get(0).version;
 	}
 
 	@Override
-	public void onRecv(String seq, byte[] data) {
+	public String onRecv(String seq, byte[] data) {
 		super.onRecv(seq, data);
 		List<TLSRecord> tls = handleTlsList(data);
-		String out = JSON.toJSONString(tls);
-		System.out.println("onrecv "+data.length+" tls:"+out);
+//		String out = JSON.toJSONString(tls);
+//		System.out.println("onrecv "+data.length+" tls:"+out);
+		return tls.get(0).version;
 	}
 	
 	public List<TLSRecord> handleTlsList(byte[] data)
