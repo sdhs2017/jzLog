@@ -234,17 +234,17 @@ public class Https {
 		this.des_ip=ip4packet.getHeader().getDstAddr().toString();
 		this.des_port=tcpPacket.getHeader().getDstPort().valueAsInt()+"";
 		this.protocol="https";
-		if (tcpPacket.getPayload()!=null) {
-			String hexstring = tcpPacket.toHexString().replaceAll(" ", "");
-			//tls类型
-				if (tcpPacket.getHeader().getAck()&&tcpPacket.getHeader().getPsh()) {
-					if(hexstring.indexOf("0303")>=0){
-						this.protocol_type="TLSv1.2";
-					}else if(hexstring.indexOf("0301")>=0){
-						this.protocol_type="TLSv1.1";
-					}
-				}
-		}
+//		if (tcpPacket.getPayload()!=null) {
+//			String hexstring = tcpPacket.toHexString().replaceAll(" ", "");
+//			//tls类型
+//				if (tcpPacket.getHeader().getAck()&&tcpPacket.getHeader().getPsh()) {
+//					if(hexstring.indexOf("0303")>=0){
+//						this.protocol_type="TLSv1.2";
+//					}else if(hexstring.indexOf("0301")>=0){
+//						this.protocol_type="TLSv1.1";
+//					}
+//				}
+//		}
 		
 	}
 	
