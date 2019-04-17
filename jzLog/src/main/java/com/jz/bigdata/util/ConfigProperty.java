@@ -58,6 +58,9 @@ public class ConfigProperty {
     
     @Value("#{prop.protocol}")
     private String protocol;
+    
+    @Value("#{prop.pcap4j_network}")
+    private String pcap4j_network;
 
 	public String getHost_user() {
 		return host_user;
@@ -194,5 +197,14 @@ public class ConfigProperty {
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
+
+	public String getPcap4j_network() {
+		return pcap4j_network;
+	}
+
+	public void setPcap4j_network(String pcap4j_network) {
+		this.pcap4j_network = pcap4j_network;
+	}
+	
 
 }
