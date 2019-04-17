@@ -567,8 +567,8 @@
 						  +	 '<th>目的端口</th>'
 						  +	 '<th>传输层协议</th>'
 						  +	 '<th>应用层协议</th>'
-						  +	 '<th>网路数据来源</th>'
 						  +	 '<th>加密协议</th>'
+						  +	 '<th>网路数据来源</th>'
 						  +	 '<th width="55px">操作</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
@@ -588,14 +588,12 @@
 					if(obj.operation_des == undefined){
 						obj.operation_des = "-"
 					}
-					//替换风险状态
-					/*var level = '';
-					if(obj.operation_level == "INFO"){
-						level = '<span class="label label-info">INFO</span>'
-					}else if(obj.operation_level == "ERROR"){
-						level = '<span class="label label-danger">ERROR</span>'
-					}	
-					*/
+					if(obj.encryption_based_protection_protocol == undefined){
+						obj.encryption_based_protection_protocol = "-"
+					}
+					if(obj.application_layer_protocol == undefined){
+						obj.application_layer_protocol = "-"
+					}
 					//删除日志内容的<br/>标签
 					logDesArr.push(obj.operation_des);				
 					var reg = new RegExp("<br/>","g");
@@ -608,8 +606,8 @@
 					         +       '<td class="logs_l4_dst_port">'+obj.l4_dst_port+'</td>'
 					         +       '<td class="logs_protocol_name">'+obj.protocol_name+'</td>'
 					         +       '<td class="logs_protocol_name">'+obj.application_layer_protocol +'</td>'
-					         +       '<td class="logs_protocol_name">'+obj.packet_source+'</td>'
 					         +       '<td class="logs_protocol_name">'+obj.encryption_based_protection_protocol+'</td>'
+					         +       '<td class="logs_protocol_name">'+obj.packet_source+'</td>'
 					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
