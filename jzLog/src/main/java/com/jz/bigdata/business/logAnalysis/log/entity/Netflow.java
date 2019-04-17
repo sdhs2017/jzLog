@@ -94,6 +94,7 @@ public class Netflow {
 	private int input_snmp;//输入snmp
 	private String last_switched;//最后转换
 	private int sampling_interval;//采样间隔
+	private String packet_source;//数据包来源
 	
 	
 	public int getDst_as() {
@@ -669,8 +670,16 @@ public class Netflow {
 		this.sampling_algorithm=netflow.getNetflow().getSampling_algorithm();
 		this.in_bytes=netflow.getNetflow().getIn_bytes();
 		this.protocol=netflow.getNetflow().getProtocol();
+		this.packet_source = "netflow";
 		if (this.protocol!=null) {
-			this.protocol_name = protocolmap.get(this.protocol);
+			if (protocolmap.get(this.protocol)!=null) {
+				this.protocol_name = protocolmap.get(this.protocol);
+			}else {
+				this.protocol_name = "";
+			}
+			
+		}else {
+			this.protocol_name = "";
 		}
 		this.tcp_flags=netflow.getNetflow().getTcp_flags();
 		this.src_as=netflow.getNetflow().getSrc_as();
@@ -686,7 +695,7 @@ public class Netflow {
 		this.input_snmp=netflow.getNetflow().getInput_snmp();
 		this.last_switched=netflow.getNetflow().getLast_switched();
 		this.sampling_interval=netflow.getNetflow().getSampling_interval();
-		this.operation_level="info";
+		this.operation_level="";
 //		netflow.setOperation_des(log);
 		this.operation_des=log;
 	}
@@ -719,13 +728,15 @@ public class Netflow {
 					|| fields[i].getName().equals("operation_level") || fields[i].getName().equals("ip")
 					|| fields[i].getName().equals("ipv4_dst_addr") || fields[i].getName().equals("ipv4_src_addr")
 					|| fields[i].getName().equals("l4_src_port")|| fields[i].getName().equals("l4_dst_port")
-					|| fields[i].getName().equals("protocol_name")) {
+					|| fields[i].getName().equals("protocol") || fields[i].getName().equals("host")
+					|| fields[i].getName().equals("protocol_name")|| fields[i].getName().equals("packet_source")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": " + "true" + "\n");
 			}
 			if (fields[i].getName().equals("operation_des") || fields[i].getName().equals("ip")
 					|| fields[i].getName().equals("equipmentname") || fields[i].getName().equals("ipv4_dst_addr")
 					|| fields[i].getName().equals("ipv4_src_addr") || fields[i].getName().equals("l4_src_port")
-					|| fields[i].getName().equals("l4_dst_port") || fields[i].getName().equals("protocol_name")) {
+					|| fields[i].getName().equals("l4_dst_port") || fields[i].getName().equals("protocol_name")
+					|| fields[i].getName().equals("host") || fields[i].getName().equals("packet_source")) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");
 			}

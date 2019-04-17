@@ -266,13 +266,12 @@ public class Http {
     	this.logtime_hour = time[0];
     	this.logtime_minute = time[1];
 		
-		this.source_ip=ip4packet.getHeader().getSrcAddr().toString();
+		this.source_ip=ip4packet.getHeader().getSrcAddr().toString().replaceAll("/", "");
 		this.source_port=tcpPacket.getHeader().getSrcPort().valueAsInt()+"";
-		this.des_ip=ip4packet.getHeader().getDstAddr().toString();
+		this.des_ip=ip4packet.getHeader().getDstAddr().toString().replaceAll("/", "");
 		this.des_port=tcpPacket.getHeader().getDstPort().valueAsInt()+"";
 		this.protocol="http";
 		String httphex = tcpPacket.getPayload().toString().substring(tcpPacket.getPayload().toString().indexOf(":")+1).trim();
-		System.out.println(hexStringToString(httphex));
 		this.operation_des=hexStringToString(httphex);
 		//httprequest
 		String httpRequest = "[a-zA-Z]{3,7} .* HTTP/1.[0,1]";
@@ -381,6 +380,10 @@ public class Http {
 			}
 			if (fields[i].getName().equals("userid") || fields[i].getName().equals("deptid")
 					|| fields[i].getName().equals("equipmentid") || fields[i].getName().equals("equipmentname")
+					|| fields[i].getName().equals("logtime") || fields[i].getName().equals("logtime_minute")
+					|| fields[i].getName().equals("logtime_hour") || fields[i].getName().equals("logtime_day")
+					|| fields[i].getName().equals("logtime_month") || fields[i].getName().equals("logtime_year")
+					|| fields[i].getName().equals("operation_level") || fields[i].getName().equals("ip")
 					|| fields[i].getName().equals("source_port")|| fields[i].getName().equals("protocol")
 					|| fields[i].getName().equals("des_port")|| fields[i].getName().equals("source_ip")
 					|| fields[i].getName().equals("des_ip")|| fields[i].getName().equals("request_type")
