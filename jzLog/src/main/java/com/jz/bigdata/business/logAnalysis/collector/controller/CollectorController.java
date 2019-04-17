@@ -1,11 +1,12 @@
 package com.jz.bigdata.business.logAnalysis.collector.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -18,11 +19,10 @@ import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.Pcaps;
 import org.pcap4j.core.BpfProgram.BpfCompileMode;
+import org.elasticsearch.action.index.IndexRequest;
 import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
-import org.pcap4j.packet.IpV4Packet;
 import org.pcap4j.packet.Packet;
-import org.pcap4j.packet.TcpPacket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jz.bigdata.business.logAnalysis.collector.pcap4j.PacketStream;
 import com.jz.bigdata.business.logAnalysis.collector.pcap4j.Pcap4jCollector;
 import com.jz.bigdata.business.logAnalysis.collector.pcap4j.TcpStream;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
@@ -185,29 +186,12 @@ public class CollectorController {
 	@ResponseBody
 	@RequestMapping(value = "/startPcap4jCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启pcap4j抓取数据包")
-	/*public String startPcap4jCollector(HttpServletRequest request) {
-		Map<String, Object> map = new HashMap<>();
-		
-		try {
-			pca = new Pcap4jCollectorTmp("192.168.0.103","true");
-			
-			map.put("state", pcap4jthread.isAlive());
-			map.put("msg", "数据包采集器开启成功");
-			return JSONArray.fromObject(map).toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-			map.put("state", false);
-			map.put("msg", "数据包采集器开启失败");
-			return JSONArray.fromObject(map).toString();
-		}
-		
-	}*/
 	public String startPcap4jCollector(HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<>();
 		
 		
 		HashMap<String, TcpStream> tcpStreamList=new HashMap<String, TcpStream>();
-		PcapNetworkInterface nif = getCaptureNetworkInterface("192.168.200.158");
+		PcapNetworkInterface nif = getCaptureNetworkInterface(configProperty.getPcap4j_network());
 		
 		if(nif==null)
         {
@@ -224,12 +208,12 @@ public class CollectorController {
         		break;
         	}
         }
-        if(client.equals(""))
+        /*if(client.equals(""))
         {
         	map.put("state", false);
 			map.put("msg", "网卡获取失败！数据包采集器开启失败！");
 			return JSONArray.fromObject(map).toString();
-        }
+        }*/
         // 抓取包长度
         int snaplen = 64 * 1024;
         // 超时50ms
@@ -250,7 +234,7 @@ public class CollectorController {
         /** 设置TCP过滤规则 */
         //String filter = "ip and tcp and (port 443)";
         /** 设置TCP过滤规则 */
-        String filter = "ip and tcp";
+        String filter = "ip and (tcp or udp or icmp)";
         
             
         // 设置过滤器
@@ -267,58 +251,21 @@ public class CollectorController {
 				 .setDateFormat("yyyy-MM-dd HH:mm:ss")  
 				 .create(); 
         
+        List<IndexRequest> requests = new ArrayList<IndexRequest>();
         //初始化listener
         PacketListener listener = new PacketListener() {
         	
         	 public void gotPacket(Packet packet) {
-        		 // public void gotPacket(PcapPacket packet) {
             	
-            	
-            	TcpPacket tcppacket =packet.getBuilder().getPayloadBuilder().build().get(TcpPacket.class);
-    			IpV4Packet ip4packet =packet.get(IpV4Packet.class);
+    			PacketStream packetStream = new PacketStream(configProperty,clientTemplate,gson,requests);
+    			packetStream.gotPacket(packet);
     			
-    			String server = "";
-    			String serverPort ="";
-    			if(ip4packet.getHeader().getDstAddr().toString().contains(client))
-    			{
-    				server=ip4packet.getHeader().getSrcAddr().toString();
-    				serverPort = tcppacket.getHeader().getSrcPort().valueAsString();
-    				
-    			}else if(ip4packet.getHeader().getSrcAddr().toString().contains(client))
-    			{
-    				server=ip4packet.getHeader().getDstAddr().toString();
-    				serverPort = tcppacket.getHeader().getDstPort().valueAsString();
-    			}else
-    			{
-    				return;
-    			}
-    			
-    			TcpStream tps =null;
-            	if(tcpStreamList.get(server+serverPort) == null)
-            	{
-            		tps= new TcpStream(server,client,configProperty,clientTemplate,gson);
-            		tcpStreamList.put(server+serverPort, tps);
-            		tps.gotPacket(packet);
-
-            	}else
-            	{
-            		tps = tcpStreamList.get(server+serverPort);
-            		tps.gotPacket(packet);
-            	}
-            	
-            	if(tps.enDestroy())
-            	{
-            		tps = null;
-            		tcpStreamList.put(server+serverPort, tps);
-            		tcpStreamList.remove(server+serverPort);
-            		
-            	}
             }
 		
         };
 		
 		try {
-			td = new Pcap4jCollector("192.168.200.158",handle,listener);
+			td = new Pcap4jCollector(configProperty.getPcap4j_network(),handle,listener);
 			futureTask = new FutureTask<>(td);
 			
 			pcap4jthread = new Thread(futureTask);
@@ -384,11 +331,11 @@ public class CollectorController {
 		
 	/**
      * 根据IP获取指定网卡设备
-	* @param localHost 网卡IP
+	* @param NameOrIP 网卡IP或者网卡名
 	* 
 	* @return 指定的设备对象
 	*/
-	public static PcapNetworkInterface getCaptureNetworkInterface(String localHost) {
+	public static PcapNetworkInterface getCaptureNetworkInterface(String NameOrIP) {
 		List<PcapNetworkInterface> allDevs;
 		try {
 			// 获取全部的网卡设备列表，Windows如果获取不到网卡信息，输入：net start npf  启动网卡服务
@@ -397,23 +344,44 @@ public class CollectorController {
 			 for (PcapNetworkInterface networkInterface : allDevs) {
 			     List<PcapAddress> addresses = networkInterface.getAddresses();
 			     for (PcapAddress pcapAddress : addresses) {
-			         // 获取网卡IP地址
-			         String ip = pcapAddress.getAddress().getHostAddress();
-			//         System.out.println(ip);
-			         if (ip != null && ip.contains(localHost)) {
-			             // 返回指定的设备对象
-			//         	System.out.println("filter:"+ip);
-			         	
-			             return networkInterface;
-			         }
-			
+			    	 // 通过判断传入的参数是IP还是网卡名来获取正式的网卡信息
+			    	 if(getSubUtil(NameOrIP,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}")!=""){
+			    		 // 获取网卡IP地址
+				         String ip = pcapAddress.getAddress().getHostAddress();
+				         if (ip != null && ip.contains(NameOrIP)) {
+				             // 返回指定的设备对象
+				        	 // System.out.println("filter:"+ip);
+				             return networkInterface;
+				         }
+			    	 }else {
+			    		 String name = networkInterface.getName();
+						 if(NameOrIP.equals(name)) {
+							 return networkInterface;
+						 }
+					}
+			         
 			     }
 			 }
 		} catch (PcapNativeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-			return null;
+		return null;
 	}
+	
+	/**
+	 * 正则匹配
+	 * @param soap
+	 * @param rgex
+	 * @return 返回匹配的内容
+	 */
+ 	public static String getSubUtil(String soap,String rgex){  
+         Pattern pattern = Pattern.compile(rgex);// 匹配的模式  
+         Matcher m = pattern.matcher(soap);  
+         while(m.find()){
+             return m.group(0);
+         }  
+         return "";  
+    }
 
 }

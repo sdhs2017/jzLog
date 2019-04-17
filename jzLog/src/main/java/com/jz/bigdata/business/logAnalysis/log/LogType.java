@@ -19,7 +19,8 @@ public class LogType {
 	
 	public static final String LOGTYPE_HTTP = "http";
 	public static final String LOGTYPE_HTTPS = "https";
-	public static final String LOGTYPE_TCP = "TCP";
+	public static final String LOGTYPE_TCP = "tcp";
+	public static final String LOGTYPE_DEFAULTPACKET = "defaultpacket";
 
 	public static final String LOGTYPE_UNKNOWN = "unknown";	
 
