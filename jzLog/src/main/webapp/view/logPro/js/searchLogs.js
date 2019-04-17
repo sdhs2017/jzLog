@@ -93,7 +93,6 @@
     	//将object对象转换成字符串
     	var hsObj = {};
     	hsObj.hsData = JSON.stringify(param);
-    	console.log(typeof hsObj.hsData)
 	    //获取数据并通过回调函数进行数据加载。
 	    ajaxPost(url,hsObj,sFunc); 		
 	}
@@ -608,6 +607,79 @@
 					         +       '<td class="logs_protocol_name">'+obj.protocol_name+'</td>'
 					         +       '<td class="logs_protocol_name">'+obj.packet_source+'</td>'
 					         +       '<td class="logs_protocol_name">-</td>'
+					         +   '</tr>'
+					 logDesArrIndex++;
+				}
+			}
+			 //添加 日志列表到页面中    
+		    $("#logs_list>tbody").html(logLists);
+		}else if(logType == "http"){
+			/****************http 日志列表格式*******************/
+			var logLists = "<b>暂无日志数据</b>";//日志列表
+			var logListTittle = "";//日志列名
+			//拼接日志列名 只需拼接一次	
+			logListTittle += '<th width="200">时间</th>'
+						  +	 '<th>源地址</th>'
+						  +	 '<th>目的地址</th>'
+						  +	 '<th>源端口</th>'
+						  +	 '<th>目的端口</th>'
+						  +	 '<th>请求或相应</th>'
+						  +	 '<th>请求方法</th>'
+						  +	 '<th>请求url</th>'
+						  +	 '<th>响应状态</th>'
+						  +	 '<th>内容</th>'
+						  +	 '<th width="55px">操作</th>'
+			//添加日志表头到页面
+			$(".con_title").html(logListTittle);
+			//判断日志是否为空  不为空则删除“暂无日志数据”提示
+			if(logsArr != ''){
+				logLists = '';
+				var logDesArrIndex = 0;
+				for(var i in logsArr){
+					
+					var obj =  filterObj(logsArr[i]);	
+					if(obj.logtime == undefined){
+						obj.logtime = "-"
+					}
+					if(obj.operation_level == undefined){
+						obj.operation_level = "-"
+					}
+					if(obj.operation_des == undefined){
+						obj.operation_des = "-"
+					}
+					if(obj.application_layer_protocol == undefined){
+						obj.application_layer_protocol = "-"
+					}
+					if(obj.protocol_name == undefined){
+						obj.protocol_name = "-"
+					}
+					//替换风险状态
+					/*var level = '';
+					if(obj.operation_level == "INFO"){
+						level = '<span class="label label-info">INFO</span>'
+					}else if(obj.operation_level == "ERROR"){
+						level = '<span class="label label-danger">ERROR</span>'
+					}	
+					*/
+					//删除日志内容的<br/>标签
+					logDesArr.push(obj.operation_des);				
+					var reg = new RegExp("<br/>","g");
+					var logCon = obj.operation_des.replace(reg,"");
+					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
+					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
+					         +       '<td class="logs_source_ip">'+obj.source_ip+'</td>'
+					         +       '<td class="logs_des_ip">'+obj.des_ip+'</td>'
+					         +       '<td class="logs_source_port">'+obj.source_port+'</td>'				     
+					         +       '<td class="logs_des_port">'+obj.des_port+'</td>'
+					         +       '<td class="logs_requestorresponse">'+obj.requestorresponse+'</td>'
+					         +       '<td class="logs_request_type">'+obj.request_type+'</td>'
+					         +       '<td class="logs_request_url ">'+obj.request_url  +'</td>'
+					         +       '<td class="logs_response_state">'+obj.response_state+'</td>'
+					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
+					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
+					         +       '</td>'
 					         +   '</tr>'
 					 logDesArrIndex++;
 				}
@@ -1253,6 +1325,50 @@
 					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'	
+		}else if(logType == "http"){
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">源地址:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].source_ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">目的地址:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].des_ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">源端口:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].source_port+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">目的端口:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].des_port+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">请求或响应:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].requestorresponse+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">请求方法:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].request_type+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">请求url:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].request_url+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">响应状态:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].response_state+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">日志内容:</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
+					+		'</div>'
+					+	'</div>'
 		} else{
 			//var logsCon = logDesArr[index];
 			//拼接弹窗 html		
