@@ -697,7 +697,7 @@ public class LogServiceImpl implements IlogService {
 		}
 		// 协议名
 		if (pamap.get("protocol_name")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("protocol_name", pamap.get("protocol_name")));
+			boolQueryBuilder.must(QueryBuilders.termQuery("protocol_name", pamap.get("protocol_name").toLowerCase()));
 		}
 		// equipmentid
 		if (pamap.get("equipmentid")!=null) {
@@ -735,6 +735,45 @@ public class LogServiceImpl implements IlogService {
 			//boolQueryBuilder.must(QueryBuilders.matchQuery("equipmentname", pamap.get("hostname")).fuzziness("AUTO"));
 			
 		}
+		// event_type
+		if (pamap.get("event_type")!=null) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery("event_type", pamap.get("event_type")));
+		}
+		
+		//  针对HTTP日志的查询条件
+		// src_IP
+		if (pamap.get("source_ip")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("source_ip", pamap.get("source_ip")));
+		}
+		// dst_IP
+		if (pamap.get("des_ip")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("des_ip", pamap.get("des_ip")));
+		}
+		// source_port
+		if (pamap.get("source_port")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("source_port", pamap.get("source_port")));
+		}
+		// des_port
+		if (pamap.get("des_port")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("des_port", pamap.get("des_port")));
+		}
+		// requestorresponse
+		if (pamap.get("requestorresponse")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("requestorresponse", pamap.get("requestorresponse")));
+		}
+		// 请求方式
+		if (pamap.get("request_type")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("request_type", pamap.get("request_type").toLowerCase()));
+		}
+		// 请求url
+		if (pamap.get("request_url")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("request_url", pamap.get("request_url")));
+		}
+		// 响应状态
+		if (pamap.get("response_state")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("response_state", pamap.get("response_state")));
+		}
+		
 		count = clientTemplate.count(index, types, boolQueryBuilder);
 		hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
 		
@@ -806,30 +845,116 @@ public class LogServiceImpl implements IlogService {
 		if (pamap.get("event")!=null) {
 			boolQueryBuilder.must(QueryBuilders.constantScoreQuery(QueryBuilders.existsQuery("event_type")));
 		}
+		if (pamap.get("event_levels")!=null) {
+			if (pamap.get("event_levels").equals("高危")) {
+				boolQueryBuilder.must(QueryBuilders.rangeQuery("event_level").gte(0).lte(3));
+			}else if (pamap.get("event_levels").equals("中危")) {
+				boolQueryBuilder.must(QueryBuilders.rangeQuery("event_level").gte(4).lte(5));
+			}else if (pamap.get("event_levels").equals("普通")) {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("event_level").gte(6).lte(7));
+			}
+			
+		}
+		
 		// IP
 		if (pamap.get("ip")!=null) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("ip", pamap.get("ip")));
 		}
-		/*// hostname
-		if (pamap.get("hostname")!=null) {
-			boolQueryBuilder.should(QueryBuilders.matchQuery("hostname", pamap.get("hostname")));
-		}*/
+		// src_IP
+		if (pamap.get("ipv4_src_addr")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("ipv4_src_addr", pamap.get("ipv4_src_addr")));
+		}
+		// dst_IP
+		if (pamap.get("ipv4_dst_addr")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("ipv4_dst_addr", pamap.get("ipv4_dst_addr")));
+		}
+		// src_port
+		if (pamap.get("l4_src_port")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("l4_src_port", pamap.get("l4_src_port")));
+		}
+		// dst_port
+		if (pamap.get("l4_dst_port")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("l4_dst_port", pamap.get("l4_dst_port")));
+		}
+		// 协议名
+		if (pamap.get("protocol_name")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("protocol_name", pamap.get("protocol_name").toLowerCase()));
+		}
+		// equipmentid
+		if (pamap.get("equipmentid")!=null) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery("equipmentid", pamap.get("equipmentid")));
+		}
 		// event_level
 		if (pamap.get("event_level")!=null) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("event_level", pamap.get("event_level")));
 		}
 		// operation_level
 		if (pamap.get("operation_level")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("operation_level", pamap.get("operation_level")));
-		}
-		// equipmentname
-		if (pamap.get("hostname")!=null) {
-			boolQueryBuilder.should(QueryBuilders.matchQuery("equipmentname", pamap.get("hostname")));
+			//boolQueryBuilder.must(QueryBuilders.termQuery("operation_level", pamap.get("operation_level")));
+			String [] operation_level = pamap.get("operation_level").split(",");
+			boolQueryBuilder.must(QueryBuilders.termsQuery("operation_level", operation_level));
 		}
 		// event_type
 		if (pamap.get("event_type")!=null) {
 			boolQueryBuilder.must(QueryBuilders.matchQuery("event_type", pamap.get("event_type")));
 		}
+		// equipmentname查询资产名称，局限性第一个字
+		if (pamap.get("hostname")!=null) {
+			//boolQueryBuilder.must();
+			count = clientTemplate.count(index, types, QueryBuilders.queryStringQuery(pamap.get("hostname")).field("equipmentname").defaultOperator(Operator.AND));
+			if (count<1) {
+				count = clientTemplate.count(index, types, QueryBuilders.queryStringQuery(pamap.get("hostname")).field("equipmentname").defaultOperator(Operator.OR));
+				if (count<1) {
+					boolQueryBuilder.must(QueryBuilders.wildcardQuery("equipmentname", "*"+pamap.get("hostname")+"*"));
+				}else {
+					boolQueryBuilder.must(QueryBuilders.queryStringQuery(pamap.get("hostname")).field("equipmentname").defaultOperator(Operator.OR));
+				}
+			}else {
+				boolQueryBuilder.must(QueryBuilders.queryStringQuery(pamap.get("hostname")).field("equipmentname").defaultOperator(Operator.AND));
+			}
+			//boolQueryBuilder.must(QueryBuilders.fuzzyQuery("equipmentname", pamap.get("hostname")));
+			//boolQueryBuilder.must(QueryBuilders.matchQuery("equipmentname", pamap.get("hostname")).fuzziness("AUTO"));
+			
+		}
+		// event_type
+		if (pamap.get("event_type")!=null) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery("event_type", pamap.get("event_type")));
+		}
+		
+		//  针对HTTP日志的查询条件
+		// src_IP
+		if (pamap.get("source_ip")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("source_ip", pamap.get("source_ip")));
+		}
+		// dst_IP
+		if (pamap.get("des_ip")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("des_ip", pamap.get("des_ip")));
+		}
+		// source_port
+		if (pamap.get("source_port")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("source_port", pamap.get("source_port")));
+		}
+		// des_port
+		if (pamap.get("des_port")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("des_port", pamap.get("des_port")));
+		}
+		// requestorresponse
+		if (pamap.get("requestorresponse")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("requestorresponse", pamap.get("requestorresponse")));
+		}
+		// 请求方式
+		if (pamap.get("request_type")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("request_type", pamap.get("request_type").toLowerCase()));
+		}
+		// 请求url
+		if (pamap.get("request_url")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("request_url", pamap.get("request_url")));
+		}
+		// 响应状态
+		if (pamap.get("response_state")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("response_state", pamap.get("response_state")));
+		}
+		
 		boolQueryBuilder.must(QueryBuilders.matchQuery("userid", userid));
 		
 		count = clientTemplate.count(index, types, boolQueryBuilder);

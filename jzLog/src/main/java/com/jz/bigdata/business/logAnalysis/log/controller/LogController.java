@@ -40,6 +40,7 @@ import com.jz.bigdata.business.logAnalysis.log.LogType;
 import com.jz.bigdata.business.logAnalysis.log.entity.App_file;
 import com.jz.bigdata.business.logAnalysis.log.entity.DHCP;
 import com.jz.bigdata.business.logAnalysis.log.entity.DNS;
+import com.jz.bigdata.business.logAnalysis.log.entity.DefaultPacket;
 import com.jz.bigdata.business.logAnalysis.log.entity.Http;
 import com.jz.bigdata.business.logAnalysis.log.entity.Https;
 import com.jz.bigdata.business.logAnalysis.log.entity.Log4j;
@@ -172,16 +173,17 @@ public class LogController extends BaseController{
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_MYSQLLOG, new Mysql().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG, new PacketFilteringFirewal().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_NETFLOW, new Netflow().toMapping());
-			//logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DNS, new DNS().toMapping());
-			//logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DHCP, new DHCP().toMapping());
-			//logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_FILE, new App_file().toMapping());
-			//logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_APACHE, new App_file().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DNS, new DNS().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DHCP, new DHCP().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_FILE, new App_file().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_APP_APACHE, new App_file().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_UNKNOWN, new Unknown().toMapping());
 			
 			// 网络数据包
-			logService.createIndexAndmapping("eslog-test",LogType.LOGTYPE_HTTP, new Http().toMapping());
-			logService.createIndexAndmapping("eslog-test",LogType.LOGTYPE_HTTPS, new Https().toMapping());
-			logService.createIndexAndmapping("eslog-test",LogType.LOGTYPE_TCP, new Tcp().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_HTTP, new Http().toMapping());
+			/*logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_HTTPS, new Https().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_TCP, new Tcp().toMapping());*/
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DEFAULTPACKET, new DefaultPacket().toMapping());
 			
 			map.put("state", true);
 			map.put("msg", "数据结构初始化成功！");
@@ -830,6 +832,83 @@ public class LogController extends BaseController{
 	@RequestMapping(value="/getDNSLogListByBlend",produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="DNS组合查询日志数据")
 	public String getDNSLogListByBlend(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
+		// receive parameter
+		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
+		String hsData = request.getParameter("hsData");
+		System.out.println(hsData);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, String> map = new HashMap<String, String>();
+		
+		map = removeMapEmptyValue(mapper.readValue(hsData, Map.class));
+		System.out.println(map);
+		Object pageo = map.get("page");
+		Object sizeo = map.get("size");
+		
+		map.remove("page");
+		map.remove("size");
+		
+		String page = pageo.toString();
+		String size = sizeo.toString();
+		
+		String starttime = "";
+		String endtime = "";
+		if (map.get("starttime")!=null) {
+			Object start = map.get("starttime");
+			starttime = start.toString();
+			map.remove("starttime");
+		}
+		if (map.get("endtime")!=null) {
+			Object end = map.get("endtime");
+			endtime = end.toString();
+			map.remove("endtime");
+		}
+		
+		ArrayList<String> arrayList = new ArrayList<>();
+		List<Map<String, Object>> list =null;
+		
+		if (map.get("type")!=null&&!map.get("type").equals("")) {
+			arrayList.add(map.get("type"));
+			map.remove("type");
+			String [] types = arrayList.toArray(new String[arrayList.size()]);
+			if (userrole.equals("1")) {
+				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,page,size);
+			}else {
+				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
+			}
+		}else {
+			String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW,LogType.LOGTYPE_DNS,LogType.LOGTYPE_DHCP};
+			if (userrole.equals("1")) {
+				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,page,size);
+			}else {
+				list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
+			}
+		}
+		Map<String, Object> allmap = new HashMap<>();
+		allmap = list.get(0);
+		list.remove(0);
+		allmap.put("list", list);
+		String result = JSONArray.fromObject(allmap).toString();
+		String replace=result.replace("\\\\005", "<br/>");
+		
+		return replace;
+	
+	}
+	
+	/**
+	 * http组合查询
+	 * @param requestt
+	 * @author jiyourui
+	 * @return 
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value="/getHttpLogListByBlend",produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="HTTP组合查询日志数据")
+	public String getHttpLogListByBlend(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
 		// receive parameter
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
 		String hsData = request.getParameter("hsData");
