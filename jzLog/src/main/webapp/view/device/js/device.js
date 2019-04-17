@@ -461,7 +461,7 @@ $("#remove_device").click(function(){
 	var deviceId = '';
 	//判断是否又被选中的  没有则提示 有则继续执行删除操作
 	if(checkboxs.length == 0){
-		layer.msg('未选中任何用户',{icon: 5});
+		layer.msg('未选中任何资产',{icon: 5});
 	}else{
 		//询问框
 		layer.confirm('您确定删除么？', {
