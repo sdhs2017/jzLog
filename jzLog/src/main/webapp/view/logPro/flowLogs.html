@@ -68,8 +68,8 @@
 				margin-right:1px solid #ccc;
 				line-height:34px;
 				text-align: center;
-				width: 75px;
-				font-size:13px;
+				width: 65px;
+				font-size:10px;
 			}
 			
 			.searchConditions{
@@ -169,39 +169,55 @@
 			<div class="top_title">
 				流量日志		
 			</div>
-			<div class="device_logType" style="display:none">flow</div>
+			<div class="device_logType" style="display:none">defaultpacket</div>
 			<!-- 普通查询条件 -->
-			<div class="search_input" style="display:flex;max-width:1286px;">
-				<div class="searchConditions">
-					<div class="searchTimeBox">
-						<div class="searchBoxTitle">时间范围</div>
-						<input type="text" class="time-input form-control" id="startTime" placeholder="起始日期" name="begin_time" readonly class="form_datetime">  
-						<i class="glyphicon glyphicon-remove startTimeRemove"></i>	
-						<span> ~ </span>
-						<input type="text" class="time-input form-control" id="endTime" placeholder="结束日期" name="end_time" readonly class="form_datetime">  		
-						<i class="glyphicon glyphicon-remove endTimeRemove"></i>	
+			<div class="search_input" style="display:flex;max-width:1296px;">
+				<div class="search_left" style="flex:1;height:73px;border-left: 2px solid #4781bb;overflow:hidden;transition:all .5s;">
+					<div class="searchConditions" style="margin-bottom:0;">
+						<div class="searchConditions">
+							<div class="searchTimeBox">
+								<div class="searchBoxTitle">时间范围</div>
+								<input type="text" class="time-input form-control" id="startTime" placeholder="起始日期" name="begin_time" readonly class="form_datetime">  
+								<i class="glyphicon glyphicon-remove startTimeRemove"></i>	
+								<span> ~ </span>
+								<input type="text" class="time-input form-control" id="endTime" placeholder="结束日期" name="end_time" readonly class="form_datetime">  		
+								<i class="glyphicon glyphicon-remove endTimeRemove"></i>	
+							</div>
+							<div class="searchIpBox">
+								<div class="searchBoxTitle">源IP</div>
+								<input type="text" class="form-control searchSrcIp"  placeholder="源IP">
+							</div>
+							<div class="searchDomainNameBox">
+								<div class="searchBoxTitle">目的IP</div>
+								<input type="text" class="form-control searchDstIp"  placeholder="目的IP">
+							</div>
+							<div class="searchAnaTypeBox">
+								<div class="searchBoxTitle">源端口</div>
+								<input type="text" class="form-control searchSrcPort"  placeholder="源端口">
+							</div>
+							<div class="searchServerBox">
+								<div class="searchBoxTitle">目的端口</div>
+								<input type="text" class="form-control searchDstPort"  placeholder="目的端口">
+							</div>
+							<div class="searchIpBox">
+								<div class="searchBoxTitle" style="width:85px;">加密层协议</div>
+								<input type="text" class="form-control searchEncryption"  placeholder="加密层协议">
+							</div>
+						</div>
 					</div>
-					<div class="searchIpBox">
-						<div class="searchBoxTitle">源IP</div>
-						<input type="text" class="form-control searchSrcIp"  placeholder="源IP">
+					<div class="searchConditions sc2" style="position:relative;top:5px;z-index:0;">
+						<div class="searchServerBox" style="width:50%;">
+							<div class="searchBoxTitle ">传输层协议</div>
+							<input type="text" class="form-control searchProtocol_name"  placeholder="传输层协议">
+						</div>
+						<div class="searchServerBox" style="width:50%;">
+							<div class="searchBoxTitle">应用层协议</div>
+							<input type="text" class="form-control searchApplication_layer_protocol"  placeholder="应用层协议">
+						</div>
 					</div>
-					<div class="searchDomainNameBox">
-						<div class="searchBoxTitle">目的IP</div>
-						<input type="text" class="form-control searchDstIp"  placeholder="目的IP">
-					</div>
-					<div class="searchAnaTypeBox">
-						<div class="searchBoxTitle">源端口</div>
-						<input type="text" class="form-control searchSrcPort"  placeholder="源端口">
-					</div>
-					<div class="searchServerBox">
-						<div class="searchBoxTitle">目的端口</div>
-						<input type="text" class="form-control searchDstPort"  placeholder="目的端口">
-					</div>
-					<div class="searchIpBox">
-						<div class="searchBoxTitle">协议</div>
-						<input type="text" class="form-control searchProtocolName"  placeholder="协议">
-					</div>
-					<button  class="btn btn-primary" id="searchLogs"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
+				</div> 
+				<div class="search_right" style="flex:0,0,60px;width:60px;height:73px;position:relative;overflow:hidden;transition:all .5s;">
+					<button  class="btn btn-primary" id="searchLogs" style="height:73px;transition:all .5s;"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
 				</div>
 			</div>
 			<div class="row result_box">
@@ -276,7 +292,7 @@
 		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/searchLogs.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
-			var pageSize = 12;
+			var pageSize = 13;
 			var url = "../../log/getLogListByBlend.do";
 			var sendSearchObj = {};//查询日志 参数集合
 			//点击检索按钮 获取数据
@@ -294,7 +310,7 @@
 				logStatus = true;
 				//获得查询条件参数值
 				//日志类型为dns
-				sendSearchObj.type = "netflow";
+				sendSearchObj.type = "operation_des";
 				//获取开始时间
 				sendSearchObj.starttime = $("#startTime").val();
 				//获取结束时间
@@ -307,8 +323,13 @@
 				sendSearchObj.l4_src_port= $(".searchSrcPort").val();
 				//获取目的端口
 				sendSearchObj.l4_dst_port= $(".searchDstPort").val();
-				//获取协议
-				sendSearchObj.protocol_name= $(".searchProtocolName").val();
+				//获取加密协议
+				sendSearchObj.encryption_based_protection_protocol= $(".searchEncryption").val();
+				//获取传输层协议
+				sendSearchObj.protocol_name= $(".searchProtocol_name").val();
+				//获取应用层协议
+				sendSearchObj.application_layer_protocol= $(".searchApplication_layer_protocol").val();
+				console.log(sendSearchObj)
 				//获取数据
 				getLogs(url,"",sendSearchObj,1,pageSize);
 				historySearch(sendSearchObj)

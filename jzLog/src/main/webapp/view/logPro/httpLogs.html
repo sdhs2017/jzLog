@@ -69,7 +69,7 @@
 				line-height:34px;
 				text-align: center;
 				width: 75px;
-				font-size:12px;
+				font-size:10px;
 			}
 			
 			.searchConditions{
@@ -174,7 +174,7 @@
 			<!-- <div class="search_input" style="max-width:1286px;">
 				
 			</div> -->
-			<div class="search_input" style="display:flex;max-width:1286px;">
+			<div class="search_input" style="display:flex;max-width:1296px;">
 				<div class="search_left" style="flex:1;height:34px;border-left: 2px solid #4781bb;overflow:hidden;transition:all .5s;">
 					<div class="searchConditions" style="margin-bottom:0;">
 						<div class="searchConditions">
@@ -212,7 +212,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="searchConditions sc2" style="max-width: 1221px;position:relative;top:5px;z-index:0;">
+					<div class="searchConditions sc2" style="position:relative;top:5px;z-index:0;">
 						<div class="searchServerBox more1" style="width:50%;">
 							<div class="searchBoxTitle ">请求方法</div>
 							<input type="text" class="form-control searchRequest_type"  placeholder="请求方法">
@@ -227,7 +227,7 @@
 						</div>
 					</div>
 				</div> 
-				<div class="search_right" style="flex:0,0,100px;width:100px;height:34px;position:relative;overflow:hidden;transition:all .5s;">
+				<div class="search_right" style="flex:0,0,60px;width:60px;height:34px;position:relative;overflow:hidden;transition:all .5s;">
 					<button  class="btn btn-primary" id="searchLogs" style="height:34px;transition:all .5s;"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
 				</div>
 			</div>
@@ -542,14 +542,14 @@
 							$(".search_left").css("height","73px");
 							$(".search_right").css("height","73px");
 							$("#searchLogs").css("height","73px");
-							$(".more1").css("display","block");
+							$(".more1").css("display","flex");
 							$(".more2").css("display","none")
 						},500)
 					}else{
 						$(".search_left").css("height","73px");
 						$(".search_right").css("height","73px");
 						$("#searchLogs").css("height","73px");
-						$(".more1").css("display","block");
+						$(".more1").css("display","flex");
 						$(".more2").css("display","none")
 					}
 					
@@ -562,14 +562,14 @@
 							$(".search_left").css("height","73px");
 							$(".search_right").css("height","73px");
 							$("#searchLogs").css("height","73px");
-							$(".more2").css("display","block");
+							$(".more2").css("display","flex");
 							$(".more1").css("display","none");
 						},500)
 					}else{
 						$(".search_left").css("height","73px");
 						$(".search_right").css("height","73px");
 						$("#searchLogs").css("height","73px");	
-						$(".more2").css("display","block");
+						$(".more2").css("display","flex");
 						$(".more1").css("display","none");
 					}
 					
