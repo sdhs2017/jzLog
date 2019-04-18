@@ -1196,7 +1196,7 @@
 					success:function(data){
 						var obj = JSON.parse(data)[0];
 						//导出成功
-						if(obj.state == "finished"){
+						if(obj.state == "finished"){ 
 							//将导出状态跟新为false
 							exporting = false;
 							//清除定时器

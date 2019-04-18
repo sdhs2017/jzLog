@@ -2,7 +2,7 @@
 	var logsArr  = [];//数组 用于存放获取来的logs
 	var logDetailArr = [];//用于查看日志详情存放json日志
 	var pageCount = 0;//总页数
-	var pageTotle = 12;//每一页显示的条数
+	var pageTotle = 13;//每一页显示的条数
 	var historyArr = [];//用于存放检索历史数组
 	var logStatus ;//用于区别是查询操作还是过滤操作
 	var filterArr = [];//过滤日志存放数组	
@@ -93,7 +93,6 @@
     	//将object对象转换成字符串
     	var hsObj = {};
     	hsObj.hsData = JSON.stringify(param);
-    	console.log(typeof hsObj.hsData)
 	    //获取数据并通过回调函数进行数据加载。
 	    ajaxPost(url,hsObj,sFunc); 		
 	}
@@ -380,7 +379,7 @@
 						  +	 '<th width="120">资产名称</th>'
 						  +	 '<th width="125">IP</th>'
 						  +	 '<th>日志内容</th>'
-						  +	 '<th width="50">操作</th>'
+						  +	 '<th width="55">操作</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
@@ -443,7 +442,7 @@
 						  +	 '<th width="120">资产名称</th>'
 						  +	 '<th width="125">IP</th>'
 						  +	 '<th>日志内容</th>'
-						  +	 '<th width="50">操作</th>'
+						  +	 '<th width="55">操作</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
@@ -505,7 +504,7 @@
 						  +	 '<th width="120">资产名称</th>'
 						  +	 '<th width="125">IP</th>'
 						  +	 '<th>日志内容</th>'
-						  +	 '<th width="50">操作</th>'
+						  +	 '<th width="55">操作</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
@@ -556,8 +555,8 @@
 			}
 			 //添加 日志列表到页面中    
 		    $("#logs_list>tbody").html(logLists);
-		}else if(logType == "flow"){
-			/****************1 flow 日志列表格式*******************/
+		}else if(logType == "defaultpacket"){
+			/****************1 defaultpacket 日志列表格式*******************/
 			var logLists = "<b>暂无日志数据</b>";//日志列表
 			var logListTittle = "";//日志列名
 			//拼接日志列名 只需拼接一次	
@@ -566,9 +565,11 @@
 						  +	 '<th>目的IP</th>'
 						  +	 '<th>源端口</th>'
 						  +	 '<th>目的端口</th>'
-						  +	 '<th>协议</th>'
-						  +	 '<th>网路数据来源</th>'
+						  +	 '<th>传输层协议</th>'
+						  +	 '<th>应用层协议</th>'
 						  +	 '<th>加密协议</th>'
+						  +	 '<th>网路数据来源</th>'
+						  +	 '<th width="55px">操作</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
@@ -587,6 +588,85 @@
 					if(obj.operation_des == undefined){
 						obj.operation_des = "-"
 					}
+					if(obj.encryption_based_protection_protocol == undefined){
+						obj.encryption_based_protection_protocol = "-"
+					}
+					if(obj.application_layer_protocol == undefined){
+						obj.application_layer_protocol = "-"
+					}
+					//删除日志内容的<br/>标签
+					logDesArr.push(obj.operation_des);				
+					var reg = new RegExp("<br/>","g");
+					var logCon = obj.operation_des.replace(reg,"");
+					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
+					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
+					         +       '<td class="logs_ipv4_src_addr">'+obj.ipv4_src_addr+'</td>'
+					         +       '<td class="logs_ipv4_dst_addr">'+obj.ipv4_dst_addr+'</td>'
+					         +       '<td class="logs_l4_src_port">'+obj.l4_src_port+'</td>'				     
+					         +       '<td class="logs_l4_dst_port">'+obj.l4_dst_port+'</td>'
+					         +       '<td class="logs_protocol_name">'+obj.protocol_name+'</td>'
+					         +       '<td class="logs_protocol_name">'+obj.application_layer_protocol +'</td>'
+					         +       '<td class="logs_protocol_name">'+obj.encryption_based_protection_protocol+'</td>'
+					         +       '<td class="logs_protocol_name">'+obj.packet_source+'</td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
+					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
+					         +       '</td>'
+					         +   '</tr>'
+					 logDesArrIndex++;
+				}
+			}
+			 //添加 日志列表到页面中    
+		    $("#logs_list>tbody").html(logLists);
+		}else if(logType == "http"){
+			/****************http 日志列表格式*******************/
+			var logLists = "<b>暂无日志数据</b>";//日志列表
+			var logListTittle = "";//日志列名
+			//拼接日志列名 只需拼接一次	
+			logListTittle += '<th width="200">时间</th>'
+						  +	 '<th>源地址</th>'
+						  +	 '<th>目的地址</th>'
+						  +	 '<th>源端口</th>'
+						  +	 '<th>目的端口</th>'
+						  +	 '<th>请求/响应</th>'
+						  +	 '<th>请求方法</th>'
+						  +	 '<th>请求url</th>'
+						  +	 '<th>响应状态</th>'
+						  +	 '<th>内容</th>'
+						  +	 '<th width="55px">操作</th>'
+			//添加日志表头到页面
+			$(".con_title").html(logListTittle);
+			//判断日志是否为空  不为空则删除“暂无日志数据”提示
+			if(logsArr != ''){
+				logLists = '';
+				var logDesArrIndex = 0;
+				for(var i in logsArr){
+					
+					var obj =  filterObj(logsArr[i]);	
+					if(obj.logtime == undefined){
+						obj.logtime = "-"
+					}
+					if(obj.operation_level == undefined){
+						obj.operation_level = "-"
+					}
+					if(obj.operation_des == undefined){
+						obj.operation_des = "-"
+					}
+					if(obj.application_layer_protocol == undefined){
+						obj.application_layer_protocol = "-"
+					}
+					if(obj.protocol_name == undefined){
+						obj.protocol_name = "-"
+					}
+					if(obj.request_type == undefined){
+						obj.request_type = "-"
+					}
+					if(obj.request_url == undefined){
+						obj.request_url = "-"
+					}
+					if(obj.response_state == undefined){
+						obj.response_state = "-"
+					}
 					//替换风险状态
 					/*var level = '';
 					if(obj.operation_level == "INFO"){
@@ -601,13 +681,19 @@
 					var logCon = obj.operation_des.replace(reg,"");
 					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
 					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
-					         +       '<td class="logs_ipv4_src_addr">'+obj.ipv4_src_addr+'</td>'
-					         +       '<td class="logs_ipv4_dst_addr">'+obj.ipv4_dst_addr+'</td>'
-					         +       '<td class="logs_l4_src_port">'+obj.l4_src_port+'</td>'				     
-					         +       '<td class="logs_l4_dst_port">'+obj.l4_dst_port+'</td>'
-					         +       '<td class="logs_protocol_name">'+obj.protocol_name+'</td>'
-					         +       '<td class="logs_protocol_name">'+obj.packet_source+'</td>'
-					         +       '<td class="logs_protocol_name">-</td>'
+					         +       '<td class="logs_source_ip">'+obj.source_ip+'</td>'
+					         +       '<td class="logs_des_ip">'+obj.des_ip+'</td>'
+					         +       '<td class="logs_source_port">'+obj.source_port+'</td>'				     
+					         +       '<td class="logs_des_port">'+obj.des_port+'</td>'
+					         +       '<td class="logs_requestorresponse">'+obj.requestorresponse+'</td>'
+					         +       '<td class="logs_request_type">'+obj.request_type+'</td>'
+					         +       '<td class="logs_request_url ">'+obj.request_url  +'</td>'
+					         +       '<td class="logs_response_state">'+obj.response_state+'</td>'
+					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
+					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
+					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
+					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
+					         +       '</td>'
 					         +   '</tr>'
 					 logDesArrIndex++;
 				}
@@ -627,7 +713,7 @@
 						  +	 '<th>访问域名</th>'
 						  +	 '<th>DNS view</th>'
 						  +	 '<th>DNS服务器</th>'
-						  +	 '<th width="50">操作</th>'
+						  +	 '<th width="55">操作</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
@@ -692,7 +778,7 @@
 						  +	 '<th>mac地址</th>'
 						  +	 '<th>中继设备地址</th>'
 						  +	 '<th>客户端IP</th>'
-						  +	 '<th width="50">操作</th>'
+						  +	 '<th width="55">操作</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
@@ -755,7 +841,7 @@
 						  +	 '<th width="120">资产名称</th>'
 						  +	 '<th width="125">IP</th>'
 						  +	 '<th>日志内容</th>'
-						  +	 '<th width="50">操作</th>'
+						  +	 '<th width="55">操作</th>'
 			//添加日志表头到页面
 			$(".con_title").html(logListTittle);
 			//判断日志是否为空  不为空则删除“暂无日志数据”提示
@@ -1253,6 +1339,90 @@
 					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'	
+		}else if(logType == "http"){
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">源地址:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].source_ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">目的地址:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].des_ip+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">源端口:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].source_port+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">目的端口:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].des_port+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">请求或响应:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].requestorresponse+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">请求方法:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].request_type+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">请求url:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].request_url+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">响应状态:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].response_state+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:24px">'
+					+			'<div class="col-xs-3">日志内容:</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
+					+		'</div>'
+					+	'</div>'
+		}else if(logType == 'defaultpacket'){
+			//拼接弹窗 html		
+			var html = '<div class="layer_box">'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">时间:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">源IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ipv4_src_addr+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">目的IP:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ipv4_dst_addr+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">源端口:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].l4_src_port+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">目的端口:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].l4_dst_port+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">传输层协议:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].protocol_name+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">应用层协议:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].application_layer_protocol+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">网路数据来源:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].packet_source+'</div>'
+					+		'</div>'
+					+		'<div class="row" style="line-height:50px">'
+					+			'<div class="col-xs-3">加密协议:</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].encryption_based_protection_protocol+'</div>'
+					+		'</div>'
+					+	'</div>'
 		} else{
 			//var logsCon = logDesArr[index];
 			//拼接弹窗 html		

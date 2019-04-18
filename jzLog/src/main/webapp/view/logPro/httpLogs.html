@@ -68,7 +68,7 @@
 				margin-right:1px solid #ccc;
 				line-height:34px;
 				text-align: center;
-				width: 65px;
+				width: 75px;
 				font-size:10px;
 			}
 			
@@ -167,12 +167,15 @@
 	<body>
 		<div id="box">
 			<div class="top_title">
-				流量日志		
+				HTTP日志		
 			</div>
-			<div class="device_logType" style="display:none">defaultpacket</div>
+			<div class="device_logType" style="display:none">http</div>
 			<!-- 普通查询条件 -->
+			<!-- <div class="search_input" style="max-width:1286px;">
+				
+			</div> -->
 			<div class="search_input" style="display:flex;max-width:1296px;">
-				<div class="search_left" style="flex:1;height:73px;border-left: 2px solid #4781bb;overflow:hidden;transition:all .5s;">
+				<div class="search_left" style="flex:1;height:34px;border-left: 2px solid #4781bb;overflow:hidden;transition:all .5s;">
 					<div class="searchConditions" style="margin-bottom:0;">
 						<div class="searchConditions">
 							<div class="searchTimeBox">
@@ -184,40 +187,48 @@
 								<i class="glyphicon glyphicon-remove endTimeRemove"></i>	
 							</div>
 							<div class="searchIpBox">
-								<div class="searchBoxTitle">源IP</div>
-								<input type="text" class="form-control searchSrcIp"  placeholder="源IP">
+								<div class="searchBoxTitle">源地址</div>
+								<input type="text" class="form-control searchSource_ip"  placeholder="源IP">
 							</div>
 							<div class="searchDomainNameBox">
-								<div class="searchBoxTitle">目的IP</div>
-								<input type="text" class="form-control searchDstIp"  placeholder="目的IP">
+								<div class="searchBoxTitle">目的地址</div>
+								<input type="text" class="form-control searchDes_ip"  placeholder="目的IP">
 							</div>
 							<div class="searchAnaTypeBox">
 								<div class="searchBoxTitle">源端口</div>
-								<input type="text" class="form-control searchSrcPort"  placeholder="源端口">
+								<input type="text" class="form-control searchSource_port"  placeholder="源端口">
 							</div>
 							<div class="searchServerBox">
 								<div class="searchBoxTitle">目的端口</div>
-								<input type="text" class="form-control searchDstPort"  placeholder="目的端口">
+								<input type="text" class="form-control searchDes_port"  placeholder="目的端口">
 							</div>
-							<div class="searchServerBox" >
-								<div class="searchBoxTitle" style="width:85px;">传输层协议</div>
-								<input type="text" class="form-control searchProtocol_name"  placeholder="传输层协议">
+							<div class="searchServerBox">
+								<div class="searchBoxTitle">请求/响应</div>
+								<select class="form-control searchRequestorresponse">
+		 							<option	selected value=""></option>
+		 							<option value="request">request</option>
+		 							<option value="response">response</option>
+		 						</select>
 							</div>
 						</div>
 					</div>
-					<div class="searchConditions sc2" style="position:relative;top:5px;z-index:0;">						
-						<div class="searchServerBox" style="width:50%;">
-							<div class="searchBoxTitle">应用层协议</div>
-							<input type="text" class="form-control searchApplication_layer_protocol"  placeholder="应用层协议">
+					<div class="searchConditions sc2" style="position:relative;top:5px;z-index:0;">
+						<div class="searchServerBox more1" style="width:50%;">
+							<div class="searchBoxTitle ">请求方法</div>
+							<input type="text" class="form-control searchRequest_type"  placeholder="请求方法">
 						</div>
-						<div class="searchIpBox" style="width:50%;">
-							<div class="searchBoxTitle" >加密层协议</div>
-							<input type="text" class="form-control searchEncryption"  placeholder="加密层协议">
+						<div class="searchServerBox more1" style="width:50%;">
+							<div class="searchBoxTitle">请求URL</div>
+							<input type="text" class="form-control searchRequest_url"  placeholder="请求URL">
+						</div>
+						<div class="searchServerBox more2" style="width:100%;">
+							<div class="searchBoxTitle ">响应状态</div>
+							<input type="text" class="form-control searchResponse_state"  placeholder="响应状态">
 						</div>
 					</div>
 				</div> 
-				<div class="search_right" style="flex:0,0,60px;width:60px;height:73px;position:relative;overflow:hidden;transition:all .5s;">
-					<button  class="btn btn-primary" id="searchLogs" style="height:73px;transition:all .5s;"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
+				<div class="search_right" style="flex:0,0,60px;width:60px;height:34px;position:relative;overflow:hidden;transition:all .5s;">
+					<button  class="btn btn-primary" id="searchLogs" style="height:34px;transition:all .5s;"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
 				</div>
 			</div>
 			<div class="row result_box">
@@ -292,8 +303,8 @@
 		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/searchLogs.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
-			var pageSize = 13;
-			var url = "../../log/getLogListByBlend.do";
+			var pageSize = 12;
+			var url = "../../log/getHttpLogListByBlend.do";
 			var sendSearchObj = {};//查询日志 参数集合
 			//点击检索按钮 获取数据
 			$("#searchLogs").click(function(){
@@ -310,26 +321,27 @@
 				logStatus = true;
 				//获得查询条件参数值
 				//日志类型为dns
-				sendSearchObj.type = "defaultpacket";
+				sendSearchObj.type = "http";
 				//获取开始时间
 				sendSearchObj.starttime = $("#startTime").val();
 				//获取结束时间
 				sendSearchObj.endtime = $("#endTime").val();
-				//获取源ip
-				sendSearchObj.ipv4_src_addr= $(".searchSrcIp").val();
-				//获取目的ip
-				sendSearchObj.ipv4_dst_addr= $(".searchDstIp").val();
+				//获取源地址
+				sendSearchObj.source_ip= $(".searchSource_ip").val();
+				//获取目的地址
+				sendSearchObj.des_ip = $(".searchDes_ip").val();
 				//获取源端口
-				sendSearchObj.l4_src_port= $(".searchSrcPort").val();
+				sendSearchObj.source_port= $(".searchSource_port").val();
 				//获取目的端口
-				sendSearchObj.l4_dst_port= $(".searchDstPort").val();
-				//获取加密协议
-				sendSearchObj.encryption_based_protection_protocol= $(".searchEncryption").val();
-				//获取传输层协议
-				sendSearchObj.protocol_name= $(".searchProtocol_name").val();
-				//获取应用层协议
-				sendSearchObj.application_layer_protocol= $(".searchApplication_layer_protocol").val();
-				console.log(sendSearchObj)
+				sendSearchObj.des_port= $(".searchDes_port").val();
+				//请求或响应
+				sendSearchObj.requestorresponse= $(".searchRequestorresponse").val();
+				//请求方法
+				sendSearchObj.request_type= $(".searchRequest_type").val();
+				//获请求URL
+				sendSearchObj.request_url= $(".searchRequest_url").val();
+				//响应状态
+				sendSearchObj.response_state= $(".searchResponse_state").val();
 				//获取数据
 				getLogs(url,"",sendSearchObj,1,pageSize);
 				historySearch(sendSearchObj)
@@ -516,6 +528,56 @@
 		  //数据最大显示下拉框改变事件
 			$(".maxShowData").change(function(){
 				maxShowChange('数据量过大时，细化查询条件提高查询效率')
+			})
+			//查询条件改变事件
+			$(".searchRequestorresponse").change(function(){
+				var val = $(".searchRequestorresponse").val();
+				 //改变高度
+				if(val == 'request'){
+					$(".search_left").css("height","34px");
+					$(".search_right").css("height","34px");
+					$("#searchLogs").css("height","34px");
+					if($(".search_left").height() == 73){						
+						setTimeout(function(){
+							$(".search_left").css("height","73px");
+							$(".search_right").css("height","73px");
+							$("#searchLogs").css("height","73px");
+							$(".more1").css("display","flex");
+							$(".more2").css("display","none")
+						},500)
+					}else{
+						$(".search_left").css("height","73px");
+						$(".search_right").css("height","73px");
+						$("#searchLogs").css("height","73px");
+						$(".more1").css("display","flex");
+						$(".more2").css("display","none")
+					}
+					
+				}else if(val == 'response'){
+					$(".search_left").css("height","34px");
+					$(".search_right").css("height","34px");
+					$("#searchLogs").css("height","34px");
+					if($(".search_left").height() == 73){						
+						setTimeout(function(){
+							$(".search_left").css("height","73px");
+							$(".search_right").css("height","73px");
+							$("#searchLogs").css("height","73px");
+							$(".more2").css("display","flex");
+							$(".more1").css("display","none");
+						},500)
+					}else{
+						$(".search_left").css("height","73px");
+						$(".search_right").css("height","73px");
+						$("#searchLogs").css("height","73px");	
+						$(".more2").css("display","flex");
+						$(".more1").css("display","none");
+					}
+					
+				}else{
+					$(".search_left").css("height","34px");
+					$(".search_right").css("height","34px");
+					$("#searchLogs").css("height","34px");
+				}	 
 			})
 		</script>
 	</body>
