@@ -1030,7 +1030,6 @@
 	//查看详情 点击事件
 	$("#logs_list").on("click",".more",function(){
 		var logIndex = $(this).parent().attr("data-index");
-		console.log(logDetailArr[logIndex])
 		//获取日志类型
 		var logType = logDetailArr[logIndex].type;
 		/*if(logType == undefined){//logType ！= undefined 单个设备的日志
@@ -1380,7 +1379,7 @@
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'"><script type="text/html" style="display:block">'+logDetailArr[logIndex].operation_des+'</script></div>'
 					+		'</div>'
 					+	'</div>'
 		}else if(logType == 'defaultpacket'){
