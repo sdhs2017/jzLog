@@ -717,13 +717,35 @@
             <value>0 */2 * * * ?</value>
         </property>
 	</bean>
+	<!-- url定时入库任务 -->
+	<bean id="urlJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    	<!-- 调用类 -->
+	    <property name="targetObject">  
+	        <ref bean="CollectorService"/>  
+	    </property>
+	   <!--  调用类方法 -->
+	    <property name="targetMethod">  
+	        <value>insertUrl</value>  
+	    </property>  
+	</bean>
+	<!-- 调度任务时间配置 -->
+	<bean id="urlJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="urlJob"/>
+		</property>
+		<!-- 设置触发时间 -->
+		<property name="cronExpression">
+            <value>0 */2 * * * ?</value>
+        </property>
+	</bean>
 	<!-- 触发器启动 -->
 	<bean name="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="createSnapshotJobTrigger" />
                 <ref bean="updateRiskJobTrigger" />
-                <ref bean="assetsHeartBeatJobTrigger" />
+                <ref bean="urlJobTrigger" />
+                <!-- <ref bean="assetsHeartBeatJobTrigger" /> -->
             </list>
         </property>
         <property name="autoStartup" value="true" />
