@@ -532,6 +532,10 @@
 			//查询条件改变事件
 			$(".searchRequestorresponse").change(function(){
 				var val = $(".searchRequestorresponse").val();
+				//清空数据
+				$(".searchRequest_type").val('');
+				$(".searchRequest_url").val('');
+				$(".searchRequest_state").val('');
 				 //改变高度
 				if(val == 'request'){
 					$(".search_left").css("height","34px");

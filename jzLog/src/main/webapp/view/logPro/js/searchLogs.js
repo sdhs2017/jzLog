@@ -689,7 +689,7 @@
 					         +       '<td class="logs_request_type">'+obj.request_type+'</td>'
 					         +       '<td class="logs_request_url ">'+obj.request_url  +'</td>'
 					         +       '<td class="logs_response_state">'+obj.response_state+'</td>'
-					         +       '<td class="logs_Mes"><p>'+logCon+'</p></td>'
+					         +       '<td class="logs_Mes"><p><script type="text/html" style="display:block">'+logCon+'</script></p></td>'
 					         +       '<td class="logs_tools" data-index="'+logDesArrIndex+'">'
 					         +       	'<i class="glyphicon glyphicon-list-alt more" title="查看详情"></i>'
 					         +       	'<i class="glyphicon glyphicon-remove removeLog" title="删除"></i>'
