@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.jz.bigdata.common.function.dao.IFunctionDao;
 import com.jz.bigdata.common.function.entity.Function;
 import com.jz.bigdata.common.function.service.IFunctionService;
+import com.jz.bigdata.util.Uuid;
 
 /**
  * @author shichengyu
@@ -83,8 +84,15 @@ public class FunctionServiceImpl implements IFunctionService {
 		return roleMap;
 	}
 
+	/**
+	 * @param function
+	 * @return
+	 * @description
+	 * 添加权限
+	 */
 	@Override
 	public int insert(Function function) {
+		function.setId(Uuid.getUUID());
 		return functionDao.insert(function);
 	}
 
