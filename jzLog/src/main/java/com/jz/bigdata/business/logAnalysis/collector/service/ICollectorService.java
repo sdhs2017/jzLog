@@ -22,4 +22,10 @@ public interface ICollectorService {
 	
 	public boolean startMasscanCollector(String startip,String endip,String ports,IAssetsService masscanipService,ConfigProperty configProperty);
 	public boolean stateMasscanCollector() ;
+
+	public String startPcap4jCollector(ClientTemplate clientTemplate,ConfigProperty configProperty);
+
+	public String statePcap4jCollector();
+
+	public String stopPcap4jCollector();
 }

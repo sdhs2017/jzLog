@@ -379,6 +379,13 @@ public class DefaultPacket {
 			this.protocol_name="UDP";
 			this.payload = udpPacket.getPayload().toString();
 			
+		}else if (ip4packet.getHeader().getProtocol().toString().contains("ICMPv4")) {
+			this.ipv4_dst_addr = ip4packet.getHeader().getDstAddr().toString().replaceAll("/", "");
+			this.ipv4_src_addr = ip4packet.getHeader().getSrcAddr().toString().replaceAll("/", "");
+			
+			this.protocol="1";
+			this.protocol_name="ICMPv4";
+			//this.payload = udpPacket.getPayload().toString();
 		}else {
 			System.out.println("协议值："+ip4packet.getHeader().getProtocol());
 		}

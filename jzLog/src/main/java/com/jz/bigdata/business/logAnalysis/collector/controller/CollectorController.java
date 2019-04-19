@@ -1,38 +1,23 @@
 package com.jz.bigdata.business.logAnalysis.collector.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.FutureTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.pcap4j.core.PacketListener;
 import org.pcap4j.core.PcapAddress;
-import org.pcap4j.core.PcapHandle;
-import org.pcap4j.core.PcapIpV4Address;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.Pcaps;
-import org.pcap4j.core.BpfProgram.BpfCompileMode;
-import org.elasticsearch.action.index.IndexRequest;
-import org.pcap4j.core.NotOpenException;
-import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
-import org.pcap4j.packet.Packet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.jz.bigdata.business.logAnalysis.collector.pcap4j.PacketStream;
-import com.jz.bigdata.business.logAnalysis.collector.pcap4j.Pcap4jCollector;
-import com.jz.bigdata.business.logAnalysis.collector.pcap4j.TcpStream;
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.assets.service.IAssetsService;
@@ -72,12 +57,6 @@ public class CollectorController {
 	private IAssetsService masscanipService;
 	
 	
-	String client ="";
-	
-	Thread pcap4jthread = null;
-	FutureTask<String> futureTask = null;
-	Pcap4jCollector td  = null;
-
 	// 获取采集器开启或关闭状态，true为开启，false为关闭
 	@ResponseBody
 	@RequestMapping("/getCollectorState")
@@ -187,6 +166,9 @@ public class CollectorController {
 	@RequestMapping(value = "/startPcap4jCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启pcap4j抓取数据包")
 	public String startPcap4jCollector(HttpServletRequest request) {
+		
+		String result = collectorService.startPcap4jCollector(clientTemplate,configProperty);
+		/*
 		Map<String, Object> map = new HashMap<>();
 		
 		
@@ -200,20 +182,6 @@ public class CollectorController {
 			return JSONArray.fromObject(map).toString();
         }
 		
-    	for(PcapAddress a:nif.getAddresses())
-        {
-        	if(a instanceof PcapIpV4Address)
-        	{
-        		client = a.getAddress().toString();
-        		break;
-        	}
-        }
-        /*if(client.equals(""))
-        {
-        	map.put("state", false);
-			map.put("msg", "网卡获取失败！数据包采集器开启失败！");
-			return JSONArray.fromObject(map).toString();
-        }*/
         // 抓取包长度
         int snaplen = 64 * 1024;
         // 超时50ms
@@ -231,9 +199,9 @@ public class CollectorController {
 		}
         // handle = nif.openLive(snaplen, PromiscuousMode.NONPROMISCUOUS, timeout);
 
-        /** 设置TCP过滤规则 */
+        *//** 设置TCP过滤规则 *//*
         //String filter = "ip and tcp and (port 443)";
-        /** 设置TCP过滤规则 */
+        *//** 设置TCP过滤规则 *//*
         String filter = "ip and (tcp or udp or icmp)";
         
             
@@ -252,16 +220,19 @@ public class CollectorController {
 				 .create(); 
         
         List<IndexRequest> requests = new ArrayList<IndexRequest>();
+        
         //初始化listener
         PacketListener listener = new PacketListener() {
-        	
-        	 public void gotPacket(Packet packet) {
-            	
-    			PacketStream packetStream = new PacketStream(configProperty,clientTemplate,gson,requests);
-    			packetStream.gotPacket(packet);
-    			
-            }
-		
+        	public void gotPacket(Packet packet) {
+        		try {
+           			PacketStream packetStream = new PacketStream(configProperty,clientTemplate,gson,requests,urlSet);
+            		packetStream.gotPacket(packet);
+       			} catch (Exception e) {
+       				System.out.println("---------------jiyourui-----new PacketStream-------报错信息:------------"+e.getLocalizedMessage());
+       				System.out.println("---------------jiyourui-----new PacketStream-------报错信息:------------"+e.getMessage());
+       				e.printStackTrace();
+       			}
+           }
         };
 		
 		try {
@@ -287,6 +258,8 @@ public class CollectorController {
 			return JSONArray.fromObject(map).toString();
 		}
 		
+	*/
+		return result;
 	}
 	
 	
@@ -295,39 +268,49 @@ public class CollectorController {
 	@RequestMapping(value = "/statePcap4jCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "监控pcap4j抓取数据包运行状态")
 	public String statePcap4jCollector(HttpServletRequest request) {
-		Map<String, Object> map = new HashMap<>();
-		if (td!=null) {
-			map.put("state", td.getPcap4jStatus());
-		}else {
-			map.put("state", false);
-		}
-		
-		return JSONArray.fromObject(map).toString();
+		return collectorService.statePcap4jCollector();
 	}
 	
 	// 停止pcap4j抓取数据包
-	@SuppressWarnings("deprecation")
 	@ResponseBody
 	@RequestMapping(value = "/stopPcap4jCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "停止pcap4j抓取数据包")
 	public String stopPcap4jCollector(HttpServletRequest request) {
-		Map<String, Object> map = new HashMap<>();
-		if (td!=null) {
-			if (td.getPcap4jStatus()) {
-				td.closePcap4j();
-				map.put("state", true);
-				map.put("msg", "数据包采集器关闭成功");
-			}else {
-				map.put("state", true);
-				map.put("msg", "数据包采集器已经关闭");
+		return collectorService.stopPcap4jCollector();
+	}
+	
+	// 获取http中request的url并入库
+	/*@ResponseBody
+	@RequestMapping(value = "/insertUrl", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe = "获取http中request的url并入库")*/
+	/*public String insertUrl(HttpServletRequest request) {
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		List<Url> list = urldao.selectAll();
+		if (list.isEmpty()) {
+			for(String url : urlSet) {
+				Url u = new Url();
+				u.setDate(format.format(new Date()));
+				u.setUrl(url);
 			}
 		}else {
-			map.put("state", false);
-			map.put("msg", "数据包采集器未启动");
+			Map<String, Integer> map = new HashMap<>();
+			for (Url url : list) {
+				map.put(url.getUrl(), 1);
+			}
+			for(String url : urlSet) {
+				if (map.get(url)!=1) {
+					Url u = new Url();
+					u.setDate(format.format(new Date()));
+					u.setUrl(url);
+				}
+			}
 		}
 		
-		return JSONArray.fromObject(map).toString();
-	}
+		return "";
+		//return JSONArray.fromObject(map).toString();
+	}*/
+	
 		
 	/**
      * 根据IP获取指定网卡设备
