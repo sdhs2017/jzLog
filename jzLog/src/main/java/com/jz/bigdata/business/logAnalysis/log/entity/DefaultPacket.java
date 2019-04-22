@@ -114,6 +114,9 @@ public class DefaultPacket {
 	 * 数据包来源
 	 */
 	private String packet_source;
+	
+	private String acknum; // tcp 确认号
+	private String seqnum; // tcp 顺序号
 
 
 	public String getId() {
@@ -316,6 +319,22 @@ public class DefaultPacket {
 		this.packet_source = packet_source;
 	}
 
+	public String getAcknum() {
+		return acknum;
+	}
+
+	public void setAcknum(String acknum) {
+		this.acknum = acknum;
+	}
+
+	public String getSeqnum() {
+		return seqnum;
+	}
+
+	public void setSeqnum(String seqnum) {
+		this.seqnum = seqnum;
+	}
+
 	public DefaultPacket(){
 		
 	}
@@ -344,11 +363,13 @@ public class DefaultPacket {
 			
 			TcpPacket tcppacket = packet.getBuilder().getPayloadBuilder().build().get(TcpPacket.class);
 			
-			
 			this.ipv4_dst_addr = ip4packet.getHeader().getDstAddr().toString().replaceAll("/", "");
 			this.ipv4_src_addr = ip4packet.getHeader().getSrcAddr().toString().replaceAll("/", "");
 			this.l4_dst_port = tcppacket.getHeader().getDstPort().valueAsInt()+"";
 			this.l4_src_port = tcppacket.getHeader().getSrcPort().valueAsInt()+"";
+			
+			this.acknum = tcppacket.getHeader().getAcknowledgmentNumber()+"";
+			this.seqnum = tcppacket.getHeader().getSequenceNumberAsLong()+"";
 			
 			this.protocol="6";
 			this.protocol_name="TCP";
