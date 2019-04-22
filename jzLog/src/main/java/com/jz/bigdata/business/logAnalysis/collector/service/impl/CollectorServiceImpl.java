@@ -64,10 +64,12 @@ public class CollectorServiceImpl implements ICollectorService{
 	Thread t;
 	Thread masscanThread;
 	
+	// pcap4j 开关设置
 	Thread pcap4jthread = null;
 	FutureTask<String> futureTask = null;
 	Pcap4jCollector pcap4jCollector  = null;
 	private Set<String> urlSet = new HashSet<>();
+	PacketStream packetStream ;
 	
 	@Resource(name="assetsService")
 	private IAssetsService assetsService;
@@ -294,7 +296,7 @@ public class CollectorServiceImpl implements ICollectorService{
         PacketListener listener = new PacketListener() {
         	public void gotPacket(Packet packet) {
         		try {
-           			PacketStream packetStream = new PacketStream(configProperty,clientTemplate,gson,requests,urlSet);
+        			packetStream = new PacketStream(configProperty,clientTemplate,gson,requests,urlSet);
             		packetStream.gotPacket(packet);
        			} catch (Exception e) {
        				System.out.println("---------------jiyourui-----new PacketStream-------报错信息:------------"+e.getLocalizedMessage());
