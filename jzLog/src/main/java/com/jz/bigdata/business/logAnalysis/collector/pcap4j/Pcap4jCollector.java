@@ -44,8 +44,9 @@ public class Pcap4jCollector implements Callable<String>{
 	public String call() {
     	
         //直接使用loop
+		// loop 参数说明-1代表无穷包接收
         try {
-			handle.loop(1000000, listener);
+			handle.loop(-1, listener);
 		} catch (PcapNativeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
