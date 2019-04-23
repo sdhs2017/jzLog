@@ -28,6 +28,10 @@ public class Http {
 	private String request_url;//请求地址
 	private String response_state;//返回状态
 	private String request_type;//请求类型
+	private String acknum; // tcp 确认号
+	private String seqnum; // tcp 顺序号
+	private String complete_url; // 完整的url http://192.168.2.182:8080/jzLog/getIndicesCount.do?_=1555924017369
+	private String url_param; // url参数
 	/**
 	 * id
 	 */
@@ -242,6 +246,38 @@ public class Http {
 		this.request_type = request_type;
 	}
 
+	public String getAcknum() {
+		return acknum;
+	}
+
+	public void setAcknum(String acknum) {
+		this.acknum = acknum;
+	}
+
+	public String getSeqnum() {
+		return seqnum;
+	}
+
+	public void setSeqnum(String seqnum) {
+		this.seqnum = seqnum;
+	}
+
+	public String getComplete_url() {
+		return complete_url;
+	}
+
+	public void setComplete_url(String complete_url) {
+		this.complete_url = complete_url;
+	}
+
+	public String getUrl_param() {
+		return url_param;
+	}
+
+	public void setUrl_param(String url_param) {
+		this.url_param = url_param;
+	}
+
 	/**
 	 * @param packet
 	 * 构造方法，填充数据
@@ -274,15 +310,19 @@ public class Http {
 		String httphex = tcpPacket.getPayload().toString().substring(tcpPacket.getPayload().toString().indexOf(":")+1).trim();
 		this.operation_des=hexStringToString(httphex);
 		//httprequest
-		String httpRequest = "[a-zA-Z]{3,7} .* HTTP/1.[0,1]";
+		String httpRequest = "^(POST|GET) /[^\\s]* HTTP/1.[0,1]";
 		//httpResponse
-		String httpResponse = "HTTP/1.[0,1] [0-9]{0,3} *";
+		String httpResponse = "^HTTP/1.[0,1] [0-9]{0,3} *";
+		
+		this.acknum = tcpPacket.getHeader().getAcknowledgmentNumber()+"";
+		this.seqnum = tcpPacket.getHeader().getSequenceNumberAsLong()+"";
 		
 		//获取数据是否为空
 		if (httphex!=null&&!httphex.equals("")) {
 			
 			// http请求报文解析
 			if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!="") {
+				
 				this.requestorresponse="request";
 				//根据空格分割数据
 				String httpcontent=getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest);
@@ -295,6 +335,8 @@ public class Http {
 						this.request_url=message[1];
 					}
 				}
+				this.complete_url = this.protocol+"://"+this.des_ip+":"+this.des_port+this.request_url;
+				this.url_param = getSubUtilSimple(this.request_url,"[?](.*?)");
 			
 			// http返回报文解析
 			}else if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="") {
@@ -303,6 +345,8 @@ public class Http {
 				//根据空格分割数据
 				String[] message=httpRespons.split("\\s+");
 				this.response_state=message[1];
+				
+				
 			}
 			
 		}
@@ -329,6 +373,15 @@ public class Http {
          return "";  
     }
 	
+ 	// 正则匹配
+ 	public static String getSubUtilSimple(String soap, String rgex) {
+ 		Pattern pattern = Pattern.compile(rgex);// 匹配的模式
+ 		Matcher m = pattern.matcher(soap);
+ 		while (m.find()) {
+ 			return m.group(1);
+ 		}
+ 		return null;
+ 	}
 		
 	/**
 	 * 16进制转换成为string类型字符串
@@ -387,6 +440,7 @@ public class Http {
 					|| fields[i].getName().equals("source_port")|| fields[i].getName().equals("protocol")
 					|| fields[i].getName().equals("des_port")|| fields[i].getName().equals("source_ip")
 					|| fields[i].getName().equals("des_ip")|| fields[i].getName().equals("request_type")
+					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
 					|| fields[i].getName().equals("request_url")|| fields[i].getName().equals("response_state")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": " + "true" + "\n");
 			}
@@ -394,6 +448,7 @@ public class Http {
 					|| fields[i].getName().equals("des_port") || fields[i].getName().equals("source_port")
 					|| fields[i].getName().equals("source_ip")
 					|| fields[i].getName().equals("des_ip")|| fields[i].getName().equals("request_url")
+					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
 					) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");

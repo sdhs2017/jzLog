@@ -41,10 +41,25 @@ public class Pcap4jCollector implements Callable<String>{
 	}
 
 	@Override
-	public String call() throws InterruptedException, PcapNativeException, NotOpenException {
+	public String call() {
     	
         //直接使用loop
-        handle.loop(1000000, listener);
+		// loop 参数说明-1代表无穷包接收
+        try {
+			handle.loop(-1, listener);
+		} catch (PcapNativeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("---------------jiyourui----------handle.loop--报错信息:------------"+e.getMessage());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			System.out.println("---------------jiyourui----------handle.loop--报错信息:------------"+e.getMessage());
+			e.printStackTrace();
+		} catch (NotOpenException e) {
+			// TODO Auto-generated catch block
+			System.out.println("---------------jiyourui----------handle.loop--报错信息:------------"+e.getMessage());
+			e.printStackTrace();
+		}
 	
 		return null;
 	}

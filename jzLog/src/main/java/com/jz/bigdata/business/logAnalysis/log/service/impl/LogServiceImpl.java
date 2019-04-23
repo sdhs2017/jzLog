@@ -695,9 +695,17 @@ public class LogServiceImpl implements IlogService {
 		if (pamap.get("l4_dst_port")!=null) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("l4_dst_port", pamap.get("l4_dst_port")));
 		}
-		// 协议名
+		// 协议名（传输层协议）
 		if (pamap.get("protocol_name")!=null) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("protocol_name", pamap.get("protocol_name").toLowerCase()));
+		}
+		// 应用层协议
+		if (pamap.get("application_layer_protocol")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("application_layer_protocol", pamap.get("application_layer_protocol").toLowerCase()));
+		}
+		// 应用层加密协议
+		if (pamap.get("encryption_based_protection_protocol")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("encryption_based_protection_protocol", pamap.get("encryption_based_protection_protocol").toLowerCase()));
 		}
 		// equipmentid
 		if (pamap.get("equipmentid")!=null) {

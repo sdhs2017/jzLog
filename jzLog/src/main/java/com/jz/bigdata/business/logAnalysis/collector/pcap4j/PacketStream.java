@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.elasticsearch.action.index.IndexRequest;
 import org.pcap4j.packet.IpV4Packet;
 import org.pcap4j.packet.Packet;
@@ -25,8 +26,11 @@ import com.jz.bigdata.util.ConfigProperty;
 public class PacketStream {
 
 	
+	final Logger logger = Logger.getLogger(PacketStream.class);
+	
 	private Http http;
 	private DefaultPacket defaultpacket;
+	private Set<String> url ;
 	
 	boolean iDestroy = false;
 	
@@ -42,54 +46,90 @@ public class PacketStream {
 	List<IndexRequest> requests ;
 	
 	
-	public PacketStream(ConfigProperty configProperty,ClientTemplate clientTemplate,Gson gson,List<IndexRequest> requests)
+	public PacketStream(ConfigProperty configProperty,ClientTemplate clientTemplate,Gson gson,List<IndexRequest> requests,Set<String> url)
 	{
 		this.configProperty = configProperty;
 		this.clientTemplate = clientTemplate;
 		this.gson = gson;
 		this.requests = requests;
+		this.url = url;
 	}
 	
 	
 	
-	public void gotPacket(Packet packet)
-	{
-		//TcpPacket tcppacket =packet.getBuilder().getPayloadBuilder().build().get(TcpPacket.class);
-		IpV4Packet ip4packet =packet.get(IpV4Packet.class);
+	public void gotPacket(Packet packet){
 		
-		// 识别http数据包的正则表达式
-		String httpRequest = "[a-zA-Z]{3,7} .* HTTP/1.[0,1]";
-		String httpResponse = "HTTP/1.[0,1] [0-9]{0,3} *";
-		
-		if (ip4packet.getHeader().getProtocol().toString().contains("TCP")) {
-			TcpPacket tcpPacket = packet.get(TcpPacket.class);
-			String dst_port = tcpPacket.getHeader().getDstPort().valueAsString();
-			if ((getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!=""||getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="")&&!dst_port.equals("9300")) {
-				http =new Http(packet);
-				json = gson.toJson(http);
-				requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTP, json));
+		try {
+			//TcpPacket tcppacket =packet.getBuilder().getPayloadBuilder().build().get(TcpPacket.class);
+			IpV4Packet ip4packet =packet.get(IpV4Packet.class);
+			
+			// 识别http数据包的正则表达式
+			String httpRequest = "^(POST|GET) /[^\\s]* HTTP/1.[0,1]";
+			String httpResponse = "^HTTP/1.[0,1] [0-9]{0,3} *";
+			
+			if (ip4packet.getHeader().getProtocol().toString().contains("TCP")) {
+				TcpPacket tcpPacket = packet.get(TcpPacket.class);
+				String dst_port = tcpPacket.getHeader().getDstPort().valueAsString();
+				if ((getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!=""||getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="")&&!dst_port.equals("9300")) {
+					http =new Http(packet);
+					if (http.getRequest_url()!=null) {
+						url.add("http://"+http.getDes_ip()+":"+http.getDes_port()+""+getSubUtil(http.getRequest_url(),"[/].*?[/]"));
+						System.out.println(url);
+					}
+					json = gson.toJson(http);
+					requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTP, json));
+				}else {
+					defaultpacket = new DefaultPacket(packet);
+					if (defaultpacket.getApplication_layer_protocol()!=null&&defaultpacket.getApplication_layer_protocol().equals("HTTPS")) {
+						defaultpacket.setEncryption_based_protection_protocol(GetEncryptionProtocol(packet));
+					}
+					// 172.16.0.233 过滤与192.168.2.182 9300端口的交互数据
+					/*if (defaultpacket.getProtocol_name().equals("TCP")) {
+						if ((defaultpacket.getIpv4_dst_addr().equals("192.168.2.182")&&defaultpacket.getL4_dst_port().equals("9300"))||(defaultpacket.getIpv4_src_addr().equals("192.168.2.182")&&defaultpacket.getL4_src_port().equals("9300"))) {
+							System.out.println("该数据不入库");
+							logger.info("-----------tcp协议 中过滤本机与192.168.2.182:9300的交互数据----------");
+						}
+					}else {
+						json = gson.toJson(defaultpacket);
+						requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DEFAULTPACKET, json));
+					}*/
+					json = gson.toJson(defaultpacket);
+					requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DEFAULTPACKET, json));
+				}
 			}else {
 				defaultpacket = new DefaultPacket(packet);
 				if (defaultpacket.getApplication_layer_protocol()!=null&&defaultpacket.getApplication_layer_protocol().equals("HTTPS")) {
 					defaultpacket.setEncryption_based_protection_protocol(GetEncryptionProtocol(packet));
 				}
+				/*if (defaultpacket.getProtocol_name().equals("TCP")) {
+					if ((defaultpacket.getIpv4_dst_addr().equals("192.168.2.182")&&defaultpacket.getL4_dst_port().equals("9300"))||(defaultpacket.getIpv4_src_addr().equals("192.168.2.182")&&defaultpacket.getL4_src_port().equals("9300"))) {
+						System.out.println("该数据不入库");
+						logger.info("-----------tcp协议 中过滤本机与192.168.2.182:9300的交互数据----------");
+					}
+				}else {
+					json = gson.toJson(defaultpacket);
+					requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DEFAULTPACKET, json));
+				}*/
 				json = gson.toJson(defaultpacket);
 				requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DEFAULTPACKET, json));
 			}
-		}else {
-			defaultpacket = new DefaultPacket(packet);
-			if (defaultpacket.getApplication_layer_protocol()!=null&&defaultpacket.getApplication_layer_protocol().equals("HTTPS")) {
-				defaultpacket.setEncryption_based_protection_protocol(GetEncryptionProtocol(packet));
+			
+		
+			if (requests.size()==configProperty.getEs_bulk()) {
+				try {
+					clientTemplate.bulk(requests);
+					requests.clear();
+				} catch (Exception e) {
+					logger.error("----------------jiyourui-----clientTemplate.bulk------报错信息：-----"+e.getMessage());
+					e.printStackTrace();
+				}
+				
 			}
-			json = gson.toJson(defaultpacket);
-			requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DEFAULTPACKET, json));
+		} catch (Exception e) {
+			logger.error("----------------jiyourui-----gotPacket------报错信息：-----"+e.getMessage());
+			e.printStackTrace();
 		}
 		
-	
-		if (requests.size()==configProperty.getEs_bulk()) {
-			clientTemplate.bulk(requests);
-			requests.clear();
-		}
 
 
 
