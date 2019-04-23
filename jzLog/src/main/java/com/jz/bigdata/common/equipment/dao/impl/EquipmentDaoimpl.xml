@@ -29,6 +29,8 @@
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
 		<result column="state" jdbcType="INTEGER" property="state" />
+		<result column="domain" jdbcType="VARCHAR" property="domain" />
+		<result column="port" jdbcType="VARCHAR" property="port" />
 		<association property="user" javaType="com.jz.bigdata.common.users.entity.User">
              <id property="userId" column="id"/>
              <result property="name" column="userName"/>
@@ -66,6 +68,8 @@
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
 		<result column="state" jdbcType="INTEGER" property="state" />
+		<result column="domain" jdbcType="VARCHAR" property="domain" />
+		<result column="port" jdbcType="VARCHAR" property="port" />
 	</resultMap>
 	
 	
@@ -78,7 +82,7 @@
 		equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
 		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId,
-		equipment.state
+		equipment.state,domain,port
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -183,7 +187,13 @@
 				departmentNodeId,
 			</if>
 			<if test="state !=null and  state !=''">
-				state
+				state,
+			</if>
+			<if test="domain !=null and  domain !=''">
+				domain,
+			</if>
+			<if test="port !=null and  port !=''">
+				port
 			</if>
 		</trim> 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -251,7 +261,13 @@
 				#{departmentNodeId,jdbcType=INTEGER},
 			</if>
 			<if test="state != null and  state !=''">
-				#{state,jdbcType=INTEGER}
+				#{state,jdbcType=INTEGER},
+			</if>
+			<if test="domain != null and  domain !=''">
+				#{domain,jdbcType=VARCHAR},
+			</if>
+			<if test="port != null and  port !=''">
+				#{port,jdbcType=VARCHAR}
 			</if>
 		</trim>
 	</insert>
@@ -268,7 +284,7 @@
 		update equipment set
 		name=#{name},hostName=#{hostName},type=#{type},ip=#{ip},startUp=#{startUp},logType=#{logType},
 		macAdress=#{macAdress},system=#{system},systemVersion=#{systemVersion},assetNum=#{assetNum},serialNum=#{serialNum},
-		equipment.describe=#{describe},valuation=#{valuation},log_level=#{log_level},
+		equipment.describe=#{describe},valuation=#{valuation},log_level=#{log_level},domain=#{domain},port=#{port}
 		<!-- if判断语句 -->
 		<choose>
 			<when test="upDateTime != null and upDateTime !='' and upDateTime !='null'">
@@ -407,7 +423,8 @@
 		resultMap="BaseResultMap">
 		select equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
-		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId
+		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,
+		equipment.departmentNodeId,equipment.port,domain
 		,a.`name` AS userName  FROM  equipment_event
 		LEFT JOIN equipment on equipment_event.equipmentId=equipment.id
 		LEFT JOIN user AS a on equipment.userId=a.id
