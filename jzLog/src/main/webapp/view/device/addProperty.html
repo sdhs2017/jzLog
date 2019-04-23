@@ -141,6 +141,15 @@
 				</div>
 				<div class="row">
 					<div class="col-sm-6">
+						<label>根域名：</label>
+						<input type="text" class="form-control domain" placeholder="根域名">
+					</div>
+					<div class="col-sm-6">
+						<input type="text" class="form-control port" placeholder="端口号">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-6">
 						<label>系统：</label>
     					<!-- <select class="form-control">
     						<option disabled selected value></option>
@@ -300,6 +309,8 @@
 					$(".eCreateTime").val(obj.createTime);//创建时间
 					$(".eUpDateTime").val(obj.upDateTime);//更新时间
 					$(".eEndTime").val(obj.endTime);//截止时间
+					$(".domain").val(obj.domain);//根域名
+					$(".port").val(obj.port);//端口
 					//日志级别数组
 					var logLevelArr = obj.log_level.split(',')
 					//获得日志级别多选框
@@ -387,6 +398,8 @@
 				obj.assetNum = $(".eAssetNum").val();//资产编号
 				obj.serialNum = $(".eSerialNum").val();//序列号
 				obj.describe = $(".eDescribe").val();//描述
+				obj.domain = $(".domain").val();//根域名
+				obj.port = $(".port").val();//端口
 				/* obj.confidentiality = $(".eConfidentiality").val();//保密性
 				obj.integrity = $(".eIntegrity").val();//完整性
 				obj.usability = $(".eUsability").val();//可用性 */
