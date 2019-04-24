@@ -35,7 +35,8 @@ public class Equipment {
 	private int low_risk;//低危
 	private int departmentNodeId;//部门最上级id
 	private int state;//状态
-	
+	private String domain;//根域名
+	private String port;//端口
 	
 	
 	public int getHigh_risk() {
@@ -201,6 +202,18 @@ public class Equipment {
 	}
 	public void setState(int state) {
 		this.state = state;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public String getPort() {
+		return port;
+	}
+	public void setPort(String port) {
+		this.port = port;
 	}
 	
 

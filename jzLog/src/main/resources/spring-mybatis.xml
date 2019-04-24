@@ -468,6 +468,19 @@
    		</property> 
 	</bean>
 	
+		<!-- service业务mapper -->
+	<bean id="serviceSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="logDataSource" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/service/**/*.xml"></property>
+		
+		<property name="plugins">  
+       		<array>  
+          		<bean class="com.jz.bigdata.util.MapInterceptor"/>  
+       		</array>  
+   		</property> 
+	</bean>
+	
 	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> 
 	   <property name="basePackage" value="com.business.mapper"/>  
 	</bean> -->
@@ -570,11 +583,17 @@
 		<property name="basePackage" value="com.jz.bigdata.common.assets" />
 		<property name="sqlSessionFactoryBeanName" value="assetsSqlSessionFactory"></property>
 	</bean>
-	<!--扫描ip表配置 -->
+	<!--url表配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.jz.bigdata.common.url" />
 		<property name="sqlSessionFactoryBeanName" value="urlSqlSessionFactory"></property>
 	</bean>
+	<!--service表配置 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.jz.bigdata.common.service" />
+		<property name="sqlSessionFactoryBeanName" value="serviceSqlSessionFactory"></property>
+	</bean>
+	
 	<!-- es spring官方封装测试 -->
 	<!-- 远程机器 -->
 	<!-- 
