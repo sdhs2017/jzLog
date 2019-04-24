@@ -145,6 +145,7 @@
 						<input type="text" class="form-control domain" placeholder="根域名">
 					</div>
 					<div class="col-sm-6">
+						<label>端口：</label>
 						<input type="text" class="form-control port" placeholder="端口号">
 					</div>
 				</div>
@@ -442,7 +443,7 @@
 							console.log(data);
 						}
 						//发送请求
-						ajaxPostWithOutLayer("../../equipment/insert.do",obj,sfunc,"",efunc);
+						ajaxPostWithOutLayer("../../equipment/update.do",obj,sfunc,"",efunc);
 					}else{//添加操作
 						
 						//发送数据
