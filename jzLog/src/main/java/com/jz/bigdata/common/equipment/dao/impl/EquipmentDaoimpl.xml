@@ -82,7 +82,7 @@
 		equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
 		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId,
-		equipment.state,domain,port
+		equipment.state,domain,equipment.port
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -284,7 +284,7 @@
 		update equipment set
 		name=#{name},hostName=#{hostName},type=#{type},ip=#{ip},startUp=#{startUp},logType=#{logType},
 		macAdress=#{macAdress},system=#{system},systemVersion=#{systemVersion},assetNum=#{assetNum},serialNum=#{serialNum},
-		equipment.describe=#{describe},valuation=#{valuation},log_level=#{log_level},domain=#{domain},port=#{port}
+		equipment.describe=#{describe},valuation=#{valuation},log_level=#{log_level},domain=#{domain},equipment.port=#{port},
 		<!-- if判断语句 -->
 		<choose>
 			<when test="upDateTime != null and upDateTime !='' and upDateTime !='null'">
