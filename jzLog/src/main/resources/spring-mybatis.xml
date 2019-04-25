@@ -469,10 +469,10 @@
 	</bean>
 	
 		<!-- service业务mapper -->
-	<bean id="serviceSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<bean id="serviceInfoSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="logDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
-		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/service/**/*.xml"></property>
+		<property name="mapperLocations" value="classpath*:com/jz/bigdata/common/serviceInfo/**/*.xml"></property>
 		
 		<property name="plugins">  
        		<array>  
@@ -590,8 +590,8 @@
 	</bean>
 	<!--service表配置 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.jz.bigdata.common.service" />
-		<property name="sqlSessionFactoryBeanName" value="serviceSqlSessionFactory"></property>
+		<property name="basePackage" value="com.jz.bigdata.common.serviceInfo" />
+		<property name="sqlSessionFactoryBeanName" value="serviceInfoSqlSessionFactory"></property>
 	</bean>
 	
 	<!-- es spring官方封装测试 -->
