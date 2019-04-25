@@ -1,4 +1,4 @@
-package com.jz.bigdata.common.service.entity;
+package com.jz.bigdata.common.serviceInfo.entity;
 
 /**
  * @ClassName Service
@@ -6,7 +6,7 @@ package com.jz.bigdata.common.service.entity;
  * @Author shi cheng yu
  * @Date 2019年4月23日 上午10:08:04
  */
-public class Service {
+public class ServiceInfo {
 	private String id;
 	private String name;			//名称
 	private String protocol;		//协议

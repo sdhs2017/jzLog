@@ -1,4 +1,4 @@
-package com.jz.bigdata.common.service.controller;
+package com.jz.bigdata.common.serviceInfo.controller;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jz.bigdata.common.Constant;
-import com.jz.bigdata.common.service.entity.Service;
-import com.jz.bigdata.common.service.service.IServiceService;
+import com.jz.bigdata.common.serviceInfo.entity.ServiceInfo;
+import com.jz.bigdata.common.serviceInfo.service.IServiceInfoService;
 import com.jz.bigdata.util.DescribeLog;
 
 /**
@@ -22,11 +22,11 @@ import com.jz.bigdata.util.DescribeLog;
  * @Date 2019年4月23日 上午10:13:35
  */
 @Controller
-@RequestMapping("/service")
-public class ServiceController {
+@RequestMapping("/serviceInfo")
+public class ServiceInfoController {
 	
-	@Resource(name = "ServiceService")
-	private IServiceService serviceService;
+	@Resource(name = "ServiceInfoService")
+	private IServiceInfoService serviceInfoService;
 	
 	
 	/**
@@ -37,11 +37,11 @@ public class ServiceController {
 	@ResponseBody
 	@RequestMapping(value="/insert",produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "添加事件")
-	public String insert(HttpServletRequest request, Service service) {
+	public String insert(HttpServletRequest request, ServiceInfo serviceInfo) {
 
 		// 结果一般命名为result
 		int result = 0;
-		result = serviceService.insert(service);
+		result = serviceInfoService.insert(serviceInfo);
 		return result >= 1 ? Constant.successMessage() : Constant.failureMessage();
 	}
 
@@ -53,12 +53,12 @@ public class ServiceController {
 	@ResponseBody
 	@RequestMapping(value="/selectAll",produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "查询所有事件信息")
-	public List<Service> selectAll(HttpServletRequest request,Service service) {
+	public List<ServiceInfo> selectAll(HttpServletRequest request,ServiceInfo serviceInfo) {
 
 		// 结果一般命名为result
 		// int result = 0;
 		// result=departmentService.insert(department);
-		return serviceService.selectAll(service);
+		return serviceInfoService.selectAll(serviceInfo);
 	}
 
 	/**
@@ -69,11 +69,11 @@ public class ServiceController {
 	@ResponseBody
 	@RequestMapping(value="/updateById",produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "修改事件信息")
-	public String updataById(HttpServletRequest request, Service service) {
+	public String updataById(HttpServletRequest request, ServiceInfo service) {
 
 		// 结果一般命名为result
 		int result = 0;
-		result = serviceService.updateById(service);
+		result = serviceInfoService.updateById(service);
 		return result >= 1 ? Constant.successMessage() : Constant.failureMessage();
 	}
 
@@ -91,7 +91,7 @@ public class ServiceController {
 		String[] ids = request.getParameter("id").split(",");
 		//数组长度大于0删除数据
 		if (ids.length > 0) {
-			result = serviceService.delete(ids);
+			result = serviceInfoService.delete(ids);
 		}
 		return result >= 1 ? Constant.successMessage() : Constant.failureMessage();
 	}
@@ -112,7 +112,7 @@ public class ServiceController {
 		int pageIndex=Integer.parseInt(request.getParameter("pageIndex"));
 		//每页显示的数量
 		int pageSize=Integer.parseInt(request.getParameter("pageSize"));
-		return serviceService.selectAllByPage( pageIndex, pageSize);
+		return serviceInfoService.selectAllByPage( pageIndex, pageSize);
 	}
 	
 	

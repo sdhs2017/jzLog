@@ -1,16 +1,17 @@
-package com.jz.bigdata.common.service.service.impl;
+package com.jz.bigdata.common.serviceInfo.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
-import com.jz.bigdata.common.Constant;
-import com.jz.bigdata.common.equipment.entity.Equipment;
-import com.jz.bigdata.common.service.dao.IServiceDao;
-import com.jz.bigdata.common.service.service.IServiceService;
+import com.jz.bigdata.common.serviceInfo.dao.IServiceInfoDao;
+import com.jz.bigdata.common.serviceInfo.entity.ServiceInfo;
+import com.jz.bigdata.common.serviceInfo.service.IServiceInfoService;
 
 import net.sf.json.JSONArray;
 
@@ -20,10 +21,11 @@ import net.sf.json.JSONArray;
  * @Author shi cheng yu
  * @Date 2019年4月23日 上午10:13:15
  */
-@Service(value = "ServiceService")
-public class ServiceServiceImpl implements IServiceService {
+@Service(value = "ServiceInfoService")
+public class ServiceInfoServiceImpl implements IServiceInfoService {
 
-	private IServiceDao serviceDao;
+	@Resource
+	private IServiceInfoDao serviceInfoDao;
 
 	/**
 	 * @param service
@@ -31,9 +33,8 @@ public class ServiceServiceImpl implements IServiceService {
 	 * @description 添加方法
 	 */
 	@Override
-	public int insert(com.jz.bigdata.common.service.entity.Service service) {
-		// TODO Auto-generated method stub
-		return serviceDao.insert(service);
+	public int insert(ServiceInfo serviceInfo) {
+		return serviceInfoDao.insert(serviceInfo);
 	}
 
 	/**
@@ -42,10 +43,9 @@ public class ServiceServiceImpl implements IServiceService {
 	 * @description 查询所有数据
 	 */
 	@Override
-	public List<com.jz.bigdata.common.service.entity.Service> selectAll(
-			com.jz.bigdata.common.service.entity.Service service) {
+	public List<ServiceInfo> selectAll(ServiceInfo serviceInfo) {
 		// TODO Auto-generated method stub
-		return serviceDao.selectAll(service);
+		return serviceInfoDao.selectAll(serviceInfo);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class ServiceServiceImpl implements IServiceService {
 	@Override
 	public int delete(String[] ids) {
 		// TODO Auto-generated method stub
-		return serviceDao.delete(ids);
+		return serviceInfoDao.delete(ids);
 	}
 
 	/**
@@ -65,9 +65,9 @@ public class ServiceServiceImpl implements IServiceService {
 	 * @description 需改数据
 	 */
 	@Override
-	public int updateById(com.jz.bigdata.common.service.entity.Service service) {
+	public int updateById(ServiceInfo serviceInfo) {
 		// TODO Auto-generated method stub
-		return serviceDao.updateById(service);
+		return serviceInfoDao.updateById(serviceInfo);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class ServiceServiceImpl implements IServiceService {
 		// 获取起始数
 		int startRecord = (pageSize * (pageIndex - 1));
 		// 获取总数
-		List count = serviceDao.count();
+		List count = serviceInfoDao.count();
 		List listCount = new ArrayList<>();
 		// 获取总数集合
 		listCount = (List) count.get(0);
@@ -91,11 +91,16 @@ public class ServiceServiceImpl implements IServiceService {
 		// 总数添加到map
 		map.put("count", (listCount.get(0)));
 		// 查询所有数据
-		List<com.jz.bigdata.common.service.entity.Service> listService = serviceDao.selectAllByPage(startRecord, pageSize);
+		List<ServiceInfo> listService = serviceInfoDao.selectAllByPage(startRecord, pageSize);
 		// System.err.println(listEquipment.get(0).getCreateTime());
 		// 数据添加到map
 		map.put("service", listService);
 		return JSONArray.fromObject(map).toString();
+	}
+
+	@Override
+	public ServiceInfo selectServiceByUrl(String url) {
+		return serviceInfoDao.selectServiceByUrl(url);
 	}
 
 }

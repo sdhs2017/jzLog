@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jz.bigdata.common.service.dao.IServiceDao">
+<mapper namespace="com.jz.bigdata.common.serviceInfo.dao.IServiceInfoDao">
 
 	<!-- 返回结果设置 -->
-	<resultMap id="BaseResultMap" type="com.jz.bigdata.common.service.entity.Service">
+	<resultMap id="BaseResultMap" type="com.jz.bigdata.common.serviceInfo.entity.ServiceInfo">
 		<id column="id" jdbcType="VARCHAR" property="id" />
 		<result column="name" jdbcType="VARCHAR" property="name" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -22,23 +22,23 @@
 	<!-- 查询字段设置可重复调用 -->
 	<sql id="Base_Column_List">
 		id, name, protocol, ip, port,url,relativeUrl,equipmentId,
-		complementState,createTime,updateTime,stopTime,state,describe
+		complementState,createTime,updateTime,stopTime,state,serviceInfo.describe
 	</sql> 
 
 	<!-- 查询所有数据 -->
-	<select id="selectAll" parameterType="java.lang.String"
+	<select id="selectAll" parameterType="com.jz.bigdata.common.serviceInfo.entity.ServiceInfo"
 		resultMap="BaseResultMap">
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
 		select 
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" /> 
-		from service
+		from serviceInfo
 	</select>
 
 
 	<!-- 添加数据 -->
-	<insert id="insert" parameterType="com.jz.bigdata.common.service.entity.Service">
-		insert into service
+	<insert id="insert" parameterType="com.jz.bigdata.common.serviceInfo.entity.ServiceInfo">
+		insert into serviceInfo
 		<!-- 格式化 -->
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<!-- 判断参数是否为空 -->
@@ -82,7 +82,7 @@
 				state,
 			</if>
 			<if test="describe != null ">
-				describe
+				serviceInfo.describe
 			</if>
 			
 		</trim>
@@ -134,12 +134,12 @@
 	</insert>
 	<!-- 删除数据 -->
 	<update id="delete" parameterType="java.lang.String">
-		update service set state=0  where
+		update serviceInfo set state=0  where
 		id =#{id,jdbcType=VARCHAR}
 	</update>
 
-	<update id="updataById" parameterType="com.jz.bigdata.common.service.entity.Service">
-	    update service
+	<update id="updateById" parameterType="com.jz.bigdata.common.serviceInfo.entity.ServiceInfo">
+	    update serviceInfo
 	    <set>
 	      <if test="name != null">
 	        name = #{name,jdbcType=VARCHAR}
@@ -186,7 +186,7 @@
 	      </if>
 	      
 	      <if test="describe != null">
-	       , describe = #{describe,jdbcType=VARCHAR}
+	       , serviceInfo.describe = #{describe,jdbcType=VARCHAR}
 	      </if>
 	      
 	    </set>
@@ -199,7 +199,7 @@
 	    select 
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
-		from equipment 
+		from serviceInfo 
 	    limit #{startRecord},#{pageSize}
 	</select>
  
@@ -208,8 +208,18 @@
 <!--   <bind name="name" value="'%' + name + '%'" /> -->
 	    select count(*) as count
 	<!--     引用查询字段 -->
-	    from equipment 
+	    from serviceInfo 
 	   
 	</select>
+	
+	<!-- 查询数据url -->
+	<select id="selectServiceByUrl" parameterType="java.lang.String" resultMap="BaseResultMap" >
+		select 
+		<!-- 引用查询字段 -->
+		<include refid="Base_Column_List" />
+		from serviceInfo where url = #{url,jdbcType=VARCHAR}
+	</select>
+	
+	
 
 </mapper>
