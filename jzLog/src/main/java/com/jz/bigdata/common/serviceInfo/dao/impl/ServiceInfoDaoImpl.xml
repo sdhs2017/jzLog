@@ -50,8 +50,12 @@
 	</insert>
 	<!-- 删除数据 -->
 	<update id="delete" parameterType="java.lang.String">
-		update serviceInfo set state=0  where
-		id =#{id,jdbcType=VARCHAR}
+		update serviceInfo set state=0  
+		where id in
+		<foreach item="ids" index="index" collection="array" open="("
+			separator="," close=")">
+			#{ids}
+		</foreach>
 	</update>
 
 	<update id="updateById" parameterType="com.jz.bigdata.common.serviceInfo.entity.ServiceInfo">
