@@ -93,8 +93,8 @@ public interface IlogService {
 	 * @param page
 	 * @param size
 	 * @return
-	 */
-	public List<Map<String, Object>> getLogListByEquipmentId(String index,String type,String param,String order,String equipmentId,String page,String size) ;
+	 *//*
+	public List<Map<String, Object>> getLogListByEquipmentId(String index,String type,String param,String order,String equipmentId,String page,String size) ;*/
 	
 	public void update();
 

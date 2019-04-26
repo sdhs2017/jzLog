@@ -754,6 +754,27 @@
 		</property>
 		<!-- 设置触发时间 -->
 		<property name="cronExpression">
+            <value>0 */6 * * * ?</value>
+        </property>
+	</bean>
+	<!-- domain定时入库任务 -->
+	<bean id="domainJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    	<!-- 调用类 -->
+	    <property name="targetObject">  
+	        <ref bean="CollectorService"/>  
+	    </property>
+	   <!--  调用类方法 -->
+	    <property name="targetMethod">  
+	        <value>insertDomain</value>  
+	    </property>  
+	</bean>
+	<!-- 调度任务时间配置 -->
+	<bean id="domainJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="domainJob"/>
+		</property>
+		<!-- 设置触发时间 -->
+		<property name="cronExpression">
             <value>0 */2 * * * ?</value>
         </property>
 	</bean>
@@ -763,8 +784,9 @@
             <list>
                 <ref bean="createSnapshotJobTrigger" />
                 <ref bean="updateRiskJobTrigger" />
-                <ref bean="urlJobTrigger" />
-                <!-- <ref bean="assetsHeartBeatJobTrigger" /> -->
+               <!--  <ref bean="urlJobTrigger" />
+                <ref bean="domainJobTrigger" />
+                <ref bean="assetsHeartBeatJobTrigger" /> -->
             </list>
         </property>
         <property name="autoStartup" value="true" />

@@ -168,7 +168,7 @@ public class LogServiceImpl implements IlogService {
 	public List<Map<String, Object>> getListGroupByEvent(String index,String[] types,String equipmentid,String event_type,String starttime,String endtime) {
 		
 		QueryBuilder queryBuilder = null;
-		BoolQueryBuilder Queryeid = QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("equipmentid", equipmentid));
+		BoolQueryBuilder Queryeid = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("equipmentid", equipmentid));
 		BoolQueryBuilder Queryevent = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("event_type", event_type));
 		BoolQueryBuilder Querydate = QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
 		queryBuilder =  QueryBuilders.boolQuery()
@@ -279,7 +279,7 @@ public class LogServiceImpl implements IlogService {
 		
 		if(equipmentid!=null&&!equipmentid.equals("")) {
 			QueryBuilder queryequipmentid = QueryBuilders.boolQuery()
-					.must(QueryBuilders.matchPhraseQuery("equipmentid", equipmentid));
+					.must(QueryBuilders.termQuery("equipmentid", equipmentid));
 			queryBuilder = QueryBuilders.boolQuery()
 					.must(querytime)
 					.must(existquery)
@@ -321,7 +321,7 @@ public class LogServiceImpl implements IlogService {
 		
 		if(equipmentid!=null&&!equipmentid.equals("")) {
 			QueryBuilder queryequipmentid = QueryBuilders.boolQuery()
-					.must(QueryBuilders.matchPhraseQuery("equipmentid", equipmentid));
+					.must(QueryBuilders.termQuery("equipmentid", equipmentid));
 			queryBuilder = QueryBuilders.boolQuery()
 					.must(querytime)
 					.must(existquery)
@@ -366,7 +366,7 @@ public class LogServiceImpl implements IlogService {
 	
 	/**
 	 * 通过资产获取日志
-	 */
+	 *//*
 	@Override
 	public List<Map<String, Object>> getLogListByEquipmentId(String index, String type, String param,String order,String equipmentId,String page,String size) {
 		List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
@@ -405,7 +405,7 @@ public class LogServiceImpl implements IlogService {
 		list.addAll(clientTemplate.getListOrderByParam(index, type, param, sortOrder,map,fromInt,sizeInt));
 		//list = clientTemplate.getListOrderByParam(index, type, param, sortOrder,map,fromInt,sizeInt);
 		return list;
-	}
+	}*/
 	
 	@Override
 	public void createIndexAndmapping(String index, String type,String mappingproperties) {
@@ -552,7 +552,7 @@ public class LogServiceImpl implements IlogService {
 			sizeInt = Integer.parseInt(size);
 		}
 		
-		QueryBuilder user = QueryBuilders.matchQuery("userid", userid);
+		QueryBuilder user = QueryBuilders.termQuery("userid", userid);
 		// "多个匹配"  匹配的列进行归纳,包括设备id，设备ip，日志类型，日志内容
 		if(content!=null&&!content.equals("")) {
 			MultiMatchQueryBuilder multiMatchQueryBuilder  = QueryBuilders.multiMatchQuery(content, "operation_level","operation_des","ip","hostname","process","operation_facility","userid");
@@ -709,7 +709,7 @@ public class LogServiceImpl implements IlogService {
 		}
 		// equipmentid
 		if (pamap.get("equipmentid")!=null) {
-			boolQueryBuilder.must(QueryBuilders.matchQuery("equipmentid", pamap.get("equipmentid")));
+			boolQueryBuilder.must(QueryBuilders.termQuery("equipmentid", pamap.get("equipmentid")));
 		}
 		// event_level
 		if (pamap.get("event_level")!=null) {
@@ -775,7 +775,7 @@ public class LogServiceImpl implements IlogService {
 		}
 		// 请求url
 		if (pamap.get("request_url")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("request_url", pamap.get("request_url")));
+			boolQueryBuilder.must(QueryBuilders.matchQuery("request_url", pamap.get("request_url")));
 		}
 		// 响应状态
 		if (pamap.get("response_state")!=null) {
@@ -890,7 +890,7 @@ public class LogServiceImpl implements IlogService {
 		}
 		// equipmentid
 		if (pamap.get("equipmentid")!=null) {
-			boolQueryBuilder.must(QueryBuilders.matchQuery("equipmentid", pamap.get("equipmentid")));
+			boolQueryBuilder.must(QueryBuilders.termQuery("equipmentid", pamap.get("equipmentid")));
 		}
 		// event_level
 		if (pamap.get("event_level")!=null) {
@@ -963,7 +963,7 @@ public class LogServiceImpl implements IlogService {
 			boolQueryBuilder.must(QueryBuilders.termQuery("response_state", pamap.get("response_state")));
 		}
 		
-		boolQueryBuilder.must(QueryBuilders.matchQuery("userid", userid));
+		boolQueryBuilder.must(QueryBuilders.termQuery("userid", userid));
 		
 		count = clientTemplate.count(index, types, boolQueryBuilder);
 		hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);

@@ -321,11 +321,11 @@ public class Http {
 		if (httphex!=null&&!httphex.equals("")) {
 			
 			// http请求报文解析
-			if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest)!="") {
+			if (getSubUtil(hexStringToString(httphex), httpRequest)!="") {
 				
 				this.requestorresponse="request";
 				//根据空格分割数据
-				String httpcontent=getSubUtil(hexStringToString(tcpPacket.toHexString()), httpRequest);
+				String httpcontent=getSubUtil(hexStringToString(httphex), httpRequest);
 				String[] message=httpcontent.split("\\s+");
 				//循环添加数据
 				for(int i=0;i<message.length;i++){
@@ -336,12 +336,12 @@ public class Http {
 					}
 				}
 				this.complete_url = this.protocol+"://"+this.des_ip+":"+this.des_port+this.request_url;
-				this.url_param = getSubUtilSimple(this.request_url,"[?](.*?)");
+				this.url_param = getSubUtilSimple(this.request_url,"[?](.*?)$");
 			
 			// http返回报文解析
-			}else if (getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse)!="") {
+			}else if (getSubUtil(hexStringToString(httphex), httpResponse)!="") {
 				this.requestorresponse="response";
-				String httpRespons=getSubUtil(hexStringToString(tcpPacket.toHexString()), httpResponse);
+				String httpRespons=getSubUtil(hexStringToString(httphex), httpResponse);
 				//根据空格分割数据
 				String[] message=httpRespons.split("\\s+");
 				this.response_state=message[1];
@@ -445,13 +445,17 @@ public class Http {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": " + "true" + "\n");
 			}
 			if (fields[i].getName().equals("operation_des") || fields[i].getName().equals("equipmentname")
-					|| fields[i].getName().equals("des_port") || fields[i].getName().equals("source_port")
 					|| fields[i].getName().equals("source_ip")
 					|| fields[i].getName().equals("des_ip")|| fields[i].getName().equals("request_url")
 					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
 					) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");
+			}
+			if (fields[i].getName().equals("equipmentname") || fields[i].getName().equals("source_ip")
+					|| fields[i].getName().equals("des_ip") || fields[i].getName().equals("request_url")
+					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")) {
+				fieldstring.append("\t\t\t\t\t\t,\"fields\": " + "{\"raw\": {\"type\": \"keyword\"}}" + "\n");
 			}
 			if (i == fields.length - 1) {
 				fieldstring.append("\t\t\t\t\t}\n");
