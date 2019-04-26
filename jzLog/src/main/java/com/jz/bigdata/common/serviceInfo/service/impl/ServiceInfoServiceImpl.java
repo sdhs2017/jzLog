@@ -106,4 +106,18 @@ public class ServiceInfoServiceImpl implements IServiceInfoService {
 		return serviceInfoDao.selectServiceByUrl(url);
 	}
 
+	/**
+	 * @param id
+	 * @return
+	 * @description
+	 * 
+	 * 根据id查询数据
+	 */
+	@Override
+	public ServiceInfo selectServiceById(String id) {
+		return serviceInfoDao.selectServiceById(id);
+	}
+	
+	
+
 }

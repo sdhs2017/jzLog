@@ -52,7 +52,7 @@ public class ServiceInfoController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/selectAll",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe = "查询所有事件信息")
+	@DescribeLog(describe = "查询所有信息")
 	public List<ServiceInfo> selectAll(HttpServletRequest request,ServiceInfo serviceInfo) {
 
 		// 结果一般命名为result
@@ -83,7 +83,7 @@ public class ServiceInfoController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/delete",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe = "删除数据")
+	@DescribeLog(describe = "根据id删除数据")
 	public String delete(HttpServletRequest request) {
 
 		// 结果一般命名为result
@@ -116,5 +116,18 @@ public class ServiceInfoController {
 	}
 	
 	
+	/**
+	 * @param request
+	 * @return
+	 * 根据id查询数据
+	 */
+	@ResponseBody
+	@RequestMapping(value="/selectServiceById.do", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="根据id查询数据")
+	public ServiceInfo selectServiceById(HttpServletRequest request){
+		String id= request.getParameter("id");
+		return serviceInfoService.selectServiceById(id);
+		
+	}
 
 }

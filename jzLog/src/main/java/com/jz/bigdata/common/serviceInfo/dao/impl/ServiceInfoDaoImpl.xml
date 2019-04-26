@@ -220,6 +220,12 @@
 		from serviceInfo where url = #{url,jdbcType=VARCHAR}
 	</select>
 	
-	
+	<!-- 查询数据根据id -->
+	<select id="selectServiceById" parameterType="java.lang.String" resultMap="BaseResultMap" >
+		select 
+		<!-- 引用查询字段 -->
+		<include refid="Base_Column_List" />
+		from serviceInfo where id = #{id,jdbcType=VARCHAR}
+	</select>
 
 </mapper>

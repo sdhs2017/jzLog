@@ -26,5 +26,7 @@ public interface IServiceInfoDao {
 	List<String> count();
 	
 	ServiceInfo selectServiceByUrl(@Param("url")String url);
+	
+	ServiceInfo selectServiceById(@Param("id")String id);
 
 }

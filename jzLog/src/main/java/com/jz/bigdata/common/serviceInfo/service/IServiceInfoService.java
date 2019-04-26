@@ -2,6 +2,8 @@ package com.jz.bigdata.common.serviceInfo.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.jz.bigdata.common.serviceInfo.entity.ServiceInfo;
 
 
@@ -24,5 +26,7 @@ public interface IServiceInfoService {
 	String selectAllByPage( int pageIndex, int pageSize);
 	
 	ServiceInfo selectServiceByUrl(String url);
+	
+	ServiceInfo selectServiceById(String id);
 
 }
