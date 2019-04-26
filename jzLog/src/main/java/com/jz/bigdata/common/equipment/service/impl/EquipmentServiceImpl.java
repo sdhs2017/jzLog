@@ -14,7 +14,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 
-import com.jz.bigdata.business.logAnalysis.log.LogType;
 import com.jz.bigdata.common.Constant;
 import com.jz.bigdata.common.equipment.dao.IEquipmentDao;
 import com.jz.bigdata.common.equipment.entity.Equipment;
@@ -243,6 +242,17 @@ public class EquipmentServiceImpl implements IEquipmentService {
 	@Override
 	public List<Equipment> selectAllEquipmentByRisk() {
 		return equipmentDao.selectAllEquipmentByRisk();
+	}
+
+	/**
+	 * @param list
+	 * @return
+	 * @description
+	 * 批量修改数据
+	 */
+	@Override
+	public int batchUpdate(List<Equipment> list) {
+		return equipmentDao.batchUpdate(list);
 	}
 
 }

@@ -41,4 +41,6 @@ public interface IEquipmentDao {
 	
 	Equipment selectByNameIp(Equipment equipment);
 	
+	int batchUpdate(List<Equipment> list);
+	
 }

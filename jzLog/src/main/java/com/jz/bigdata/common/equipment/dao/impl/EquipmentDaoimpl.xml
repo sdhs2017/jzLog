@@ -31,15 +31,16 @@
 		<result column="state" jdbcType="INTEGER" property="state" />
 		<result column="domain" jdbcType="VARCHAR" property="domain" />
 		<result column="port" jdbcType="VARCHAR" property="port" />
-		<association property="user" javaType="com.jz.bigdata.common.users.entity.User">
-             <id property="userId" column="id"/>
-             <result property="name" column="userName"/>
-        </association>
-		
+		<association property="user"
+			javaType="com.jz.bigdata.common.users.entity.User">
+			<id property="userId" column="id" />
+			<result property="name" column="userName" />
+		</association>
+
 	</resultMap>
-	
-	
-	
+
+
+
 	<resultMap id="BaseResultMapUserName"
 		type="com.jz.bigdata.common.equipment.entity.Equipment">
 		<id column="id" jdbcType="VARCHAR" property="id" />
@@ -71,15 +72,16 @@
 		<result column="domain" jdbcType="VARCHAR" property="domain" />
 		<result column="port" jdbcType="VARCHAR" property="port" />
 	</resultMap>
-	
-	
-	<resultMap id="ResultOfInteger" type="java.lang.Integer">  
-	    <result column="budget" property="budget" jdbcType="INTEGER" />  
-	</resultMap>  
+
+
+	<resultMap id="ResultOfInteger" type="java.lang.Integer">
+		<result column="budget" property="budget" jdbcType="INTEGER" />
+	</resultMap>
 	<!-- 查询字段设置可重复调用 -->
 	<!-- 部门id,name:部门名称,level:部门层级,superiorId:上级id,subordinate:是否有下级（1有0没有）,orderId:位置排序,comment:简介 -->
 	<sql id="Base_Column_List">
-		equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
+		equipment.id, equipment.name, hostName, type,
+		ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
 		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId,
 		equipment.state,domain,equipment.port
@@ -91,32 +93,36 @@
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
 		select
 		<!-- 引用查询字段 -->
-		<include refid="Base_Column_List" /> , user.`name` AS userName
+		<include refid="Base_Column_List" />
+		, user.`name` AS userName
 		from equipment,user
-		where 1=1 and user.id=equipment.userId
-		<if test="name != null and name !=''" > and equipment.name LIKE CONCAT('%', 
+		where 1=1 and
+		user.id=equipment.userId
+		<if test="name != null and name !=''"> and equipment.name LIKE
+			CONCAT('%',
 			#{name}, '%') </if>
-		<if test="hostName != null and hostName !=''" > and hostName LIKE CONCAT('%', 
-			#{hostName}, '%') </if>	
+		<if test="hostName != null and hostName !=''"> and hostName LIKE
+			CONCAT('%',
+			#{hostName}, '%') </if>
 		<if test="ip != null and ip !=''">
 			and ip = #{ip,jdbcType=VARCHAR}
 		</if>
 		<if test='role=="2"'>
-			 and equipment.userId=#{userId,jdbcType=VARCHAR}
-			 and state=1
+			and equipment.userId=#{userId,jdbcType=VARCHAR}
+			and state=1
 		</if>
 	</select>
-<!-- 查询所有数据 -->
-	<select id="selectAllHostName"  resultMap="BaseResultMapUserName">
+	<!-- 查询所有数据 -->
+	<select id="selectAllHostName" resultMap="BaseResultMapUserName">
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
 		select
 		<!-- 引用查询字段 -->
-		<include refid="Base_Column_List" /> 
+		<include refid="Base_Column_List" />
 		from equipment
-	
+
 	</select>
 
-	
+
 	<!-- 添加数据 -->
 	<insert id="insert" parameterType="com.jz.bigdata.common.equipment.entity.Equipment">
 		insert into equipment
@@ -144,16 +150,16 @@
 			<if test="upDateTime !=null and  upDateTime !=''">
 				upDateTime,
 			</if>
-				<if test="endTime !=null and  endTime !=''">
+			<if test="endTime !=null and  endTime !=''">
 				endTime,
 			</if>
-				<if test="startUp !=null and  startUp !=''">
+			<if test="startUp !=null and  startUp !=''">
 				startUp,
 			</if>
-				<if test="departmentId !=null and  departmentId !=''">
+			<if test="departmentId !=null and  departmentId !=''">
 				departmentId,
 			</if>
-				<if test="userId !=null and  userId !=''">
+			<if test="userId !=null and  userId !=''">
 				userId,
 			</if>
 			<if test="logType !=null and  logType !=''">
@@ -195,7 +201,7 @@
 			<if test="port !=null and  port !=''">
 				port
 			</if>
-		</trim> 
+		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null">
 				#{id,jdbcType=VARCHAR},
@@ -257,7 +263,8 @@
 			<if test="log_level != null and  log_level !=''">
 				#{log_level,jdbcType=VARCHAR},
 			</if>
-			<if test="departmentNodeId != null and  departmentNodeId !='' and  departmentNodeId !=0">
+			<if
+				test="departmentNodeId != null and  departmentNodeId !='' and  departmentNodeId !=0">
 				#{departmentNodeId,jdbcType=INTEGER},
 			</if>
 			<if test="state != null and  state !=''">
@@ -273,10 +280,11 @@
 	</insert>
 	<!-- 删除数据 -->
 	<update id="delete" parameterType="java.lang.String">
-		<!-- delete from equipment where id in  -->
+		<!-- delete from equipment where id in -->
 		update equipment set state =0 where id in
-		<foreach item="ids" index="index" collection="array" open="(" separator="," close=")">  
-	 		#{ids}
+		<foreach item="ids" index="index" collection="array" open="("
+			separator="," close=")">
+			#{ids}
 		</foreach>
 	</update>
 	<!-- 根据id修改数据 -->
@@ -287,11 +295,12 @@
 		equipment.describe=#{describe},valuation=#{valuation},log_level=#{log_level},domain=#{domain},equipment.port=#{port},
 		<!-- if判断语句 -->
 		<choose>
-			<when test="upDateTime != null and upDateTime !='' and upDateTime !='null'">
+			<when
+				test="upDateTime != null and upDateTime !='' and upDateTime !='null'">
 				equipment.upDateTime = #{upDateTime},
 			</when>
 			<otherwise>
-				equipment.upDateTime =  null ,
+				equipment.upDateTime = null ,
 			</otherwise>
 		</choose>
 		<choose>
@@ -302,29 +311,28 @@
 				endTime = null
 			</otherwise>
 		</choose>
-		
+
 		where equipment.id=#{id}
 	</update>
 
 
-<!-- 	<update id="updateSuperiorId" parameterType="com.jz.bigdata.common.department.entity.Department">
-		<if test="id != null and id !='0'">
-			update department set subordinate=1 where , id=#{id,jdbcType=INTEGER}
-		</if>
-	</update>
- -->
- <!-- 查询单个数据 -->
+	<!-- <update id="updateSuperiorId" parameterType="com.jz.bigdata.common.department.entity.Department"> 
+		<if test="id != null and id !='0'"> update department set subordinate=1 where 
+		, id=#{id,jdbcType=INTEGER} </if> </update> -->
+	<!-- 查询单个数据 -->
 	<select id="selectEquipment" parameterType="com.jz.bigdata.common.equipment.entity.Equipment"
 		resultMap="BaseResultMapUserName">
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
 		select
 		<!-- 引用查询字段 -->
-		<include refid="Base_Column_List" />,user.`name` AS userName
-		FROM equipment LEFT JOIN `user` ON equipment.userId=`user`.id
-		where equipment.id=#{id} 
+		<include refid="Base_Column_List" />
+		,user.`name` AS userName
+		FROM equipment LEFT JOIN `user` ON
+		equipment.userId=`user`.id
+		where equipment.id=#{id}
 	</select>
-	
- <!-- 查询单个数据 -->
+
+	<!-- 查询单个数据 -->
 	<select id="selectOneEquipment" parameterType="com.jz.bigdata.common.equipment.entity.Equipment"
 		resultMap="BaseResultMapUserName">
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
@@ -332,20 +340,21 @@
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
 		from equipment
-		where id=#{id} 
+		where id=#{id}
 	</select>
- 
- <!--   分页查询所有数据 -->
-	<select id="selectAllByPage" resultMap="BaseResultMapUserName"  >
-<!--   <bind name="name" value="'%' + name + '%'" /> -->
-	    select 
+
+	<!-- 分页查询所有数据 -->
+	<select id="selectAllByPage" resultMap="BaseResultMapUserName">
+		<!-- <bind name="name" value="'%' + name + '%'" /> -->
+		select
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
-		from equipment where 1=1 
-	   <if test="name != null and name !=''" > and name LIKE CONCAT('%', 
+		from equipment where 1=1
+		<if test="name != null and name !=''"> and name LIKE CONCAT('%',
 			#{name}, '%') </if>
-		<if test="hostName != null and hostName !=''" > and hostName LIKE CONCAT('%', 
-			#{hostName}, '%') </if>	
+		<if test="hostName != null and hostName !=''"> and hostName LIKE
+			CONCAT('%',
+			#{hostName}, '%') </if>
 		<if test="ip != null and ip !=''">
 			and ip = #{ip,jdbcType=VARCHAR}
 		</if>
@@ -353,85 +362,92 @@
 			and logType = #{logType,jdbcType=VARCHAR}
 		</if>
 		<if test='role=="2"'>
-			 and equipment.userId=#{userId,jdbcType=VARCHAR}
-			 and state=1
+			and equipment.userId=#{userId,jdbcType=VARCHAR}
+			and state=1
 		</if>
-	    limit #{startRecord},#{pageSize}
+		limit #{startRecord},#{pageSize}
 	</select>
- 
-<!--  查询总数量 -->
- 	<select id="count"  >
-<!--   <bind name="name" value="'%' + name + '%'" /> -->
-	    select count(*) as count
-	<!--     引用查询字段 -->
-	    from equipment 
-	    where 1=1 
-	  <if test="name != null and name !=''" > and name LIKE CONCAT('%', 
-	  	#{name}, '%') </if>
-	  <if test="hostName != null and hostName !=''" > and hostName LIKE CONCAT('%', 
-	  	#{hostName}, '%') </if>	
-	  <if test="ip != null and ip !=''">
-	  	and ip = #{ip,jdbcType=VARCHAR}
-	  </if>
-	  <if test="logType != null and logType !='' ">
-		and logType = #{logType,jdbcType=VARCHAR}
-	  </if>
-	  <if test='role=="2"'>
-		and equipment.userId=#{userId,jdbcType=VARCHAR}
-	  </if>
+
+	<!-- 查询总数量 -->
+	<select id="count">
+		<!-- <bind name="name" value="'%' + name + '%'" /> -->
+		select count(*) as count
+		<!-- 引用查询字段 -->
+		from equipment
+		where 1=1
+		<if test="name != null and name !=''"> and name LIKE CONCAT('%',
+			#{name}, '%') </if>
+		<if test="hostName != null and hostName !=''"> and hostName LIKE
+			CONCAT('%',
+			#{hostName}, '%') </if>
+		<if test="ip != null and ip !=''">
+			and ip = #{ip,jdbcType=VARCHAR}
+		</if>
+		<if test="logType != null and logType !='' ">
+			and logType = #{logType,jdbcType=VARCHAR}
+		</if>
+		<if test='role=="2"'>
+			and equipment.userId=#{userId,jdbcType=VARCHAR}
+		</if>
 	</select>
-	
-	
+
+
 	<!-- 根据id修改数据 -->
-	<update id="upRiskById" >
-		update equipment  <set >
-			<if test="high_risk != null" >
-	        	high_risk = #{high_risk,jdbcType=VARCHAR},
-	      	</if>
-	      	<if test="moderate_risk != null" >
-	        	moderate_risk = #{moderate_risk,jdbcType=VARCHAR},
-	      	</if>
-	      	<if test="low_risk != null" >
-	        	low_risk = #{low_risk,jdbcType=VARCHAR},
-	      	</if>
-	    </set>
-	    where id = #{id,jdbcType=VARCHAR}
+	<update id="upRiskById">
+		update equipment
+		<set>
+			<if test="high_risk != null">
+				high_risk = #{high_risk,jdbcType=VARCHAR},
+			</if>
+			<if test="moderate_risk != null">
+				moderate_risk = #{moderate_risk,jdbcType=VARCHAR},
+			</if>
+			<if test="low_risk != null">
+				low_risk = #{low_risk,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
 
 	</update>
-	
-	
+
+
 	<!-- 查询所有数据 -->
-	<select id="selectAllEquipmentByRisk" 	resultMap="BaseResultMapUserName">
+	<select id="selectAllEquipmentByRisk" resultMap="BaseResultMapUserName">
 		<!-- <bind name="name" value="'%' + name + '%'" /> -->
 		select
 		<!-- 引用查询字段 -->
-		<include refid="Base_Column_List" /> 
+		<include refid="Base_Column_List" />
 		from equipment
-		
+
 	</select>
-	
-	
-	
-	<!--  查询总数量 -->
- 	<select id="count_Number"  >
-<!--   <bind name="name" value="'%' + name + '%'" /> -->
-	    select count(*) as count from equipment 
+
+
+
+	<!-- 查询总数量 -->
+	<select id="count_Number">
+		<!-- <bind name="name" value="'%' + name + '%'" /> -->
+		select count(*) as count from equipment
 	</select>
-	
+
 	<!-- 根据事件id查询资产数据 -->
 	<select id="selectEquipmentByEventId" parameterType="java.lang.String"
 		resultMap="BaseResultMap">
-		select equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
+		select equipment.id, equipment.name, hostName, type,
+		ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
 		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,
 		equipment.departmentNodeId,equipment.port,domain
-		,a.`name` AS userName  FROM  equipment_event
-		LEFT JOIN equipment on equipment_event.equipmentId=equipment.id
-		LEFT JOIN user AS a on equipment.userId=a.id
-		WHERE equipment_event.eventId=#{eventId,jdbcType=VARCHAR}
+		,a.`name` AS userName
+		FROM equipment_event
+		LEFT JOIN equipment on
+		equipment_event.equipmentId=equipment.id
+		LEFT JOIN user AS a on
+		equipment.userId=a.id
+		WHERE
+		equipment_event.eventId=#{eventId,jdbcType=VARCHAR}
 	</select>
-	
-	
+
+
 	<!-- 查询单个数据 -->
 	<select id="selectByNameIp" parameterType="com.jz.bigdata.common.equipment.entity.Equipment"
 		resultMap="BaseResultMapUserName">
@@ -440,8 +456,23 @@
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
 		from equipment
-		where name=#{name}  and ip=#{ip}
+		where name=#{name} and ip=#{ip}
 	</select>
-	
-	
+
+	<!-- 批量修改数据 -->
+	<update id="batchUpdate" parameterType="java.util.List">
+		<foreach close="" collection="list" index="index" item="item"
+			open="" separator=";">
+			update equipment
+			<set>
+			domain=#{item.domain,jdbcType=VARCHAR}
+			</set>
+			<where>
+			id=#{item.id,jdbcType=VARCHAR}
+			</where>
+			
+		</foreach>
+	</update>
+
+
 </mapper>

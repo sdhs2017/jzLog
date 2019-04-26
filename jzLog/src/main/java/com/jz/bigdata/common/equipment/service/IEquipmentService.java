@@ -41,4 +41,6 @@ public interface IEquipmentService {
 	
 	List<Equipment> selectAllEquipmentByRisk();
 	
+	int batchUpdate(List<Equipment> list);
+	
 }
