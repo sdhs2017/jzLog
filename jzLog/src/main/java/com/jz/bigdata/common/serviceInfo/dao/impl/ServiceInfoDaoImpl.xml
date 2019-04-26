@@ -32,7 +32,7 @@
 		select 
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" /> 
-		from serviceInfo
+		from serviceInfo where state=1
 	</select>
 
 
@@ -115,16 +115,16 @@
 	    select 
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
-		from serviceInfo 
+		from serviceInfo where state=1
 	    limit #{startRecord},#{pageSize}
 	</select>
  
 <!--  查询总数量 -->
  	<select id="count"  >
 <!--   <bind name="name" value="'%' + name + '%'" /> -->
-	    select count(*) as count
+	    select count(*) as count 
 	<!--     引用查询字段 -->
-	    from serviceInfo 
+	    from serviceInfo  where state=1
 	   
 	</select>
 	
