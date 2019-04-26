@@ -15,15 +15,15 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 
 import org.elasticsearch.action.index.IndexRequest;
+import org.pcap4j.core.BpfProgram.BpfCompileMode;
 import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PacketListener;
 import org.pcap4j.core.PcapAddress;
 import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.PcapNetworkInterface;
-import org.pcap4j.core.Pcaps;
-import org.pcap4j.core.BpfProgram.BpfCompileMode;
 import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
+import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.Packet;
 import org.springframework.stereotype.Service;
 
@@ -39,12 +39,15 @@ import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.assets.entity.Assets;
 import com.jz.bigdata.common.assets.service.IAssetsService;
+import com.jz.bigdata.common.equipment.entity.Equipment;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
+import com.jz.bigdata.common.serviceInfo.entity.ServiceInfo;
+import com.jz.bigdata.common.serviceInfo.service.IServiceInfoService;
 import com.jz.bigdata.common.url.dao.IUrlDao;
-import com.jz.bigdata.common.url.entity.Url;
 import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.ConfigProperty;
+import com.jz.bigdata.util.Uuid;
 
 import net.sf.json.JSONArray;
 
@@ -68,7 +71,9 @@ public class CollectorServiceImpl implements ICollectorService{
 	Thread pcap4jthread = null;
 	FutureTask<String> futureTask = null;
 	Pcap4jCollector pcap4jCollector  = null;
-	private Set<String> urlSet = new HashSet<>();
+	private Set<String> domainSet = new HashSet<>();
+	private Map<String, String> urlmap = new HashMap<String, String>();
+	//private Set<String> urlSet = new HashSet<>();
 	PacketStream packetStream ;
 	
 	@Resource(name="assetsService")
@@ -77,8 +82,16 @@ public class CollectorServiceImpl implements ICollectorService{
 	@Resource(name ="configProperty")  
     private ConfigProperty configProperty;
 	
+	@Resource(name = "EquipmentService")
+	private IEquipmentService equipmentService;
+	
+	@Resource(name = "ServiceInfoService")
+	private IServiceInfoService serviceInfoService;
+	
 	@Resource
 	private IUrlDao urldao;
+	
+	
 //	public Thread getT() {
 //		return t;
 //	}
@@ -296,7 +309,7 @@ public class CollectorServiceImpl implements ICollectorService{
         PacketListener listener = new PacketListener() {
         	public void gotPacket(Packet packet) {
         		try {
-        			packetStream = new PacketStream(configProperty,clientTemplate,gson,requests,urlSet);
+        			packetStream = new PacketStream(configProperty,clientTemplate,gson,requests,domainSet,urlmap);
             		packetStream.gotPacket(packet);
        			} catch (Exception e) {
        				System.out.println("---------------jiyourui-----new PacketStream-------报错信息:------------"+e.getLocalizedMessage());
@@ -424,6 +437,16 @@ public class CollectorServiceImpl implements ICollectorService{
          }  
          return "";  
     }
+ 	
+ 	// 正则匹配
+  	public static String getSubUtilSimple(String soap, String rgex) {
+  		Pattern pattern = Pattern.compile(rgex);// 匹配的模式
+  		Matcher m = pattern.matcher(soap);
+  		while (m.find()) {
+  			return m.group(1);
+  		}
+  		return null;
+  	}
 	
 	/**
 	 * 资产心跳机制
@@ -438,10 +461,14 @@ public class CollectorServiceImpl implements ICollectorService{
 		
 	}
 	
-	public String insertUrl() {
+	/**
+	 * 定时任务将获取的http url 插入到servicefunction表中
+	 * @return
+	 */
+	public void insertUrl() {
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		List<Url> list = urldao.selectAll();
+		/*List<Url> list = urldao.selectAll();
 		if (list.isEmpty()) {
 			for(String url : urlSet) {
 				Url u = new Url();
@@ -462,9 +489,68 @@ public class CollectorServiceImpl implements ICollectorService{
 					urldao.insert(u);
 				}
 			}
+		}*/
+		// 资产表获取domain
+		List<Equipment> list = equipmentService.selectAllHostName();
+		
+		// 查询serviceFunction表中的url
+		List<ServiceInfo> serviceslist = new ArrayList<ServiceInfo>();
+		Set<String> tmpurlSet = new HashSet<>();
+		tmpurlSet.addAll(domainSet);
+		
+		if (!list.isEmpty()) {
+			for(String url : tmpurlSet) {
+				for(Equipment equipment : list) {
+					if (equipment.getDomain()!=null&&url.indexOf(equipment.getDomain())!=-1) {
+						System.out.println("----------------配置成功准备入库--------------------");
+						ServiceInfo funservice = new  ServiceInfo();
+						String protocol = getSubUtilSimple(url, "^(.*?)[://]");
+						String relativeUrl = getSubUtilSimple(url, "[:][0-9]{1,5}(.*?)$");
+						funservice.setId(Uuid.getUUID());
+						funservice.setCreateTime(format.format(new Date()));
+						funservice.setEquipmentId(equipment.getId());
+						funservice.setIp(equipment.getIp());
+						funservice.setPort(equipment.getPort());
+						funservice.setProtocol(protocol);
+						funservice.setUrl(url);
+						funservice.setRelativeUrl(relativeUrl);
+						serviceslist.add(funservice);
+						serviceInfoService.insert(funservice);
+						break;
+					}
+				}
+			}
 		}
 		
-		return "";
-		//return JSONArray.fromObject(map).toString();
+	}
+	/**
+	 * 定时任务将获取的http 根域名  插入到资产表中
+	 * @return
+	 */
+	public void insertDomain() {
+		
+		List<Equipment> list = equipmentService.selectAllHostName();
+		Set<String> tmpdomain = new HashSet<>();
+		tmpdomain.addAll(domainSet);
+		domainSet.clear();
+		
+		List<Equipment> Equipmentlist = new ArrayList<>();
+		
+		if (!list.isEmpty()) {
+			for(String domain : tmpdomain) {
+				String ip = getSubUtil(domain, "\\d+\\.\\d+\\.\\d+\\.\\d+");
+				String port = getSubUtilSimple(domain, "[:]([0-9]{1,5})[/]");
+				for(Equipment equipment : list) {
+					if (equipment.getIp().equals(ip)&&equipment.getPort().equals(port)&&equipment.getDomain()==null) {
+						equipment.setDomain(domain);
+						Equipmentlist.add(equipment);
+						equipmentService.updateById(equipment, null);
+						break;
+					}
+					
+				}
+			}
+		}
+		
 	}
 }

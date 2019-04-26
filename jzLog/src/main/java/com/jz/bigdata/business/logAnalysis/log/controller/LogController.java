@@ -387,6 +387,96 @@ public class LogController extends BaseController{
 	}
 	
 	/**
+	 * @param request
+	 * 统计url
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getCountGroupByUrl")
+	@DescribeLog(describe="统计url的数据量")
+	public String getCountGroupByUrl(HttpServletRequest request) {
+		String index = configProperty.getEs_index();
+		String  groupby = "complete_url.raw";
+		String [] types = {"http"};
+		// 资产的ip和端口即目的IP和目的端口
+		String des_ip = request.getParameter("des_ip");
+		String des_port = request.getParameter("des_port");
+		// 源IP和源端口
+		String source_ip = request.getParameter("source_ip");
+		String source_port = request.getParameter("source_port");
+		
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("requestorresponse", "request");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		if ((des_ip!=null&&!des_ip.equals(""))||(des_port!=null&&!des_port.equals(""))||(source_ip!=null&&!source_ip.equals(""))||(source_port!=null&&!source_port.equals(""))) {
+			if (des_ip!=null&&!des_ip.equals("")) {
+				map.put("des_ip", des_ip);
+			}
+			if (des_port!=null&&!des_port.equals("")) {
+				map.put("des_port", des_port);
+			}
+			if (source_ip!=null&&!source_ip.equals("")) {
+				map.put("source_ip", source_ip);
+			}
+			if (source_port!=null&&!source_port.equals("")) {
+				map.put("source_port", source_port);
+			}
+			
+			list = logService.groupBy(index, types, groupby, map);
+		}else {
+			list = logService.groupBy(index, types, groupby, null);
+		}
+		
+		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+		for(Entry<String, Object> key : list.get(0).entrySet()) {
+			Map<String,Object> tMap = new HashMap<>();
+			tMap.put("url", key.getKey());
+			tMap.put("count", key.getValue());
+			tmplist.add(tMap);
+		}
+		
+		
+		return JSONArray.fromObject(tmplist).toString();
+	}
+	
+	/**
+	 * @param request
+	 * 统计domain被IP访问的次数
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getCountGroupByDomain")
+	@DescribeLog(describe="统计domain被IP访问的次数")
+	public String getVisitCountGroupByHttpSourceIP(HttpServletRequest request) {
+		String index = configProperty.getEs_index();
+		String  groupby = "source_ip";
+		String [] types = {"http"};
+		// 资产的ip和端口
+		String ip = request.getParameter("ip");
+		String port = request.getParameter("port");
+		
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("requestorresponse", "request");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		if ((ip!=null&&!ip.equals(""))||(port!=null&&!port.equals(""))) {
+			if (ip!=null&&!ip.equals("")) {
+				map.put("des_ip", ip);
+			}
+			if (port!=null&&!port.equals("")) {
+				map.put("des_port", port);
+			}
+			
+			list = logService.groupBy(index, types, groupby, map);
+		}else {
+			list = logService.groupBy(index, types, groupby, null);
+		}
+		
+		
+		return JSONArray.fromObject(list).toString();
+	}
+		
+	
+	/**
 	 * 
 	 * @param request
 	 * @return 
