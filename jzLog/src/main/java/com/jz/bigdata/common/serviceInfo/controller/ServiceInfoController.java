@@ -32,11 +32,11 @@ public class ServiceInfoController {
 	/**
 	 * @param request
 	 * @param event
-	 * @return 添加事件
+	 * @return 添加数据
 	 */
 	@ResponseBody
 	@RequestMapping(value="/insert",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe = "添加事件")
+	@DescribeLog(describe = "添加数据")
 	public String insert(HttpServletRequest request, ServiceInfo serviceInfo) {
 
 		// 结果一般命名为result
@@ -68,7 +68,7 @@ public class ServiceInfoController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/updateById",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe = "修改事件信息")
+	@DescribeLog(describe = "修改信息")
 	public String updataById(HttpServletRequest request, ServiceInfo service) {
 
 		// 结果一般命名为result
@@ -83,7 +83,7 @@ public class ServiceInfoController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/delete",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe = "删除事件")
+	@DescribeLog(describe = "删除数据")
 	public String delete(HttpServletRequest request) {
 
 		// 结果一般命名为result

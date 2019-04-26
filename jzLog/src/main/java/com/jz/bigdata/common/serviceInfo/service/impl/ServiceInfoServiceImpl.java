@@ -44,7 +44,6 @@ public class ServiceInfoServiceImpl implements IServiceInfoService {
 	 */
 	@Override
 	public List<ServiceInfo> selectAll(ServiceInfo serviceInfo) {
-		// TODO Auto-generated method stub
 		return serviceInfoDao.selectAll(serviceInfo);
 	}
 
@@ -55,18 +54,16 @@ public class ServiceInfoServiceImpl implements IServiceInfoService {
 	 */
 	@Override
 	public int delete(String[] ids) {
-		// TODO Auto-generated method stub
 		return serviceInfoDao.delete(ids);
 	}
 
 	/**
 	 * @param service
 	 * @return
-	 * @description 需改数据
+	 * @description 修改数据
 	 */
 	@Override
 	public int updateById(ServiceInfo serviceInfo) {
-		// TODO Auto-generated method stub
 		return serviceInfoDao.updateById(serviceInfo);
 	}
 
@@ -94,10 +91,16 @@ public class ServiceInfoServiceImpl implements IServiceInfoService {
 		List<ServiceInfo> listService = serviceInfoDao.selectAllByPage(startRecord, pageSize);
 		// System.err.println(listEquipment.get(0).getCreateTime());
 		// 数据添加到map
-		map.put("service", listService);
+		map.put("serviceInfo", listService);
 		return JSONArray.fromObject(map).toString();
 	}
 
+	/**
+	 * @param url
+	 * @return
+	 * @description
+	 * 查询url
+	 */
 	@Override
 	public ServiceInfo selectServiceByUrl(String url) {
 		return serviceInfoDao.selectServiceByUrl(url);
