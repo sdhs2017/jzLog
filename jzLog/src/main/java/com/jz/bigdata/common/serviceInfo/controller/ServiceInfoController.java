@@ -34,16 +34,16 @@ public class ServiceInfoController {
 	 * @param event
 	 * @return 添加数据
 	 */
-	@ResponseBody
-	@RequestMapping(value="/insert",produces = "application/json; charset=utf-8")
-	@DescribeLog(describe = "添加数据")
-	public String insert(HttpServletRequest request, ServiceInfo serviceInfo) {
-
-		// 结果一般命名为result
-		int result = 0;
-		result = serviceInfoService.insert(serviceInfo);
-		return result >= 1 ? Constant.successMessage() : Constant.failureMessage();
-	}
+//	@ResponseBody
+//	@RequestMapping(value="/insert",produces = "application/json; charset=utf-8")
+//	@DescribeLog(describe = "添加数据")
+//	public String insert(HttpServletRequest request, ServiceInfo serviceInfo) {
+//
+//		// 结果一般命名为result
+//		int result = 0;
+//		result = serviceInfoService.insert(serviceInfo);
+//		return result >= 1 ? Constant.successMessage() : Constant.failureMessage();
+//	}
 
 	/**
 	 * @param request

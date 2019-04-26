@@ -15,7 +15,7 @@ import com.jz.bigdata.common.serviceInfo.entity.ServiceInfo;
  * @Date 2019年4月23日 上午10:13:11
  */
 public interface IServiceInfoService {
-	int insert(ServiceInfo serviceInfo);
+	int insert(List<ServiceInfo> list);
 
 	List<ServiceInfo> selectAll(ServiceInfo serviceInfo);
 

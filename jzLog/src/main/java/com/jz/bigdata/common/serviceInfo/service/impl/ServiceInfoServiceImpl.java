@@ -33,8 +33,8 @@ public class ServiceInfoServiceImpl implements IServiceInfoService {
 	 * @description 添加方法
 	 */
 	@Override
-	public int insert(ServiceInfo serviceInfo) {
-		return serviceInfoDao.insert(serviceInfo);
+	public int insert(List<ServiceInfo> list) {
+		return serviceInfoDao.insert(list);
 	}
 
 	/**

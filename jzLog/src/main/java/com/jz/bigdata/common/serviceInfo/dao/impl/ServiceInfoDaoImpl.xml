@@ -37,100 +37,16 @@
 
 
 	<!-- 添加数据 -->
-	<insert id="insert" parameterType="com.jz.bigdata.common.serviceInfo.entity.ServiceInfo">
-		insert into serviceInfo
-		<!-- 格式化 -->
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<!-- 判断参数是否为空 -->
-			<if test="id != null">
-				id,
-			</if>
-			<if test="name != null">
-				name,
-			</if>
-			<if test="protocol != null">
-				protocol,
-			</if>
-			<if test="ip != null ">
-				ip,
-			</if>
-			<if test="port != null">
-				port,
-			</if>
-			<if test="url != null ">
-				url,
-			</if>
-			<if test="relativeUrl != null ">
-				relativeUrl,
-			</if>
-			<if test="equipmentId != null ">
-				equipmentId,
-			</if>
-			<if test="complementState != null ">
-				complementState,
-			</if>
-			<if test="createTime != null ">
-				createTime,
-			</if>
-			<if test="updateTime != null ">
-				updateTime,
-			</if>
-			<if test="stopTime != null ">
-				stopTime,
-			</if>
-			<if test="state != null ">
-				state,
-			</if>
-			<if test="describe != null ">
-				serviceInfo.describe
-			</if>
-			
-		</trim>
-		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				#{id,jdbcType=VARCHAR},
-			</if>
-			<if test="name != null">
-				#{name,jdbcType=VARCHAR},
-			</if>
-			<if test="protocol != null">
-				#{protocol,jdbcType=VARCHAR},
-			</if>
-			<if test="ip != null ">
-				#{ip,jdbcType=VARCHAR},
-			</if>
-			<if test="port != null">
-				#{port,jdbcType=VARCHAR},
-			</if>
-			<if test="url != null">
-				#{url,jdbcType=VARCHAR},
-			</if>
-			<if test="relativeUrl != null">
-				#{relativeUrl,jdbcType=VARCHAR},
-			</if>
-			<if test="equipmentId != null">
-				#{equipmentId,jdbcType=VARCHAR},
-			</if>
-			<if test="complementState != null">
-				#{complementState,jdbcType=INTEGER},
-			</if>
-			<if test="createTime != null">
-				#{createTime,jdbcType=VARCHAR},
-			</if>
-			<if test="updateTime != null ">
-				#{updateTime,jdbcType=VARCHAR},
-			</if>
-			<if test="stopTime != null ">
-				#{stopTime,jdbcType=VARCHAR},
-			</if>
-			<if test="state != null ">
-				#{state,jdbcType=INTEGER},
-			</if>
-			<if test="describe != null ">
-				#{describe,jdbcType=VARCHAR}
-			</if>
-			
-		</trim>
+	<insert id="insert" parameterType="java.util.List">
+	insert ignore serviceInfo (id, name, protocol, ip, port,url,relativeUrl,equipmentId,
+		complementState,createTime,state,serviceInfo.describe)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id}, #{item.name}, #{item.protocol}, #{item.ip},#{item.port}, #{item.url}, 
+      #{item.relativeUrl}, #{item.equipmentId}, #{item.complementState}, #{item.createTime},
+       #{item.state},#{item.describe})
+    </foreach>
+
 	</insert>
 	<!-- 删除数据 -->
 	<update id="delete" parameterType="java.lang.String">
