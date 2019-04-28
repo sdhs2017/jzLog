@@ -35,9 +35,7 @@ public class MenuController {
 		HttpSession session = request.getSession();
 		String role=(String) session.getAttribute(Constant.SESSION_USERROLE);
 		int ro=Integer.valueOf(role);
-		System.out.println(ro);
 		return menuService.selectAll(ro);
-		
 	}
 	
 

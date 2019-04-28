@@ -2,7 +2,6 @@ package com.jz.bigdata.common.menu.entity;
 
 import java.util.List;
 
-import com.jz.bigdata.common.department.entity.Department;
 
 /**
  * @author shichengyu
