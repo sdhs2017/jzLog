@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>URL 排行</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
+		<style type="text/css">
+			#box{
+				padding: 10px;
+			    width: 100%;
+			    height: 100%;
+			    /* overflow-y: auto; */
+			}
+			.rankingListBox span{
+				display:inline-block;
+				font-weight:600;
+			}	
+			.ipRanking,.portRanking{
+			    display: flex;
+			}
+			.startIpBox,.endIpBox,.startPortBox,.endPortBox{			
+				width:50%;
+				padding:40px;
+				padding-top:10px;	
+			}
+			.startIpBox,.endIpBox{
+				border-bottom:1px solid #4b759e;
+			}
+			.startIpBox,.startPortBox{
+				border-right:1px solid #4b759e;
+			}
+			/*  */
+			.listBox{
+				max-width: 630px;
+				/* height: 600px; */
+				background: #3b5773;
+				margin: 10px auto;
+			}
+			.title{
+				height: 60px;
+			    line-height: 60px;
+			    border-bottom: 1px dashed #6598c7;
+			    text-align: center;
+			    font-size: 18px;
+			    font-weight: 600;
+			    color: #fff;
+			}
+			.listContent{
+				padding: 10px;
+			}
+			.listContent ul{
+				padding-right:40px;
+			}
+			li{
+				height: 46px;
+				margin-bottom: 1px;	
+				overflow: hidden;
+				color: #fff;
+				font-weight: 600;
+				/*display: flex;*/		
+			}
+			li:hover{
+				cursor: pointer;
+				box-shadow:6px 6px 15px #6592bb;
+			}
+			.list_left{
+				height: 100%;
+				width: 66px;
+				display: flex;
+				position: relative;
+				float: left;
+			}
+			.list_left .rect{
+				width: 20px;
+				height: 100%;
+				background: #245d92; 
+				border-radius: 5px 0 0 5px;
+			}
+			.list_left .order{
+				position: absolute;
+			    left: 9px;
+			    top: 12px;
+			    font-size: 14px;
+			    font-weight: 600;
+			    height: 24px;
+			    line-height: 24px;
+			    width: 26px;
+			    text-align: center;
+			    color: #fff;
+			    border-bottom: 1px solid #fff;
+			}
+			.list_left .triangle{
+				/*width: ;
+				height: 100%;*/
+				width: 0;
+			    height: 0;
+			    border-bottom: 46px solid #245d92;
+			    border-right: 46px solid transparent;
+			}
+			.list_right{
+				margin:3px 0;
+				height: 40px;
+				width: 100%;
+				background: #4b759e;	
+				border-radius: 0 5px 5px 0;
+			}
+			.list_right>div{
+				float: left;
+				line-height: 40px;
+			}
+			.list_right .emptyBox{
+				width: 66px;
+			}
+			.list_right .text{
+				width: calc(100% - 166px);
+				height: 100%;
+				text-align: center;
+				white-space: nowrap; 
+				overflow: hidden; 
+				text-overflow: ellipsis;				
+			}
+			.list_right .num{
+				width: 100px;
+				height: 100%;
+				text-align: center;
+			}
+			.firstItem{
+				color: #f75656;
+				font-weight: 600;
+			}
+			.firstItem .list_left .rect{
+				background: #f75656;
+			}
+			.firstItem .list_left .triangle{
+				border-bottom: 46px solid #f75656;
+			}
+			.secondItem{
+				color: #ff8547;
+				font-weight: 600;
+			}
+			.secondItem .list_left .rect{
+				background: #ff8547;
+			}
+			.secondItem .list_left .triangle{
+				border-bottom: 46px solid #ff8547;
+			}
+			.thirdItem{
+				color: #ffac38;
+				font-weight: 600;
+			}
+			.thirdItem .list_left .rect{
+				background: #ffac38;
+			}
+			.thirdItem .list_left .triangle{
+				border-bottom: 46px solid #ffac38;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<div class="top_title">
+				服务画像
+			</div>
+			<div class="urlRankingCon">
+				<div class="listBox">
+					<div class="title">URL Top10 排行</div>
+					<div class="listContent">
+						<ul></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="../../js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			//获取排行榜数据
+			//function getUrlRankingData(){}
+			var sfunc =  function(data){
+				var arr = data;
+				var html = "";
+				for(var i = 0;i<arr.length;i++){
+					var className = '';//class名 用于颜色显示
+					//判断顺序 添加class名
+					if(i == 0){
+						className = 'firstItem';
+					}else if(i == 1){
+						className = 'secondItem';
+					}else if(i == 2){
+						className = 'thirdItem';
+					}
+					var obj = arr[i];
+					//判断次数大小 超过一万 做万位处理
+					if(obj.count > 10000){
+						count = (Number(obj.count) / 10000).toFixed(1) + ' 万';
+					}else {
+						count = obj.count;
+					}
+					if(i < 9){
+						order = '0' + (i+1);
+					}else{
+						order = (i+1);
+					}
+					
+					html += '<li class="'+className+'" data-count="'+obj.count+'" data-val="'+obj.url+'">'
+						 +		'<div class="list_left">'
+						 +			'<div class="rect"></div>'
+						 +		    '<div class="triangle"></div>'
+						 +			'<div class="order">'+ order +'</div>'
+						 +		'</div>'
+						 + 		'<div class="list_right">'
+						 +			'<div class="emptyBox"></div>'
+						 +			'<div class="text" title="'+obj.url+'">'+obj.url+'</div>'
+						 +			'<div class="num">'+count+'</div>'
+						 +		'</div>'
+						 +  '</li>'			
+				}
+				//添加到页面中
+				$(".listContent ul").html(html);
+			}
+			var efunc = function(err){
+				console.log(err)
+				layer.msg('操作失败',{icon: 5});
+			}
+			//发送请求
+			ajaxPost("../../log/getCountGroupByUrl.do","",sfunc,"",efunc);
+		</script>
+		
+	</body>
+</html>
