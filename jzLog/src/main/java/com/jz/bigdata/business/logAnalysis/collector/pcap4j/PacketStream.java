@@ -80,7 +80,6 @@ public class PacketStream {
 							http =new Http(packet);
 						} catch (Exception e) {
 							System.out.println("---------------范式化失败·······---------"+e.getMessage());
-							
 							e.printStackTrace();
 						}
 						

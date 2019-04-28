@@ -396,7 +396,7 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="统计url的数据量")
 	public String getCountGroupByUrl(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
-		String  groupby = "complete_url.raw";
+		String  groupby = "domain_url.raw";
 		String [] types = {"http"};
 		// 资产的ip和端口即目的IP和目的端口
 		String des_ip = request.getParameter("des_ip");
@@ -430,7 +430,7 @@ public class LogController extends BaseController{
 		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
 		for(Entry<String, Object> key : list.get(0).entrySet()) {
 			Map<String,Object> tMap = new HashMap<>();
-			tMap.put("url", key.getKey());
+			tMap.put("domain_url", key.getKey());
 			tMap.put("count", key.getValue());
 			tmplist.add(tMap);
 		}
@@ -445,34 +445,32 @@ public class LogController extends BaseController{
 	 * @return 
 	 */
 	@ResponseBody
-	@RequestMapping("/getCountGroupByDomain")
+	@RequestMapping("/getVisitCountGroupByHttpSourceIP")
 	@DescribeLog(describe="统计domain被IP访问的次数")
 	public String getVisitCountGroupByHttpSourceIP(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String  groupby = "source_ip";
 		String [] types = {"http"};
 		// 资产的ip和端口
-		String ip = request.getParameter("ip");
-		String port = request.getParameter("port");
+		String domain_url = request.getParameter("domain_url");
 		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("requestorresponse", "request");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		if ((ip!=null&&!ip.equals(""))||(port!=null&&!port.equals(""))) {
-			if (ip!=null&&!ip.equals("")) {
-				map.put("des_ip", ip);
-			}
-			if (port!=null&&!port.equals("")) {
-				map.put("des_port", port);
-			}
-			
-			list = logService.groupBy(index, types, groupby, map);
-		}else {
-			list = logService.groupBy(index, types, groupby, null);
+		if ((domain_url!=null&&!domain_url.equals(""))) {
+			map.put("domain_url", domain_url);
+		}
+		list = logService.groupBy(index, types, groupby, map);
+		
+		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+		for(Entry<String, Object> key : list.get(0).entrySet()) {
+			Map<String,Object> tMap = new HashMap<>();
+			tMap.put("source_ip", key.getKey());
+			tMap.put("count", key.getValue());
+			tmplist.add(tMap);
 		}
 		
-		
-		return JSONArray.fromObject(list).toString();
+		return JSONArray.fromObject(tmplist).toString();
 	}
 		
 	

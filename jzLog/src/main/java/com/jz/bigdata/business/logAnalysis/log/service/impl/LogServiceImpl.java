@@ -88,6 +88,9 @@ public class LogServiceImpl implements IlogService {
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if (entry.getKey().equals("logdate")) {
 					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));
+				}else if (entry.getKey().equals("domain_url")) {
+					// 短语匹配
+					queryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
 				}else {
 					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
 				}

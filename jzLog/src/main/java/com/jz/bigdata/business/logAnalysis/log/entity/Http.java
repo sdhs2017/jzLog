@@ -32,6 +32,7 @@ public class Http {
 	private String seqnum; // tcp 顺序号
 	private String complete_url; // 完整的url http://192.168.2.182:8080/jzLog/getIndicesCount.do?_=1555924017369
 	private String url_param; // url参数
+	private String domain_url; // 域名
 	/**
 	 * id
 	 */
@@ -278,6 +279,14 @@ public class Http {
 		this.url_param = url_param;
 	}
 
+	public String getDomain_url() {
+		return domain_url;
+	}
+
+	public void setDomain_url(String domain_url) {
+		this.domain_url = domain_url;
+	}
+
 	/**
 	 * @param packet
 	 * 构造方法，填充数据
@@ -332,11 +341,29 @@ public class Http {
 					if(i==0){
 						this.request_type=message[0];
 					}else if(i==1){
-						this.request_url=message[1];
+						String request_url_tmp = null;
+						try {
+							request_url_tmp=message[1];
+						} catch (Exception e) {
+							System.err.println(e.getMessage());
+						}
+						if (request_url_tmp!=null) {
+							if (request_url_tmp.contains("?")) {
+								this.request_url = getSubUtilSimple(request_url_tmp,"^(.*?)[?]");
+								this.url_param = getSubUtilSimple(request_url_tmp,"[?](.*?)$");
+							}else {
+								this.request_url = request_url_tmp;
+							}
+						}
 					}
 				}
-				this.complete_url = this.protocol+"://"+this.des_ip+":"+this.des_port+this.request_url;
-				this.url_param = getSubUtilSimple(this.request_url,"[?](.*?)$");
+				
+				if (this.request_url!=null) {
+					this.complete_url = this.protocol+"://"+this.des_ip+":"+this.des_port+this.request_url;
+					if (!getSubUtil(this.request_url,"[/].*?[/]").equals("")) {
+						this.domain_url = "http://"+this.des_ip+":"+this.des_port+""+getSubUtil(this.request_url,"[/].*?[/]");
+					}
+				}
 			
 			// http返回报文解析
 			}else if (getSubUtil(hexStringToString(httphex), httpResponse)!="") {
@@ -373,14 +400,19 @@ public class Http {
          return "";  
     }
 	
- 	// 正则匹配
+ 	/**
+	 * 正则匹配
+	 * @param soap
+	 * @param rgex
+	 * @return 返回括号中匹配的内容
+	 */
  	public static String getSubUtilSimple(String soap, String rgex) {
  		Pattern pattern = Pattern.compile(rgex);// 匹配的模式
  		Matcher m = pattern.matcher(soap);
  		while (m.find()) {
  			return m.group(1);
  		}
- 		return null;
+ 		return "";
  	}
 		
 	/**
@@ -441,6 +473,7 @@ public class Http {
 					|| fields[i].getName().equals("des_port")|| fields[i].getName().equals("source_ip")
 					|| fields[i].getName().equals("des_ip")|| fields[i].getName().equals("request_type")
 					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
+					|| fields[i].getName().equals("domain_url")
 					|| fields[i].getName().equals("request_url")|| fields[i].getName().equals("response_state")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": " + "true" + "\n");
 			}
@@ -448,12 +481,14 @@ public class Http {
 					|| fields[i].getName().equals("source_ip")
 					|| fields[i].getName().equals("des_ip")|| fields[i].getName().equals("request_url")
 					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
+					|| fields[i].getName().equals("domain_url") 
 					) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");
 			}
 			if (fields[i].getName().equals("equipmentname") || fields[i].getName().equals("source_ip")
 					|| fields[i].getName().equals("des_ip") || fields[i].getName().equals("request_url")
+					|| fields[i].getName().equals("domain_url") 
 					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fields\": " + "{\"raw\": {\"type\": \"keyword\"}}" + "\n");
 			}
