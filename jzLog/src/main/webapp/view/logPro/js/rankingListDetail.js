@@ -546,11 +546,72 @@ function splitList(title, data,eleClassName){
 		}else {
 			count = obj.count;
 		}
-		html += '<dd ondragstart="drag(event)" draggable="true" class="'+className+'"><a href="#"><span class="rankingOrder">'+(i+1)+'</span><span class="rankingText">'+obj.IpOrPort+'</span><span class="rankingNum">'+count+'</span></a></dd>'	    
+		html += '<dd onclick="ddClick($(this))" ondragstart="drag(event)" draggable="true" class="'+className+'"><a href="#"><span class="rankingOrder">'+(i+1)+'</span><span class="rankingText">'+obj.IpOrPort+'</span><span class="rankingNum">'+count+'</span></a></dd>'	    
 		//添加到页面中
 		$("."+eleClassName).html(html);
+		/*$("dd").click(function(){
+			console.log($(this).children('a').children(".rankingText").html())
+		})*/
 	}
 }
+//点击列表（dd） 事件
+function ddClick($this,event){
+	//获得当前点击行的值
+	var targetVal = $this.children("a").children(".rankingText").html();
+	//获得当前点击的位置
+	var e = window.event||event||arguments.callee.caller.arguments[0];
+	var startLeft = $(e.target).offset().left;
+	var startTop = $(e.target).offset().top;
+	//获得当前点击的类别的id
+	var parentId = $this.parents('dl').attr("id");
+	//获得结束盒子
+	var endDiv = "";
+	if(parentId == 'list01'){
+		endDiv = $(".cond1_text");
+	}else if(parentId == 'list02'){
+		endDiv = $(".cond2_text");
+	}else if(parentId == 'list03'){
+		endDiv = $(".cond3_text");
+	}
+	//判断结束盒子里的值是否等于当前点击的值
+	if($(endDiv).children("div").length ==  0 || targetVal !== $(endDiv).children("div").children('.val').html()){
+		//创建动画盒子
+		var outer = createBall(targetVal),//outer框
+			inner = outer.firstElementChild//内部框
+		//设置动画盒子的初始位置
+		$(".outer").css({left:startLeft,top:startTop})
+		//计算水平移动的位置
+		var instanceX = endDiv.offset().left - startLeft;
+		var instanceY = endDiv.offset().top - startTop;
+		outer.style.transform = 'translate3d('+instanceX+'px,0,0)';//水平方向匀速移动，参考样式设置
+		inner.style.transform = 'translate3d(0,'+instanceY+'px,0)';//垂直方向变速运动，参考样式设置
+		inner.style.opacity = 0;
+		//延时0.5s填充数据
+		setTimeout(function(){
+			endDiv.html('<div><span class="val">'+targetVal+'</span><i class=" fa fa-times"></i></div>');
+			//删除动画盒子
+			$(".outer").remove();
+		},500)
+		//初始化
+		outer = inner = null;
+	}
+	
+	
+	
+}
+//创建动画盒子
+function createBall(targetVal){
+	var inner = document.createElement('div'),
+		outer = document.createElement('div');
+	inner.classList.add('inner');
+	outer.classList.add('outer');
+	inner.innerHTML = targetVal;
+	outer.appendChild(inner);
+	document.body.appendChild(outer);
+	return outer;
+}
+
+
 //拖拽开始函数
 function drag(event){	
 	var e = window.event||event||arguments.callee.caller.arguments[0];

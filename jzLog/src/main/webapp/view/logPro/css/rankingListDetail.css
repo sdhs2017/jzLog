@@ -341,6 +341,29 @@ a {
 	color:#ffac38;
 	font-size: 13px;
 }
-
+.outer {
+  	z-index: 9;
+  	position: absolute;
+ 	transition: -webkit-transform .5s linear;
+  	transition: transform .5s linear;
+  	transition: transform .5s linear, -webkit-transform .5s linear; 
+}
+ .outer .inner {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    top: 0;
+    left: 0;
+    position: absolute;
+    /* background: #e0c01b; */
+    /* background:#e4956d; */
+    /* overflow:hidden; */
+    font-size:14px;
+    foont-weight:600px;
+    color:#ffac38;
+    text-shadow: 3px 4px 3px #4e7ba9;
+    opacity: 1;
+    transition: all .5s cubic-bezier(0.41, -0.31, 0.95, 0.82); 
+}
 
 

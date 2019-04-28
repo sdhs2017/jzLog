@@ -7,8 +7,16 @@
 		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 		<style type="text/css">
+			.top_title{
+				width: auto;
+			    margin-bottom: 0;
+			    background: #293947;
+			    border-top: 4px solid #2d4356;
+			}
 			.content{
 				min-height: 610px;
+				overflow: hidden;
+				border: 1px solid #2f4050;
 			}
 			#echartBox{
 				height: 810px;
@@ -38,7 +46,20 @@
 			// 基于准备好的容器(这里的容器是id为chart1的div)，初始化echarts实例
 			var chart = echarts.init(document.getElementById("echartBox"));
 			var option = {
-				backgroundColor:'#3A4D5F',
+				//backgroundColor:'#3A4D5F',
+				backgroundColor: {
+				    type: 'linear',
+				    x: 0,
+				    y: 0,
+				    x2: 0,
+				    y2: 1,
+				    colorStops: [{
+				        offset: 0, color: '#293846' // 0% 处的颜色
+				    }, {
+				        offset: 1, color: '#456479' // 100% 处的颜色
+				    }],
+				    global: false // 缺省为 false
+				},
 				title:{ 	//标题
 					text:"网络关系图",
 					x:'center',
@@ -70,7 +91,7 @@
 				    edgeSymbol:['circle','arrow'],//关系边的形状 -> 箭头
 				    lineStyle:{  //线的基本样式
 				    	normal:{
-				    		opacity:0.7,  //透明度
+				    		opacity:1,  //透明度
 				    		/* curveness:0.5 //边的弯曲 */
 				    	}
 				    },
@@ -79,7 +100,11 @@
 				    		show:true,          //是否显示
 				    		position:'inside',  //位置  节点里面
 				    		textStyle:{  		//文本样式
-				    			fontSize:12
+				    			fontSize:12,
+				    			color:'#eee',
+				    			fontWeight:'bold',
+				    			textBorderWidth:'2',
+				    			textBorderColor:'#3A4D5F'
 				    		}
 				    	}
 				    },
@@ -105,7 +130,7 @@
 			senObj.iporport  = rankingListVal.split('-')[2];
 			senObj.count = rankingListVal.split('-')[3];
 			//获取数据
-			var sfunc = function(data){
+			var sfunc = function(data){	
 				//关系图节点
 				var echartNodeData = data[0].data;
 				//获取中间节点的count
@@ -124,13 +149,53 @@
 					//echartNodeData[i].symbolSize = [];
 					echartNodeData[i].draggable = true;//可拖拽
 					echartNodeData[i].symbolSize = Math.pow(echartNodeData[i].count/centerCount,1/3) * CIRCLE_SIZE; //大小
+					echartNodeData[i].itemStyle.shadowBlur = 5 //阴影大小
 					//颜色
 					if(echartNodeData[i].node == 1){
-						echartNodeData[i].itemStyle.color = '#de9325';
+						//echartNodeData[i].itemStyle.color = '#de9325';
+						echartNodeData[i].itemStyle.color = {
+							    type: 'radial',
+							    x: 0.5,
+							    y: 0.5,
+							    r: 0.5,
+							    colorStops: [{
+							        offset: 0, color: '#D76662' // 0% 处的颜色
+							    }, {//de9325
+							        offset: 1, color: '#de9325' // 100% 处的颜色
+							    }],
+							    global: false // 缺省为 false
+							}
+						echartNodeData[i].itemStyle.shadowColor = "#de9325"
 					}else if(echartNodeData[i].node == 2){
-						echartNodeData[i].itemStyle.color = '#5f9da5';
+						//echartNodeData[i].itemStyle.color = '#5f9da5';
+						echartNodeData[i].itemStyle.color = {
+							    type: 'radial',
+							    x: 0.5,
+							    y: 0.5,
+							    r: 0.5,
+							    colorStops: [{
+							        offset: 0, color: '#fff' // 0% 处的颜色
+							    }, {
+							        offset: 1, color: '#5f9da5' // 100% 处的颜色
+							    }],
+							    global: false // 缺省为 false
+							}
+						echartNodeData[i].itemStyle.shadowColor = "#5f9da5"
 					}else if(echartNodeData[i].node == 3){
-						echartNodeData[i].itemStyle.color = '#bda29a';
+						//echartNodeData[i].itemStyle.color = '#bda29a';
+						echartNodeData[i].itemStyle.color= {
+							    type: 'radial',
+							    x: 0.5,
+							    y: 0.5,
+							    r: 0.5,
+							    colorStops: [{
+							        offset: 0, color: '#fff' // 0% 处的颜色
+							    }, {
+							        offset: 1, color: '#bda29as' // 100% 处的颜色
+							    }],
+							    global: false // 缺省为 false
+							}
+						echartNodeData[i].itemStyle.shadowColor = "#bda29as"
 					} 
 					
 				}
@@ -154,11 +219,13 @@
 					echartLinkData[i].symbolSize = [lineWidth,2*lineWidth];
 					//echartLinkData[i].lineStyle.curveness = 0.3;
 					echartLinkData[i].lineStyle.width = lineWidth;
-					
+					echartLinkData[i].lineStyle.shadowBlur = 5;
 					if(echartLinkData[i].node == 1){
 						echartLinkData[i].lineStyle.color = "#EBC38C";
+						echartLinkData[i].lineStyle.shadowColor = "#EBC38C";
 					}else if(echartLinkData[i].node == 2){
 						echartLinkData[i].lineStyle.color = "#aed1d5";
+						echartLinkData[i].lineStyle.shadowColor = "#aed1d5";
 					}
 				}
 				

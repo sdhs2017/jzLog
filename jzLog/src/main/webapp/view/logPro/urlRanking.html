@@ -212,7 +212,7 @@
 						 +		'</div>'
 						 + 		'<div class="list_right">'
 						 +			'<div class="emptyBox"></div>'
-						 +			'<div class="text" title="'+obj.url+'">'+obj.url+'</div>'
+						 +			'<div class="text" title="'+obj.domain_url+'">'+obj.domain_url+'</div>'
 						 +			'<div class="num">'+count+'</div>'
 						 +		'</div>'
 						 +  '</li>'			
@@ -226,6 +226,37 @@
 			}
 			//发送请求
 			ajaxPost("../../log/getCountGroupByUrl.do","",sfunc,"",efunc);
+			
+			var htmlNum = 0;
+			//列表点击事件
+			$(".listContent ul").on("click","li",function(){				
+				//将设备信息存放到本地sessionStorage中
+				var obj = {};
+				obj.domain_url = $(this).find(".text").html();
+				//将对象转换为字符串
+				var objstr = JSON.stringify(obj);
+				// 储存在本地
+				//sessionStorage.setItem("deviceObj1", objstr);
+				//将  " 替换成 '
+				var urlStr = '';
+				objstr = objstr.replace(/"/g,"'");
+				if(obj.domain_url.length > 15){
+					urlStr = obj.domain_url.substring(0,15)+'...'
+				}
+				//拼接导航
+				var html ='<a href="javascript:;" class="active J_menuTab" data-obj="'+objstr+'" title="'+obj.domain_url+'" data-id="urlGraph'+htmlNum+'">'+urlStr+'业务流<i class="fa fa-times-circle"></i></a>'
+				//移除导航菜单选中属性
+				$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
+				//添加导航菜单
+				$('.page-tabs-content', parent.document).click().append(html);
+				var iframe = '<iframe class="J_iframe" width="100%" height="100%" src="logPro/urlGraph.html" frameborder="0" data-id="urlGraph'+htmlNum+'" seamless="" style="display: inline;"></iframe>'
+				//移除其他页面
+				$('#content-main', parent.document).click().children("iframe").hide();
+				$('#content-main', parent.document).click().append(iframe);
+				htmlNum++;
+			})	
+			
+			
 		</script>
 		
 	</body>

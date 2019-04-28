@@ -2,25 +2,14 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>关系图</title>
+		<title></title>
 		<link src="../../css/layer.css" type="text/javascript" charset="utf-8"></link>
 		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 		<style type="text/css">
-			#box{
-				width:auto;
-			}
-			.top_title{
-				width:auto;
-				margin-bottom:0;
-				background:#293947;
-				border-top: 4px solid #2d4356;
-			}
 			.content{
 				min-height: 810px;
 				position:relative;
-				overflow: hidden;
-				border: 1px solid #2f4050;
 			}
 			#cy{
 				width: 100%;
@@ -28,9 +17,7 @@
             	position: absolute;
 	            left: 0;
 	            top:0;
-				/* background:#3A4D5F; */
-				background-image: linear-gradient(to bottom, #293846 0%, #456479 100%);
-				
+				background:#3A4D5F;
 			}
 		</style>
 	</head>
@@ -46,43 +33,49 @@
 	
 		<script src="../../js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/cytoscape.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
-		
-		
+			//获取存放在标签页标题中的数据
+			var getDeviceObj = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
+			//将获取的本地sessionstorage字符串转换为obj对象格式
+			var obj = JSON.parse(getDeviceObj.replace(/'/g,"\""));	
+			//取出设备id
+			var domain_url = obj.domain_url;
+			$(".top_title").html("'"+obj.domain_url+"' 业务流")
 			//成功回调函数
 			var sfunc = function(dataArr){
 				var nodesArr = [];//节点数组
     			var edgesArr = [];//线数组
     			var nodesCountArr = [];//节点count数组
     			var linksCountArr = [];//节点count数组
-    			//{data:{id:'王大拿',target:true,type:'People'}},
-    			//{"node": 1,"name": "123.232.103.226","count": "188394"}
     			//node节点
-    			for(var i in dataArr[0].data){
+    			for(var i in dataArr[0].source){
     				var obj = {};
     				obj.data = {};
-    				obj.data.id = dataArr[0].data[i].name;
+    				obj.data.id = dataArr[0].source[i].source_ip;
     				obj.data.target = true;
-    				obj.data.count = dataArr[0].data[i].count;
-    				obj.data.type = dataArr[0].data[i].node;
-    				nodesCountArr.push(dataArr[0].data[i].count)
+    				obj.data.count = dataArr[0].source[i].count;
+    				//obj.data.type = dataArr[i].node;
+    				nodesCountArr.push(dataArr[0].source[i].count);
     				nodesArr.push(obj);
     			}
+    			nodesCountArr.push(dataArr[0].domain.count)
+    			nodesArr.push({
+    				data:{id:dataArr[0].domain.domain_url,target:true,count:dataArr[0].domain.count}
+    			})
     			var maxNodesCount = Math.max.apply(null,nodesCountArr);
     			// {data:{source:'王大拿',target:'AAA公司',label:'董事'}},
     			//{"node": 1,"count": 80761,"source": "123.232.103.226","target": "level2\n192.168.2.151"}
     			//连接线
-    			for(var i in dataArr[0].links){
+    			for(var i in dataArr[0].source){
     				var obj = {};
     				obj.data = {};
-    				obj.data.source = dataArr[0].links[i].source;
-    				obj.data.target = dataArr[0].links[i].target;
-    				obj.data.count = dataArr[0].links[i].count;
-    				obj.data.label = dataArr[0].links[i].count;
-    				linksCountArr.push(dataArr[0].links[i].count);
+    				obj.data.source = dataArr[0].source[i].source_ip;
+    				obj.data.target = dataArr[0].domain.domain_url;
+    				obj.data.count = dataArr[0].source[i].count;
+    				obj.data.label = dataArr[0].source[i].count;
+    				linksCountArr.push(dataArr[0].source[i].count);
     				edgesArr.push(obj);
     			}
     			var maxLinksCount = Math.max.apply(null,linksCountArr);
@@ -103,23 +96,18 @@
 		                        },
 		                        "text-valign": 'center', //文本对齐  center-居中
 		                        "width": function (a) { //宽度
-		                            //return "Company" == a.data('type') ? 60 : 145
 		                            var widthVal = 140;		                            
 		                            return Math.pow(a.data('count')/maxNodesCount,1/3) * widthVal;
 		                        },
 		                        "height": function (a) { //高度
 		                        	 var heightVal = 140;	
-		                            //return "Company" == a.data('type') ? 60 : 145
 		                            return  Math.pow(a.data('count')/maxNodesCount,1/3) * heightVal;;
 		                        },
 		                        "background-color": function (a) { //背景颜色
-		                            //return '#47D2AC'; 
 		                        	return a.data('count') == maxNodesCount ? '#D76662' : '#59C9A5';
 		                        },
 		                        "color": '#fff', //文本颜色
 		                        "border-color": function (a) { //边框颜色
-		                            /*return !a.data('target') ? '#47D2AC' : "Company" == a.data('type') ?
-		                                '#2196F4' : '#EAA829'*/
 		                            return '#3A4D5F'; 
 		                        },
 		                        "border-width":2, //边框宽度		                        
@@ -136,7 +124,6 @@
 		                        "z-index-compare": "manual",
 		                        "z-index": 20,
 		                        "padding": function (a) { 
-//		                            return "Company" == a.data("type") ? 3 : 0
 									return 20; 
 		                        }
 		            		})
@@ -154,13 +141,10 @@
 		                        "control-point-step-size": 20,
 		                        "target-arrow-shape": "triangle",
 		                        "target-arrow-color": function (a) {
-		                            // return a.data("color")
 		                            return '#65F9FD'
 		                        },
 		                        "arrow-scale": .8,
 		                        "line-color": function (a) {//线颜色
-		                            // return a.data("color")
-		                            // return '#A8D0DB'
 		                            return '#65F9FD'
 		                        },
 		                        "label": function (a) {
@@ -334,7 +318,7 @@
 				layer.msg('操作失败',{icon: 5});
 			}
 			//发送请求
-			ajaxPost("../../log/getNetworkTopological.do",'',sfunc,"",efunc);
+			ajaxPost("../../log/getVisitCountGroupByHttpSourceIP.do",obj,sfunc,"",efunc);
 		</script>
 	</body>
 </html>
