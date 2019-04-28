@@ -478,7 +478,7 @@ public class LogController extends BaseController{
 		
 		Map<String,Object> result = new HashMap<>();
 		result.put("domain", domainMap);
-		result.put("source", list);
+		result.put("source", tmplist);
 		
 		return JSONArray.fromObject(result).toString();
 	}
