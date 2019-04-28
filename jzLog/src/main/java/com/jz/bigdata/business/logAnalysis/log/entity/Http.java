@@ -360,8 +360,10 @@ public class Http {
 				
 				if (this.request_url!=null) {
 					this.complete_url = this.protocol+"://"+this.des_ip+":"+this.des_port+this.request_url;
-					if (!getSubUtil(this.request_url,"[/].*?[/]").equals("")) {
-						this.domain_url = "http://"+this.des_ip+":"+this.des_port+""+getSubUtil(this.request_url,"[/].*?[/]");
+					if (!getSubUtil(this.request_url,"^[/].*?[/]").equals("")) {
+						this.domain_url = "http://"+this.des_ip+":"+this.des_port+""+getSubUtil(this.request_url,"^[/].*?[/]");
+					}else if (!getSubUtil(this.request_url,"^[/].*?$").equals("")) {
+						this.domain_url = "http://"+this.des_ip+":"+this.des_port+""+getSubUtil(this.request_url,"^[/].*?$");
 					}
 				}
 			

@@ -83,16 +83,11 @@ public class PacketStream {
 							e.printStackTrace();
 						}
 						
-						if (http.getRequest_url()!=null) {
-							if (!getSubUtil(http.getRequest_url(),"[/].*?[/]").equals("")) {
-								domainSet.add("http://"+http.getDes_ip()+":"+http.getDes_port()+""+getSubUtil(http.getRequest_url(),"[/].*?[/]"));
-							}
-							//urlSet.add("http://"+http.getDes_ip()+":"+http.getDes_port()+""+http.getRequest_url());
-							String request_url = http.getRequest_url();
-							if (http.getRequest_url().contains("?")) {
-								request_url = getSubUtilSimple(http.getRequest_url(),"$(.*?)[?]");
-							}
-							urlmap.put("http://"+http.getDes_ip()+":"+http.getDes_port()+""+request_url, getSubUtil(http.getRequest_url(),"[/].*?[/]"));
+						if (http.getDomain_url()!=null&&!http.getDomain_url().equals("")) {
+							domainSet.add(http.getDomain_url());
+						}
+						if (http.getRequest_url()!=null&&!http.getRequest_url().equals("")) {
+							urlmap.put("http://"+http.getDes_ip()+":"+http.getDes_port()+""+http.getRequest_url(), http.getDomain_url());
 							System.out.println("--urlmap---"+urlmap);
 						}
 						json = gson.toJson(http);

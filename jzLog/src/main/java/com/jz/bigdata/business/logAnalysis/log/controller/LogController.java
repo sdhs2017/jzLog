@@ -407,25 +407,22 @@ public class LogController extends BaseController{
 		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("requestorresponse", "request");
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		if ((des_ip!=null&&!des_ip.equals(""))||(des_port!=null&&!des_port.equals(""))||(source_ip!=null&&!source_ip.equals(""))||(source_port!=null&&!source_port.equals(""))) {
-			if (des_ip!=null&&!des_ip.equals("")) {
-				map.put("des_ip", des_ip);
-			}
-			if (des_port!=null&&!des_port.equals("")) {
-				map.put("des_port", des_port);
-			}
-			if (source_ip!=null&&!source_ip.equals("")) {
-				map.put("source_ip", source_ip);
-			}
-			if (source_port!=null&&!source_port.equals("")) {
-				map.put("source_port", source_port);
-			}
-			
-			list = logService.groupBy(index, types, groupby, map);
-		}else {
-			list = logService.groupBy(index, types, groupby, null);
+		
+		if (des_ip!=null&&!des_ip.equals("")) {
+			map.put("des_ip", des_ip);
 		}
+		if (des_port!=null&&!des_port.equals("")) {
+			map.put("des_port", des_port);
+		}
+		if (source_ip!=null&&!source_ip.equals("")) {
+			map.put("source_ip", source_ip);
+		}
+		if (source_port!=null&&!source_port.equals("")) {
+			map.put("source_port", source_port);
+		}
+		
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		list = logService.groupBy(index, types, groupby, map);
 		
 		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
 		for(Entry<String, Object> key : list.get(0).entrySet()) {
@@ -454,6 +451,7 @@ public class LogController extends BaseController{
 		// 资产的ip和端口
 		String domain_url = request.getParameter("domain_url");
 		
+		// 构建参数map
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("requestorresponse", "request");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -462,6 +460,14 @@ public class LogController extends BaseController{
 		}
 		list = logService.groupBy(index, types, groupby, map);
 		
+		map.put("domain_url", domain_url);
+		long domain_url_count = logService.getCount(index, types, map);
+		
+		Map<String,Object> domainMap = new HashMap<>();
+		domainMap.put("domain_url", domain_url);
+		domainMap.put("count", domain_url_count);
+		
+		
 		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
 		for(Entry<String, Object> key : list.get(0).entrySet()) {
 			Map<String,Object> tMap = new HashMap<>();
@@ -469,6 +475,7 @@ public class LogController extends BaseController{
 			tMap.put("count", key.getValue());
 			tmplist.add(tMap);
 		}
+		tmplist.add(domainMap);
 		
 		return JSONArray.fromObject(tmplist).toString();
 	}

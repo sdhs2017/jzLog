@@ -1263,10 +1263,16 @@ public class LogServiceImpl implements IlogService {
 		if (map!=null) {
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if (entry.getKey().equals("event")) {
+					// 字段不为null查询
 					queryBuilder.must(QueryBuilders.constantScoreQuery(QueryBuilders.existsQuery("event_type")));
 				}else if(entry.getKey().equals("event_level")){
+					// 范围查询
 					queryBuilder.must(QueryBuilders.rangeQuery("event_level").gte(0).lte(3));
+				}else if (entry.getKey().equals("domain_url")) {
+					// 短语匹配
+					queryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
 				}else {
+					// 不分词精确查询
 					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
 				}
 			}

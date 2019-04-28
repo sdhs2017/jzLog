@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -468,58 +469,38 @@ public class CollectorServiceImpl implements ICollectorService{
 	public void insertUrl() {
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		/*List<Url> list = urldao.selectAll();
-		if (list.isEmpty()) {
-			for(String url : urlSet) {
-				Url u = new Url();
-				u.setDate(format.format(new Date()));
-				u.setUrl(url);
-				urldao.insert(u);
-			}
-		}else {
-			Map<String, Integer> map = new HashMap<>();
-			for (Url url : list) {
-				map.put(url.getUrl(), 1);
-			}
-			for(String url : urlSet) {
-				if (map.get(url)==null) {
-					Url u = new Url();
-					u.setDate(format.format(new Date()));
-					u.setUrl(url);
-					urldao.insert(u);
-				}
-			}
-		}*/
 		// 资产表获取domain
 		List<Equipment> list = equipmentService.selectAllHostName();
 		
-		// 查询serviceFunction表中的url
+		// 临时serviceinfo list
 		List<ServiceInfo> serviceslist = new ArrayList<ServiceInfo>();
-		Set<String> tmpurlSet = new HashSet<>();
-		tmpurlSet.addAll(domainSet);
+		Map<String, String> tmpurlmap = new HashMap<String, String>();
+		tmpurlmap.putAll(urlmap);
+		urlmap.clear();
 		
 		if (!list.isEmpty()) {
-			for(String url : tmpurlSet) {
+			for(Entry<String, String> key : tmpurlmap.entrySet()) {
 				for(Equipment equipment : list) {
-					if (equipment.getDomain()!=null&&url.indexOf(equipment.getDomain())!=-1) {
-						System.out.println("----------------配置成功准备入库--------------------");
+					if (equipment.getDomain()!=null&&key.getValue().equals(equipment.getDomain())) {
 						ServiceInfo funservice = new  ServiceInfo();
-						String protocol = getSubUtilSimple(url, "^(.*?)[://]");
-						String relativeUrl = getSubUtilSimple(url, "[:][0-9]{1,5}(.*?)$");
+						String protocol = getSubUtilSimple(key.getKey(), "^(.*?)[://]");
+						String relativeUrl = getSubUtilSimple(key.getKey(), "[:][0-9]{1,5}(.*?)$");
 						funservice.setId(Uuid.getUUID());
 						funservice.setCreateTime(format.format(new Date()));
 						funservice.setEquipmentId(equipment.getId());
 						funservice.setIp(equipment.getIp());
 						funservice.setPort(equipment.getPort());
 						funservice.setProtocol(protocol);
-						funservice.setUrl(url);
+						funservice.setUrl(key.getKey());
 						funservice.setRelativeUrl(relativeUrl);
 						serviceslist.add(funservice);
-						serviceInfoService.insert(funservice);
 						break;
 					}
 				}
 			}
+		}
+		if (!serviceslist.isEmpty()) {
+			serviceInfoService.insert(serviceslist);
 		}
 		
 	}
@@ -541,15 +522,18 @@ public class CollectorServiceImpl implements ICollectorService{
 				String ip = getSubUtil(domain, "\\d+\\.\\d+\\.\\d+\\.\\d+");
 				String port = getSubUtilSimple(domain, "[:]([0-9]{1,5})[/]");
 				for(Equipment equipment : list) {
-					if (equipment.getIp().equals(ip)&&equipment.getPort().equals(port)&&equipment.getDomain()==null) {
-						equipment.setDomain(domain);
-						Equipmentlist.add(equipment);
-						equipmentService.updateById(equipment, null);
-						break;
+					if (equipment.getIp().equals(ip)&&equipment.getPort()!=null&&equipment.getPort().equals(port)) {
+						if (equipment.getDomain()==null||equipment.getDomain().equals("")) {
+							equipment.setDomain(domain);
+							Equipmentlist.add(equipment);
+							break;
+						}
 					}
-					
 				}
 			}
+		}
+		if (!Equipmentlist.isEmpty()) {
+			equipmentService.batchUpdate(Equipmentlist);
 		}
 		
 	}
