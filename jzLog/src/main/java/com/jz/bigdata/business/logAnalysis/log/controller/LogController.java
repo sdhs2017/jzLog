@@ -475,9 +475,12 @@ public class LogController extends BaseController{
 			tMap.put("count", key.getValue());
 			tmplist.add(tMap);
 		}
-		tmplist.add(domainMap);
 		
-		return JSONArray.fromObject(tmplist).toString();
+		Map<String,Object> result = new HashMap<>();
+		result.put("domain", domainMap);
+		result.put("source", list);
+		
+		return JSONArray.fromObject(result).toString();
 	}
 		
 	
