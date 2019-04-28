@@ -493,6 +493,7 @@ public class CollectorServiceImpl implements ICollectorService{
 						funservice.setProtocol(protocol);
 						funservice.setUrl(key.getKey());
 						funservice.setRelativeUrl(relativeUrl);
+						funservice.setState(1);
 						serviceslist.add(funservice);
 						break;
 					}
