@@ -33,6 +33,7 @@
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" /> 
 		from serviceInfo where state=1
+		order by complementState desc
 	</select>
 
 
@@ -120,7 +121,9 @@
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
 		from serviceInfo where state=1
+		order by complementState desc
 	    limit #{startRecord},#{pageSize}
+	   
 	</select>
  
 <!--  查询总数量 -->
