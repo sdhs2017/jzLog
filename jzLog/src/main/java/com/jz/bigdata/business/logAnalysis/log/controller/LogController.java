@@ -482,7 +482,92 @@ public class LogController extends BaseController{
 		
 		return JSONArray.fromObject(result).toString();
 	}
+	
+	/**
+	 * @param request
+	 * 统计domain被访问的全url次数
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getCountGroupByHttpComUrl")
+	@DescribeLog(describe="统计domain被访问的全url次数")
+	public String getCountGroupByHttpComUrl(HttpServletRequest request) {
+		String index = configProperty.getEs_index();
+		String  groupby = "complete_url.raw";
+		String [] types = {"http"};
+		// 资产的ip和端口
+		String domain_url = request.getParameter("domain_url");
 		
+		// 构建参数map
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("requestorresponse", "request");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		if ((domain_url!=null&&!domain_url.equals(""))) {
+			map.put("domain_url", domain_url);
+		}
+		list = logService.groupBy(index, types, groupby, map);
+		
+		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+		for(Entry<String, Object> key : list.get(0).entrySet()) {
+			Map<String,Object> tMap = new HashMap<>();
+			tMap.put("complete_url", key.getKey());
+			tMap.put("count", key.getValue());
+			tmplist.add(tMap);
+		}
+		
+		return JSONArray.fromObject(tmplist).toString();
+	}
+		
+	/**
+	 * @param request
+	 * 统计单个url被IP访问的次数
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getVisitCountOfComUrlGroupByHttpSourceIP")
+	@DescribeLog(describe="统计单个url被IP访问的次数")
+	public String getVisitCountOfComUrlGroupByHttpSourceIP(HttpServletRequest request) {
+		String index = configProperty.getEs_index();
+		String  groupby = "source_ip";
+		String [] types = {"http"};
+		// 资产的ip和端口
+		String domain_url = request.getParameter("domain_url");
+		String complete_url = request.getParameter("complete_url");
+		
+		// 构建参数map
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("requestorresponse", "request");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		if ((domain_url!=null&&!domain_url.equals(""))) {
+			map.put("domain_url", domain_url);
+		}if (complete_url!=null&&!complete_url.equals("")) {
+			map.put("complete_url", complete_url);
+		}
+		list = logService.groupBy(index, types, groupby, map);
+		
+		//map.put("domain_url", domain_url);
+		
+		long complete_url_count = logService.getCount(index, types, map);
+		
+		Map<String,Object> complete_urlMap = new HashMap<>();
+		complete_urlMap.put("complete_url", domain_url);
+		complete_urlMap.put("count", complete_url_count);
+		
+		
+		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+		for(Entry<String, Object> key : list.get(0).entrySet()) {
+			Map<String,Object> tMap = new HashMap<>();
+			tMap.put("source_ip", key.getKey());
+			tMap.put("count", key.getValue());
+			tmplist.add(tMap);
+		}
+		
+		Map<String,Object> result = new HashMap<>();
+		result.put("complete_url", complete_urlMap);
+		result.put("source", tmplist);
+		
+		return JSONArray.fromObject(result).toString();
+	}
 	
 	/**
 	 * 

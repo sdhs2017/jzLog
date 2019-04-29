@@ -88,7 +88,7 @@ public class LogServiceImpl implements IlogService {
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if (entry.getKey().equals("logdate")) {
 					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));
-				}else if (entry.getKey().equals("domain_url")) {
+				}else if (entry.getKey().equals("domain_url")||entry.getKey().equals("complete_url")) {
 					// 短语匹配
 					queryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
 				}else {
@@ -1268,7 +1268,7 @@ public class LogServiceImpl implements IlogService {
 				}else if(entry.getKey().equals("event_level")){
 					// 范围查询
 					queryBuilder.must(QueryBuilders.rangeQuery("event_level").gte(0).lte(3));
-				}else if (entry.getKey().equals("domain_url")) {
+				}else if (entry.getKey().equals("domain_url")||entry.getKey().equals("complete_url")) {
 					// 短语匹配
 					queryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
 				}else {
