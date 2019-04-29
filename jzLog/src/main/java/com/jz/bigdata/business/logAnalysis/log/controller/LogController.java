@@ -550,7 +550,7 @@ public class LogController extends BaseController{
 		long complete_url_count = logService.getCount(index, types, map);
 		
 		Map<String,Object> complete_urlMap = new HashMap<>();
-		complete_urlMap.put("complete_url", domain_url);
+		complete_urlMap.put("complete_url", complete_url);
 		complete_urlMap.put("count", complete_url_count);
 		
 		
