@@ -7,9 +7,16 @@
 		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 		<style type="text/css">
+			.top_title{
+				width:auto;
+				margin-bottom:0;
+				background:#293947;
+				border-top: 4px solid #2d4356;
+			}
 			.content{
 				min-height: 810px;
 				position:relative;
+				border: 1px solid #2f4050;
 			}
 			#cy{
 				width: 100%;
@@ -17,7 +24,7 @@
             	position: absolute;
 	            left: 0;
 	            top:0;
-				background:#3A4D5F;
+				background-image: linear-gradient(to bottom, #293846 0%, #456479 100%);
 			}
 		</style>
 	</head>
@@ -40,44 +47,86 @@
 			var getDeviceObj = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
 			//将获取的本地sessionstorage字符串转换为obj对象格式
 			var obj = JSON.parse(getDeviceObj.replace(/'/g,"\""));	
-			//取出设备id
-			var domain_url = obj.domain_url;
-			$(".top_title").html("'"+obj.domain_url+"' 业务流")
+			//参数集合
+			var sendObj = {};
+			var url = '';
+			if(obj.complete_url == undefined){	
+				url = "../../log/getVisitCountGroupByHttpSourceIP.do"
+				$(".top_title").html("'"+obj.domain_url+"' 业务流")
+			}else{
+				url = "../../log/getVisitCountOfComUrlGroupByHttpSourceIP.do "
+				$(".top_title").html("'"+obj.complete_url+"' 业务流")
+			}
+			
 			//成功回调函数
 			var sfunc = function(dataArr){
 				var nodesArr = [];//节点数组
     			var edgesArr = [];//线数组
     			var nodesCountArr = [];//节点count数组
     			var linksCountArr = [];//节点count数组
-    			//node节点
-    			for(var i in dataArr[0].source){
-    				var obj = {};
-    				obj.data = {};
-    				obj.data.id = dataArr[0].source[i].source_ip;
-    				obj.data.target = true;
-    				obj.data.count = dataArr[0].source[i].count;
-    				//obj.data.type = dataArr[i].node;
-    				nodesCountArr.push(dataArr[0].source[i].count);
-    				nodesArr.push(obj);
+    			//判断业务流类型   
+    			if(dataArr[0].complete_url == undefined){ 
+    				//node节点
+        			for(var i in dataArr[0].source){
+        				var obj = {};
+        				obj.data = {};
+        				obj.data.id = dataArr[0].source[i].source_ip;
+        				obj.data.target = true;
+        				obj.data.count = dataArr[0].source[i].count;
+        				//obj.data.type = dataArr[i].node;
+        				nodesCountArr.push(dataArr[0].source[i].count);
+        				nodesArr.push(obj);
+        			}
+        			nodesCountArr.push(dataArr[0].domain.count)
+        			nodesArr.push({
+        				data:{id:dataArr[0].domain.domain_url,target:true,count:dataArr[0].domain.count}
+        			})
+        			
+        			// {data:{source:'王大拿',target:'AAA公司',label:'董事'}},
+        			//{"node": 1,"count": 80761,"source": "123.232.103.226","target": "level2\n192.168.2.151"}
+        			//连接线
+        			for(var i in dataArr[0].source){
+        				var obj = {};
+        				obj.data = {};
+        				obj.data.source = dataArr[0].source[i].source_ip;
+        				obj.data.target = dataArr[0].domain.domain_url;
+        				obj.data.count = dataArr[0].source[i].count;
+        				obj.data.label = dataArr[0].source[i].count;
+        				linksCountArr.push(dataArr[0].source[i].count);
+        				edgesArr.push(obj);
+        			}
+    			}else{  //功能 业务流
+    				//node节点
+        			for(var i in dataArr[0].source){
+        				var obj = {};
+        				obj.data = {};
+        				obj.data.id = dataArr[0].source[i].source_ip;
+        				obj.data.target = true;
+        				obj.data.count = dataArr[0].source[i].count;
+        				//obj.data.type = dataArr[i].node;
+        				nodesCountArr.push(dataArr[0].source[i].count);
+        				nodesArr.push(obj);
+        			}
+        			nodesCountArr.push(dataArr[0].complete_url.count)
+        			nodesArr.push({
+        				data:{id:dataArr[0].complete_url.complete_url,target:true,count:dataArr[0].complete_url.count}
+        			})
+        			//连接线
+        			for(var i in dataArr[0].source){
+        				var obj = {};
+        				obj.data = {};
+        				obj.data.source = dataArr[0].source[i].source_ip;
+        				obj.data.target = dataArr[0].complete_url.complete_url;
+        				obj.data.count = dataArr[0].source[i].count;
+        				obj.data.label = dataArr[0].source[i].count;
+        				linksCountArr.push(dataArr[0].source[i].count);
+        				edgesArr.push(obj);
+        			}
     			}
-    			nodesCountArr.push(dataArr[0].domain.count)
-    			nodesArr.push({
-    				data:{id:dataArr[0].domain.domain_url,target:true,count:dataArr[0].domain.count}
-    			})
+    			
+    			//node最大值
     			var maxNodesCount = Math.max.apply(null,nodesCountArr);
-    			// {data:{source:'王大拿',target:'AAA公司',label:'董事'}},
-    			//{"node": 1,"count": 80761,"source": "123.232.103.226","target": "level2\n192.168.2.151"}
-    			//连接线
-    			for(var i in dataArr[0].source){
-    				var obj = {};
-    				obj.data = {};
-    				obj.data.source = dataArr[0].source[i].source_ip;
-    				obj.data.target = dataArr[0].domain.domain_url;
-    				obj.data.count = dataArr[0].source[i].count;
-    				obj.data.label = dataArr[0].source[i].count;
-    				linksCountArr.push(dataArr[0].source[i].count);
-    				edgesArr.push(obj);
-    			}
+    			//链接线最大值
     			var maxLinksCount = Math.max.apply(null,linksCountArr);
     			//console.log(nodesArr)
     			//渲染
@@ -318,7 +367,7 @@
 				layer.msg('操作失败',{icon: 5});
 			}
 			//发送请求
-			ajaxPost("../../log/getVisitCountGroupByHttpSourceIP.do",obj,sfunc,"",efunc);
+			ajaxPost(url,obj,sfunc,"",efunc);
 		</script>
 	</body>
 </html>
