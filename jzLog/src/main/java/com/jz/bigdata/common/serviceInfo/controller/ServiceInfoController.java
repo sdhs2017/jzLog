@@ -108,11 +108,19 @@ public class ServiceInfoController {
 	@RequestMapping(value="/selectPage.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="分页查询资产")
 	public String selectPage(HttpServletRequest request,HttpSession session) {
+		String name=request.getParameter("name");
+		String ip=request.getParameter("ip");
+		String port=request.getParameter("port");
+		String protocol=request.getParameter("protocol");
+		String url=request.getParameter("url");
+		String relativeUrl=request.getParameter("relativeUrl");
+		int complementState=Integer.parseInt(request.getParameter("complementState"));
+		int state=Integer.parseInt(request.getParameter("state"));
 		//页码数
 		int pageIndex=Integer.parseInt(request.getParameter("pageIndex"));
 		//每页显示的数量
 		int pageSize=Integer.parseInt(request.getParameter("pageSize"));
-		return serviceInfoService.selectAllByPage( pageIndex, pageSize);
+		return serviceInfoService.selectAllByPage(name, ip, port, protocol, url, relativeUrl, complementState, state, pageIndex, pageSize);
 	}
 	
 	

@@ -23,7 +23,8 @@ public interface IServiceInfoService {
 
 	int updateById(ServiceInfo serviceInfo);
 	
-	String selectAllByPage( int pageIndex, int pageSize);
+	String selectAllByPage(String name,String ip,String port,String protocol,
+			String url,String relativeUrl,int complementState,int state, int pageIndex, int pageSize);
 	
 	ServiceInfo selectServiceByUrl(String url);
 	

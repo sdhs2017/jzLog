@@ -75,11 +75,12 @@ public class ServiceInfoServiceImpl implements IServiceInfoService {
 	 * 分页查询
 	 */
 	@Override
-	public String selectAllByPage( int pageIndex, int pageSize) {
+	public String selectAllByPage(String name,String ip,String port,String protocol,
+			String url,String relativeUrl,int complementState,int state, int pageIndex, int pageSize) {
 		// 获取起始数
 		int startRecord = (pageSize * (pageIndex - 1));
 		// 获取总数
-		List count = serviceInfoDao.count();
+		List count = serviceInfoDao.count(name, ip, port, protocol, url, relativeUrl, complementState, state);
 		List listCount = new ArrayList<>();
 		// 获取总数集合
 		listCount = (List) count.get(0);
@@ -88,7 +89,7 @@ public class ServiceInfoServiceImpl implements IServiceInfoService {
 		// 总数添加到map
 		map.put("count", (listCount.get(0)));
 		// 查询所有数据
-		List<ServiceInfo> listService = serviceInfoDao.selectAllByPage(startRecord, pageSize);
+		List<ServiceInfo> listService = serviceInfoDao.selectAllByPage(name, ip, port, protocol, url, relativeUrl, complementState, state, startRecord, pageSize);
 		// System.err.println(listEquipment.get(0).getCreateTime());
 		// 数据添加到map
 		map.put("serviceInfo", listService);

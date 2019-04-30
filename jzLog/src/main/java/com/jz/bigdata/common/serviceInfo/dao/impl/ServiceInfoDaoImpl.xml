@@ -33,7 +33,7 @@
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" /> 
 		from serviceInfo where state=1
-		order by complementState desc
+		order by complementState,url,relativeUrl desc
 	</select>
 
 
@@ -120,8 +120,37 @@
 	    select 
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
-		from serviceInfo where state=1
-		order by complementState desc
+		from serviceInfo where 1=1
+		<if test="name != null and name !=''"> and name LIKE CONCAT('%',
+			#{name}, '%') </if>
+		<if test="ip != null and ip !=''">
+			and ip = #{ip,jdbcType=VARCHAR}
+		</if>
+		<if test="port != null and port !=''">
+			and port = #{port,jdbcType=VARCHAR}
+		</if>
+		<if test="protocol != null and protocol !=''">
+			and protocol = #{protocol,jdbcType=VARCHAR}
+		</if>
+		<if test="url != null and url !=''">
+			and url = #{url,jdbcType=VARCHAR}
+		</if>
+		<if test="relativeUrl != null and relativeUrl !=''">
+			and relativeUrl = #{relativeUrl,jdbcType=VARCHAR}
+		</if>
+		<if test="complementState != null and complementState !='' and complementState !='0' and complementState !=0 ">
+			and complementState = #{complementState,jdbcType=INTEGER}
+		</if>
+		
+		<choose>
+			<when test="state != null and state !='' and state !='0' and state !=0 ">
+				and state = #{state,jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and state = 1
+			</otherwise>
+		</choose>
+		order by complementState,url,relativeUrl desc
 	    limit #{startRecord},#{pageSize}
 	   
 	</select>
@@ -131,7 +160,36 @@
 <!--   <bind name="name" value="'%' + name + '%'" /> -->
 	    select count(*) as count 
 	<!--     引用查询字段 -->
-	    from serviceInfo  where state=1
+	    from serviceInfo  where 1=1
+	    <if test="name != null and name !=''"> and name LIKE CONCAT('%',
+			#{name}, '%') </if>
+		<if test="ip != null and ip !=''">
+			and ip = #{ip,jdbcType=VARCHAR}
+		</if>
+		<if test="port != null and port !=''">
+			and port = #{port,jdbcType=VARCHAR}
+		</if>
+		<if test="protocol != null and protocol !=''">
+			and protocol = #{protocol,jdbcType=VARCHAR}
+		</if>
+		<if test="url != null and url !=''">
+			and url = #{url,jdbcType=VARCHAR}
+		</if>
+		<if test="relativeUrl != null and relativeUrl !=''">
+			and relativeUrl = #{relativeUrl,jdbcType=VARCHAR}
+		</if>
+		<if test="complementState != null and complementState !='' and complementState !='0' and complementState !=0 ">
+			and complementState = #{complementState,jdbcType=INTEGER}
+		</if>
+		
+		<choose>
+			<when test="state != null and state !='' and state !='0' and state !=0 ">
+				and state = #{state,jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and state = 1
+			</otherwise>
+		</choose>
 	   
 	</select>
 	
