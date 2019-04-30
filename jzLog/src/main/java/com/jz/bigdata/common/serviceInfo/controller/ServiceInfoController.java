@@ -115,7 +115,7 @@ public class ServiceInfoController {
 		String url=request.getParameter("url");
 		String relativeUrl=request.getParameter("relativeUrl");
 		Integer complementState=Integer.valueOf(request.getParameter("complementState"));
-		Integer state=Integer.parseInt(request.getParameter("state"));
+		Integer state=Integer.valueOf(request.getParameter("state"));
 		//页码数
 		int pageIndex=Integer.parseInt(request.getParameter("pageIndex"));
 		//每页显示的数量
