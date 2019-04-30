@@ -116,15 +116,15 @@ public class ServiceInfoController {
 		String relativeUrl=request.getParameter("relativeUrl");
 		String complementStateString=request.getParameter("complementState");
 		String stateString=request.getParameter("state");
-		Integer complementState=null;
-		Integer state=null;
+		int complementState=0;
+		int state=0;
 		if(complementStateString.equals("")){
-			complementState=null;
+			complementState=2;
 		}else{
 			complementState=Integer.valueOf(complementStateString);
 		}
 		if(stateString.equals("")){
-			state=null;
+			state=2;
 		}else{
 			state=Integer.valueOf(stateString);
 		}

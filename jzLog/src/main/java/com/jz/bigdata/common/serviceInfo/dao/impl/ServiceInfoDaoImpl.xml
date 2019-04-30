@@ -138,10 +138,10 @@
 		<if test="relativeUrl != null and relativeUrl !=''">
 			and relativeUrl = #{relativeUrl,jdbcType=VARCHAR}
 		</if>
-		<if test="complementState != null and complementState !=''  ">
+		<if test=" complementState !='2' and complementState !=2 ">
 			and complementState = #{complementState,jdbcType=INTEGER}
 		</if>
-		<if test="state != null and state !=''  ">
+		<if test="state !='2' and state !=2 ">
 			and state = #{state,jdbcType=INTEGER}
 		</if>
 		
@@ -181,10 +181,10 @@
 		<if test="relativeUrl != null and relativeUrl !=''">
 			and relativeUrl = #{relativeUrl,jdbcType=VARCHAR}
 		</if>
-		<if test="complementState != null and complementState !=''">
+		<if test=" complementState !='2' and complementState !=2">
 			and complementState = #{complementState,jdbcType=INTEGER}
 		</if>
-		<if test="state != null and state !=''  ">
+		<if test="state !='2' and state !=2">
 			and state = #{state,jdbcType=INTEGER}
 		</if>
 	</select>
