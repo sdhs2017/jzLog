@@ -184,16 +184,9 @@
 		<if test="complementState != null and complementState !=''">
 			and complementState = #{complementState,jdbcType=INTEGER}
 		</if>
-		
-		<choose>
-			<when test="state != null and state !=''  ">
-				and state = #{state,jdbcType=INTEGER}
-			</when>
-			<otherwise>
-				and state = 1
-			</otherwise>
-		</choose>
-	   
+		<if test="state != null and state !=''  ">
+			and state = #{state,jdbcType=INTEGER}
+		</if>
 	</select>
 	
 	<!-- 查询数据url -->
