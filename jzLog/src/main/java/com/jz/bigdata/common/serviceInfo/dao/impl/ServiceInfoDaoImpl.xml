@@ -138,18 +138,21 @@
 		<if test="relativeUrl != null and relativeUrl !=''">
 			and relativeUrl = #{relativeUrl,jdbcType=VARCHAR}
 		</if>
-		<if test="complementState != null and complementState !='' and complementState !='0' and complementState !=0 ">
+		<if test="complementState != null and complementState !=''  ">
 			and complementState = #{complementState,jdbcType=INTEGER}
 		</if>
+		<if test="state != null and state !=''  ">
+			and state = #{state,jdbcType=INTEGER}
+		</if>
 		
-		<choose>
-			<when test="state != null and state !='' and state !='0' and state !=0 ">
+		<!-- <choose>
+			<when test="state != null and state !=''   ">
 				and state = #{state,jdbcType=INTEGER}
 			</when>
 			<otherwise>
 				and state = 1
 			</otherwise>
-		</choose>
+		</choose> -->
 		order by complementState,url,relativeUrl desc
 	    limit #{startRecord},#{pageSize}
 	   
@@ -178,12 +181,12 @@
 		<if test="relativeUrl != null and relativeUrl !=''">
 			and relativeUrl = #{relativeUrl,jdbcType=VARCHAR}
 		</if>
-		<if test="complementState != null and complementState !='' and complementState !='0' and complementState !=0 ">
+		<if test="complementState != null and complementState !=''">
 			and complementState = #{complementState,jdbcType=INTEGER}
 		</if>
 		
 		<choose>
-			<when test="state != null and state !='' and state !='0' and state !=0 ">
+			<when test="state != null and state !=''  ">
 				and state = #{state,jdbcType=INTEGER}
 			</when>
 			<otherwise>

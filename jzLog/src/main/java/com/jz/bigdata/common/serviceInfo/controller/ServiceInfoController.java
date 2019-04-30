@@ -114,8 +114,8 @@ public class ServiceInfoController {
 		String protocol=request.getParameter("protocol");
 		String url=request.getParameter("url");
 		String relativeUrl=request.getParameter("relativeUrl");
-		int complementState=Integer.parseInt(request.getParameter("complementState"));
-		int state=Integer.parseInt(request.getParameter("state"));
+		Integer complementState=Integer.valueOf(request.getParameter("complementState"));
+		Integer state=Integer.parseInt(request.getParameter("state"));
 		//页码数
 		int pageIndex=Integer.parseInt(request.getParameter("pageIndex"));
 		//每页显示的数量

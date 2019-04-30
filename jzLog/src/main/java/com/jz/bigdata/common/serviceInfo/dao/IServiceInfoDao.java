@@ -22,11 +22,11 @@ public interface IServiceInfoDao {
 	int updateById(ServiceInfo serviceInfo);
 
 	List<ServiceInfo> selectAllByPage(@Param("name")String name,@Param("ip")String ip,@Param("port")String port,@Param("protocol")String protocol,
-			@Param("url")String url,@Param("relativeUrl")String relativeUrl,@Param("complementState")int complementState,@Param("state")int state,
+			@Param("url")String url,@Param("relativeUrl")String relativeUrl,@Param("complementState")Integer complementState,@Param("state")Integer state,
 			@Param("startRecord")int startRecord,@Param("pageSize")int pageSize);
 
 	List<String> count(@Param("name")String name,@Param("ip")String ip,@Param("port")String port,@Param("protocol")String protocol,
-			@Param("url")String url,@Param("relativeUrl")String relativeUrl,@Param("complementState")int complementState,@Param("state")int state);
+			@Param("url")String url,@Param("relativeUrl")String relativeUrl,@Param("complementState")Integer complementState,@Param("state")Integer state);
 	
 	ServiceInfo selectServiceByUrl(@Param("url")String url);
 	
