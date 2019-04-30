@@ -784,6 +784,9 @@ public class LogServiceImpl implements IlogService {
 		if (pamap.get("response_state")!=null) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("response_state", pamap.get("response_state")));
 		}
+		if (pamap.get("packet_source")!=null) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery("packet_source", pamap.get("packet_source")));
+		}
 		
 		count = clientTemplate.count(index, types, boolQueryBuilder);
 		hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
@@ -964,6 +967,10 @@ public class LogServiceImpl implements IlogService {
 		// 响应状态
 		if (pamap.get("response_state")!=null) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("response_state", pamap.get("response_state")));
+		}
+		// 流量日志来源
+		if (pamap.get("packet_source")!=null) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery("packet_source", pamap.get("packet_source")));
 		}
 		
 		boolQueryBuilder.must(QueryBuilders.termQuery("userid", userid));
