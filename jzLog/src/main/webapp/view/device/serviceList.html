@@ -68,7 +68,7 @@
 			    margin: 0 5px;
 			}
 			th,td{
-				white-space:nowrap;
+				/* white-space:nowrap; */
 			}
 			.layui-layer-content{
 				padding: 20px;
@@ -77,12 +77,111 @@
 			.form-group>div{
 				margin-top:5px;
 			}
+			.search_input{
+				padding-left:10px;
+			}
+			.search_input input{
+				border-radius:0;
+			}	
+			.search_input button{
+				height:34px;
+				margin-left:-4px;
+				border-radius:0;
+				font-size:12px;
+				border-color: #386c9a;
+			    background: #386c9a;
+			    box-shadow: 0px 0px 7px 1px #386c9a;
+			}
+			.searchBoxTitle{
+				height:32px;
+				margin-right:1px solid #4781bb;
+				line-height:34px;
+				text-align: center;
+				padding: 0 10px;
+    			word-break: keep-all;
+				font-size:12px;
+			}			
+			.searchConditions{
+				width:100%;
+				height:34px;
+				margin-bottom:24px;
+				display: flex;
+				justify-content: center;
+			}
+			.searchConditions>div{
+				display: flex;
+				justify-content: left;
+				border:1px solid #4781bb;
+				border-left:0;
+			}
+			.searchConditions select,.searchConditions input{
+				width:90px;
+				border-radius:0;
+				border:0;
+				height: 32px;
+				font-size:12px;
+			}
+			.searchConditions input{
+				width:100%;
+			}	
+			.searchTimeBox>input{
+				border: 0;
+				width: 150px;
+				padding-right:0;
+				height:32px;
+				font-size:13px;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="box">
 			<div class="top_title">
 				服务列表
+			</div>
+			<div class="search_input" style="display:flex;max-width:1286px;margin:0 auto;">
+				<div class="searchConditions">
+					<div class="searchIpBox">
+						<div class="searchBoxTitle">名称</div>
+						<input type="text" class="form-control searchName"  placeholder="名称">
+					</div>
+					<div class="searchDomainNameBox">
+						<div class="searchBoxTitle">IP</div>
+						<input type="text" class="form-control searchIp"  placeholder="IP">
+					</div>
+					<div class="searchAnaTypeBox">
+						<div class="searchBoxTitle">端口</div>
+						<input type="text" class="form-control searchPort" style="width:60px;"  placeholder="端口">
+					</div>
+					<div class="searchServerBox">
+						<div class="searchBoxTitle">协议</div>
+						<input type="text" class="form-control searchProtocol" style="width:60px;"  placeholder="协议">
+					</div>
+					<div class="searchIpBox">
+						<div class="searchBoxTitle">路径</div>
+						<input type="text" class="form-control searchUrl"  placeholder="路径">
+					</div>
+					<div class="searchIpBox">
+						<div class="searchBoxTitle">相对路径</div>
+						<input type="text" class="form-control searchRelativeUrl"  placeholder="相对路径">
+					</div>
+					<div class="searchIpBox">
+						<div class="searchBoxTitle">状态</div>
+						<select class="form-control searchComplementState" style="width:80px;">
+    						<option selected value=" "></option>
+ 							<option value="0">未补全</option>
+ 							<option value="1">已补全</option> 							
+ 						</select>
+					</div>
+					<div class="searchIpBox">
+						<div class="searchBoxTitle">启用</div>
+						<select class="form-control searchState" style="width:60px;">
+    						<option selected value=" "></option>
+ 							<option value="0">否</option>
+ 							<option value="1">是</option> 							
+ 						</select>
+					</div>
+					<button  class="btn btn-primary" id="searchList"><i class="glyphicon glyphicon-search"></i>&nbsp;检索</button>
+				</div>
 			</div>
 			<div class="service_tools">
 				<button  class="btn btn-info" id="remove_service" title="删除"><i class="glyphicon glyphicon-remove"></i>&nbsp;删除</button>
@@ -94,19 +193,19 @@
 							<table class="table table-hover text-nowrap" id="service_list" style="table-layout:fixed;">
 								<thead>
 									<tr>
-										<th><input type="checkbox" id="theadCheck"></th>
-										<th>名称</th>
+										<th width="30"><input type="checkbox" id="theadCheck"></th>
+										<th width="80">名称</th>
 										<th width="120">IP</th>
 										<th width="65">端口</th>
 										<th width="65">协议</th>
 										<th>路径</th>
 										<th>相对路径</th>
 										<th width="75">补全状态</th>
+										<th width="75">是否启用</th>
+										<th>描述</th>
 										<th>创建时间</th>
 										<th>修改时间</th>
 										<th>停用时间</th>
-										<th width="75">是否启用</th>
-										<th>描述</th>
 										<th width="50">操作</th>
 									</tr>
 								</thead>
@@ -136,6 +235,14 @@
 			var allCount;//总数
 			//定义传参集合
 			var sendObj = {};
+			sendObj.name = "";
+			sendObj.ip = "";
+			sendObj.port = "";
+			sendObj.protocol = "";
+			sendObj.url = "";
+			sendObj.relativeUrl ="";
+			sendObj.state = " ";
+			sendObj.complementState =" ";
 			//初始化
 			paramInitialize();
 			getServiceData(sendObj);
@@ -189,18 +296,18 @@
 					
 				 	htmlStr += '<tr>'   
 						+		 '<td class="service_checkbox"> <input type="checkbox" name="'+obj.id+'"></td>'
-			            +        '<td class="service_name">'+obj.name +'</td>'   
+			            +        '<td title="'+obj.name+'" class="service_name">'+obj.name +'</td>'   
 			            +        '<td class="service_ip">'+obj.ip+'</td>'
 			            +        '<td class="service_port">'+obj.port+'</td>'
 			            +        '<td class="service_protocol">'+obj.protocol+'</td>'
-			            +        '<td class="service_url">'+obj.url+'</td>'
-			            +        '<td class="service_relativeUrl">'+obj.relativeUrl+'</td>'
-			            +        '<td class="service_complementState">'+obj.complementState+'</td>'
-			            +        '<td class="service_createTime">'+obj.createTime+'</td>' 		         
-			            +        '<td class="service_updatetime">'+obj.updateTime+'</td>' 
-			            +        '<td class="service_stoptime">'+obj.stopTime+'</td>'
+			            +        '<td title="'+obj.url+'" class="service_url">'+obj.url+'</td>'
+			            +        '<td title="'+obj.relativeUrl+'" class="service_relativeUrl">'+obj.relativeUrl+'</td>'
+			            +        '<td class="service_complementState">'+obj.complementState+'</td>'			   
 			            +        '<td class="service_state">'+obj.state+'</td>'
-			            +        '<td class="service_describe">'+obj.describe+'</td>'
+			            +        '<td title="'+obj.describe+'" class="service_describe">'+obj.describe+'</td>'
+			            +        '<td title="'+obj.createTime+'" class="service_createTime">'+obj.createTime+'</td>' 		         
+			            +        '<td title="'+obj.updateTime+'" class="service_updatetime">'+obj.updateTime+'</td>' 
+			            +        '<td class="service_stoptime">'+obj.stopTime+'</td>'
 			            +        '<td class="td_tools">'
 			            +       	  '<i class="glyphicon glyphicon-edit service_revise" title="修改"> </i>'
 			            +        '</td>'
@@ -243,7 +350,22 @@
 				allCount = 0;//检索的结果总总数
 				currentPage = 1;//当前显示的页码
 			}
-			
+			//检索按钮方法
+			$("#searchList").click(function(){
+				//初始化参数
+				paramInitialize();
+				//获取输入框中的值
+				sendObj.name = $(".searchName").val();
+				sendObj.ip = $(".searchIp").val();
+				sendObj.port = $(".searchPort").val();
+				sendObj.protocol = $(".searchProtocol").val();
+				sendObj.url = $(".searchUrl").val();
+				sendObj.relativeUrl = $(".relativeUrl").val();
+				sendObj.state = $(".searchState").val();
+				sendObj.complementState = $(".searchComplementState").val();
+				//获取数据
+				getServiceData(sendObj);
+			})
 			//修改按钮方法
 			$("#service_list").on("click",".service_revise",function(){
 				//获取id
