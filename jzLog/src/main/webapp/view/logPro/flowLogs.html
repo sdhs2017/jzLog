@@ -200,17 +200,21 @@
 								<input type="text" class="form-control searchDstPort"  placeholder="目的端口">
 							</div>
 							<div class="searchServerBox" >
-								<div class="searchBoxTitle" style="width:85px;">传输层协议</div>
-								<input type="text" class="form-control searchProtocol_name"  placeholder="传输层协议">
+								<div class="searchBoxTitle" style="width:85px;">数据来源</div>
+								<input type="text" class="form-control searchPacket_source"  placeholder="网络数据来源">
 							</div>
 						</div>
 					</div>
-					<div class="searchConditions sc2" style="position:relative;top:5px;z-index:0;">						
-						<div class="searchServerBox" style="width:50%;">
+					<div class="searchConditions sc2" style="position:relative;top:5px;z-index:0;">	
+						<div class="searchServerBox" style="width:33.333%;">
+							<div class="searchBoxTitle">传输层协议</div>
+							<input type="text" class="form-control searchProtocol_name"  placeholder="传输层协议">
+						</div>					
+						<div class="searchServerBox" style="width:33.333%;">
 							<div class="searchBoxTitle">应用层协议</div>
 							<input type="text" class="form-control searchApplication_layer_protocol"  placeholder="应用层协议">
 						</div>
-						<div class="searchIpBox" style="width:50%;">
+						<div class="searchIpBox" style="width:33.333%;">
 							<div class="searchBoxTitle" >加密层协议</div>
 							<input type="text" class="form-control searchEncryption"  placeholder="加密层协议">
 						</div>
@@ -323,13 +327,14 @@
 				sendSearchObj.l4_src_port= $(".searchSrcPort").val();
 				//获取目的端口
 				sendSearchObj.l4_dst_port= $(".searchDstPort").val();
+				//网络数据来源
+				sendSearchObj.packet_source=$(".searchPacket_source").val();
 				//获取加密协议
 				sendSearchObj.encryption_based_protection_protocol= $(".searchEncryption").val();
 				//获取传输层协议
 				sendSearchObj.protocol_name= $(".searchProtocol_name").val();
 				//获取应用层协议
 				sendSearchObj.application_layer_protocol= $(".searchApplication_layer_protocol").val();
-				console.log(sendSearchObj)
 				//获取数据
 				getLogs(url,"",sendSearchObj,1,pageSize);
 				historySearch(sendSearchObj)
@@ -376,7 +381,7 @@
 			   		sendSearchObj.dns_ana_type = $(this).attr("data-dns_ana_type");
 			   		sendSearchObj.dns_server  = $(this).attr("data-dns_server");
 			   		//获取数据
-			   		getLogs(url,"",sendSearchObj,1,pageSize);
+			   		//getLogs(url,"",sendSearchObj,1,pageSize);
 			   		//填充搜索框中得值
 			   		$("#startTime").val(sendSearchObj.starttime);
 					$("#endTime").val(sendSearchObj.endtime);
