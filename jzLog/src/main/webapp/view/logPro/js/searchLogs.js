@@ -1032,7 +1032,7 @@
 	$("#logs_list").on("click",".more",function(){
 		var logIndex = $(this).parent().attr("data-index");
 		//获取日志类型
-		var logType = logDetailArr[logIndex].type;
+		//var logType = logDetailArr[logIndex].type;
 		/*if(logType == undefined){//logType ！= undefined 单个设备的日志
 			logType = $(this).parent().siblings('.logs_type').html();
 		}*/
