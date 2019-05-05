@@ -303,18 +303,24 @@
 		<script type="text/javascript">
 			var pageSize = 13;
 			var url = "../../log/getLogListByBlend.do";
-			var multifield_ip = "";
+			var sendSearchObj = {};//查询日志 参数集合
 			//获得存放在标签里的参数
 			var getObj = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
 			//判断是否是功能url排行榜
 			if(getObj !== undefined){
 				//将获取的本地sessionstorage字符串转换为obj对象格式
 				var obj = JSON.parse(getObj.replace(/'/g,"\""));
-				multifield_ip = obj.ip;
+				if(obj.clickType == "node"){
+					if(obj.type == "ip"){
+						sendSearchObj.multifield_ip = obj.val;
+					}else if(obj.type == "url"){
+						sendSearchObj[obj.kname] = obj.val;
+					}
+				}
+				
 				//url = "../../log/getCountGroupByHttpComUrl.do";
-				$(".top_title").html("'"+obj.ip +"' 日志")
+				$(".top_title").html("'"+obj.val +"' 日志")
 			}			
-			var sendSearchObj = {};//查询日志 参数集合
 			//点击检索按钮 获取数据
 			$("#searchLogs").click(function(){
 				//定义第一次请求

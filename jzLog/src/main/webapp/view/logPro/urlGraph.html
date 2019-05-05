@@ -42,6 +42,7 @@
 		<script src="js/cytoscape.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			//获取存放在标签页标题中的数据
 			var getDeviceObj = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
@@ -328,10 +329,29 @@
 		            c.neighborhood("edge").removeClass("edgeActive");
 		            c.neighborhood("node").removeClass("nodeActive");
 		        })
+		        //node点击事件
 		        cy.on("click", "node", function (a) {
-		            let c = a.target;
-		            c.removeClass("nodeActive");
-		            cy.collection("edge").removeClass("edgeActive");
+		        	var obj={};
+		        	//获得点击的值
+		            obj.val = a.target._private.data.id;
+		        	//点击的对象类型
+		            obj.clickType = "node"
+		        	//判断值得类型
+		        	if(obj.val.substring(0,4) == "http"){//点击的是url圆点
+		        		obj.type = "url";
+		        		if(obj.complete_url == undefined){	
+		        			obj.kname = "domain_url"
+		    			}else{
+		    				obj.kname = "complete_url"
+		    			}
+		        	}else{
+		        		obj.type = "ip";
+		        		obj.kname = "multifield_ip";
+		        	}
+		            var objStr = JSON.stringify(obj);
+		            objStr = objStr.replace(/"/g,"'");
+		            //跳转到流量日志页面
+		            jumpHtml("logPro/flowLogs.html",obj.val,"日志",objStr)
 		        })
 		        cy.on("vmousedown", "node", function (a) { //监听鼠标左键按下
 		           /*  let c = a.target;
