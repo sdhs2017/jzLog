@@ -169,7 +169,7 @@
 			<div class="top_title">
 				HTTP日志		
 			</div>
-			<div class="device_logType" style="display:none">http</div>
+			<div class="device_logType" style="display:none">defaultpacket_http</div>
 			<!-- 普通查询条件 -->
 			<!-- <div class="search_input" style="max-width:1286px;">
 				
@@ -321,19 +321,21 @@
 				logStatus = true;
 				//获得查询条件参数值
 				//日志类型为dns
-				sendSearchObj.type = "http";
+				sendSearchObj.type = "defaultpacket";
+				//应用层日志类型
+				sendSearchObj.application_layer_protocol= "http";
 				//获取开始时间
 				sendSearchObj.starttime = $("#startTime").val();
 				//获取结束时间
 				sendSearchObj.endtime = $("#endTime").val();
 				//获取源地址
-				sendSearchObj.source_ip= $(".searchSource_ip").val();
+				sendSearchObj.ipv4_src_addr= $(".searchSource_ip").val();
 				//获取目的地址
-				sendSearchObj.des_ip = $(".searchDes_ip").val();
+				sendSearchObj.ipv4_dst_addr = $(".searchDes_ip").val();
 				//获取源端口
-				sendSearchObj.source_port= $(".searchSource_port").val();
+				sendSearchObj.l4_src_port= $(".searchSource_port").val();
 				//获取目的端口
-				sendSearchObj.des_port= $(".searchDes_port").val();
+				sendSearchObj.l4_dst_port= $(".searchDes_port").val();
 				//请求或响应
 				sendSearchObj.requestorresponse= $(".searchRequestorresponse").val();
 				//请求方法

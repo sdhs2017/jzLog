@@ -618,7 +618,7 @@
 			}
 			 //添加 日志列表到页面中    
 		    $("#logs_list>tbody").html(logLists);
-		}else if(logType == "http"){
+		}else if(logType == "defaultpacket_http"){
 			/****************http 日志列表格式*******************/
 			var logLists = "<b>暂无日志数据</b>";//日志列表
 			var logListTittle = "";//日志列名
@@ -681,10 +681,10 @@
 					var logCon = obj.operation_des.replace(reg,"");
 					logLists += '<tr data-id="'+obj.equipmentid+'" data-logId="'+obj.id+'">'   
 					         +       '<td class="logs_time"  width="200">'+obj.logtime+'</td>'
-					         +       '<td class="logs_source_ip">'+obj.source_ip+'</td>'
-					         +       '<td class="logs_des_ip">'+obj.des_ip+'</td>'
-					         +       '<td class="logs_source_port">'+obj.source_port+'</td>'				     
-					         +       '<td class="logs_des_port">'+obj.des_port+'</td>'
+					         +       '<td class="logs_source_ip">'+obj.ipv4_src_addr+'</td>'
+					         +       '<td class="logs_des_ip">'+obj.ipv4_dst_addr+'</td>'
+					         +       '<td class="logs_source_port">'+obj.l4_src_port+'</td>'				     
+					         +       '<td class="logs_des_port">'+obj.l4_dst_port+'</td>'
 					         +       '<td class="logs_requestorresponse">'+obj.requestorresponse+'</td>'
 					         +       '<td class="logs_request_type">'+obj.request_type+'</td>'
 					         +       '<td class="logs_request_url ">'+obj.request_url  +'</td>'
