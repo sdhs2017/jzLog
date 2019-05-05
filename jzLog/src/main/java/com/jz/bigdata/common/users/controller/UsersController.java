@@ -20,8 +20,6 @@ import com.jz.bigdata.common.users.util.Page;
 import com.jz.bigdata.util.DescribeLog;
 import com.jz.bigdata.util.Uuid;
 
-import net.sf.json.JSONObject;
-
 /**
  * @author shichengyu
  * @date 2017年8月1日 上午10:09:08
@@ -174,28 +172,17 @@ public class UsersController {
 	@DescribeLog(describe="用户登录")
 	public String login(HttpServletRequest request,User user,HttpSession session){
 //		Boolean result = this.userService.login(user,session);
-		int result= this.userService.login(user,session);
-		if(result==1){
-			//VerifyLicense vLicense = new VerifyLicense();
-			//获取参数
-			/*verifyLicense.setParam("/verifyparam.properties");
-			//验证证书
-			Boolean vresult = verifyLicense.verify();
-			
-			if (vresult) {
-				return Constant.loginMessage(vresult, 1, "登录成功！");
-			}else {
-				return Constant.loginMessage(vresult, 2, "产品已过期！");
-			}*/
-			return "{\"success\":\"true\",\"message\":\"登录成功\"}";
-		}else if(result ==2){
-			return "{\"success\":\"false\",\"message\":\"登录失败，账号或密码错误\"}";
-		}else if(result==3) {
-			return "{\"success\":\"false\",\"message\":\"您已连续5次输入密码错误，账号已被锁定\"}";
-		}else {
-			return "{\"success\":\"false\",\"message\":\"产品已过期！\"}";
-		}
-		
+//		int result= this.userService.login(user,session);
+//		if(result==1){
+//			return "{\"success\":\"true\",\"message\":\"登录成功\"}";
+//		}else if(result ==2){
+//			return "{\"success\":\"false\",\"message\":\"登录失败，账号或密码错误\"}";
+//		}else if(result==3) {
+//			return "{\"success\":\"false\",\"message\":\"您已连续5次输入密码错误，账号已被锁定\"}";
+//		}else {
+//			return "{\"success\":\"false\",\"message\":\"产品已过期！\"}";
+//		}
+		return this.userService.login(user,session);
 	}
 	
 	

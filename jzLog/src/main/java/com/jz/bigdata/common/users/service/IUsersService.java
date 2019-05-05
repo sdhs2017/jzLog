@@ -32,7 +32,7 @@ public interface IUsersService {
 	 
 	 User selectById(String id);
 	 
-	 public int login(User user,HttpSession session);
+	 String login(User user,HttpSession session);
 	 
 	 public Boolean checkLogin(HttpSession session);
 	 

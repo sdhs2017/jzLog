@@ -1,12 +1,10 @@
 package com.jz.bigdata.common.users.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -25,6 +23,8 @@ import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.common.users.util.Page;
 import com.jz.bigdata.util.MD5;
 import com.jz.bigdata.util.Uuid;
+
+import net.sf.json.JSONObject;
 
 /**
  * @author shichengyu
@@ -150,12 +150,12 @@ public class UsersServiceImpl implements IUsersService{
 	 * @return 是否登陆成功 true/false
 	 * @description 登陆操作
 	 */
-	public int login(User user,HttpSession session){
+	public String login(User user,HttpSession session){
 		//查询账号密码对应的用户信息
 		user.setPassword(MD5.EncoderByMd5(user.getPassword()));
 		List<User> _userList = userDao.selectByPhonePwd(user);
-//		int tt= 1/0;
-		int result=0;
+		
+		Map<String,Object> map =new HashMap<String,Object>();
 		//获取参数
 		verifyLicense.setParam("/verifyparam.properties");
 		//验证证书
@@ -183,13 +183,20 @@ public class UsersServiceImpl implements IUsersService{
 						session.setAttribute(Constant.SESSION_ID, session.getId());
 						session.setAttribute(Constant.SESSION_USERROLE, String.valueOf(_user.getRole()));
 //						return "{\"success\":\"true\",\"message\":\"登陆成功\"}";
-						result=1;
-						return result;
+						map.put("success", "true");
+						map.put("message", "登陆成功");
+						map.put("user", _user);
+//						result=1;
+						JSONObject json = JSONObject.fromObject(map);
+						return json.toString();
 					}
 				//账号被锁定
 				}else{
-					result=3;
-					return result;
+					map.put("success", "false");
+					map.put("message", "您已连续5次输入密码错误，账号已被锁定");
+//					result=3;
+					JSONObject json = JSONObject.fromObject(map);
+					return json.toString();
 				}
 				
 			}
@@ -211,11 +218,16 @@ public class UsersServiceImpl implements IUsersService{
 					userDao.updateByPhone(user.getPhone());	
 				}
 			}
-			result=2;
-			return result;
+			map.put("success", "false");
+			map.put("message", "登录失败，账号或密码错误");
+			JSONObject json = JSONObject.fromObject(map);
+			return json.toString();
 		//无授权
 		}else {
-			return 4;
+			map.put("success", "false");
+			map.put("message", "产品已过期");
+			JSONObject json = JSONObject.fromObject(map);
+			return json.toString();
 		}
 		
 	}
@@ -256,9 +268,14 @@ public class UsersServiceImpl implements IUsersService{
 	}
 
 
+	/**
+	 * @param session
+	 * @return
+	 * @description
+	 * 获取角色用户信息
+	 */
 	@Override
 	public List<User> selectUserRole(HttpSession session) {
-		
 		return userDao.selectUserRole(session.getAttribute(Constant.SESSION_USERID).toString());
 	}
 
@@ -284,7 +301,6 @@ public class UsersServiceImpl implements IUsersService{
 	 */
 	@Override
 	public List<User> selectByName(User user) {
-		// TODO Auto-generated method stub
 		return userDao.selectByName(user);
 	}
 
