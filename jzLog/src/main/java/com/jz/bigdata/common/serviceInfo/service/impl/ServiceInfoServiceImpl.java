@@ -1,6 +1,8 @@
 package com.jz.bigdata.common.serviceInfo.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +66,8 @@ public class ServiceInfoServiceImpl implements IServiceInfoService {
 	 */
 	@Override
 	public int updateById(ServiceInfo serviceInfo) {
+		SimpleDateFormat format =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		serviceInfo.setUpdateTime(format.format(new Date()));
 		return serviceInfoDao.updateById(serviceInfo);
 	}
 

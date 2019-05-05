@@ -33,7 +33,7 @@
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" /> 
 		from serviceInfo where state=1
-		order by complementState,url,relativeUrl desc
+		order by complementState desc,ip ASC,url ASC,relativeUrl ASC
 	</select>
 
 
@@ -153,7 +153,7 @@
 				and state = 1
 			</otherwise>
 		</choose> -->
-		order by complementState,url,relativeUrl desc
+		order by complementState desc,ip ASC,url ASC,relativeUrl ASC
 	    limit #{startRecord},#{pageSize}
 	   
 	</select>
