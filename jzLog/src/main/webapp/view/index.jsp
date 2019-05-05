@@ -536,7 +536,7 @@ if(user.role == "1"){
 	roleName = "master"
 }
 
-$(".block").html(user.phone+'-'+roleName+'<b class="caret"></b>');
+$(".block").html(roleName+' - '+user.phone+'<b class="caret"></b>');
 /* $.ajax({
 	url:"../users/selectUserRole.do",
 	data:"",
