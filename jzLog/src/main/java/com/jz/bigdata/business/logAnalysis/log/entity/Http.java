@@ -19,11 +19,23 @@ import org.pcap4j.packet.TcpPacket;
  */
 public class Http {
 	
-	private String source_port;//源端口
-	private String des_port;//目标端口
-	private String source_ip;//源ip
-	private String des_ip;//目标ip
-	private String protocol;//协议
+	private String l4_src_port;//源端口
+	private String l4_dst_port;//目标端口
+	private String ipv4_src_addr;//源ip
+	private String ipv4_dst_addr;//目标ip
+	private String protocol;//协议值
+	/**
+	 * 协议名称
+	 */
+	private String protocol_name;// 协议名称
+	/**
+	 * 应用层协议
+	 */
+	private String application_layer_protocol;
+	/**
+	 * 数据包来源
+	 */
+	private String packet_source;
 	private String requestorresponse;//请求或返回
 	private String request_url;//请求地址
 	private String response_state;//返回状态
@@ -69,36 +81,38 @@ public class Http {
 	 */
 	private String operation_des;
 
-	public String getSource_port() {
-		return source_port;
+	
+
+	public String getL4_src_port() {
+		return l4_src_port;
 	}
 
-	public void setSource_port(String source_port) {
-		this.source_port = source_port;
+	public void setL4_src_port(String l4_src_port) {
+		this.l4_src_port = l4_src_port;
 	}
 
-	public String getDes_port() {
-		return des_port;
+	public String getL4_dst_port() {
+		return l4_dst_port;
 	}
 
-	public void setDes_port(String des_port) {
-		this.des_port = des_port;
+	public void setL4_dst_port(String l4_dst_port) {
+		this.l4_dst_port = l4_dst_port;
 	}
 
-	public String getSource_ip() {
-		return source_ip;
+	public String getIpv4_src_addr() {
+		return ipv4_src_addr;
 	}
 
-	public void setSource_ip(String source_ip) {
-		this.source_ip = source_ip;
+	public void setIpv4_src_addr(String ipv4_src_addr) {
+		this.ipv4_src_addr = ipv4_src_addr;
 	}
 
-	public String getDes_ip() {
-		return des_ip;
+	public String getIpv4_dst_addr() {
+		return ipv4_dst_addr;
 	}
 
-	public void setDes_ip(String des_ip) {
-		this.des_ip = des_ip;
+	public void setIpv4_dst_addr(String ipv4_dst_addr) {
+		this.ipv4_dst_addr = ipv4_dst_addr;
 	}
 
 	public String getProtocol() {
@@ -107,6 +121,30 @@ public class Http {
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
+	}
+
+	public String getProtocol_name() {
+		return protocol_name;
+	}
+
+	public void setProtocol_name(String protocol_name) {
+		this.protocol_name = protocol_name;
+	}
+
+	public String getApplication_layer_protocol() {
+		return application_layer_protocol;
+	}
+
+	public void setApplication_layer_protocol(String application_layer_protocol) {
+		this.application_layer_protocol = application_layer_protocol;
+	}
+
+	public String getPacket_source() {
+		return packet_source;
+	}
+
+	public void setPacket_source(String packet_source) {
+		this.packet_source = packet_source;
 	}
 
 	public String getRequestorresponse() {
@@ -296,8 +334,6 @@ public class Http {
 		TcpPacket tcpPacket = packet.get(TcpPacket.class);
 //		System.out.println(log);
 		
-//		Pattern source_portPattern = Pattern.compile("Source port:");  
-//        Matcher source_portmatcher = source_portPattern.matcher(log);
 		Date currentTime = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		this.logdate=currentTime;
@@ -311,11 +347,14 @@ public class Http {
     	this.logtime_hour = time[0];
     	this.logtime_minute = time[1];
 		
-		this.source_ip=ip4packet.getHeader().getSrcAddr().toString().replaceAll("/", "");
-		this.source_port=tcpPacket.getHeader().getSrcPort().valueAsInt()+"";
-		this.des_ip=ip4packet.getHeader().getDstAddr().toString().replaceAll("/", "");
-		this.des_port=tcpPacket.getHeader().getDstPort().valueAsInt()+"";
-		this.protocol="http";
+		this.ipv4_src_addr=ip4packet.getHeader().getSrcAddr().toString().replaceAll("/", "");
+		this.l4_src_port=tcpPacket.getHeader().getSrcPort().valueAsInt()+"";
+		this.ipv4_dst_addr=ip4packet.getHeader().getDstAddr().toString().replaceAll("/", "");
+		this.l4_dst_port=tcpPacket.getHeader().getDstPort().valueAsInt()+"";
+		this.protocol="6";
+		this.protocol_name="TCP";
+		this.application_layer_protocol = "http";
+		this.packet_source = "libpcap";
 		String httphex = tcpPacket.getPayload().toString().substring(tcpPacket.getPayload().toString().indexOf(":")+1).trim();
 		this.operation_des=hexStringToString(httphex);
 		//httprequest
@@ -359,11 +398,11 @@ public class Http {
 				}
 				
 				if (this.request_url!=null) {
-					this.complete_url = this.protocol+"://"+this.des_ip+":"+this.des_port+this.request_url;
+					this.complete_url = this.application_layer_protocol+"://"+this.ipv4_dst_addr+":"+this.l4_dst_port+this.request_url;
 					if (!getSubUtil(this.request_url,"^[/].*?[/]").equals("")) {
-						this.domain_url = "http://"+this.des_ip+":"+this.des_port+""+getSubUtil(this.request_url,"^[/].*?[/]");
+						this.domain_url = "http://"+this.ipv4_dst_addr+":"+this.l4_dst_port+""+getSubUtil(this.request_url,"^[/].*?[/]");
 					}else if (!getSubUtil(this.request_url,"^[/].*?$").equals("")) {
-						this.domain_url = "http://"+this.des_ip+":"+this.des_port+""+getSubUtil(this.request_url,"^[/].*?$");
+						this.domain_url = "http://"+this.ipv4_dst_addr+":"+this.l4_dst_port+""+getSubUtil(this.request_url,"^[/].*?$");
 					}
 				}
 			
@@ -471,25 +510,25 @@ public class Http {
 					|| fields[i].getName().equals("logtime_hour") || fields[i].getName().equals("logtime_day")
 					|| fields[i].getName().equals("logtime_month") || fields[i].getName().equals("logtime_year")
 					|| fields[i].getName().equals("operation_level") || fields[i].getName().equals("ip")
-					|| fields[i].getName().equals("source_port")|| fields[i].getName().equals("protocol")
-					|| fields[i].getName().equals("des_port")|| fields[i].getName().equals("source_ip")
-					|| fields[i].getName().equals("des_ip")|| fields[i].getName().equals("request_type")
+					|| fields[i].getName().equals("l4_src_port")|| fields[i].getName().equals("protocol")
+					|| fields[i].getName().equals("l4_dst_port")|| fields[i].getName().equals("ipv4_src_addr")
+					|| fields[i].getName().equals("ipv4_dst_addr")|| fields[i].getName().equals("request_type")
 					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
 					|| fields[i].getName().equals("domain_url")
 					|| fields[i].getName().equals("request_url")|| fields[i].getName().equals("response_state")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": " + "true" + "\n");
 			}
 			if (fields[i].getName().equals("operation_des") || fields[i].getName().equals("equipmentname")
-					|| fields[i].getName().equals("source_ip")
-					|| fields[i].getName().equals("des_ip")|| fields[i].getName().equals("request_url")
+					|| fields[i].getName().equals("ipv4_src_addr")
+					|| fields[i].getName().equals("ipv4_dst_addr")|| fields[i].getName().equals("request_url")
 					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
 					|| fields[i].getName().equals("domain_url") 
 					) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");
 			}
-			if (fields[i].getName().equals("equipmentname") || fields[i].getName().equals("source_ip")
-					|| fields[i].getName().equals("des_ip") || fields[i].getName().equals("request_url")
+			if (fields[i].getName().equals("equipmentname") || fields[i].getName().equals("ipv4_src_addr")
+					|| fields[i].getName().equals("ipv4_dst_addr") || fields[i].getName().equals("request_url")
 					|| fields[i].getName().equals("domain_url") 
 					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fields\": " + "{\"raw\": {\"type\": \"keyword\"}}" + "\n");

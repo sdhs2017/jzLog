@@ -84,7 +84,7 @@ public class TcpStream {
 			http =new Http(packet);
 			json = gson.toJson(http);
 			requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTP, json));
-			System.out.println(http.getSource_ip());
+			System.out.println(http.getIpv4_src_addr());
 		}else if (hexstring.contains("170303")||hexstring.contains("160301")||hexstring.contains("150303")||hexstring.contains("160303")||hexstring.contains("140303")) {
 			TcpStream tcpStream=new TcpStream();
 			if (tcpPacket.getHeader().getAck()&&tcpPacket.getHeader().getPsh()) {

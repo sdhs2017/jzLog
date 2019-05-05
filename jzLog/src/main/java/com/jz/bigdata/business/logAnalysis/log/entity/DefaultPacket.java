@@ -118,6 +118,14 @@ public class DefaultPacket {
 	private String acknum; // tcp 确认号
 	private String seqnum; // tcp 顺序号
 
+	// -------------http数据包属性---------------
+	private String requestorresponse;//请求或返回
+	private String request_url;//请求地址
+	private String response_state;//返回状态
+	private String request_type;//请求类型
+	private String complete_url; // 完整的url http://192.168.2.182:8080/jzLog/getIndicesCount.do?_=1555924017369
+	private String url_param; // url参数
+	private String domain_url; // 域名
 
 	public String getId() {
 		return id;
@@ -335,6 +343,62 @@ public class DefaultPacket {
 		this.seqnum = seqnum;
 	}
 
+	public String getRequestorresponse() {
+		return requestorresponse;
+	}
+
+	public void setRequestorresponse(String requestorresponse) {
+		this.requestorresponse = requestorresponse;
+	}
+
+	public String getRequest_url() {
+		return request_url;
+	}
+
+	public void setRequest_url(String request_url) {
+		this.request_url = request_url;
+	}
+
+	public String getResponse_state() {
+		return response_state;
+	}
+
+	public void setResponse_state(String response_state) {
+		this.response_state = response_state;
+	}
+
+	public String getRequest_type() {
+		return request_type;
+	}
+
+	public void setRequest_type(String request_type) {
+		this.request_type = request_type;
+	}
+
+	public String getComplete_url() {
+		return complete_url;
+	}
+
+	public void setComplete_url(String complete_url) {
+		this.complete_url = complete_url;
+	}
+
+	public String getUrl_param() {
+		return url_param;
+	}
+
+	public void setUrl_param(String url_param) {
+		this.url_param = url_param;
+	}
+
+	public String getDomain_url() {
+		return domain_url;
+	}
+
+	public void setDomain_url(String domain_url) {
+		this.domain_url = domain_url;
+	}
+
 	public DefaultPacket(){
 		
 	}
@@ -410,7 +474,7 @@ public class DefaultPacket {
 		}else {
 			System.out.println("协议值："+ip4packet.getHeader().getProtocol());
 		}
-		this.packet_source = "pcap4j";
+		this.packet_source = "libpcap";
 		
 	}
 	
@@ -443,7 +507,11 @@ public class DefaultPacket {
 					|| fields[i].getName().equals("l4_src_port")|| fields[i].getName().equals("l4_dst_port")
 					|| fields[i].getName().equals("protocol")|| fields[i].getName().equals("protocol_name")
 					|| fields[i].getName().equals("application_layer_protocol")|| fields[i].getName().equals("encryption_based_protection_protocol")
-					|| fields[i].getName().equals("packet_source")) {
+					|| fields[i].getName().equals("packet_source")
+					// http 需要聚合的字段值
+					|| fields[i].getName().equals("request_type")|| fields[i].getName().equals("domain_url")
+					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
+					|| fields[i].getName().equals("request_url")|| fields[i].getName().equals("response_state")) {
 				fieldstring.append("\t\t\t\t\t\t,\"fielddata\": " + "true" + "\n");
 			}
 			if (fields[i].getName().equals("operation_des") || fields[i].getName().equals("ip")
@@ -451,9 +519,17 @@ public class DefaultPacket {
 					|| fields[i].getName().equals("ipv4_src_addr") || fields[i].getName().equals("l4_src_port")
 					|| fields[i].getName().equals("l4_dst_port") || fields[i].getName().equals("protocol_name")
 					|| fields[i].getName().equals("application_layer_protocol")|| fields[i].getName().equals("encryption_based_protection_protocol")
-					|| fields[i].getName().equals("packet_source")) {
+					|| fields[i].getName().equals("packet_source")|| fields[i].getName().equals("request_url")
+					|| fields[i].getName().equals("complete_url")|| fields[i].getName().equals("url_param")
+					|| fields[i].getName().equals("domain_url") ) {
 				fieldstring.append("\t\t\t\t\t\t,\"analyzer\": \"" + "index_ansj\"" + "\n");
 				fieldstring.append("\t\t\t\t\t\t,\"search_analyzer\": \"" + "query_ansj\"" + "\n");
+			}
+			if (fields[i].getName().equals("equipmentname") || fields[i].getName().equals("ipv4_src_addr")
+					|| fields[i].getName().equals("ipv4_dst_addr") || fields[i].getName().equals("request_url")
+					|| fields[i].getName().equals("domain_url") || fields[i].getName().equals("url_param")
+					|| fields[i].getName().equals("complete_url")) {
+				fieldstring.append("\t\t\t\t\t\t,\"fields\": " + "{\"raw\": {\"type\": \"keyword\"}}" + "\n");
 			}
 			if (i == fields.length - 1) {
 				fieldstring.append("\t\t\t\t\t}\n");
@@ -512,11 +588,12 @@ public class DefaultPacket {
 		return null;
 	}
 	public static void main(String[] args) {
-		String tcp ="6 (TCP)" ;
+		/*String tcp ="6 (TCP)" ;
 		String udp ="17 (UDP)";
 		
 		String tcp_protocol_value =getSubUtilSimple(tcp,"(\\d+)");
 		String tcp_protocol_name = getSubUtilSimple(tcp,"[(](.*?)[)]");
-		System.out.println(tcp_protocol_value+":"+tcp_protocol_name);
+		System.out.println(tcp_protocol_value+":"+tcp_protocol_name);*/
+		System.out.println(new DefaultPacket().toMapping());
 	}
 }

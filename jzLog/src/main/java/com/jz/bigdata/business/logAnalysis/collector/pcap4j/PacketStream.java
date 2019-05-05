@@ -78,20 +78,21 @@ public class PacketStream {
 					if ((getSubUtil(hexStringToString(payloadString), httpRequest)!=""||getSubUtil(hexStringToString(payloadString), httpResponse)!="")&&!dst_port.equals("9300")) {
 						try {
 							http =new Http(packet);
+							
+							if (http.getDomain_url()!=null&&!http.getDomain_url().equals("")) {
+								domainSet.add(http.getDomain_url());
+							}
+							if (http.getRequest_url()!=null&&!http.getRequest_url().equals("")) {
+								urlmap.put("http://"+http.getIpv4_dst_addr()+":"+http.getL4_dst_port()+""+http.getRequest_url(), http.getDomain_url());
+								System.out.println("--urlmap---"+urlmap);
+							}
+							json = gson.toJson(http);
+							requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DEFAULTPACKET, json));
 						} catch (Exception e) {
 							System.out.println("---------------范式化失败·······---------"+e.getMessage());
 							e.printStackTrace();
 						}
 						
-						if (http.getDomain_url()!=null&&!http.getDomain_url().equals("")) {
-							domainSet.add(http.getDomain_url());
-						}
-						if (http.getRequest_url()!=null&&!http.getRequest_url().equals("")) {
-							urlmap.put("http://"+http.getDes_ip()+":"+http.getDes_port()+""+http.getRequest_url(), http.getDomain_url());
-							System.out.println("--urlmap---"+urlmap);
-						}
-						json = gson.toJson(http);
-						requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_HTTP, json));
 					}else {
 						defaultpacket = new DefaultPacket(packet);
 						if (defaultpacket.getApplication_layer_protocol()!=null&&defaultpacket.getApplication_layer_protocol().equals("HTTPS")) {
