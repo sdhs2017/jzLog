@@ -427,6 +427,8 @@ function loginOut(){
         dataType:"json", //数据类型  
 		success:function(data){
 			if(data.success=="true"){
+				//删除保存本地的用户
+				localStorage.removeItem("LoginUser")
 				window.location.href="../Login.jsp";
 			}
 		}
@@ -519,21 +521,34 @@ function rangeChange(){
 thresholdWarning();
 //定时查看阈值情况  100分钟 查看一次
 setInterval(thresholdWarning,6000000);
-
 //获取角色信息
-$.ajax({
+var user = JSON.parse(localStorage.getItem("LoginUser"))
+var roleName = "";
+if(user.role == "1"){
+	roleName == "管理员"
+}else if(user.role == "2"){
+	roleName == "操作员"
+}else if(user.role == "3"){
+	roleName == "审查员"
+}else if(user.role == "4"){
+	roleName == "游客"
+}else if(user.role == "5"){
+	roleName == "master"
+}
+
+$(".block").html(user.phone+'-'+user.roleName+'<b class="caret"></b>');
+/* $.ajax({
 	url:"../users/selectUserRole.do",
 	data:"",
 	type:"get",  //提交方式  
 	cache: false ,
     dataType:"json", //数据类型  
 	success:function(data){
-		var roleName = data[0][0].roleName;
-		$(".block").html(roleName+'<b class="caret"></b>');
+		
 		//保存在本地
 		localStorage.setItem("LoginUser", JSON.stringify(data[0]));
 	}
-}); 
+});  */
 /* //本地存储系统颜色风格
 localStorage.setItem("systemColor","deepColour");
 

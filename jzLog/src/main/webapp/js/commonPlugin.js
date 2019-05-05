@@ -113,3 +113,36 @@
 	}
 	
 })( jQuery );
+/*
+ *功能： 页面跳转方法
+ * 参数：
+ *  src-页面路径
+ *	titleVal-标签值
+ *  des - 标题文字描述
+ *	objStr-参数的集合
+ */
+//跳转页面    type-页面类型（排行榜、关系图） 
+function jumpHtml(src,titleVal,des,objStr){
+	//标签页面计数
+	var htmlNum = Number(sessionStorage.getItem("htmlNum"));	
+	//长度超出15显示...号
+	var tVal = "";
+	if(titleVal.length > 15){
+		tVal = titleVal.substring(0,15)+'...';
+	}else{
+		tVal = titleVal;
+	}
+	//标签页名称
+	var tagsName = tVal + des;
+	var html ='<a href="javascript:;" class="active J_menuTab" data-obj="'+objStr+'" title="'+titleVal+'" data-id="'+src+htmlNum+'">'+tagsName+'<i class="fa fa-times-circle"></i></a>'
+		//移除导航菜单选中属性
+		$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
+		//添加导航菜单
+		$('.page-tabs-content', parent.document).click().append(html);
+		var iframe = '<iframe class="J_iframe" width="100%" height="100%" src="'+src+'" frameborder="0" data-id="'+src+htmlNum+'" seamless="" style="display: inline;"></iframe>'
+		//移除其他页面
+		$('#content-main', parent.document).click().children("iframe").hide();
+		$('#content-main', parent.document).click().append(iframe);
+		htmlNum++;
+		sessionStorage.setItem("htmlNum",htmlNum);
+}	

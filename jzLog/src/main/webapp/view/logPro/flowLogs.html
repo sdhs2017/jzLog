@@ -201,7 +201,12 @@
 							</div>
 							<div class="searchServerBox" >
 								<div class="searchBoxTitle" style="width:85px;">数据来源</div>
-								<input type="text" class="form-control searchPacket_source"  placeholder="网络数据来源">
+								<!-- <input type="text" class="form-control searchPacket_source"  placeholder="网络数据来源"> -->
+								<select class="form-control searchPacket_source">
+		 							<option selected="" value=""></option>
+		 							<option value="libpcap">libpcap</option>
+		 							<option value="netflow">netflow</option>
+		 						</select>
 							</div>
 						</div>
 					</div>
@@ -298,6 +303,17 @@
 		<script type="text/javascript">
 			var pageSize = 13;
 			var url = "../../log/getLogListByBlend.do";
+			var multifield_ip = "";
+			//获得存放在标签里的参数
+			var getObj = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
+			//判断是否是功能url排行榜
+			if(getObj !== undefined){
+				//将获取的本地sessionstorage字符串转换为obj对象格式
+				var obj = JSON.parse(getObj.replace(/'/g,"\""));
+				multifield_ip = obj.ip;
+				//url = "../../log/getCountGroupByHttpComUrl.do";
+				$(".top_title").html("'"+obj.ip +"' 日志")
+			}			
 			var sendSearchObj = {};//查询日志 参数集合
 			//点击检索按钮 获取数据
 			$("#searchLogs").click(function(){
@@ -313,6 +329,8 @@
 				firstGet = true;
 				logStatus = true;
 				//获得查询条件参数值
+				//传递过来的ip
+				sendSearchObj.multifield_ip = multifield_ip;
 				//日志类型为dns
 				sendSearchObj.type = "defaultpacket";
 				//获取开始时间

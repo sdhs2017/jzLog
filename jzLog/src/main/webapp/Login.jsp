@@ -133,9 +133,13 @@ $(function() {
 			timeout:30000,
 			async:true,
 			success:function(data){
+				sessionStorage.setItem("htmlNum",0);
+				console.log(data)
 				//关闭进度条
 				layer.closeAll('loading');
 				if(data.success=="true"){
+					//保存在本地
+					localStorage.setItem("LoginUser", JSON.stringify(data.user));
 	            	window.location.href="view/index.jsp";
 	            }else if(data.success=="false"){
 	            	layer.msg(data.message,{

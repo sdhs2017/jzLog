@@ -49,6 +49,7 @@
 		<script src="../../js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 		
 		
@@ -295,10 +296,18 @@
 		            c.neighborhood("edge").removeClass("edgeActive");
 		            c.neighborhood("node").removeClass("nodeActive");
 		        })
+		        var htmlNum = 0;
 		        cy.on("click", "node", function (a) {
-		            let c = a.target;
+		            /* let c = a.target;
 		            c.removeClass("nodeActive");
-		            cy.collection("edge").removeClass("edgeActive");
+		            cy.collection("edge").removeClass("edgeActive"); */
+		            //获取ip地址  参数集合
+		            var obj={};
+		            obj.ip = a.target._private.data.id;
+		            var objStr = JSON.stringify(obj);
+		            objStr = objStr.replace(/"/g,"'");
+		            //跳转到流量日志页面
+		            jumpHtml("logPro/flowLogs.html",obj.ip,"日志",objStr)
 		        })
 		        cy.on("vmousedown", "node", function (a) { //监听鼠标左键按下
 		           /*  let c = a.target;
