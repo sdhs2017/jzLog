@@ -525,18 +525,18 @@ setInterval(thresholdWarning,6000000);
 var user = JSON.parse(localStorage.getItem("LoginUser"))
 var roleName = "";
 if(user.role == "1"){
-	roleName == "管理员"
+	roleName = "管理员"
 }else if(user.role == "2"){
-	roleName == "操作员"
+	roleName = "操作员"
 }else if(user.role == "3"){
-	roleName == "审查员"
+	roleName = "审查员"
 }else if(user.role == "4"){
-	roleName == "游客"
+	roleName = "游客"
 }else if(user.role == "5"){
-	roleName == "master"
+	roleName = "master"
 }
 
-$(".block").html(user.phone+'-'+user.roleName+'<b class="caret"></b>');
+$(".block").html(user.phone+'-'+roleName+'<b class="caret"></b>');
 /* $.ajax({
 	url:"../users/selectUserRole.do",
 	data:"",
