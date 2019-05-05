@@ -328,6 +328,23 @@
 		            c.neighborhood("edge").removeClass("edgeActive");
 		            c.neighborhood("node").removeClass("nodeActive");
 		        })
+		        //线点击事件
+		        cy.on("click", "edge", function (a) {
+		        	var obj={};
+		        	obj.clickType = "link";
+		        	obj.type = "ip-url"
+		            obj.ipv4_src_addr = a.target._private.data.source;
+		        	obj.targetVal = a.target._private.data.target;
+		            if(tagObj.complete_url == undefined){	
+	        			obj.kname = "domain_url"
+	    			}else{
+	    				obj.kname = "complete_url"
+	    			}
+		            var objStr = JSON.stringify(obj);
+		            objStr = objStr.replace(/"/g,"'");
+		            //跳转到流量日志页面
+		            jumpHtml("logPro/flowLogs.html",obj.ipv4_src_addr+'-'+obj.targetVal,"日志",objStr)
+		        })
 		        //node点击事件
 		        cy.on("click", "node", function (a) {
 		        	var obj={};

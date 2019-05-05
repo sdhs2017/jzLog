@@ -316,10 +316,25 @@
 					}else if(obj.type == "url"){
 						sendSearchObj[obj.kname] = obj.val;
 					}
+					$(".top_title").html("'"+obj.val +"' 日志")
+				}else if(obj.clickType == "link"){
+					if(obj.type == "ip"){						
+						$(".searchSrcIp").val(obj.ipv4_src_addr);
+						$(".searchDstIp").val(obj.ipv4_dst_addr);
+						$(".searchSrcIp").attr("disabled","disabled")
+						$(".searchDstIp").attr("disabled","disabled")
+						$(".top_title").html("'"+obj.ipv4_src_addr +"-"+obj.ipv4_dst_addr +"' 日志");
+					}else if(obj.type == "ip-url"){;
+						$(".searchSrcIp").val(obj.ipv4_src_addr);
+						$(".searchSrcIp").attr("disabled","disabled")
+						sendSearchObj[obj.kname] = obj.targetVal;
+						$(".top_title").html("'"+obj.ipv4_src_addr +"-"+obj.targetVal +"' 日志");
+					}
+					
 				}
 				
 				//url = "../../log/getCountGroupByHttpComUrl.do";
-				$(".top_title").html("'"+obj.val +"' 日志")
+				
 			}			
 			//点击检索按钮 获取数据
 			$("#searchLogs").click(function(){

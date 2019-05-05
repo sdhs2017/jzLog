@@ -161,7 +161,7 @@
 	<body>
 		<div id="box">
 			<div class="top_title">
-				服务画像
+				应用画像
 			</div>
 			<div class="urlRankingCon">
 				<div class="listBox">
@@ -336,6 +336,8 @@
 				var urlStr = "";
 				if(dataVal.length > 15){
 					urlStr = dataVal.substring(0,15)+'...'
+				}else{
+					urlStr = dataVal;
 				}
 				 var html ='<a href="javascript:;" class="active J_menuTab" data-obj="'+objStr+'" title="'+dataVal+'" data-id="'+src+htmlNum+'">'+urlStr+type+'<i class="fa fa-times-circle"></i></a>'
 					//移除导航菜单选中属性

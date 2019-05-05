@@ -297,7 +297,15 @@
 		            c.neighborhood("node").removeClass("nodeActive");
 		        })
 		        cy.on("click", "edge", function (a) {
-		        	console.log(a)
+		        	var obj={};
+		        	obj.clickType = "link";
+		        	obj.type = "ip"
+		            obj.ipv4_src_addr = a.target._private.data.source;
+		            obj.ipv4_dst_addr = a.target._private.data.target;
+		            var objStr = JSON.stringify(obj);
+		            objStr = objStr.replace(/"/g,"'");
+		            //跳转到流量日志页面
+		            jumpHtml("logPro/flowLogs.html",obj.ipv4_src_addr+'-'+obj.ipv4_dst_addr,"日志",objStr)
 		        })
 		        
 		        cy.on("click", "node", function (a) {
@@ -313,7 +321,7 @@
 		            var objStr = JSON.stringify(obj);
 		            objStr = objStr.replace(/"/g,"'");
 		            //跳转到流量日志页面
-		            jumpHtml("logPro/flowLogs.html",obj.val,"日志",objStr)
+		            jumpHtml("logPro/flowLogs.html",obj.val,"日志",objStr);
 		        })
 		        cy.on("vmousedown", "node", function (a) { //监听鼠标左键按下
 		           /*  let c = a.target;
