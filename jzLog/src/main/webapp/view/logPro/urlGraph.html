@@ -47,16 +47,15 @@
 			//获取存放在标签页标题中的数据
 			var getDeviceObj = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
 			//将获取的本地sessionstorage字符串转换为obj对象格式
-			var obj = JSON.parse(getDeviceObj.replace(/'/g,"\""));	
+			var tagObj = JSON.parse(getDeviceObj.replace(/'/g,"\""));	
 			//参数集合
-			var sendObj = {};
 			var url = '';
-			if(obj.complete_url == undefined){	
+			if(tagObj.complete_url == undefined){	
 				url = "../../log/getVisitCountGroupByHttpSourceIP.do"
-				$(".top_title").html("'"+obj.domain_url+"' 业务流")
+				$(".top_title").html("'"+tagObj.domain_url+"' 业务流")
 			}else{
 				url = "../../log/getVisitCountOfComUrlGroupByHttpSourceIP.do "
-				$(".top_title").html("'"+obj.complete_url+"' 业务流")
+				$(".top_title").html("'"+tagObj.complete_url+"' 业务流")
 			}
 			
 			//成功回调函数
@@ -339,7 +338,7 @@
 		        	//判断值得类型
 		        	if(obj.val.substring(0,4) == "http"){//点击的是url圆点
 		        		obj.type = "url";
-		        		if(obj.complete_url == undefined){	
+		        		if(tagObj.complete_url == undefined){	
 		        			obj.kname = "domain_url"
 		    			}else{
 		    				obj.kname = "complete_url"
@@ -387,7 +386,7 @@
 				layer.msg('操作失败',{icon: 5});
 			}
 			//发送请求
-			ajaxPost(url,obj,sfunc,"",efunc);
+			ajaxPost(url,tagObj,sfunc,"",efunc);
 		</script>
 	</body>
 </html>

@@ -1,6 +1,7 @@
 
 	var logsArr  = [];//数组 用于存放获取来的logs
 	var logDetailArr = [];//用于查看日志详情存放json日志
+	var logType = "";//日志类型
 	var pageCount = 0;//总页数
 	var pageTotle = 13;//每一页显示的条数
 	var historyArr = [];//用于存放检索历史数组
@@ -185,7 +186,7 @@
 	function showLogs(logsArr){
 		logDesArr = [];
 		//获取日志类型
-		var logType = $(".device_logType").html();
+		logType = $(".device_logType").html();
 		//判断日志类型
 		if(logType == "log4j"){
 			/****************1 log4j 日志列表格式*******************/
@@ -1338,7 +1339,7 @@
 					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'	
-		}else if(logType == "http"){
+		}else if(logType == "defaultpacket_http"){
 			//拼接弹窗 html		
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:50px">'
