@@ -180,8 +180,8 @@ public class LogController extends BaseController{
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_UNKNOWN, new Unknown().toMapping());
 			
 			// 网络数据包
-			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_HTTP, new Http().toMapping());
-			/*logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_HTTPS, new Https().toMapping());
+			/*logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_HTTP, new Http().toMapping());
+			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_HTTPS, new Https().toMapping());
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_TCP, new Tcp().toMapping());*/
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DEFAULTPACKET, new DefaultPacket().toMapping());
 			
@@ -397,7 +397,7 @@ public class LogController extends BaseController{
 	public String getCountGroupByUrl(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String  groupby = "domain_url.raw";
-		String [] types = {"http"};
+		String [] types = {"defaultpacket"};
 		// 资产的ip和端口即目的IP和目的端口
 		String des_ip = request.getParameter("des_ip");
 		String des_port = request.getParameter("des_port");
@@ -446,8 +446,8 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="统计domain被IP访问的次数")
 	public String getVisitCountGroupByHttpSourceIP(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
-		String  groupby = "source_ip";
-		String [] types = {"http"};
+		String  groupby = "ipv4_src_addr";
+		String [] types = {"defaultpacket"};
 		// 资产的ip和端口
 		String domain_url = request.getParameter("domain_url");
 		
@@ -494,7 +494,7 @@ public class LogController extends BaseController{
 	public String getCountGroupByHttpComUrl(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String  groupby = "complete_url.raw";
-		String [] types = {"http"};
+		String [] types = {"defaultpacket"};
 		// 资产的ip和端口
 		String domain_url = request.getParameter("domain_url");
 		
@@ -528,8 +528,8 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="统计单个url被IP访问的次数")
 	public String getVisitCountOfComUrlGroupByHttpSourceIP(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
-		String  groupby = "source_ip";
-		String [] types = {"http"};
+		String  groupby = "ipv4_src_addr";
+		String [] types = {"defaultpacket"};
 		// 资产的ip和端口
 		String domain_url = request.getParameter("domain_url");
 		String complete_url = request.getParameter("complete_url");
@@ -674,7 +674,10 @@ public class LogController extends BaseController{
 		map.put("equipmentid", equipmentId);
 		map.remove("id");
 		ArrayList<String> arrayList = new ArrayList<>();
-		arrayList.add(type);
+		
+		if (type.equals("netflow")) {
+			arrayList.add("defaultpacket");
+		}
 		String [] types = null;
 		if (type!=null) {
 			types = arrayList.toArray(new String[arrayList.size()]);
@@ -774,6 +777,8 @@ public class LogController extends BaseController{
 		System.out.println(map);
 		Object pageo = map.get("page");
 		Object sizeo = map.get("size");
+		map.remove("page");
+		map.remove("size");
 		
 		String page = pageo.toString();
 		String size = sizeo.toString();
@@ -784,9 +789,74 @@ public class LogController extends BaseController{
 		
 		if (map.get("type")!=null&&!map.get("type").equals("")) {
 			arrayList.add(map.get("type"));
+			map.remove("type");
 			String [] types = arrayList.toArray(new String[arrayList.size()]);
 			if (userrole.equals("1")) {
 				list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,size);
+			}else {
+				list = logService.getListByBlend(configProperty.getEs_index(), types, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
+			}
+		}else {
+			String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
+			if (userrole.equals("1")) {
+				list = logService.getListByBlend(configProperty.getEs_index(), types, map,page,size);
+			}else {
+				list = logService.getListByBlend(configProperty.getEs_index(), types, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
+			}
+		}
+		Map<String, Object> allmap = new HashMap<>();
+		allmap = list.get(0);
+		list.remove(0);
+		allmap.put("list", list);
+		String result = JSONArray.fromObject(allmap).toString();
+		String replace=result.replace("\\\\005", "<br/>");
+		
+		return replace;
+	}
+	
+	/**
+	 * 组合查询
+	 * @param requestt
+	 * @author jiyourui
+	 * @return 
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value="/getLogListByFlow",produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="业务流分析-深钻-日志内容")
+	public String getLogListByFlow(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
+		// receive parameter
+		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
+		String ztData = request.getParameter("hsData");
+		
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, String> map = new HashMap<String, String>();
+		
+		map = removeMapEmptyValue(mapper.readValue(ztData, Map.class));
+		System.out.println(map);
+		Object pageo = map.get("page");
+		Object sizeo = map.get("size");
+		
+		String page = pageo.toString();
+		String size = sizeo.toString();
+		map.remove("page");
+		map.remove("size");
+		
+		ArrayList<String> arrayList = new ArrayList<>();
+		List<Map<String, Object>> list =null;
+		Map<String, String[]> param = new HashMap<>();
+		String[] multified = {"ipv4_dst_addr","ipv4_src_addr"};
+		param.put(map.get("ip"), multified);
+		
+		if (map.get("type")!=null&&!map.get("type").equals("")) {
+			arrayList.add(map.get("type"));
+			map.remove("type");
+			String [] types = arrayList.toArray(new String[arrayList.size()]);
+			if (userrole.equals("1")) {
+				list = logService.getListByMultiField(configProperty.getEs_index(), types, param,map,page,size);
 			}else {
 				list = logService.getListByBlend(configProperty.getEs_index(), types, map,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
 			}
@@ -1095,7 +1165,6 @@ public class LogController extends BaseController{
 		// receive parameter
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
 		String hsData = request.getParameter("hsData");
-		System.out.println(hsData);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> map = new HashMap<String, String>();
@@ -1601,7 +1670,7 @@ public class LogController extends BaseController{
 		
 		// 双向划线
 		String [] groupbys = {"ipv4_src_addr","ipv4_dst_addr"};
-		String[] types = {"netflow"};
+		String[] types = {"defaultpacket"};
 		
 		Map<String, String> searchmap = new HashMap<>();
 		

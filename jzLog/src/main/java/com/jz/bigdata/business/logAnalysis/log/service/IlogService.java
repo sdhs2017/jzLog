@@ -224,6 +224,18 @@ public interface IlogService {
 
 	List<Map<String, Object>> getEventstypeCountByEquipmentid(String index, String[] types, String equipmentid, Date enddate);
 
+	/**
+	 * 构建multiField查询
+	 * @param index
+	 * @param types
+	 * @param multifield map中的 key是查询内容，value是需要查询的字段，value为String数组
+	 * @param param 其他条件参数
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	List<Map<String, Object>> getListByMultiField(String index, String[] types, Map<String, String[]> multifield, Map<String, String> param, String page, String size);
+
 	
 
 	
