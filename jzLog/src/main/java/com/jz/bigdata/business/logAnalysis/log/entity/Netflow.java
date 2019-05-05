@@ -644,31 +644,24 @@ public class Netflow {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-//		cal.setTimeInMillis(log4jjson.getTimestamp());
 		cal.setTime(this.logdate);
 		this.logtime = format.format(this.logdate.getTime());
-//		netflow.setLogtime(format.format(this.logdate.getTime()));
 		this.logtime_year = String.valueOf(cal.get(Calendar.YEAR));
-//		netflow.setLogtime_year(String.valueOf(cal.get(Calendar.YEAR)));
 		this.logtime_month = String.format("%02d", cal.get(Calendar.MONTH) + 1);
-//		netflow.setLogtime_month(String.format("%02d", cal.get(Calendar.MONTH) + 1));
 		this.logtime_day = String.format("%02d", cal.get(Calendar.DAY_OF_MONTH));
-//		netflow.setLogtime_day(String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
 		this.logtime_hour = String.format("%02d", cal.get(Calendar.HOUR_OF_DAY));
-//		netflow.setLogtime_hour(String.format("%02d", cal.get(Calendar.HOUR_OF_DAY)));
 		this.logtime_minute = String.format("%02d", cal.get(Calendar.MINUTE));
-//		netflow.setLogtime_minute(String.format("%02d", cal.get(Calendar.MINUTE)));
 		
 		this.l4_src_port=netflow.getNetflow().l4_src_port;
 		this.l4_dst_port=netflow.getNetflow().l4_dst_port;
 		this.ipv4_dst_addr=netflow.getNetflow().ipv4_dst_addr;
 		this.ipv4_src_addr=netflow.getNetflow().ipv4_src_addr;
-		this.dst_as=netflow.getNetflow().getDst_as();
+		/*this.dst_as=netflow.getNetflow().getDst_as();
 		this.in_pkts=netflow.getNetflow().getIn_pkts();
 		this.first_switched=netflow.getNetflow().getFirst_switched();
 		this.ipv4_next_hop=netflow.getNetflow().getIpv4_next_hop();
 		this.sampling_algorithm=netflow.getNetflow().getSampling_algorithm();
-		this.in_bytes=netflow.getNetflow().getIn_bytes();
+		this.in_bytes=netflow.getNetflow().getIn_bytes();*/
 		this.protocol=netflow.getNetflow().getProtocol();
 		this.packet_source = "netflow";
 		if (this.protocol!=null) {
@@ -681,7 +674,7 @@ public class Netflow {
 		}else {
 			this.protocol_name = "";
 		}
-		this.tcp_flags=netflow.getNetflow().getTcp_flags();
+		/*this.tcp_flags=netflow.getNetflow().getTcp_flags();
 		this.src_as=netflow.getNetflow().getSrc_as();
 		this.output_snmp=netflow.getNetflow().getOutput_snmp();
 		this.dst_mask=netflow.getNetflow().getDst_mask();
@@ -694,7 +687,7 @@ public class Netflow {
 		this.engine_id=netflow.getNetflow().getEngine_id();
 		this.input_snmp=netflow.getNetflow().getInput_snmp();
 		this.last_switched=netflow.getNetflow().getLast_switched();
-		this.sampling_interval=netflow.getNetflow().getSampling_interval();
+		this.sampling_interval=netflow.getNetflow().getSampling_interval();*/
 		this.operation_level="";
 //		netflow.setOperation_des(log);
 		this.operation_des=log;

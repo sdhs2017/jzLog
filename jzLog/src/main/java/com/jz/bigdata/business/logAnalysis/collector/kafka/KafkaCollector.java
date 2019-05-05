@@ -420,7 +420,8 @@ public class KafkaCollector implements Runnable {
 							netflow.setEquipmentname(equipment.getName());
 							netflow.setEquipmentid(equipment.getId());
 							json = gson.toJson(netflow);
-							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_NETFLOW, json));
+							//requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_NETFLOW, json));
+							requests.add(template.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DEFAULTPACKET, json));
 						}
 					}catch (Exception e) {
 						e.printStackTrace();
