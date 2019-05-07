@@ -799,7 +799,7 @@
 			//获取用户权限等级
 			var loginUserObj = JSON.parse(localStorage.getItem("LoginUser"));
 			//如果不是master 则无法修改
-			if(loginUserObj[0].role != "5"){
+			if(loginUserObj.role != "5"){
 				$(".user_state").attr("disabled","disabled")
 			}
 			if(obj.state == "0"){
