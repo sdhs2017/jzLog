@@ -1036,6 +1036,13 @@
 		/*if(logType == undefined){//logType ！= undefined 单个设备的日志
 			logType = $(this).parent().siblings('.logs_type').html();
 		}*/
+		if(logType == undefined){//精确查询与日志检索
+			logType = logDetailArr[logIndex].type;
+			if(logDetailArr[logIndex].application_layer_protocol !== undefined){
+				logType == "defaultpacket_http"
+			}
+		}
+		
 		//获取日志Id
 		var id = $(this).parents("tr").attr("data-id");
 		//获取日志时间
@@ -1348,19 +1355,19 @@
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">源地址:</div>'
-					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].source_ip+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ipv4_src_addr+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">目的地址:</div>'
-					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].des_ip+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ipv4_dst_addr +'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">源端口:</div>'
-					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].source_port+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].l4_src_port+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">目的端口:</div>'
-					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].des_port+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].l4_dst_port+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">请求或响应:</div>'
