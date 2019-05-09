@@ -288,8 +288,11 @@ public class Syslog {
 	 	Pattern datePattern = Pattern.compile("[0-9]{4}[-][0-9]{1,2}[-][0-9]{1,2}[ ][0-9]{1,2}[:][0-9]{1,2}[:][0-9]{1,2}[.][0-9]{2,3}");  
 	    Matcher datematcher = datePattern.matcher(syslog);
 	    // 事件定性
-	    Pattern shutdownpattern = Pattern.compile("shutdown",Pattern.CASE_INSENSITIVE);
+	    Pattern shutdownpattern = Pattern.compile("shutdown\\s+",Pattern.CASE_INSENSITIVE);
 		Matcher shutdownmatcher = shutdownpattern.matcher(syslog);
+		
+		Pattern sshFailedpattern = Pattern.compile("Failed\\s+password\\s+for\\s+invalid\\s+user\\s+(.*?)\\s+from\\s+(\\d+\\.\\d+\\.\\d+\\.\\d+)\\s+port\\s+[0-9]{1,5}\\s+ssh2",Pattern.CASE_INSENSITIVE);
+		Matcher sshFailedmatcher = sshFailedpattern.matcher(syslog);
 
 	    Pattern networkpattern = Pattern.compile("NetworkManager",Pattern.CASE_INSENSITIVE);
 		Matcher networkmatcher = networkpattern.matcher(syslog);
@@ -297,7 +300,7 @@ public class Syslog {
 		Pattern usbpattern = Pattern.compile("usb",Pattern.CASE_INSENSITIVE);
 		Matcher usbmatcher = usbpattern.matcher(syslog);
 		
-		Pattern sshdpattern = Pattern.compile("sshd",Pattern.CASE_INSENSITIVE);
+		Pattern sshdpattern = Pattern.compile("Accepted password for (.*?) from (\\d+\\.\\d+\\.\\d+\\.\\d+) port [0-9]{1,5} ssh2",Pattern.CASE_INSENSITIVE);
 		Matcher sshdmatcher = sshdpattern.matcher(syslog);
 		
 		Pattern loginpattern = Pattern.compile("systemd-logind",Pattern.CASE_INSENSITIVE);
@@ -485,6 +488,10 @@ public class Syslog {
 		if (CRONDmatcher.find()) {
 			this.event_type="crond";
 			this.event_des="定时任务";
+		}
+		if (sshFailedmatcher.find()) {
+			this.event_type="ssh failed";
+			this.event_des="ssh登录失败";
 		}
 		
 		
