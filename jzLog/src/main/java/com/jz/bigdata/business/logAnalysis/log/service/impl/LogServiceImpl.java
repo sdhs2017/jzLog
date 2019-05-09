@@ -874,13 +874,19 @@ public class LogServiceImpl implements IlogService {
 		// 时间段
 		if (pamap.get("starttime")!=null&&pamap.get("endtime")!=null) {
 			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(pamap.get("starttime")).lte(pamap.get("endtime")));
+			pamap.remove("starttime");
+			pamap.remove("endtime");
 		}else if (pamap.get("starttime")!=null) {
 			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(pamap.get("starttime")));
+			pamap.remove("starttime");
 		}else if (pamap.get("endtime")!=null) {
 			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(pamap.get("endtime")));
+			pamap.remove("endtime");
 		}
+		// 判断是否是事件查询，如果是事件查询，es会判断event_type不为null
 		if (pamap.get("event")!=null) {
 			boolQueryBuilder.must(QueryBuilders.constantScoreQuery(QueryBuilders.existsQuery("event_type")));
+			pamap.remove("event");
 		}
 		if (pamap.get("event_levels")!=null) {
 			if (pamap.get("event_levels").equals("高危")) {
@@ -890,50 +896,23 @@ public class LogServiceImpl implements IlogService {
 			}else if (pamap.get("event_levels").equals("普通")) {
 			boolQueryBuilder.must(QueryBuilders.rangeQuery("event_level").gte(6).lte(7));
 			}
-			
+			pamap.remove("event_levels");
 		}
-		
-		// IP
-		if (pamap.get("ip")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("ip", pamap.get("ip")));
+		if (pamap.get("multifield_ip")!=null) {
+			String[] multified = {"ipv4_dst_addr","ipv4_src_addr"};
+			boolQueryBuilder.must(QueryBuilders.multiMatchQuery(pamap.get("multifield_ip"), multified));
+			pamap.remove("multifield_ip");
 		}
-		// src_IP
-		if (pamap.get("ipv4_src_addr")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("ipv4_src_addr", pamap.get("ipv4_src_addr")));
-		}
-		// dst_IP
-		if (pamap.get("ipv4_dst_addr")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("ipv4_dst_addr", pamap.get("ipv4_dst_addr")));
-		}
-		// src_port
-		if (pamap.get("l4_src_port")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("l4_src_port", pamap.get("l4_src_port")));
-		}
-		// dst_port
-		if (pamap.get("l4_dst_port")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("l4_dst_port", pamap.get("l4_dst_port")));
-		}
-		// 协议名
-		if (pamap.get("protocol_name")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("protocol_name", pamap.get("protocol_name").toLowerCase()));
-		}
-		// equipmentid
-		if (pamap.get("equipmentid")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("equipmentid", pamap.get("equipmentid")));
-		}
-		// event_level
-		if (pamap.get("event_level")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("event_level", pamap.get("event_level")));
-		}
-		// operation_level
+		// operation_level 类似于in查询
 		if (pamap.get("operation_level")!=null) {
-			//boolQueryBuilder.must(QueryBuilders.termQuery("operation_level", pamap.get("operation_level")));
 			String [] operation_level = pamap.get("operation_level").split(",");
 			boolQueryBuilder.must(QueryBuilders.termsQuery("operation_level", operation_level));
+			pamap.remove("operation_level");
 		}
-		// event_type
-		if (pamap.get("event_type")!=null) {
-			boolQueryBuilder.must(QueryBuilders.matchQuery("event_type", pamap.get("event_type")));
+		// 日志来源需要使用match
+		if (pamap.get("packet_source")!=null) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery("packet_source", pamap.get("packet_source")));
+			pamap.remove("packet_source");
 		}
 		// equipmentname查询资产名称，局限性第一个字
 		if (pamap.get("hostname")!=null) {
@@ -949,51 +928,20 @@ public class LogServiceImpl implements IlogService {
 			}else {
 				boolQueryBuilder.must(QueryBuilders.queryStringQuery(pamap.get("hostname")).field("equipmentname").defaultOperator(Operator.AND));
 			}
-			//boolQueryBuilder.must(QueryBuilders.fuzzyQuery("equipmentname", pamap.get("hostname")));
-			//boolQueryBuilder.must(QueryBuilders.matchQuery("equipmentname", pamap.get("hostname")).fuzziness("AUTO"));
-			
-		}
-		// event_type
-		if (pamap.get("event_type")!=null) {
-			boolQueryBuilder.must(QueryBuilders.matchQuery("event_type", pamap.get("event_type")));
+			pamap.remove("hostname");
 		}
 		
-		//  针对HTTP日志的查询条件
-		// src_IP
-		if (pamap.get("source_ip")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("source_ip", pamap.get("source_ip")));
+		if (pamap.get("domain_url")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("domain_url.raw", pamap.get("domain_url")));
+			pamap.remove("domain_url");
 		}
-		// dst_IP
-		if (pamap.get("des_ip")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("des_ip", pamap.get("des_ip")));
+		if (pamap.get("complete_url")!=null) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("complete_url.raw", pamap.get("complete_url")));
+			pamap.remove("complete_url");
 		}
-		// source_port
-		if (pamap.get("source_port")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("source_port", pamap.get("source_port")));
-		}
-		// des_port
-		if (pamap.get("des_port")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("des_port", pamap.get("des_port")));
-		}
-		// requestorresponse
-		if (pamap.get("requestorresponse")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("requestorresponse", pamap.get("requestorresponse")));
-		}
-		// 请求方式
-		if (pamap.get("request_type")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("request_type", pamap.get("request_type").toLowerCase()));
-		}
-		// 请求url
-		if (pamap.get("request_url")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("request_url", pamap.get("request_url")));
-		}
-		// 响应状态
-		if (pamap.get("response_state")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("response_state", pamap.get("response_state")));
-		}
-		// 流量日志来源
-		if (pamap.get("packet_source")!=null) {
-			boolQueryBuilder.must(QueryBuilders.matchQuery("packet_source", pamap.get("packet_source")));
+		
+		for(Map.Entry<String, String> entry : pamap.entrySet()) {
+			boolQueryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue().toLowerCase()));
 		}
 		
 		boolQueryBuilder.must(QueryBuilders.termQuery("userid", userid));
