@@ -1484,7 +1484,7 @@ public class LogController extends BaseController{
 	public String getTopGroupByIPOrPort(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
-		String [] types = {"netflow"};
+		String [] types = {"defaultpacket"};
 		
 		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
 		for(String param:groupbys) {
@@ -1517,7 +1517,7 @@ public class LogController extends BaseController{
 		String groupby = request.getParameter("groupfiled");
 		String iporport = request.getParameter("iporport");
 		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
-		String[] types = {"netflow"};
+		String[] types = {"defaultpacket"};
 		
 		Map<String, String> searchmap = new HashMap<>();
 		if (groupby!=null&&iporport!=null) {
@@ -1560,7 +1560,7 @@ public class LogController extends BaseController{
 		
 		// 双向划线
 		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr"};
-		String[] types = {"netflow"};
+		String[] types = {"defaultpacket"};
 		
 		Map<String, String> searchmap = new HashMap<>();
 		if (groupby!=null&&iporport!=null) {
