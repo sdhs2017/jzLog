@@ -1,6 +1,8 @@
 package com.jz.bigdata.common.equipment.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import com.jz.bigdata.common.equipment.service.IEquipmentService;
 import com.jz.bigdata.components.kafka.logAnalysis.SysLogKafkaConsumer;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.DescribeLog;
+
 
 /**
  * @author shichengyu
@@ -99,9 +102,20 @@ public class EquipmentController {
 //	@RequestMapping("/selectEquipment")
 	@RequestMapping(value="/selectEquipment.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="查询单个资产")
-	public List<Equipment> selectEquipment(HttpServletRequest request, Equipment equipment) {
+	public Map<String, Object> selectEquipment(HttpServletRequest request, Equipment equipment) {
 		List<Equipment> list=this.equipmentService.selectEquipment(equipment);
-		return list;
+		Map<String,Object> map =new HashMap<>();
+		if(list.size()>0){
+			map.put("success", "true");
+			map.put("message", "查询成功");
+			map.put("equipment", list.get(0));
+			return map;
+		}else{
+			map.put("success", "false");
+			map.put("message", "资产已删除");
+			map.put("equipment", "");
+			return map;
+		}
 	}
 
 	

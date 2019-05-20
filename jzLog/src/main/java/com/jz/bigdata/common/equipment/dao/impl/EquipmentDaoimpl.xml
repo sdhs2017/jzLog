@@ -28,7 +28,6 @@
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
-		<result column="state" jdbcType="INTEGER" property="state" />
 		<result column="domain" jdbcType="VARCHAR" property="domain" />
 		<result column="port" jdbcType="VARCHAR" property="port" />
 		<association property="user"
@@ -68,7 +67,6 @@
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
-		<result column="state" jdbcType="INTEGER" property="state" />
 		<result column="domain" jdbcType="VARCHAR" property="domain" />
 		<result column="port" jdbcType="VARCHAR" property="port" />
 	</resultMap>
@@ -84,7 +82,7 @@
 		ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
 		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId,
-		equipment.state,domain,equipment.port
+		domain,equipment.port
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -109,7 +107,6 @@
 		</if>
 		<if test='role=="2"'>
 			and equipment.userId=#{userId,jdbcType=VARCHAR}
-			and state=1
 		</if>
 	</select>
 	<!-- 查询所有数据 -->
@@ -118,7 +115,7 @@
 		select
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
-		from equipment where startUp =1 and state=1
+		from equipment where startUp =1 
 
 	</select>
 
@@ -192,9 +189,6 @@
 			<if test="departmentNodeId !=null and  departmentNodeId !=''">
 				departmentNodeId,
 			</if>
-			<if test="state !=null and  state !=''">
-				state,
-			</if>
 			<if test="domain !=null and  domain !=''">
 				domain,
 			</if>
@@ -267,9 +261,6 @@
 				test="departmentNodeId != null and  departmentNodeId !='' and  departmentNodeId !=0">
 				#{departmentNodeId,jdbcType=INTEGER},
 			</if>
-			<if test="state != null and  state !=''">
-				#{state,jdbcType=INTEGER},
-			</if>
 			<if test="domain != null and  domain !=''">
 				#{domain,jdbcType=VARCHAR},
 			</if>
@@ -281,7 +272,7 @@
 	<!-- 删除数据 -->
 	<update id="delete" parameterType="java.lang.String">
 		<!-- delete from equipment where id in -->
-		update equipment set state =0 where id in
+		DELETE FROM equipment  where id in
 		<foreach item="ids" index="index" collection="array" open="("
 			separator="," close=")">
 			#{ids}
@@ -363,7 +354,6 @@
 		</if>
 		<if test='role=="2"'>
 			and equipment.userId=#{userId,jdbcType=VARCHAR}
-			and state=1
 		</if>
 		limit #{startRecord},#{pageSize}
 	</select>
@@ -474,5 +464,14 @@
 		</foreach>
 	</update>
 
+<!-- 删除资产事件关系表 -->
+	<update id="deleteEvent" parameterType="java.lang.String">
+		<!-- delete from equipment where id in -->
+		DELETE FROM equipment_event  where equipmentId in
+		<foreach item="ids" index="index" collection="array" open="("
+			separator="," close=")">
+			#{ids}
+		</foreach>
+	</update>
 
 </mapper>

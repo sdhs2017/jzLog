@@ -34,7 +34,6 @@ public class Equipment {
 	private int moderate_risk;//中危
 	private int low_risk;//低危
 	private int departmentNodeId;//部门最上级id
-	private int state;//状态
 	private String domain;//根域名
 	private String port;//端口
 	
@@ -196,12 +195,6 @@ public class Equipment {
 	}
 	public void setDepartmentNodeId(int departmentNodeId) {
 		this.departmentNodeId = departmentNodeId;
-	}
-	public int getState() {
-		return state;
-	}
-	public void setState(int state) {
-		this.state = state;
 	}
 	public String getDomain() {
 		return domain;

@@ -43,4 +43,6 @@ public interface IEquipmentDao {
 	
 	int batchUpdate(List<Equipment> list);
 	
+	int deleteEvent(String[] ids);
+	
 }
