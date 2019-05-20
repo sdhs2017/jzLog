@@ -113,6 +113,7 @@
 			and user.id=#{id,jdbcType=VARCHAR}
 			and state=1
 	 	 </if>
+	 	 and role !=5
 	    limit #{startRecord},#{pageSize}
 	</select>
   
@@ -137,6 +138,7 @@
 			and user.id=#{id,jdbcType=VARCHAR}
 			and state=1
 	 	 </if>
+	 	 and role !=5
 	</select>
   
   
