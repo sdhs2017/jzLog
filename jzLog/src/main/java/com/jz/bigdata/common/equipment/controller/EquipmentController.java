@@ -108,7 +108,7 @@ public class EquipmentController {
 		if(list.size()>0){
 			map.put("success", "true");
 			map.put("message", "查询成功");
-			map.put("equipment", list.get(0));
+			map.put("equipment", list);
 			return map;
 		}else{
 			map.put("success", "false");
