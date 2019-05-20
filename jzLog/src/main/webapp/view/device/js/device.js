@@ -14,6 +14,29 @@ $(function(){
 			}
 		}
 	});
+	
+	//资产类型改变事件
+	//二级下拉框 联动 数据源 
+	var dTypeArr = [
+		['<option value="0101">交换机</option>','<option value="0102">路由器</option>'],
+		['<option value="0201">IPS</option>','<option value="0202">IDS</option>','<option value="0203">抗DDOS</option>','<option value="0204">防火墙</option>'],
+		['<option value="0301">Windows</option>','<option value="0302">Linux</option>','<option value="0303">虚拟化</option>'],
+		['<option value="0401">Tomcat</option>','<option value="0402">Apache</option>','<option value="0403">IIS</option>','<option value="0404">Weblogic</option>','<option value="0405">Mysql</option>','<option value="0406">Oracle</option>','<option value="0407">Sqlserver</option>','<option value="0408">Db2</option>']
+	]
+	//二级下拉框 函数
+	$(".eBigType").change(function(){
+		//获取一级下拉框中的值
+	    var opt=$(".eBigType").val();
+	    //清空二级下拉框中的内容
+	    $(".eType").html('');
+	    if(opt != ''){
+	    	//往二级下拉框中循环添加内容 
+		    for(var i in dTypeArr[opt]){
+		    	$(".eType").append(dTypeArr[opt][i])
+		    }		   
+	    }
+	    
+	});
 });
 
 var pageIndex = 1;//页码
@@ -22,13 +45,16 @@ var searchStutus = false;//用于判断是否是搜索
 var eId =  localStorage.getItem("equipmentid");
 if(eId != null){
 	var sfunc = function(data){
-		var deviceData = data;
-		//拼接到页面
-		jointDeviceList(deviceData);
-		//更改检索总数
-		$(".allCountBox>b").html(1);
+		if(data.success == 'false'){
+			layer.msg(data.message,{icon:5});
+		}else{
+			//拼接到页面
+			jointDeviceList(data.equipment);
+			//更改检索总数
+			$(".allCountBox>b").html(1);
+		}	
 	}
-	ajaxPost("../../equipment/selectEquipment.do",{id:eId},sfunc);
+	ajaxPost("../../equipment/selectEquipmentByLog.do",{id:eId},sfunc);
 	//删除本地缓存日志
 	localStorage.removeItem("equipmentid");
 }else{
@@ -535,12 +561,17 @@ function searchDevice(pageIndex){
 	var search_hostname = $(".search_hostname").val();
 	var search_deviceIp = $(".search_deviceIp").val();
 	var search_logType = $(".logType").val();
+	var search_type = $(".eType").val();
 	var obj = {};
 	//赋值 参数
 	obj.name = search_deviceName;
 	obj.hostName = search_hostname;
 	obj.ip = search_deviceIp;
 	obj.logType = search_logType;
+	if(search_type == null){
+		search_type = "";
+	}
+	obj.type = search_type;
 	//调用函数 获取数据
 	getDeviceData(pageIndex,obj);
 }
