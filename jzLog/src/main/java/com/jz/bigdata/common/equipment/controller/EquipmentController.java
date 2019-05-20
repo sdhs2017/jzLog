@@ -102,20 +102,9 @@ public class EquipmentController {
 //	@RequestMapping("/selectEquipment")
 	@RequestMapping(value="/selectEquipment.do", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe="查询单个资产")
-	public Map<String, Object> selectEquipment(HttpServletRequest request, Equipment equipment) {
+	public List<Equipment> selectEquipment(HttpServletRequest request, Equipment equipment) {
 		List<Equipment> list=this.equipmentService.selectEquipment(equipment);
-		Map<String,Object> map =new HashMap<>();
-		if(list.size()>0){
-			map.put("success", "true");
-			map.put("message", "查询成功");
-			map.put("equipment", list);
-			return map;
-		}else{
-			map.put("success", "false");
-			map.put("message", "资产已删除");
-			map.put("equipment", "");
-			return map;
-		}
+		return list;
 	}
 
 	
@@ -145,6 +134,12 @@ public class EquipmentController {
 	}
 	
 	
+	/**
+	 * @param request
+	 * @param equipment
+	 * @param session
+	 * @return 修改资产
+	 */
 	@ResponseBody
 //	@RequestMapping("/insert")
 	@RequestMapping(value="/update.do", produces = "application/json; charset=utf-8")
@@ -155,6 +150,32 @@ public class EquipmentController {
 		int	result = 0;
 		result = this.equipmentService.updateById(equipment,session);
 		return result >= 1 ? Constant.successMessage() : Constant.failureMessage();
+	}
+	
+	/**
+	 * @param request
+	 * @param equipment
+	 * @return
+	 * 查询单个实体
+	 */
+	@ResponseBody
+//	@RequestMapping("/selectEquipment")
+	@RequestMapping(value="/selectEquipmentByLog.do", produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="日志跳转资产")
+	public Map<String, Object> selectEquipmentByLog(HttpServletRequest request, Equipment equipment) {
+		List<Equipment> list=this.equipmentService.selectEquipment(equipment);
+		Map<String,Object> map =new HashMap<>();
+		if(list.size()>0){
+			map.put("success", "true");
+			map.put("message", "查询成功");
+			map.put("equipment", list);
+			return map;
+		}else{
+			map.put("success", "false");
+			map.put("message", "资产已删除");
+			map.put("equipment", "");
+			return map;
+		}
 	}
 	
 	
