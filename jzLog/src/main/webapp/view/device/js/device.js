@@ -54,7 +54,7 @@ if(eId != null){
 			$(".allCountBox>b").html(1);
 		}	
 	}
-	ajaxPost("../../equipment/selectEquipment.do",{id:eId},sfunc);
+	ajaxPost("../../equipment/selectEquipmentByLog.do",{id:eId},sfunc);
 	//删除本地缓存日志
 	localStorage.removeItem("equipmentid");
 }else{
