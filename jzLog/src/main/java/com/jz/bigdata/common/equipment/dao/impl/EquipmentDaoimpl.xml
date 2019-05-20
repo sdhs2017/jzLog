@@ -118,7 +118,7 @@
 		select
 		<!-- 引用查询字段 -->
 		<include refid="Base_Column_List" />
-		from equipment where start =1
+		from equipment where state =1
 
 	</select>
 
