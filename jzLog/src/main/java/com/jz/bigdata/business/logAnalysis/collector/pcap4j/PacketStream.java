@@ -84,7 +84,7 @@ public class PacketStream {
 							}
 							if (http.getRequest_url()!=null&&!http.getRequest_url().equals("")) {
 								urlmap.put("http://"+http.getIpv4_dst_addr()+":"+http.getL4_dst_port()+""+http.getRequest_url(), http.getDomain_url());
-								System.out.println("--urlmap---"+urlmap);
+								//System.out.println("--urlmap---"+urlmap);
 							}
 							json = gson.toJson(http);
 							requests.add(clientTemplate.insertNo(configProperty.getEs_index(), LogType.LOGTYPE_DEFAULTPACKET, json));
