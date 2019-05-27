@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.jz.bigdata.util.Pattern_Matcher;
+
 
 public class Winlog {
 
@@ -435,6 +437,11 @@ public class Winlog {
 				this.event_des="用户注销";
 			}
 			
+			// 日志过滤
+			if (Pattern_Matcher.getMatchedContent(this.operation_des, "Windows 筛选平台阻止了数据包")!=""||Pattern_Matcher.getMatchedContent(this.operation_des, "Windows 筛选平台已阻止连接")!="") {
+				this.operation_level = "Info";
+			}
+			
 		}else if(Securitymatcher.find()){
 			if (PRImatcher.find()) {
 				String PRI = PRImatcher.group(0);
@@ -589,6 +596,11 @@ public class Winlog {
 			if (logoffmatcher.find()) {
 				this.event_type="log_off";
 				this.event_des="用户注销";
+			}
+			
+			// 日志过滤
+			if (Pattern_Matcher.getMatchedContent(this.operation_des, "Windows 筛选平台阻止了数据包")!=""||Pattern_Matcher.getMatchedContent(this.operation_des, "Windows 筛选平台已阻止连接")!="") {
+				this.operation_level = "Info";
 			}
 		}
 		

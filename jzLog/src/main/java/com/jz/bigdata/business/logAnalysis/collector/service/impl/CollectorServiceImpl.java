@@ -266,7 +266,6 @@ public class CollectorServiceImpl implements ICollectorService{
 			map.put("msg", "网卡获取失败！数据包采集器开启失败！");
 			return JSONArray.fromObject(map).toString();
         }
-		
         // 抓取包长度
         int snaplen = 64 * 1024;
         // 超时50ms
@@ -279,8 +278,10 @@ public class CollectorServiceImpl implements ICollectorService{
 		try {
 			handle = phb.build();
 		} catch (PcapNativeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			map.put("state", false);
+			map.put("msg", "网卡build失败！数据包采集器开启失败！"+e.getMessage());
+			return JSONArray.fromObject(map).toString();
 		}
         // handle = nif.openLive(snaplen, PromiscuousMode.NONPROMISCUOUS, timeout);
 
@@ -294,11 +295,15 @@ public class CollectorServiceImpl implements ICollectorService{
         try {
 			handle.setFilter(filter, BpfCompileMode.OPTIMIZE);
 		} catch (PcapNativeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			map.put("state", false);
+			map.put("msg", "网卡设置过滤器失败！数据包采集器开启失败！"+e.getMessage());
+			return JSONArray.fromObject(map).toString();
 		} catch (NotOpenException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			map.put("state", false);
+			map.put("msg", "网卡设置过滤器失败！数据包采集器开启失败！"+e.getMessage());
+			return JSONArray.fromObject(map).toString();
 		}
         Gson gson = new GsonBuilder()
 				 .setDateFormat("yyyy-MM-dd HH:mm:ss")  
@@ -397,25 +402,27 @@ public class CollectorServiceImpl implements ICollectorService{
 			allDevs = Pcaps.findAllDevs();
 		
 			 for (PcapNetworkInterface networkInterface : allDevs) {
-			     List<PcapAddress> addresses = networkInterface.getAddresses();
-			     for (PcapAddress pcapAddress : addresses) {
-			    	 // 通过判断传入的参数是IP还是网卡名来获取正式的网卡信息
-			    	 if(getSubUtil(NameOrIP,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}")!=""){
-			    		 // 获取网卡IP地址
+				 System.out.println(networkInterface.getName());
+				 // 通过判断传入的参数是IP还是网卡名来获取正式的网卡信息
+		    	 if(getSubUtil(NameOrIP,"\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}")!=""){
+		    		 List<PcapAddress> addresses = networkInterface.getAddresses();
+				     for (PcapAddress pcapAddress : addresses) {
+				    	// 获取网卡IP地址
 				         String ip = pcapAddress.getAddress().getHostAddress();
 				         if (ip != null && ip.contains(NameOrIP)) {
 				             // 返回指定的设备对象
 				        	 // System.out.println("filter:"+ip);
 				             return networkInterface;
 				         }
-			    	 }else {
-			    		 String name = networkInterface.getName();
-						 if(NameOrIP.equals(name)) {
-							 return networkInterface;
-						 }
-					}
-			         
-			     }
+				     }
+		    	 }else {
+		    		 String name = networkInterface.getName();
+		    		 System.out.println("实际name："+name+"----------传入name："+NameOrIP);
+					 if(NameOrIP.equals(name)) {
+						 return networkInterface;
+					 }
+				}
+			     
 			 }
 		} catch (PcapNativeException e) {
 			// TODO Auto-generated catch block
