@@ -86,13 +86,26 @@ public class LogServiceImpl implements IlogService {
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 		if (map!=null&&!map.isEmpty()) {
+			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
+				map.remove("starttime");
+				map.remove("endtime");
+			}else if (map.get("starttime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")));
+				map.remove("starttime");
+			}else if (map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(map.get("endtime")));
+				map.remove("endtime");
+			}
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if (entry.getKey().equals("logdate")) {
 					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));
 				}else if (entry.getKey().equals("domain_url")||entry.getKey().equals("complete_url")) {
 					// 短语匹配
 					queryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
-				}else {
+				}/*else if (entry.getKey().equals("application_layer_protocol")) {
+					queryBuilder.must(QueryBuilders.multiMatchQuery(entry.getKey(), "http"));
+				}*/else {
 					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
 				}
 			}
@@ -131,6 +144,17 @@ public class LogServiceImpl implements IlogService {
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 		if (map!=null&&!map.isEmpty()) {
+			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
+				map.remove("starttime");
+				map.remove("endtime");
+			}else if (map.get("starttime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")));
+				map.remove("starttime");
+			}else if (map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(map.get("endtime")));
+				map.remove("endtime");
+			}
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if (entry.getKey().equals("logdate")) {
 					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));

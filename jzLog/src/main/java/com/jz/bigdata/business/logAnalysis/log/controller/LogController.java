@@ -404,6 +404,9 @@ public class LogController extends BaseController{
 		// 源IP和源端口
 		String source_ip = request.getParameter("source_ip");
 		String source_port = request.getParameter("source_port");
+		// 时间段
+		String starttime = request.getParameter("startTime")+" 00:00:00";
+		String endtime = request.getParameter("endTime")+" 23:59:59";
 		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("requestorresponse", "request");
@@ -419,6 +422,12 @@ public class LogController extends BaseController{
 		}
 		if (source_port!=null&&!source_port.equals("")) {
 			map.put("source_port", source_port);
+		}
+		if (starttime!=null&&!starttime.equals("")) {
+			map.put("starttime", starttime);
+		}
+		if (endtime!=null&&!endtime.equals("")) {
+			map.put("endtime", endtime);
 		}
 		
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -1483,12 +1492,31 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="统计netflow源IP、目的IP、源端口、目的端口的数量")
 	public String getTopGroupByIPOrPort(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
-		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
+		String [] groupbys = {"ipv4_dst_addr.raw","ipv4_src_addr.raw","l4_dst_port.raw","l4_src_port.raw"};
 		String [] types = {"defaultpacket"};
+		// 单个group条件
+		String groupby = request.getParameter("groupfiled");
+		// 应用协议
+		String application_layer_protocol = request.getParameter("application_layer_protocol");
+		// 时间段
+		String starttime = request.getParameter("startTime");
+		String endtime = request.getParameter("endTime");
+		
+		Map<String, String> searchmap = new HashMap<>();
+		if (application_layer_protocol!=null&&!application_layer_protocol.equals("")) {
+			searchmap.put("application_layer_protocol", "http");
+		}
+		if (starttime!=null&&!starttime.equals("")) {
+			searchmap.put("starttime", starttime+" 00:00:00");
+		}
+		if (endtime!=null&&!endtime.equals("")) {
+			searchmap.put("endtime", endtime+" 23:59:59");
+		}
 		
 		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
-		for(String param:groupbys) {
-			List<Map<String, Object>> list = logService.groupBy(index, types, param, null);
+		
+		if (groupby!=null) {
+			List<Map<String, Object>> list = logService.groupBy(index, types, groupby+".raw", searchmap);
 			
 			List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
 			for(Entry<String, Object> key : list.get(0).entrySet()) {
@@ -1497,7 +1525,21 @@ public class LogController extends BaseController{
 				tMap.put("count", key.getValue());
 				tmplist.add(tMap);
 			}
-			map.put(param, tmplist);
+			map.put(groupby, tmplist);
+		}else {
+			for(String param:groupbys) {
+				List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap);
+				
+				List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+				for(Entry<String, Object> key : list.get(0).entrySet()) {
+					Map<String,Object> tMap = new HashMap<>();
+					tMap.put("IpOrPort", key.getKey());
+					tMap.put("count", key.getValue());
+					tmplist.add(tMap);
+				}
+				map.put(param.replace(".raw", ""), tmplist);
+			}
+			
 		}
 		
 		return JSONArray.fromObject(map).toString();
@@ -1516,6 +1558,7 @@ public class LogController extends BaseController{
 		String index = configProperty.getEs_index();
 		String groupby = request.getParameter("groupfiled");
 		String iporport = request.getParameter("iporport");
+		
 		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
 		String[] types = {"defaultpacket"};
 		
@@ -1545,7 +1588,7 @@ public class LogController extends BaseController{
 	
 	/**
 	 * @param request
-	 * 通过netflow源IP、目的IP、源端口、目的端口的一项作为条件统计其他三项的数量
+	 * 通过netflow数据获取网络拓扑数据
 	 * @return 
 	 */
 	@ResponseBody

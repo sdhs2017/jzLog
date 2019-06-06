@@ -403,6 +403,8 @@ public class Http {
 						this.domain_url = "http://"+this.ipv4_dst_addr+":"+this.l4_dst_port+""+getSubUtil(this.request_url,"^[/].*?[/]");
 					}else if (!getSubUtil(this.request_url,"^[/].*?$").equals("")) {
 						this.domain_url = "http://"+this.ipv4_dst_addr+":"+this.l4_dst_port+""+getSubUtil(this.request_url,"^[/].*?$");
+					}else if (getSubUtil(this.request_url,"^[/].*?$").equals("")) {
+						this.domain_url = "http://"+this.ipv4_dst_addr+":"+this.l4_dst_port+""+"";
 					}
 				}
 			
