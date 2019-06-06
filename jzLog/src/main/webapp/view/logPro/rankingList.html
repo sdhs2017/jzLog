@@ -5,12 +5,12 @@
 	<title>排行</title>
 	<link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css"/>
 	<link rel="stylesheet" type="text/css" href="../../css/bootstrap-table.min.css"/>
-	<link rel="stylesheet" type="text/css" href="../../css/bootstrap-datetimepicker.css"/>
 	<link src="../../css/layer.css" type="text/javascript" charset="utf-8"></link>
 	<link rel="stylesheet" type="text/css" href="../../css/layui.css"/>
 	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
 	<link rel="stylesheet" type="text/css" href="../../css/animate.min.css"/>
-	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
+	<link rel="stylesheet" type="text/css" href="../../js/datepicker/css/datepicker.css"/>
+	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>	
 	<style type="text/css">
 		html,body{
 			width:100%;
@@ -165,7 +165,16 @@
 <body>
 	<div id="box">
 		<div class="top_title">
-			排行
+			资产画像
+		</div>
+		<div class="datepickerBox" style="width:350px;display:flex; height: 35px;line-height: 35px;padding-left:10px;">
+			<span style="font-weight:600;">日期范围：</span>
+	        <div class="c-datepicker-date-editor  J-datepicker-range-day mt10">
+	        	<i class="c-datepicker-range__icon kxiconfont icon-clock"></i>
+	            <input placeholder="开始日期" name="" class="c-datepicker-data-input only-date startTime" value="">
+	            <span class="c-datepicker-range-separator">-</span>
+	            <input placeholder="结束日期" name="" class="c-datepicker-data-input only-date endTime" value="">
+	        </div>				
 		</div>
 		<div class="rankingListBox">
 			<div class="ipRanking">
@@ -228,30 +237,67 @@
 	<script src="../../js/bootstrap/js/bootstrap-datetimepicker.zh-CN.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../../js/bootstrap-table/js/bootstrap-table.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../../js/bootstrap-table/js/bootstrap-table-zh-CN.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/datepicker/js/plugins/moment.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/datepicker/js/datepicker.all.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		var sfunc = function(data){//成功 
-			var startIpObj = data[0].ipv4_src_addr;//源ip数组集合
-			var endIpObj = data[0].ipv4_dst_addr;//目的ip数组集合
-			var startPortObj = data[0].l4_src_port;//源端口数组集合
-			var endPortObj = data[0].l4_dst_port;//目的端口数组集合			
-			//源ip排行榜列表
-			splitRankingList(startIpObj,'startIpBox');			
-			//目的ip排行榜列表
-			splitRankingList(endIpObj,'endIpBox');
-			//源端口排行榜列表
-			splitRankingList(data[0].l4_src_port,'startPortBox');			
-			//目的端口排行榜列表
-			splitRankingList(endPortObj,'endPortBox');
-		}
-		//失败回调函数
-		var efunc = function(data){
-			layer.msg('操作失败',{icon: 5});
-		}
-		//发送请求
-		ajaxPost("../../log/getTopGroupByIPOrPort.do","",sfunc,"",efunc);
+	 	$(function(){
+		//年月日范围
+		    $('.J-datepicker-range-day').datePicker({
+		      hasShortcut: true,
+		      format: 'YYYY-MM-DD',
+		      isRange: true,
+		      shortcutOptions: [{
+		            name: '最近7天',
+		            day: '-7,0'
+		          }, {
+		            name: '最近30天',
+		            day: '-30,0'
+		          }, {
+		            name: '最近90天',
+		            day: '-90, 0'
+		          }],
+		      	hide:function(){
+		      		var startTime = $(".startTime").val();
+		      		var endTime = $(".endTime").val();
+		      		//console.log(startTime+'-----'+endTime)
+		      		//获取数据
+		      		getRankingData(startTime,endTime);
+		      	}
+		    }) 
+	 	})
+	 	
+		var newDate = new Date();
+		var curDate = newDate.toLocaleDateString();
+		var curYear = newDate.getFullYear();
+		var curMonth = newDate.getMonth() + 1;
+		$(".startTime").val(curYear+'-'+curMonth+'-1');
+		$(".endTime").val(curDate.replace(/\//g,'-'));
 		
+		getRankingData(curYear+'-'+curMonth+'-1',curDate.replace(/\//g,'-'));
+		//获取数据方法
+		function getRankingData(startTime,endTime){
+			 var sfunc = function(data){//成功 
+					var startIpObj = data[0].ipv4_src_addr;//源ip数组集合
+					var endIpObj = data[0].ipv4_dst_addr;//目的ip数组集合
+					var startPortObj = data[0].l4_src_port;//源端口数组集合
+					var endPortObj = data[0].l4_dst_port;//目的端口数组集合			
+					//源ip排行榜列表
+					splitRankingList(startIpObj,'startIpBox');			
+					//目的ip排行榜列表
+					splitRankingList(endIpObj,'endIpBox');
+					//源端口排行榜列表
+					splitRankingList(data[0].l4_src_port,'startPortBox');			
+					//目的端口排行榜列表
+					splitRankingList(endPortObj,'endPortBox');
+				}
+				//失败回调函数
+				var efunc = function(data){
+					layer.msg('操作失败',{icon: 5});
+				}
+				//发送请求
+				ajaxPost("../../log/getTopGroupByIPOrPort.do",{"startTime":startTime,"endTime":endTime},sfunc,"",efunc);
+	 	}
+
 		//拼接排行榜通用方法 arr-列表数组   elem-页面中列表展示的位置（class名）
 		function splitRankingList(arr,eleClassName){
 			var html = '';
