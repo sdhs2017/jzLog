@@ -408,6 +408,9 @@ public class LogController extends BaseController{
 		String starttime = request.getParameter("startTime")+" 00:00:00";
 		String endtime = request.getParameter("endTime")+" 23:59:59";
 		
+		String ipv4_dst_addr = request.getParameter("ipv4_dst_addr");
+		String application_layer_protocol = request.getParameter("application_layer_protocol");
+		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("requestorresponse", "request");
 		
@@ -428,6 +431,12 @@ public class LogController extends BaseController{
 		}
 		if (endtime!=null&&!endtime.equals("")) {
 			map.put("endtime", endtime);
+		}
+		if (ipv4_dst_addr!=null&&!ipv4_dst_addr.equals("")) {
+			map.put("ipv4_dst_addr", ipv4_dst_addr);
+		}
+		if (application_layer_protocol!=null&&!application_layer_protocol.equals("")) {
+			map.put("application_layer_protocol", application_layer_protocol);
 		}
 		
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -467,6 +476,7 @@ public class LogController extends BaseController{
 		if ((domain_url!=null&&!domain_url.equals(""))) {
 			map.put("domain_url", domain_url);
 		}
+		
 		list = logService.groupBy(index, types, groupby, map);
 		
 		map.put("domain_url", domain_url);
@@ -506,13 +516,21 @@ public class LogController extends BaseController{
 		String [] types = {"defaultpacket"};
 		// 资产的ip和端口
 		String domain_url = request.getParameter("domain_url");
-		
+		// 时间段
+		String starttime = request.getParameter("startTime")+" 00:00:00";
+		String endtime = request.getParameter("endTime")+" 23:59:59";
 		// 构建参数map
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("requestorresponse", "request");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		if ((domain_url!=null&&!domain_url.equals(""))) {
 			map.put("domain_url", domain_url);
+		}
+		if (starttime!=null&&!starttime.equals("")) {
+			map.put("starttime", starttime);
+		}
+		if (endtime!=null&&!endtime.equals("")) {
+			map.put("endtime", endtime);
 		}
 		list = logService.groupBy(index, types, groupby, map);
 		
