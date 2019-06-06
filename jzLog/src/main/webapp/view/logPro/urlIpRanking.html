@@ -218,8 +218,17 @@
 			var curDate = newDate.toLocaleDateString();
 			var curYear = newDate.getFullYear();
 			var curMonth = newDate.getMonth() + 1;
-			$(".startTime").val(curYear+'-'+curMonth+'-1');
-			$(".endTime").val(curDate.replace(/\//g,'-'));
+			var curDay = newDate.getDate();
+			if(curMonth < 10){
+				curMonth = '0'+curMonth
+			}
+			if(curDay < 10){
+				curDay = '0' + curDay;
+			}
+			var startTime = curYear+'-'+curMonth+'-01';
+			var endTime = curYear+'-'+curMonth+'-'+curDay;
+			$(".startTime").val(startTime);
+			$(".endTime").val(endTime);
 			
 			var rankingTitle = "应用资产 Top10 排行";
 			var sendObj = {};//参数
@@ -232,15 +241,16 @@
 			if(getObj !== undefined){
 				//将获取的本地sessionstorage字符串转换为obj对象格式
 				var obj = JSON.parse(getObj.replace(/'/g,"\""));	
-				rankingTitle = "功能URL排行";
-				sendObj.domain_url = obj.domain_url;
-				url = "../../log/getCountGroupByHttpComUrl.do";
-				$(".top_title").html("'"+obj.domain_url +"' 功能排行")
+				rankingTitle = "应用排行";
+				sendObj.ipv4_dst_addr = obj.ipv4_dst_addr;
+				sendObj.application_layer_protocol="http";
+				url = "../../log/getCountGroupByUrl.do";
+				$(".top_title").html("'"+obj.ipv4_dst_addr +"' 应用画像")
 			}
 			//填充标题
 			$(".listBox .title").html(rankingTitle)
 			
-			getRankingData(curYear+'-'+curMonth+'-1',curDate.replace(/\//g,'-'));
+			getRankingData(startTime,endTime);
 			//获取数据方法
 			function getRankingData(startTime,endTime){
 				sendObj.startTime = startTime;
@@ -278,7 +288,7 @@
 						}
 						var text = "";
 						if(getObj !== undefined){//
-							text = obj.complete_url;
+							text = obj.domain_url;
 						}else{//应用资产画像
 							text = obj.IpOrPort;
 						}
@@ -343,13 +353,14 @@
 				  	//菜单排行榜点击事件
 					$(".menuRanking").click(function(){
 						var obj = {};
-						obj.domain_url = textUrl;
+						obj.ipv4_dst_addr = textUrl;
+						obj.application_layer_protocol = "http";
 						//将对象转换为字符串
 						var objstr = JSON.stringify(obj);
 						//将  " 替换成 '
 						var urlStr = '';
 						objstr = objstr.replace(/"/g,"'");
-						jumpHtml("logPro/urlRanking.html",textUrl,' 排行',objstr);	
+						jumpHtml("logPro/urlRanking.html",textUrl,' 应用画像',objstr);	
 						$(".selectedMenu").remove();
 						$(".zzDiv").remove();
 					})
@@ -377,7 +388,7 @@
 						$(".zzDiv").remove();
 					})
 										
-				}else {//功能url排行
+				}else {
 					var obj = {};
 					obj.complete_url = textUrl;
 					obj.domain_url = sendObj.domain_url;
@@ -386,7 +397,7 @@
 					//将  " 替换成 '
 					var urlStr = '';
 					objstr = objstr.replace(/"/g,"'");
-					jumpHtml("logPro/urlGraph.html",textUrl,' 业务流',objstr);
+					jumpHtml("logPro/urlIpGraph.html",textUrl,' 业务流',objstr);
 				}								
 			})	
 			

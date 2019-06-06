@@ -218,8 +218,17 @@
 			var curDate = newDate.toLocaleDateString();
 			var curYear = newDate.getFullYear();
 			var curMonth = newDate.getMonth() + 1;
-			$(".startTime").val(curYear+'-'+curMonth+'-1');
-			$(".endTime").val(curDate.replace(/\//g,'-'));
+			var curDay = newDate.getDate();
+			if(curMonth < 10){
+				curMonth = '0'+curMonth
+			}
+			if(curDay < 10){
+				curDay = '0' + curDay;
+			}
+			var startTime = curYear+'-'+curMonth+'-01';
+			var endTime = curYear+'-'+curMonth+'-'+curDay;
+			$(".startTime").val(startTime);
+			$(".endTime").val(endTime);
 			
 			var rankingTitle = "URL Top10 排行";
 			var sendObj = {};//参数
@@ -230,15 +239,23 @@
 			if(getObj !== undefined){
 				//将获取的本地sessionstorage字符串转换为obj对象格式
 				var obj = JSON.parse(getObj.replace(/'/g,"\""));	
-				rankingTitle = "功能URL排行";
-				sendObj.domain_url = obj.domain_url;
-				url = "../../log/getCountGroupByHttpComUrl.do";
-				$(".top_title").html("'"+obj.domain_url +"' 功能排行")
+				if(obj.application_layer_protocol !== undefined){//指定资产的应用画像 排行
+					rankingTitle =obj.ipv4_dst_addr +" URL 排行";
+					sendObj.ipv4_dst_addr = obj.ipv4_dst_addr;
+					sendObj.application_layer_protocol = obj.application_layer_protocol;
+					$(".top_title").html("'"+obj.ipv4_dst_addr +"' 应用画像");
+				}else{ //功能排行
+					rankingTitle = "功能URL排行";
+					sendObj.domain_url = obj.domain_url;
+					url = "../../log/getCountGroupByHttpComUrl.do";
+					$(".top_title").html("'"+obj.domain_url +"' 功能排行")
+				}
+				
 			}
 			//填充标题
 			$(".listBox .title").html(rankingTitle)
 			
-			getRankingData(curYear+'-'+curMonth+'-1',curDate.replace(/\//g,'-'));
+			getRankingData(startTime,endTime);
 			//获取数据方法
 			function getRankingData(startTime,endTime){
 				sendObj.startTime = startTime;
@@ -270,8 +287,13 @@
 							order = (i+1);
 						}
 						var text = "";
-						if(getObj !== undefined){//功能url
-							text = obj.complete_url;
+						if(getObj !== undefined){//功能url-指定应用资产排行
+							if(obj.complete_url !== undefined){ //功能url
+								text = obj.complete_url;
+							}else{ //指定应用资产排行
+								text = obj.domain_url;
+							}
+							
 						}else{//服务画像
 							text = obj.domain_url;
 						}
@@ -308,7 +330,7 @@
 				//获取当前点击的值
 				var textUrl = $(this).find(".text").html();
 				//判断页面类型
-				if(getObj == undefined){//url排行页面
+				if(getObj == undefined || JSON.parse(getObj.replace(/'/g,"\"")).application_layer_protocol !== undefined){//url排行页面
 					$(".selectedMenu").remove();
 					//页面添加选项菜单
 					var html = '<div class="selectedMenu animated bounceIn" style="position: fixed;width: 80px; color:#fff;box-shadow: 0 3px 15px #4781bb;font-size: 12px;background: rgb(52, 114, 174);z-index: 99999999900;display: none;">'
