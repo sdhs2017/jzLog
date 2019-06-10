@@ -312,7 +312,7 @@
 				var obj = JSON.parse(getObj.replace(/'/g,"\""));
 				if(obj.clickType == "node"){
 					if(obj.type == "ip"){
-						sendSearchObj.multifield_ip = obj.val;
+						sendSearchObj[obj.kname] = obj.val;
 					}else if(obj.type == "url"){
 						sendSearchObj[obj.kname] = obj.val;
 					}
@@ -328,6 +328,13 @@
 						$(".searchSrcIp").val(obj.ipv4_src_addr);
 						$(".searchSrcIp").attr("disabled","disabled")
 						sendSearchObj[obj.kname] = obj.targetVal;
+						$(".top_title").html("'"+obj.ipv4_src_addr +"-"+obj.targetVal +"' 日志");
+					}else if(obj.type == "ip-ip"){
+						$(".searchSrcIp").val(obj.ipv4_src_addr);
+						$(".searchSrcIp").attr("disabled","disabled");
+						$(".searchDstIp").val(obj.targetVal);
+						$(".searchDstIp").attr("disabled","disabled");
+						//sendSearchObj[obj.kname] = obj.targetVal;
 						$(".top_title").html("'"+obj.ipv4_src_addr +"-"+obj.targetVal +"' 日志");
 					}
 					
