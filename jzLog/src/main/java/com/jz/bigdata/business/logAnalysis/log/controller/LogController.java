@@ -461,12 +461,60 @@ public class LogController extends BaseController{
 	
 	/**
 	 * @param request
+	 * 统计应用资产的IP访问次数
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getDstIPCountGroupByHTTPSrcIP")
+	@DescribeLog(describe="统计应用资产的IP访问次数")
+	public String getDstIPCountGroupByHTTPSrcIP(HttpServletRequest request) {
+		String index = configProperty.getEs_index();
+		String  groupby = "ipv4_src_addr";
+		String [] types = {"defaultpacket"};
+		// 资产的ip
+		String ipv4_dst_addr = request.getParameter("ipv4_dst_addr");
+		
+		// 构建参数map
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("requestorresponse", "request");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		if ((ipv4_dst_addr!=null&&!ipv4_dst_addr.equals(""))) {
+			map.put("ipv4_dst_addr", ipv4_dst_addr);
+		}
+		
+		list = logService.groupBy(index, types, groupby, map);
+		
+		long ipv4_dst_addr_count = logService.getCount(index, types, map);
+		
+		// 中心圆数据统计
+		Map<String,Object> ipv4_dst_addr_Map = new HashMap<>();
+		ipv4_dst_addr_Map.put("ipv4_dst_addr", ipv4_dst_addr);
+		ipv4_dst_addr_Map.put("count", ipv4_dst_addr_count);
+		
+		// IP访问次数统计
+		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+		for(Entry<String, Object> key : list.get(0).entrySet()) {
+			Map<String,Object> tMap = new HashMap<>();
+			tMap.put("source_ip", key.getKey());
+			tMap.put("count", key.getValue());
+			tmplist.add(tMap);
+		}
+		
+		Map<String,Object> result = new HashMap<>();
+		result.put("ipv4_dst_addr", ipv4_dst_addr_Map);
+		result.put("source", tmplist);
+		
+		return JSONArray.fromObject(result).toString();
+	}
+	
+	/**
+	 * @param request
 	 * 统计domain被IP访问的次数
 	 * @return 
 	 */
 	@ResponseBody
 	@RequestMapping("/getVisitCountGroupByHttpSourceIP")
-	@DescribeLog(describe="统计domain被IP访问的次数")
+	@DescribeLog(describe="统计IP-->domain的访问次数")
 	public String getVisitCountGroupByHttpSourceIP(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String  groupby = "ipv4_src_addr";
@@ -484,7 +532,6 @@ public class LogController extends BaseController{
 		
 		list = logService.groupBy(index, types, groupby, map);
 		
-		map.put("domain_url", domain_url);
 		long domain_url_count = logService.getCount(index, types, map);
 		
 		Map<String,Object> domainMap = new HashMap<>();
@@ -509,12 +556,12 @@ public class LogController extends BaseController{
 	
 	/**
 	 * @param request
-	 * 统计domain被访问的全url次数
+	 * 统计domain下全url被访问的次数
 	 * @return 
 	 */
 	@ResponseBody
 	@RequestMapping("/getCountGroupByHttpComUrl")
-	@DescribeLog(describe="统计domain被访问的全url次数")
+	@DescribeLog(describe="统计domain下全url被访问的次数")
 	public String getCountGroupByHttpComUrl(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String  groupby = "complete_url.raw";
