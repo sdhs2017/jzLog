@@ -177,7 +177,7 @@ public class LogServiceImpl implements IlogService {
 	 * @return
 	 * service层 
 	 */
-	public List<Map<String, Object>> getListGroupByTime(String index,String types,String param,String equipmentid) {
+	public List<Map<String, Object>> getListGroupByTime(String index,String[] types,String param,String equipmentid) {
 		
 		String groupby = "logtime_hour";
 		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, param,groupby,equipmentid);

@@ -773,10 +773,10 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 	 * @return
 	 * template层  
 	 */
-	public List<Map<String, Object>> getListGroupByQueryBuilder(String index,String types,String dates,String param,String eid) {
+	public List<Map<String, Object>> getListGroupByQueryBuilder(String index,String[] types,String dates,String param,String eid) {
 		
 		SearchRequestBuilder sBuilder = client.prepareSearch(index);
-		if (types!=null&&!types.equals("")) {
+		if (types!=null&&types.length>0) {
 			sBuilder.setTypes(types);
 		}
 		QueryBuilder queryBuilder = null;
