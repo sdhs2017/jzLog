@@ -81,10 +81,12 @@ public class LogServiceImpl implements IlogService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> groupBy(String index, String[] types, String param,Map<String, String> map) {
+	public List<Map<String, Object>> groupBy(String index, String[] types, String param,Map<String, String> termsmap) {
 
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		Map<String, String> map = new HashMap<>();
+		map.putAll(termsmap);
 		if (map!=null&&!map.isEmpty()) {
 			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
 				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
@@ -118,11 +120,24 @@ public class LogServiceImpl implements IlogService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> groupBy(String index, String[] types, String param,Map<String, String> map,int size) {
+	public List<Map<String, Object>> groupBy(String index, String[] types, String param,Map<String, String> termsmap,int size) {
 
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		Map<String, String> map = new HashMap<>();
+		map.putAll(termsmap);
 		if (map!=null&&!map.isEmpty()) {
+			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
+				map.remove("starttime");
+				map.remove("endtime");
+			}else if (map.get("starttime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")));
+				map.remove("starttime");
+			}else if (map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(map.get("endtime")));
+				map.remove("endtime");
+			}
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if (entry.getKey().equals("logdate")) {
 					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));
@@ -139,10 +154,12 @@ public class LogServiceImpl implements IlogService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> groupBy(String index, String[] types, String[] param,Map<String, String> map,int size) {
+	public List<Map<String, Object>> groupBy(String index, String[] types, String[] param,Map<String, String> termsmap,int size) {
 
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		Map<String, String> map = new HashMap<>();
+		map.putAll(termsmap);
 		if (map!=null&&!map.isEmpty()) {
 			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
 				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
@@ -681,6 +698,7 @@ public class LogServiceImpl implements IlogService {
 		
 		
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+		// 针对特殊字段进行查询处理，如时间、多字段、分词字段等
 		// 时间段
 		if (pamap.get("starttime")!=null&&pamap.get("endtime")!=null) {
 			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(pamap.get("starttime")).lte(pamap.get("endtime")));
@@ -708,6 +726,7 @@ public class LogServiceImpl implements IlogService {
 			}
 			pamap.remove("event_levels");
 		}
+		// 多字段查询，这里是为了查询该IP在源地址或目的地址中的数据
 		if (pamap.get("multifield_ip")!=null) {
 			String[] multified = {"ipv4_dst_addr","ipv4_src_addr"};
 			boolQueryBuilder.must(QueryBuilders.multiMatchQuery(pamap.get("multifield_ip"), multified));
@@ -753,87 +772,6 @@ public class LogServiceImpl implements IlogService {
 		for(Map.Entry<String, String> entry : pamap.entrySet()) {
 			boolQueryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue().toLowerCase()));
 		}
-		
-		
-		/*// IP
-		if (pamap.get("ip")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("ip", pamap.get("ip")));
-		}
-		// src_IP
-		if (pamap.get("ipv4_src_addr")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("ipv4_src_addr", pamap.get("ipv4_src_addr")));
-		}
-		// dst_IP
-		if (pamap.get("ipv4_dst_addr")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("ipv4_dst_addr", pamap.get("ipv4_dst_addr")));
-		}
-		// src_port
-		if (pamap.get("l4_src_port")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("l4_src_port", pamap.get("l4_src_port")));
-		}
-		// dst_port
-		if (pamap.get("l4_dst_port")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("l4_dst_port", pamap.get("l4_dst_port")));
-		}
-		// 协议名（传输层协议）
-		if (pamap.get("protocol_name")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("protocol_name", pamap.get("protocol_name").toLowerCase()));
-		}
-		// 应用层协议
-		if (pamap.get("application_layer_protocol")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("application_layer_protocol", pamap.get("application_layer_protocol").toLowerCase()));
-		}
-		// 应用层加密协议
-		if (pamap.get("encryption_based_protection_protocol")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("encryption_based_protection_protocol", pamap.get("encryption_based_protection_protocol").toLowerCase()));
-		}
-		// equipmentid
-		if (pamap.get("equipmentid")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("equipmentid", pamap.get("equipmentid")));
-		}
-		// event_level
-		if (pamap.get("event_level")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("event_level", pamap.get("event_level")));
-		}
-		
-		// event_type
-		if (pamap.get("event_type")!=null) {
-			boolQueryBuilder.must(QueryBuilders.matchQuery("event_type", pamap.get("event_type")));
-		}
-		
-		//  针对HTTP日志的查询条件
-		// src_IP
-		if (pamap.get("source_ip")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("source_ip", pamap.get("source_ip")));
-		}
-		// dst_IP
-		if (pamap.get("des_ip")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("des_ip", pamap.get("des_ip")));
-		}
-		// source_port
-		if (pamap.get("source_port")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("source_port", pamap.get("source_port")));
-		}
-		// des_port
-		if (pamap.get("des_port")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("des_port", pamap.get("des_port")));
-		}
-		// requestorresponse
-		if (pamap.get("requestorresponse")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("requestorresponse", pamap.get("requestorresponse")));
-		}
-		// 请求方式
-		if (pamap.get("request_type")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("request_type", pamap.get("request_type").toLowerCase()));
-		}
-		// 请求url
-		if (pamap.get("request_url")!=null) {
-			boolQueryBuilder.must(QueryBuilders.matchQuery("request_url", pamap.get("request_url")));
-		}
-		// 响应状态
-		if (pamap.get("response_state")!=null) {
-			boolQueryBuilder.must(QueryBuilders.termQuery("response_state", pamap.get("response_state")));
-		}*/
 		
 		count = clientTemplate.count(index, types, boolQueryBuilder);
 		hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);

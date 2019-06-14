@@ -1764,7 +1764,7 @@ public class LogController extends BaseController{
 		long endtime = new Date().getTime();
 		long ms = endtime-starttime;
 		long time = (endtime-starttime)/1000;
-		System.out.println("----------------------聚合消耗时间："+time+"s ==========="+ms+"ms");
+		//System.out.println("----------------------聚合消耗时间："+time+"s ==========="+ms+"ms");
 		
 		return JSONArray.fromObject(map).toString();
 	}
@@ -1787,6 +1787,15 @@ public class LogController extends BaseController{
 		String[] types = {"defaultpacket"};
 		
 		Map<String, String> searchmap = new HashMap<>();
+		// 设置时间段为一周
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String endtime = sdf.format(cal.getTime());
+		cal.add(Calendar.DATE, -7);
+		String starttime = sdf.format(cal.getTime());
+		searchmap.put("starttime", starttime);
+		searchmap.put("endtime", endtime);
 		
 		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
 		
