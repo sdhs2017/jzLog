@@ -1056,7 +1056,9 @@ public class LogController extends BaseController{
 		        Object[] head = {"时间", "日志类型", "日志级别", "资产名称", "资产IP", "日志内容"};
 		        List<Object> headList = Arrays.asList(head);
 				Date date = new Date();
-		        CSVUtil.createCSVFile(headList, list, "D:\\Computer_Science\\exportfile\\"+username+"\\"+dateformat.format(date), "exportlog"+timeformat.format(date),null);
+				// 过滤第一条，第一条数据为总数统计
+		        list.remove(0);
+		        CSVUtil.createCSVFile(headList, list, "/home"+File.separator+"exportfile"+File.separator+username+File.separator+dateformat.format(date), "exportlog"+timeformat.format(date),null);
 		        
 		        if (i==forsize&&modsize==0) {
 		        	resultmap.put("state", "finished");
@@ -1102,7 +1104,10 @@ public class LogController extends BaseController{
 		        List<Object> headList = Arrays.asList(head);
 		        
 		        Date date = new Date();
-		        CSVUtil.createCSVFile(headList, list, "D:\\Computer_Science\\exportfile\\"+username+"\\"+dateformat.format(date), "exportlog"+timeformat.format(date),null);
+		        // 过滤第一条，第一条数据为总数统计
+		        list.remove(0);
+		        // 开始写入csv文件
+		        CSVUtil.createCSVFile(headList, list, "/home"+File.separator+"exportfile"+File.separator+username+File.separator+dateformat.format(date), "exportlog"+timeformat.format(date),null);
 		        if (forsize>0) {
 		        	resultmap.put("state", "finished");
 					resultmap.put("value", fileSize+"-"+fileSize);
