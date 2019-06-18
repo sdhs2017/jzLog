@@ -5,6 +5,7 @@
 		<title>关系图</title>
 		<link src="../../css/layer.css" type="text/javascript" charset="utf-8"></link>
 		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link href="../../hplus/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 		<style type="text/css">
 			#box{
@@ -18,6 +19,7 @@
 			}
 			.content{
 				min-height: 810px;
+				/* height:calc(100vh - 100px); */
 				position:relative;
 				overflow: hidden;
 				border: 1px solid #2f4050;
@@ -32,12 +34,19 @@
 				background-image: linear-gradient(to bottom, #293846 0%, #456479 100%);
 				
 			}
+			.fullScreen{
+				float:right;
+				margin-right:10px;
+				cursor:pointer;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="box">
 			<div class="top_title">
 				业务流分析
+				<!-- <span class="fullScreen" title="全屏观看"><i class="fa fa-arrows-alt" aria-hidden="true"></i></span> -->
+				<span style="float:right;font-weight:100;font-size:14px;margin-right:10px;">时间范围：最近7天</span>
 			</div>
 			<div class="content">
 				<div id="cy"></div>
@@ -46,311 +55,330 @@
 	
 		<script src="../../js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/cytoscape.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/d3.v4.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/calCircleCenter.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
-		
-		
-			//成功回调函数
-			var sfunc = function(dataArr){
-				var nodesArr = [];//节点数组
-    			var edgesArr = [];//线数组
-    			var nodesCountArr = [];//节点count数组
-    			var linksCountArr = [];//节点count数组
-    			//{data:{id:'王大拿',target:true,type:'People'}},
-    			//{"node": 1,"name": "123.232.103.226","count": "188394"}
-    			//node节点
-    			for(var i in dataArr[0].data){
-    				var obj = {};
-    				obj.data = {};
-    				obj.data.id = dataArr[0].data[i].name;
-    				obj.data.target = true;
-    				obj.data.count = dataArr[0].data[i].count;
-    				obj.data.type = dataArr[0].data[i].node;
-    				nodesCountArr.push(dataArr[0].data[i].count)
-    				nodesArr.push(obj);
-    			}
-    			var maxNodesCount = Math.max.apply(null,nodesCountArr);
-    			// {data:{source:'王大拿',target:'AAA公司',label:'董事'}},
-    			//{"node": 1,"count": 80761,"source": "123.232.103.226","target": "level2\n192.168.2.151"}
-    			//连接线
-    			for(var i in dataArr[0].links){
-    				var obj = {};
-    				obj.data = {};
-    				obj.data.source = dataArr[0].links[i].source;
-    				obj.data.target = dataArr[0].links[i].target;
-    				obj.data.count = dataArr[0].links[i].count;
-    				obj.data.label = dataArr[0].links[i].count;
-    				linksCountArr.push(dataArr[0].links[i].count);
-    				edgesArr.push(obj);
-    			}
-    			var maxLinksCount = Math.max.apply(null,linksCountArr);
-    			//console.log(nodesArr)
-    			//渲染
-    			var cy = cytoscape({
-		            container: document.getElementById('cy'),
-//		            boxSelectionEnabled: true,
-		            autounselectify: true,//默认情况下节点是否应该是未分类的
-		            maxZoom:4,//最大缩放
-		            minZoom:0.7,//最小缩放 
-		            wheelSensitivity:.1,//滑动滚轮一次缩放大小
-		            style: cytoscape.stylesheet()
-		            	.selector('node')
-		            		.css({
-		            			"content": function (ele) { //文本内容
-		                            return ele.data('label') || ele.data('id')+'\n 活跃度:'+ele.data('count')
-		                        },
-		                        "text-valign": 'center', //文本对齐  center-居中
-		                        "width": function (a) { //宽度
-		                            //return "Company" == a.data('type') ? 60 : 145
-		                            var widthVal = 140;		                            
-		                            return Math.pow(a.data('count')/maxNodesCount,1/3) * widthVal;
-		                        },
-		                        "height": function (a) { //高度
-		                        	 var heightVal = 140;	
-		                            //return "Company" == a.data('type') ? 60 : 145
-		                            return  Math.pow(a.data('count')/maxNodesCount,1/3) * heightVal;;
-		                        },
-		                        "background-color": function (a) { //背景颜色
-		                            //return '#47D2AC'; 
-		                        	return a.data('count') == maxNodesCount ? '#D76662' : '#59C9A5';
-		                        },
-		                        "color": '#fff', //文本颜色
-		                        "border-color": function (a) { //边框颜色
-		                            /*return !a.data('target') ? '#47D2AC' : "Company" == a.data('type') ?
-		                                '#2196F4' : '#EAA829'*/
-		                            return '#3A4D5F'; 
-		                        },
-		                        "border-width":2, //边框宽度		                        
-		                        "text-wrap": "wrap", //文本换行
-		                        "font-size": 10, //字体大小
-		                        "font-weight":600,
-		                        "font-family": "microsoft yahei",//字体
-		                        "overlay-color": "#fff",
-		                        "overlay-opacity": 0,
-		                        'text-outline-width': 1,
-		                        'text-outline-color': '#316383',//颜色设置
-		                        "background-opacity": 1, //透明度
-		                        "shape": "ellipse",//节点形状    ellipse-圆形  rectangle-矩形
-		                        "z-index-compare": "manual",
-		                        "z-index": 20,
-		                        "padding": function (a) { 
-//		                            return "Company" == a.data("type") ? 3 : 0
-									return 20; 
-		                        }
-		            		})
-		            	.selector('edge')
-		            		.css({
-		            			"width": function(a){
-		            				var widthVal = 15;
-		            				return Math.pow(a.data('count')/maxLinksCount,1/3) * widthVal;
-		            			},
-		                        // 添加箭头
-		                        "line-style": function (a) {
-		                            return "solid"
-		                        },
-		                        "curve-style": "bezier",
-		                        "control-point-step-size": 20,
-		                        "target-arrow-shape": "triangle",
-		                        "target-arrow-color": function (a) {
-		                            // return a.data("color")
-		                            return '#65F9FD'
-		                        },
-		                        "arrow-scale": .8,
-		                        "line-color": function (a) {//线颜色
-		                            // return a.data("color")
-		                            // return '#A8D0DB'
-		                            return '#65F9FD'
-		                        },
-		                        "label": function (a) {
-		                            return a.data("label")
-		                        },
-		                        "text-opacity": 1,
-		                        "text-background-color": "#e4956d",
-		                    
-		                        "text-background-opacity": 0,
-		                        "text-background-padding": 2,
-		                        "font-size":0,
-		                        "color":"#fff",		                        
-		                        "font-weight":600,
-		                        "overlay-color": "#fff",
-		                        "overlay-opacity": 0,
-		                        "font-family": "microsoft yahei"
-		            		})
-		            	.selector(':selected')
-		            		.css({
-		            			"border-width": 3,
-		                        "border-color": '#333',
-		                        "background-color": 'black',
-		                        "line-color": 'black',
-		                        "target-arrow-color": 'black',
-		                        "source-arrow-color": 'black'
-		            		})
-		            	.selector('.nodeHover')
-		            		.css({
-		            			"shape": "ellipse",
-		                        "background-opacity": .8
-		            		})
-		            	.selector('.nodeActive')
-		            		.css({
-		            			"border-color": '#4EA2F0',
-		                        "border-width": 10,
-		                        "border-opacity": .5
-		            		})
-		            	.selector('.edgeShow')
-		            		.css({
-		            			/*"color": "#999",
-		                        "text-opacity": 1,
-		                        "font-weight": 400,
-		                        "label": function (a) {
-		                            return a.data("label")
-		                        },
-		                        "font-size": 10,
-		                        "arrow-scale": .8,
-		                        "width": 1.5,
-		                        "source-text-margin-y": 20,
-		                        "target-text-margin-y": 20,*/
-		            		})
-		            	.selector('.edgeActive')
-		            		.css({
-		            			"arrow-scale": .8,
-		                        //"width": 1.5,
-		                        "color": "#fff",
-		                        "text-opacity": 1,
-		                        "font-size": 12,
-		                        "text-background-color": "#e4956d",
-		                        "text-background-opacity": .8,
-		                        "text-background-padding": 2,		                       
-		                        "source-text-margin-y": 20,
-		                        "target-text-margin-y": 20,
-		                        "z-index-compare": "manual",
-		                        "z-index": 1,
-		                        "line-color": function (a) { //直线颜色
-		                            return "#4EA2F0"
-		                        },
-		                        "target-arrow-color": function (a) { //箭头颜色
-		                            return "#4EA2F0"
-		                        },
-		                        label: function (a) {
-		                            return a.data("label")
-		                        }
-		            		})
-		            	.selector('.dull')
-		            		.css({
-		            			"z-index": 1,
-		                        "opacity": .2
-		            		}),
-		            
-		            elements: {
-		                nodes:nodesArr,
-		                edges:edgesArr
-		            },
-		            layout: {
-		                name: 'cose',//用哪种方式排列，可选：breadthfirst(广度优先)、cose(缝制，乱交)、preset(预设)、circle(圆形)、grid(矩形)
-		                animate:true,//出来动画
-		                idealEdgeLength: 60,
-		                nodeOverlap: 20,
-		                refresh: 20,
-		                fit: true,
-		                padding: 30,
-		                randomize: false,
-		                componentSpacing: 20,
-		                nodeRepulsion: 400,
-		                edgeElasticity: 10,
-		                nestingFactor: 5,
-		                animate:true,//出来动画
-		                gravity: 80,
-		                numIter: 1000,
-		                initialTemp: 200,
-		                coolingFactor: 0.95,
-		                minTemp: 1.0
+			//定义画布宽高
+			var width = $('#cy').width();
+			var height = $("#cy").height();
+			//定义画布
+			var svg = d3.select("#cy").append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				//.attr("viewBox","0 0 "+width+' '+height)
+				.call( d3.zoom().scaleExtent([0.1,10]).on("zoom", ()=> {
+		            if(1){
+		                container.attr("transform", d3.event.transform);	
 		            }
-		        })
-		        cy.collection("edge").addClass("edgeShow");
-		        cy.on("mouseover", "node", function (a) {
-		           /*  $('#cy').css('cursor', 'move');
-		            let c = a.target;
-		            c.addClass("nodeHover");
-		            // cy.collection("edge").removeClass("edgeShow");
-		            cy.collection("edge").removeClass("edgeActive");
-		            c.neighborhood("edge").addClass("edgeActive"); */
-		            let c = a.target;
-		            cy.collection("edge").addClass('dull');
-		            cy.collection("node").addClass('dull');
-		            c.removeClass("dull");
-		            c.neighborhood("edge").removeClass("dull");
-		            c.neighborhood("edge").addClass("edgeActive");
-		            c.neighborhood("edge").connectedNodes().removeClass("dull"); //当前节点的邻域边的边缘节点！
-		            // c.neighborhood("node").removeClass("dull");//与上面意义相同
-		        })
-		        cy.on("mouseout", "node", function (a) {
-		           /*  $('#cy').css('cursor', 'default');
-		            let c = a.target;
-		            c.removeClass("nodeHover");
-		            cy.collection("edge").removeClass("edgeActive"); */
-		        	let c = a.target;
-		            cy.collection("edge").removeClass('dull');
-		            cy.collection("node").removeClass('dull');
-		            c.neighborhood("edge").removeClass("edgeActive");
-		            c.neighborhood("node").removeClass("nodeActive");
-		        })
-		        cy.on("click", "edge", function (a) {
-		        	var obj={};
-		        	obj.clickType = "link";
-		        	obj.type = "ip"
-		            obj.ipv4_src_addr = a.target._private.data.source;
-		            obj.ipv4_dst_addr = a.target._private.data.target;
-		            var objStr = JSON.stringify(obj);
-		            objStr = objStr.replace(/"/g,"'");
-		            //跳转到流量日志页面
-		            jumpHtml("logPro/flowLogs.html",obj.ipv4_src_addr+'-'+obj.ipv4_dst_addr,"日志",objStr)
-		        })
-		        
-		        cy.on("click", "node", function (a) {
-		            /* let c = a.target;
-		            c.removeClass("nodeActive");
-		            cy.collection("edge").removeClass("edgeActive"); */
-		            //获取ip地址  参数集合
-		            var obj={};
-		            obj.type = "ip";
-		            obj.kname = "multifield_ip";
-		            obj.clickType = "node";
-		            obj.val = a.target._private.data.id;
-		            var objStr = JSON.stringify(obj);
-		            objStr = objStr.replace(/"/g,"'");
-		            //跳转到流量日志页面
-		            jumpHtml("logPro/flowLogs.html",obj.val,"日志",objStr);
-		        })
-		        cy.on("vmousedown", "node", function (a) { //监听鼠标左键按下
-		           /*  let c = a.target;
-		            cy.collection("edge").addClass('dull');
-		            cy.collection("node").addClass('dull');
-		            c.removeClass("dull");
-		            c.neighborhood("edge").removeClass("dull");
-		            c.neighborhood("edge").addClass("edgeActive");
-		            c.neighborhood("edge").connectedNodes().removeClass("dull"); //当前节点的邻域边的边缘节点！
-		            // c.neighborhood("node").removeClass("dull");//与上面意义相同 */
-		        })
-		        cy.on("tapend", "node", function (a) { //监听鼠标左键释放
-		           /*  let c = a.target;
-		            cy.collection("edge").removeClass('dull');
-		            cy.collection("node").removeClass('dull');
-		            c.neighborhood("edge").removeClass("edgeActive");
-		            c.neighborhood("node").removeClass("nodeActive"); */
-		        })
-		
-		        //线
-		        cy.on("mouseover", "edge", function (a) {
-		            let c = a.target;
-		            cy.collection("edge").removeClass("edgeActive");
-		            c.addClass("edgeActive")
-		        })
-		        cy.on("mouseout", "edge", function (a) {
-		            let c = a.target;
-		            c.removeClass("edgeActive")
-		        })
+		        }))
+				
+			var container =  svg.append("g")   //相当于缩放的容器
+				.attr("width", width)
+				.attr("height", height)
+				.attr("x","0")
+				.attr("y",'0')
+				.attr("class", "relMap_g")
+                
+			//取得20个颜色的序列
+			var color = d3.scaleOrdinal(d3.schemeCategory20);
+			//定义力学结构
+			var simulation = d3.forceSimulation()
+				.force("link", d3.forceLink().id(function(d) {
+					return d.id;
+				}))
+				//万有引力
+				//.force("charge", d3.forceManyBody().strength(-300))
+				// 碰撞作用力，为节点指定一个radius区域来防止节点重叠，设置碰撞力的强度，范围[0,1], 默认为0.7。设置迭代次数，默认为1，迭代次数越多最终的布局效果越好，但是计算复杂度更高
+		        .force("collide", d3.forceCollide(100).strength(0.1).iterations(10))
+				.force("center", d3.forceCenter(width/2, height / 2))
+				//.alphaDecay(0.0228)
+			//d3.json("json/data2.json", function(error, graph) {
+			var maxNodeR = '';
+			var maxLinkW = '';
+			
+			//成功回调函数
+			var sfunc = function(data){
+				var graph = {};
+				var nodes = [];//节点数据
+				var links = [];//线数组
+				var nodeRArr = [];//节点半径数据
+				var linkWArr = [];//线宽度
+				data[0].data.forEach(function (item){
+					nodeRArr.push(item.count);
+					nodes.push({
+						id:item.name,
+						count:item.count
+					})
+				})
+				//定义最大半径
+				maxNodeR = Math.max.apply(null,nodeRArr);
+				
+				data[0].links.forEach(function(item){
+					linkWArr.push(item.count)
+				})
+				//最大线宽
+				maxLinkW = Math.max.apply(null,linkWArr);
+				
+				graph.nodes = nodes;
+				graph.links = data[0].links;
+				
+				var defs = svg.append('defs');
+				 //箭头
+		        var marker =
+		            defs.append("marker")
+		                .attr("id", "resolved")
+		                .attr("markerUnits", "strokeWidth")//设置为strokeWidth箭头会随着线的粗细发生变化
+		                //.attr("markerUnits", "userSpaceOnUse")
+		                .attr("viewBox", "0 -5 10 10")//坐标系的区域
+		                /*.attr("refX", function(d){
+		            
+		                	return 22;
+		                })//箭头坐标
+		                .attr("refY", 0)*/
+		                /*.attr("markerWidth", 12)//标识的大小
+		                .attr("markerHeight", 12)*/
+		                .attr("orient", "auto")//绘制方向，可设定为：auto（自动确认方向）和 角度值
+		                .attr("stroke-width", 1)//箭头宽度
+		                .append("path")
+		                .attr("d", "M0,-5L10,0L0,5")//箭头的路径
+		                .attr('fill', '#65f9fd');//箭头颜色
+
+	            //线容器
+	            var edges =  container.selectAll("g.edge")
+				    .data(graph.links)
+				    .enter()
+				    .append("g")
+				    .attr("class","edge")
+				   
+				edges.append("title") //为每个线设置title（类似于html标签的title属性）
+					.text(function(d) {
+						return d.count;
+				});    
+	            //线
+	            var links = edges.append("path")
+	            	.attr("class","links")
+				    .style("marker-mid", "url(#resolved)")
+				    // .attr("refX",this.config.r)
+				    .style("stroke","#65f9fd")
+	                .style("stroke-width",function(d){
+	                	var rv = (d.count * 10)/maxLinkW;
+	                	d.w = rv<2 ? 2 : rv
+						return d.w;
+	                })
+	                .on("mouseenter",function(d){
+				    	d3.select(this).style('stroke-width', d.w+4);
+						//当前线的index
+						var cLIndex = [d.index];
+						// 隐藏线
+			            svg.selectAll('.edge').filter(function (d1) {
+			                // return true;
+			                return (cLIndex.indexOf(d1.index) == -1)
+			            }).transition().style('opacity', 0.1);
+			            //当前线的节点index
+			            var cNIndex = [d.source.index,d.target.index];
+			            //隐藏节点
+		                svg.selectAll('.node').filter(function (d1) {
+			                 return (cNIndex.indexOf(d1.index) == -1);
+			            }).transition().style('opacity', 0.1);
+			            
+			            
+				    })
+	            	.on('mouseleave', function(d){
+	            		//回复原来的状态
+	            		d3.select(this).style('stroke-width', d.w);
+	            		svg.selectAll('.node').filter(function (d) {
+			                return true;
+			            }).transition().style('opacity', 1);
+			            svg.selectAll('.edge').filter(function (d) {
+			                return true;
+			            }).transition().style('opacity', 1);
+	            	})
+					.on('click', function(d){
+						exitFullScreen(document.getElementById('cy'));
+			        	var obj={};
+			        	obj.clickType = "link";
+			        	obj.type = "ip"
+			            obj.ipv4_src_addr = d.source.id;
+			            obj.ipv4_dst_addr = d.target.id;
+			            var objStr = JSON.stringify(obj);
+			            objStr = objStr.replace(/"/g,"'");
+			            //跳转到流量日志页面
+			            jumpHtml("logPro/flowLogs.html",obj.ipv4_src_addr+'-'+obj.ipv4_dst_addr,"日志",objStr)
+	            	})
+				var linkText = edges.append('g')
+					.attr("class","linkText")
+					.append('text')
+					.attr('fill',"#fff")
+					.style("font-weight","600")
+					.text(function(d){return d.count});
+	        
+	         	//绘制节点
+		        var node = container.selectAll(".node")
+					.data(graph.nodes)
+					.enter().append("g")
+					.attr("class", "node")
+					/*.call(d3.drag().on("start", dragstarted)//d3.drag() 创建一个拖曳行为
+                    .on("drag", dragged)
+                    .on("end", dragended))*/
+                  	.on('mouseenter', function(d){
+		                d3.select(this).selectAll("circle").attr('stroke-width', '8');
+		                d3.select(this).selectAll("circle").attr('stroke', '#a3e5f9');
+		                //定义鼠标悬停相关的节点、线的index数组
+		                var dependsNode = [];
+						var dependsLinkAndText = [];
+		                //当前的index
+		                var objIndex = d.index;
+		                dependsNode = dependsNode.concat([objIndex]);
+        				dependsLinkAndText = dependsLinkAndText.concat([objIndex]);
+        				//筛选出当前有关的节点、线的index
+        				graph.links.forEach(function (lkItem) {
+			                if (objIndex == lkItem['source']['index']) {
+			                    dependsNode = dependsNode.concat([lkItem.target.index]);
+			                } else if (objIndex == lkItem['target']['index']) {
+			                    dependsNode = dependsNode.concat([lkItem.source.index]);
+			                }
+			            });
+						//隐藏节点
+		                svg.selectAll('.node').filter(function (d1) {
+			                 return (dependsNode.indexOf(d1.index) == -1);
+			            }).transition().style('opacity', 0.01);
+			            // 隐藏线
+			            svg.selectAll('.edge').filter(function (d1) {
+			                // return true;
+			                return ((dependsLinkAndText.indexOf(d1.source.index) == -1) && (dependsLinkAndText.indexOf(d1.target.index) == -1))
+			            }).transition().style('opacity', 0.01);
+		            })
+                  	.on('mouseleave', function(d){
+		                d3.select(this).selectAll("circle").attr('stroke-width','0');
+		               // d3.select(this).attr('stroke', '#c5dbf0');
+		               	svg.selectAll('.node').filter(function (d) {
+			                return true;
+			            }).transition().style('opacity', 1);
+			            svg.selectAll('.edge').filter(function (d) {
+			                return true;
+			            }).transition().style('opacity', 1);
+		            })
+		            .on('click', function(d){
+		                console.log(d)
+		                exitFullScreen(document.getElementById('cy'));
+			            var obj={};
+			            obj.type = "ip";
+			            obj.kname = "multifield_ip";
+			            obj.clickType = "node";
+			            obj.val = d.id;
+			            var objStr = JSON.stringify(obj);
+			            objStr = objStr.replace(/"/g,"'");
+			            //跳转到流量日志页面
+			            jumpHtml("logPro/flowLogs.html",obj.val,"日志",objStr);
+		            })
+				node.append("circle")
+					.attr("r", function(d) {
+                  		var rv = (d.count * 100)/maxNodeR;
+                  		d.w = rv<20 ? 20 : rv;
+						return d.w;
+					})
+					/*.attr("fill", function(d,i){
+                    	return color(d.count);
+                	})*/
+                	.attr("fill",function(d){
+                		if(d.count == maxNodeR){
+                			return "#ff7f0e";
+                		}else {
+                			return "#59c9a5";
+                		}
+                	})
+					.attr('stroke',  function(d){
+				       return color(d.count);
+				    })
+				node.append("text")
+					.attr("font-family", "微软雅黑")
+					.attr("text-anchor", "middle")
+					.attr("fill","#fff")
+					.style("font-weight","600")
+					.attr("dy", function() { //dy表示文字的偏移量
+						return "0em";
+					})
+					.attr('x', function(d) {
+						d3.select(this).append('tspan')//添加文字
+							.text(function() {
+								return d.id;
+							})
+						d3.select(this).append('tspan') //添加文字
+							.attr("x",0)
+							.attr("y",14)
+							.text(function() {
+								return "活跃度："+d.count;
+							});
+					});	
+				simulation
+	                .nodes(graph.nodes)//设置力模拟的节点
+	                .on("tick", ticked);
+	 
+	            simulation.force("link")//添加或移除力
+	                .links(graph.links);//设置连接数组
+				function dragstarted(d) {
+	              	if (!d3.event.active) simulation.alphaTarget(0.3).restart();//设置目标α
+	                  d.fx = d.x;
+	                  d.fy = d.y;
+	            }
+	 
+	            function dragged(d) {
+	              	d.fx = d3.event.x;
+	              	d.fy = d3.event.y;
+	            }
+	 
+	            function dragended(d) {
+	              	if (!d3.event.active) simulation.alphaTarget(0);
+	              /*	d.fx = null;
+	              	d.fy = null;*/
+	            }
+	            function ticked() {
+	            	//线
+	                links
+		                .attr("d", function(d) { //设置线条的偏移以及路径
+							var dx = d.target.x - d.source.x,
+								dy = d.target.y - d.source.y,
+								dr = Math.sqrt(dx * dx + dy * dy);
+							/*下面表示位置， M（表示画笔落下的位置）, A（画椭圆）是大写的，表示绝对位置。当使用相对位置时，要小写*/
+							return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,0 " + d.target.x + "," + d.target.y;
+						})
+		                .attr("fill", "transparent");
+	 				//线描述
+	 				linkText.attr("transform", function (d) {
+	 					var dx = d.target.x - d.source.x,
+								dy = d.target.y - d.source.y,
+								dr = Math.sqrt(dx * dx + dy * dy);
+	 					var oa= calCircleCenter([d.source.x,d.source.y],[d.target.x,d.target.y],dr)
+			            //判断圆点位置
+			            var o = [];
+			            if(d.source.x < d.target.x && d.source.y > d.target.y){
+			            	o = [oa[2],oa[3]]
+			            }else if(d.source.x > d.target.x && d.source.y > d.target.y){
+			            	o = [oa[2],oa[3]]
+			            }else if(d.source.x < d.target.x && d.source.y < d.target.y){
+			            	o = [oa[0],oa[1]]
+			            }else if(d.source.x > d.target.x && d.source.y < d.target.y){
+			            	o = [oa[0],oa[1]]
+			            }
+			            //计算偏移量 （偏移角度为30度）
+	 					var x = ( d.source.x - o[0])*Math.cos(-3.14/6) - ((d.source.y -o[1])*Math.sin(-3.14/6)) + o[0];
+						var y = (d.source.x - o[0])*Math.sin(-3.14/6) + ((d.source.y - o[1])*Math.cos(-3.14/6)) + o[1]
+			            return "translate(" +x + "," +y + ")";
+			        })
+	 				//调整节点位置
+	                node.attr("transform", function(d) { //circle节点的偏移量
+	                	if(d.count == maxNodeR){ //最大节点放在视图中心
+	                		d.x = width/2;
+	                		d.y = height/2
+	                	}
+						return "translate(" + d.x + "," + d.y + ")";
+					});
+	             	//调整视图位置
+	             	
+	            }
 			}
 			//失败回调函数
 			var efunc = function(data){
@@ -358,6 +386,54 @@
 			}
 			//发送请求
 			ajaxPost("../../log/getNetworkTopological.do",'',sfunc,"",efunc);
+			//缩放
+			var zoom = d3.zoom()
+		        .scaleExtent([0.1,10])
+		        .on("zoom", ()=> {
+		            if(1){
+		                container.attr("transform", d3.event.transform);
+		            }
+		        });
+			$(".fullScreen").click(function(){
+				var fullarea = document.getElementById('cy');
+				fullScreen(fullarea)
+			})
+			
+			//全屏及退出全屏方法
+			  function fullScreen(el) {
+			    var rfs = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullScreen,
+			        wscript;
+
+			    if(typeof rfs != "undefined" && rfs) {
+			        rfs.call(el);
+			        return;
+			    }
+
+			    if(typeof window.ActiveXObject != "undefined") {
+			        wscript = new ActiveXObject("WScript.Shell");
+			        if(wscript) {
+			            wscript.SendKeys("{F11}");
+			        }
+			    }
+			  }
+
+			  function exitFullScreen(el) {
+			      var el= document,
+			          cfs = el.cancelFullScreen || el.webkitCancelFullScreen || el.mozCancelFullScreen || el.exitFullScreen,
+			          wscript;
+
+			      if (typeof cfs != "undefined" && cfs) {
+			        cfs.call(el);
+			        return;
+			      }
+
+			      if (typeof window.ActiveXObject != "undefined") {
+			          wscript = new ActiveXObject("WScript.Shell");
+			          if (wscript != null) {
+			              wscript.SendKeys("{F11}");
+			          }
+			    }
+			  }
 		</script>
 	</body>
 </html>
