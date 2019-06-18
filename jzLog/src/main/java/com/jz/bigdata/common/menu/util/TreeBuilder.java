@@ -131,11 +131,24 @@ public class TreeBuilder {
 			}
 		}
 		//对list进行排序
+//		Collections.sort(childNodes, new Comparator<Menu>() {
+//			public int compare(Menu arg0, Menu arg1) {
+//				return arg0.getChildId() + "".compareTo(arg1.getChildId() + "");
+//			}
+//		});
 		Collections.sort(childNodes, new Comparator<Menu>() {
+			@Override
 			public int compare(Menu arg0, Menu arg1) {
-				return arg0.getChildId() + "".compareTo(arg1.getChildId() + "");
+				int diff = arg0.getChildId() - arg1.getChildId();
+				if (diff > 0) {
+					return 1;
+				} else if (diff < 0) {
+					return -1;
+				}
+				return 0; // 相等为0
 			}
 		});
+		
 		return childNodes;
 	}
 
