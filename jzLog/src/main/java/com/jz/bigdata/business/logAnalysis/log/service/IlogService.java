@@ -138,7 +138,7 @@ public interface IlogService {
 	 * TO DO 获取资产各个时段的日志数据
 	 * @return
 	 */
-	public List<Map<String, Object>> getListGroupByTime(String index,String types,String param,String equipmentid);
+	public List<Map<String, Object>> getListGroupByTime(String index,String[] types,String param,String equipmentid);
 	
 	public List<Map<String, Object>> getEventListGroupByTime(String index,String[] types,String dates,String equipmentid,String eventtype,int i);
 	

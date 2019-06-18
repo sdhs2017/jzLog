@@ -51,9 +51,14 @@
 			//参数集合
 			var url = '';
 			if(tagObj.complete_url == undefined){	
-				url = "../../log/getVisitCountGroupByHttpSourceIP.do"
-				$(".top_title").html("'"+tagObj.domain_url+"' 业务流")
-			}else{
+				if(tagObj.ipv4_dst_addr == undefined){ //应用画像业务流
+					url = "../../log/getVisitCountGroupByHttpSourceIP.do"
+					$(".top_title").html("'"+tagObj.domain_url+"' 业务流")
+				}else{ //应用资产画像业务流
+					url = "../../log/getDstIPCountGroupByHTTPSrcIP.do";
+					$(".top_title").html("'"+tagObj.ipv4_dst_addr+"' 业务流")
+				}				
+			}else{ //功能业务流
 				url = "../../log/getVisitCountOfComUrlGroupByHttpSourceIP.do "
 				$(".top_title").html("'"+tagObj.complete_url+"' 业务流")
 			}
@@ -66,35 +71,62 @@
     			var linksCountArr = [];//节点count数组
     			//判断业务流类型   
     			if(dataArr[0].complete_url == undefined){ 
-    				//node节点
-        			for(var i in dataArr[0].source){
-        				var obj = {};
-        				obj.data = {};
-        				obj.data.id = dataArr[0].source[i].source_ip;
-        				obj.data.target = true;
-        				obj.data.count = dataArr[0].source[i].count;
-        				//obj.data.type = dataArr[i].node;
-        				nodesCountArr.push(dataArr[0].source[i].count);
-        				nodesArr.push(obj);
-        			}
-        			nodesCountArr.push(dataArr[0].domain.count)
-        			nodesArr.push({
-        				data:{id:dataArr[0].domain.domain_url,target:true,count:dataArr[0].domain.count}
-        			})
-        			
-        			// {data:{source:'王大拿',target:'AAA公司',label:'董事'}},
-        			//{"node": 1,"count": 80761,"source": "123.232.103.226","target": "level2\n192.168.2.151"}
-        			//连接线
-        			for(var i in dataArr[0].source){
-        				var obj = {};
-        				obj.data = {};
-        				obj.data.source = dataArr[0].source[i].source_ip;
-        				obj.data.target = dataArr[0].domain.domain_url;
-        				obj.data.count = dataArr[0].source[i].count;
-        				obj.data.label = dataArr[0].source[i].count;
-        				linksCountArr.push(dataArr[0].source[i].count);
-        				edgesArr.push(obj);
-        			}
+    				if(dataArr[0].ipv4_dst_addr == undefined){ //应用画像业务流
+    					//node节点
+            			for(var i in dataArr[0].source){
+            				var obj = {};
+            				obj.data = {};
+            				obj.data.id = dataArr[0].source[i].source_ip;
+            				obj.data.target = true;
+            				obj.data.count = dataArr[0].source[i].count;
+            				//obj.data.type = dataArr[i].node;
+            				nodesCountArr.push(dataArr[0].source[i].count);
+            				nodesArr.push(obj);
+            			}
+            			nodesCountArr.push(dataArr[0].domain.count)
+            			nodesArr.push({
+            				data:{id:dataArr[0].domain.domain_url,target:true,count:dataArr[0].domain.count}
+            			})
+            			//连接线
+            			for(var i in dataArr[0].source){
+            				var obj = {};
+            				obj.data = {};
+            				obj.data.source = dataArr[0].source[i].source_ip;
+            				obj.data.target = dataArr[0].domain.domain_url;
+            				obj.data.count = dataArr[0].source[i].count;
+            				obj.data.label = dataArr[0].source[i].count;
+            				linksCountArr.push(dataArr[0].source[i].count);
+            				edgesArr.push(obj);
+            			}
+    				}else{ //应用资产画像业务流
+    					//node节点
+            			for(var i in dataArr[0].source){
+            				var obj = {};
+            				obj.data = {};
+            				obj.data.id = dataArr[0].source[i].source_ip;
+            				obj.data.target = true;
+            				obj.data.count = dataArr[0].source[i].count;
+            				//obj.data.type = dataArr[i].node;
+            				nodesCountArr.push(dataArr[0].source[i].count);
+            				nodesArr.push(obj);
+            			}
+            			nodesCountArr.push(dataArr[0].ipv4_dst_addr.count)
+            			nodesArr.push({
+            				data:{id:dataArr[0].ipv4_dst_addr.ipv4_dst_addr,target:true,count:dataArr[0].ipv4_dst_addr.count}
+            			})
+            			//连接线
+            			for(var i in dataArr[0].source){
+            				var obj = {};
+            				obj.data = {};
+            				obj.data.source = dataArr[0].source[i].source_ip;
+            				obj.data.target = dataArr[0].ipv4_dst_addr.ipv4_dst_addr;
+            				obj.data.count = dataArr[0].source[i].count;
+            				obj.data.label = dataArr[0].source[i].count;
+            				linksCountArr.push(dataArr[0].source[i].count);
+            				edgesArr.push(obj);
+            			}
+    				}
+    				
     			}else{  //功能 业务流
     				//node节点
         			for(var i in dataArr[0].source){
@@ -332,12 +364,18 @@
 		        cy.on("click", "edge", function (a) {
 		        	var obj={};
 		        	obj.clickType = "link";
-		        	obj.type = "ip-url"
-		            obj.ipv4_src_addr = a.target._private.data.source;
-		        	obj.targetVal = a.target._private.data.target;
-		            if(tagObj.complete_url == undefined){	
+		        	if(tagObj.ipv4_dst_addr == undefined){//应用画像
+		        		obj.type = "ip-url"
+		        		obj.ipv4_src_addr = a.target._private.data.source;
+			        	obj.targetVal = a.target._private.data.target;
+	        		}else{ //应用资产画像
+	        			obj.type = "ip-ip"
+	        			obj.ipv4_src_addr = a.target._private.data.source;
+			        	obj.targetVal = a.target._private.data.target;
+	        		}		        			           
+		            if(tagObj.complete_url == undefined){//应用画像
 	        			obj.kname = "domain_url"
-	    			}else{
+	    			}else{//功能画像
 	    				obj.kname = "complete_url"
 	    			}
 		            var objStr = JSON.stringify(obj);
@@ -362,7 +400,12 @@
 		    			}
 		        	}else{
 		        		obj.type = "ip";
-		        		obj.kname = "multifield_ip";
+		        		if(tagObj.ipv4_dst_addr == obj.val){//目的ip节点
+		        			obj.kname = "ipv4_dst_addr";
+		        		}else{ //源ip节点
+		        			obj.kname = "multifield_ip";
+		        		}
+		        		
 		        	}
 		            var objStr = JSON.stringify(obj);
 		            objStr = objStr.replace(/"/g,"'");

@@ -317,10 +317,15 @@ public class LogController extends BaseController{
 	public List<Map<String, Object>> getCountGroupByTime(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String type = request.getParameter("type");
+		String[] types = null;
+		if (type!=null&&!type.equals("")) {
+			types = type.split(",");
+		}
+		
 		String param = request.getParameter("param");
 		String equipmentid = request.getParameter("equipmentid");
 		String [] hours = {"00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"};
-		List<Map<String, Object>> list = logService.getListGroupByTime(index, type, param,equipmentid);
+		List<Map<String, Object>> list = logService.getListGroupByTime(index, types, param,equipmentid);
 		
 		Map<String, Object> map = new HashMap<>();
 		for(String hour : hours) {
@@ -404,6 +409,12 @@ public class LogController extends BaseController{
 		// 源IP和源端口
 		String source_ip = request.getParameter("source_ip");
 		String source_port = request.getParameter("source_port");
+		// 时间段
+		String starttime = request.getParameter("startTime");
+		String endtime = request.getParameter("endTime");
+		
+		String ipv4_dst_addr = request.getParameter("ipv4_dst_addr");
+		String application_layer_protocol = request.getParameter("application_layer_protocol");
 		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("requestorresponse", "request");
@@ -419,6 +430,18 @@ public class LogController extends BaseController{
 		}
 		if (source_port!=null&&!source_port.equals("")) {
 			map.put("source_port", source_port);
+		}
+		if (starttime!=null&&!starttime.equals("")) {
+			map.put("starttime", starttime+" 00:00:00");
+		}
+		if (endtime!=null&&!endtime.equals("")) {
+			map.put("endtime", endtime+" 23:59:59");
+		}
+		if (ipv4_dst_addr!=null&&!ipv4_dst_addr.equals("")) {
+			map.put("ipv4_dst_addr", ipv4_dst_addr);
+		}
+		if (application_layer_protocol!=null&&!application_layer_protocol.equals("")) {
+			map.put("application_layer_protocol", application_layer_protocol);
 		}
 		
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -438,12 +461,60 @@ public class LogController extends BaseController{
 	
 	/**
 	 * @param request
+	 * 统计应用资产的IP访问次数
+	 * @return 
+	 */
+	@ResponseBody
+	@RequestMapping("/getDstIPCountGroupByHTTPSrcIP")
+	@DescribeLog(describe="统计应用资产的IP访问次数")
+	public String getDstIPCountGroupByHTTPSrcIP(HttpServletRequest request) {
+		String index = configProperty.getEs_index();
+		String  groupby = "ipv4_src_addr";
+		String [] types = {"defaultpacket"};
+		// 资产的ip
+		String ipv4_dst_addr = request.getParameter("ipv4_dst_addr");
+		
+		// 构建参数map
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("requestorresponse", "request");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		if ((ipv4_dst_addr!=null&&!ipv4_dst_addr.equals(""))) {
+			map.put("ipv4_dst_addr", ipv4_dst_addr);
+		}
+		
+		list = logService.groupBy(index, types, groupby, map);
+		
+		long ipv4_dst_addr_count = logService.getCount(index, types, map);
+		
+		// 中心圆数据统计
+		Map<String,Object> ipv4_dst_addr_Map = new HashMap<>();
+		ipv4_dst_addr_Map.put("ipv4_dst_addr", ipv4_dst_addr);
+		ipv4_dst_addr_Map.put("count", ipv4_dst_addr_count);
+		
+		// IP访问次数统计
+		List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+		for(Entry<String, Object> key : list.get(0).entrySet()) {
+			Map<String,Object> tMap = new HashMap<>();
+			tMap.put("source_ip", key.getKey());
+			tMap.put("count", key.getValue());
+			tmplist.add(tMap);
+		}
+		
+		Map<String,Object> result = new HashMap<>();
+		result.put("ipv4_dst_addr", ipv4_dst_addr_Map);
+		result.put("source", tmplist);
+		
+		return JSONArray.fromObject(result).toString();
+	}
+	
+	/**
+	 * @param request
 	 * 统计domain被IP访问的次数
 	 * @return 
 	 */
 	@ResponseBody
 	@RequestMapping("/getVisitCountGroupByHttpSourceIP")
-	@DescribeLog(describe="统计domain被IP访问的次数")
+	@DescribeLog(describe="统计IP-->domain的访问次数")
 	public String getVisitCountGroupByHttpSourceIP(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String  groupby = "ipv4_src_addr";
@@ -458,9 +529,9 @@ public class LogController extends BaseController{
 		if ((domain_url!=null&&!domain_url.equals(""))) {
 			map.put("domain_url", domain_url);
 		}
+		
 		list = logService.groupBy(index, types, groupby, map);
 		
-		map.put("domain_url", domain_url);
 		long domain_url_count = logService.getCount(index, types, map);
 		
 		Map<String,Object> domainMap = new HashMap<>();
@@ -485,25 +556,33 @@ public class LogController extends BaseController{
 	
 	/**
 	 * @param request
-	 * 统计domain被访问的全url次数
+	 * 统计domain下全url被访问的次数
 	 * @return 
 	 */
 	@ResponseBody
 	@RequestMapping("/getCountGroupByHttpComUrl")
-	@DescribeLog(describe="统计domain被访问的全url次数")
+	@DescribeLog(describe="统计domain下全url被访问的次数")
 	public String getCountGroupByHttpComUrl(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
 		String  groupby = "complete_url.raw";
 		String [] types = {"defaultpacket"};
 		// 资产的ip和端口
 		String domain_url = request.getParameter("domain_url");
-		
+		// 时间段
+		String starttime = request.getParameter("startTime");
+		String endtime = request.getParameter("endTime");
 		// 构建参数map
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("requestorresponse", "request");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		if ((domain_url!=null&&!domain_url.equals(""))) {
 			map.put("domain_url", domain_url);
+		}
+		if (starttime!=null&&!starttime.equals("")) {
+			map.put("starttime", starttime+" 00:00:00");
+		}
+		if (endtime!=null&&!endtime.equals("")) {
+			map.put("endtime", endtime+" 23:59:59");
 		}
 		list = logService.groupBy(index, types, groupby, map);
 		
@@ -977,7 +1056,9 @@ public class LogController extends BaseController{
 		        Object[] head = {"时间", "日志类型", "日志级别", "资产名称", "资产IP", "日志内容"};
 		        List<Object> headList = Arrays.asList(head);
 				Date date = new Date();
-		        CSVUtil.createCSVFile(headList, list, "D:\\Computer_Science\\exportfile\\"+username+"\\"+dateformat.format(date), "exportlog"+timeformat.format(date),null);
+				// 过滤第一条，第一条数据为总数统计
+		        list.remove(0);
+		        CSVUtil.createCSVFile(headList, list, "/home"+File.separator+"exportfile"+File.separator+username+File.separator+dateformat.format(date), "exportlog"+timeformat.format(date),null);
 		        
 		        if (i==forsize&&modsize==0) {
 		        	resultmap.put("state", "finished");
@@ -1023,7 +1104,10 @@ public class LogController extends BaseController{
 		        List<Object> headList = Arrays.asList(head);
 		        
 		        Date date = new Date();
-		        CSVUtil.createCSVFile(headList, list, "D:\\Computer_Science\\exportfile\\"+username+"\\"+dateformat.format(date), "exportlog"+timeformat.format(date),null);
+		        // 过滤第一条，第一条数据为总数统计
+		        list.remove(0);
+		        // 开始写入csv文件
+		        CSVUtil.createCSVFile(headList, list, "/home"+File.separator+"exportfile"+File.separator+username+File.separator+dateformat.format(date), "exportlog"+timeformat.format(date),null);
 		        if (forsize>0) {
 		        	resultmap.put("state", "finished");
 					resultmap.put("value", fileSize+"-"+fileSize);
@@ -1483,12 +1567,32 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="统计netflow源IP、目的IP、源端口、目的端口的数量")
 	public String getTopGroupByIPOrPort(HttpServletRequest request) {
 		String index = configProperty.getEs_index();
-		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
+		String [] groupbys = {"ipv4_dst_addr.raw","ipv4_src_addr.raw","l4_dst_port","l4_src_port"};
 		String [] types = {"defaultpacket"};
+		// 单个group条件
+		String groupby = request.getParameter("groupfiled");
+		// 应用协议
+		String application_layer_protocol = request.getParameter("application_layer_protocol");
+		// 时间段
+		String starttime = request.getParameter("startTime");
+		String endtime = request.getParameter("endTime");
+		
+		Map<String, String> searchmap = new HashMap<>();
+		if (application_layer_protocol!=null&&!application_layer_protocol.equals("")) {
+			searchmap.put("application_layer_protocol", "http");
+			searchmap.put("requestorresponse", "request");
+		}
+		if (starttime!=null&&!starttime.equals("")) {
+			searchmap.put("starttime", starttime+" 00:00:00");
+		}
+		if (endtime!=null&&!endtime.equals("")) {
+			searchmap.put("endtime", endtime+" 23:59:59");
+		}
 		
 		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
-		for(String param:groupbys) {
-			List<Map<String, Object>> list = logService.groupBy(index, types, param, null);
+		
+		if (groupby!=null) {
+			List<Map<String, Object>> list = logService.groupBy(index, types, groupby+".raw", searchmap);
 			
 			List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
 			for(Entry<String, Object> key : list.get(0).entrySet()) {
@@ -1497,7 +1601,21 @@ public class LogController extends BaseController{
 				tMap.put("count", key.getValue());
 				tmplist.add(tMap);
 			}
-			map.put(param, tmplist);
+			map.put(groupby, tmplist);
+		}else {
+			for(String param:groupbys) {
+				List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap);
+				
+				List<Map<String, Object>> tmplist = new ArrayList<Map<String, Object>>();
+				for(Entry<String, Object> key : list.get(0).entrySet()) {
+					Map<String,Object> tMap = new HashMap<>();
+					tMap.put("IpOrPort", key.getKey());
+					tMap.put("count", key.getValue());
+					tmplist.add(tMap);
+				}
+				map.put(param.replace(".raw", ""), tmplist);
+			}
+			
 		}
 		
 		return JSONArray.fromObject(map).toString();
@@ -1516,6 +1634,7 @@ public class LogController extends BaseController{
 		String index = configProperty.getEs_index();
 		String groupby = request.getParameter("groupfiled");
 		String iporport = request.getParameter("iporport");
+		
 		String [] groupbys = {"ipv4_dst_addr","ipv4_src_addr","l4_dst_port","l4_src_port"};
 		String[] types = {"defaultpacket"};
 		
@@ -1545,7 +1664,7 @@ public class LogController extends BaseController{
 	
 	/**
 	 * @param request
-	 * 通过netflow源IP、目的IP、源端口、目的端口的一项作为条件统计其他三项的数量
+	 * 通过netflow数据获取网络拓扑数据
 	 * @return 
 	 */
 	@ResponseBody
@@ -1650,7 +1769,7 @@ public class LogController extends BaseController{
 		long endtime = new Date().getTime();
 		long ms = endtime-starttime;
 		long time = (endtime-starttime)/1000;
-		System.out.println("----------------------聚合消耗时间："+time+"s ==========="+ms+"ms");
+		//System.out.println("----------------------聚合消耗时间："+time+"s ==========="+ms+"ms");
 		
 		return JSONArray.fromObject(map).toString();
 	}
@@ -1673,6 +1792,15 @@ public class LogController extends BaseController{
 		String[] types = {"defaultpacket"};
 		
 		Map<String, String> searchmap = new HashMap<>();
+		// 设置时间段为一周
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String endtime = sdf.format(cal.getTime());
+		cal.add(Calendar.DATE, -7);
+		String starttime = sdf.format(cal.getTime());
+		searchmap.put("starttime", starttime);
+		searchmap.put("endtime", endtime);
 		
 		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
 		

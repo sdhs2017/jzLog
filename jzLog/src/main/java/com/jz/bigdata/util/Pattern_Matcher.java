@@ -37,10 +37,11 @@ public class Pattern_Matcher {
    	
    	public static void main(String [] args) {
    		
-   		String log ="5157: Windows 筛选平台阻止了数据包。 应用程序信息: 进程 ID: 808 应用程序名称: \\device\\harddiskvolume2\\windows\\system32\\svchost.exe 网络信息: 方向: 入站 源地址: 255.255.255.255 源端口: 67 目标地址: 0.0.0.0 目标端口: 68 协议: 0 筛选器信息: 筛选器运行时 ID: 65691 层名称: 接收/接受 层运行时 ID: 44";
+   		String log ="{\"snapshots\":[{\"snapshot\":\"snapshot\",\"uuid\":\"6gOQWizJQWWrl-KuCwAysQ\",\"version_id\":5040099,\"version\":\"5.4.0\",\"indices\":[\"packet-analysis3\"],\"state\":\"SUCCESS\",\"start_time\":\"2019-05-21T03:05:52.123Z\",\"start_time_in_millis\":1558407952123,\"end_time\":\"2019-05-21T03:07:30.410Z\",\"end_time_in_millis\":1558408050410,\"duration_in_millis\":98287,\"failures\":[],\"shards\":{\"total\":5,\"failed\":0,\"successful\":5}}]}\r\n" + 
+   				"";
 	   	// 日志过滤
-		if (Pattern_Matcher.getMatchedContent(log, "Windows 筛选平台阻止了数据包")!=""||Pattern_Matcher.getMatchedContent(log, "Windows 筛选平台已阻止连接")!="") {
-			System.out.println(log);
+		if (Pattern_Matcher.getMatchedContentByParentheses(log, "\"state\":\"(.*?)\"")!="") {
+			System.out.println(Pattern_Matcher.getMatchedContentByParentheses(log, "\"state\":\"(.*?)\""));
 		}
 	}
 }
