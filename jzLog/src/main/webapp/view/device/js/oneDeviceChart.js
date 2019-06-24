@@ -324,6 +324,10 @@ function getLogsData(sendObj,page,firstGet,listBox){
 	sendObj.page = page;	
 	//获取事件总数与高危事件数量
 	var sfunc = function(data){
+		if(data[0].state == false){
+			layer.msg(data[0].msg,{icon: 5});
+			return false;
+		}
 		//将数据添加到页面中
 		var html = '';
 		for(var i in data[0].list){
@@ -410,16 +414,20 @@ function getLogsData(sendObj,page,firstGet,listBox){
 			//显示数据
 		}
 	}
-	var ztObj = {};
-	ztObj.ztData = JSON.stringify(sendObj);
+	var hsObj = {};
+	hsObj.hsData = JSON.stringify(sendObj);
 	//发送请求
-	ajaxPost("../../log/getLogListByEquipment.do",ztObj,sfunc);
+	ajaxPost("../../log/getLogListByEquipment.do",hsObj,sfunc);
 }
 //获得事件列表函数 sendObj-传参对象   page-当前页码  firstGet-判断第一次请求  listBox-存放日志列表的最外层盒子
 function getEventsData(sendObj,page,firstGet,listBox){
 	sendObj.page = page;	
 	//获取事件总数与高危事件数量
 	var sfunc = function(data){
+		if(data[0].state == false){
+			layer.msg(data[0].msg,{icon: 5});
+			return false;
+		}
 		//将数据添加到页面中
 		var html = '';
 		for(var i in data[0].list){
@@ -518,10 +526,10 @@ function getEventsData(sendObj,page,firstGet,listBox){
 			//显示数据
 		}
 	}
-	var ztObj = {};
-	ztObj.ztData = JSON.stringify(sendObj);
+	var hsObj = {};
+	hsObj.hsData = JSON.stringify(sendObj);
 	//发送请求
-	ajaxPost("../../log/getEventListByBlend.do",ztObj,sfunc);
+	ajaxPost("../../log/getEventListByBlend.do",hsObj,sfunc);
 }
 //潜在威胁分析
 function getEchartData2(sendObj){
