@@ -494,7 +494,10 @@ public class Syslog {
 			this.event_des="ssh登录失败";
 		}
 		
-		
+		// 针对烟台烟草的防火墙日志收集做定制化修改，烟台烟草防火墙日志无PRI值，范式化之后无法获得日志级别、日志模块内容，为保证日志数据收集，添加默认级别info
+		if(this.operation_level==null||this.operation_level.equals("")){
+			this.operation_level = "info";
+		}
 		
 	}
 	
@@ -599,13 +602,14 @@ public class Syslog {
 			json = gson.toJson(syslog);
 			System.out.println(json);
 		}*/
-		/*Gson gson = new GsonBuilder()
+		Gson gson = new GsonBuilder()
 				 .setDateFormat("yyyy-MM-dd HH:mm:ss")  
 				 .create(); 
 		String json;
 		String log = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 #015";
-		Syslog syslog = new Syslog(log);
+		String ytyclog = "<invld> 2019-06-18 14:19:37 10.60.96.37 10.60.96.37 ????????-?? FLOW: SerialNum=0816101406139990 GenTime=\"2019-06-18 14:19:37\" SrcIP=10.60.108.94 DstIP=10.60.0.5 Protocol=UDP SrcPort=61650 DstPort=53 ProtoNum=17 AppProto=0 Starttime=\"2019-06-18 14:19:27\" Endtime=\"2019-06-18 14:19:37\" Packets=2 Bytes=584 VpnType=0 Content=\"\" EvtCount=1";
+		Syslog syslog = new Syslog(ytyclog);
 		json = gson.toJson(syslog);
-		System.out.println(json);*/
+		System.out.println(json);
 	}
 }
