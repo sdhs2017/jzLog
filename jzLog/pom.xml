@@ -78,6 +78,14 @@
     </pluginRepositories>
 
 	<dependencies>
+		
+		<dependency>
+		    <groupId>sqlline</groupId>
+		    <artifactId>sqlline</artifactId>
+		    <version>1.8.0</version>
+		    <scope>test</scope>
+		</dependency>
+	
 		<!-- spring boot test -->
 		<dependency>
             <groupId>org.springframework.boot</groupId>
@@ -104,6 +112,25 @@
            <groupId>org.projectlombok</groupId>
            <artifactId>lombok</artifactId>
        	</dependency>
+       	
+       	<!-- java curl util 20190701 dengy -->
+       	<dependency>
+		    <groupId>org.toile-libre.libe</groupId>
+		    <artifactId>curl</artifactId>
+		    <version>LATEST</version>
+		</dependency>
+		
+		<!-- org.apache.httpcomponents -->
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.9</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpcore</artifactId>
+		    <version>4.4.11</version>
+		</dependency>
 	
 		<dependency>
 			<groupId>junit</groupId>
