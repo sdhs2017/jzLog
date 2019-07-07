@@ -112,6 +112,25 @@
            <groupId>org.projectlombok</groupId>
            <artifactId>lombok</artifactId>
        	</dependency>
+       	
+       	<!-- java curl util 20190701 dengy -->
+       	<dependency>
+		    <groupId>org.toile-libre.libe</groupId>
+		    <artifactId>curl</artifactId>
+		    <version>LATEST</version>
+		</dependency>
+		
+		<!-- org.apache.httpcomponents -->
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.9</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpcore</artifactId>
+		    <version>4.4.11</version>
+		</dependency>
 	
 		<dependency>
 			<groupId>junit</groupId>
@@ -826,20 +845,7 @@
 		    <artifactId>jna</artifactId>
 		    <version>5.2.0</version>
 		</dependency>
-		
-		<!-- baidu AI -->
-		<dependency>
-		    <groupId>com.baidu.aip</groupId>
-		    <artifactId>java-sdk</artifactId>
-		    <version>4.11.3</version>
-		</dependency>
 
-		<!-- zabbix -->
-		<dependency>
-			<groupId>io.github.hengyunabc</groupId>
-			<artifactId>zabbix-api</artifactId>
-			<version>0.0.2</version>
-		</dependency>
 		
 	</dependencies>
 	<build>
