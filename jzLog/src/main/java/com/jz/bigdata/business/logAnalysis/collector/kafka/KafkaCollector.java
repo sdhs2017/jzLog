@@ -336,6 +336,7 @@ public class KafkaCollector implements Runnable {
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
+									System.out.println("范式化失败 ，日志内容："+builder.toString());
 									continue;
 								}
 								
@@ -372,6 +373,7 @@ public class KafkaCollector implements Runnable {
 						}
 					}catch (Exception e) {
 						e.printStackTrace();
+						System.out.println("范式化失败 ，日志内容："+log);
 						continue;
 					}
 				
@@ -405,6 +407,7 @@ public class KafkaCollector implements Runnable {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						System.out.println("范式化失败 ，日志内容："+log);
 						continue;
 					}
 					
@@ -425,6 +428,7 @@ public class KafkaCollector implements Runnable {
 						}
 					}catch (Exception e) {
 						e.printStackTrace();
+						System.out.println("范式化失败 ，日志内容："+log);
 						continue;
 					}
 					
@@ -491,6 +495,7 @@ public class KafkaCollector implements Runnable {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						System.out.println("范式化失败 ，日志内容："+log);
 						continue;
 					}
 					
@@ -526,6 +531,7 @@ public class KafkaCollector implements Runnable {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						System.out.println("范式化失败 ，日志内容："+log);
 						continue;
 					}
 				}else if (dhcpmatcher.find()) {
@@ -560,6 +566,7 @@ public class KafkaCollector implements Runnable {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						System.out.println("范式化失败 ，日志内容："+log);
 						continue;
 					}
 				}else if (filebeatmatcher.find()) {
@@ -601,6 +608,7 @@ public class KafkaCollector implements Runnable {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						System.out.println("范式化失败 ，日志内容："+log);
 						continue;
 					}
 				}else {
@@ -642,6 +650,7 @@ public class KafkaCollector implements Runnable {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						System.out.println("范式化失败 ，日志内容："+log);
 						continue;
 					}
 					
@@ -659,7 +668,7 @@ public class KafkaCollector implements Runnable {
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			System.out.println(e1.getMessage());
+			System.out.println("es入库失败："+e1.getMessage());
 			System.out.println(e1);
 		}
 

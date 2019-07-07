@@ -691,89 +691,99 @@ public class LogController extends BaseController{
 	public String getLogListByEquipment(HttpServletRequest request,Equipment equipment) {
 		
 		String ztData = request.getParameter("hsData");
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, String> map = new HashMap<String, String>();
-		
-		try {
-			map = removeMapEmptyValue(mapper.readValue(ztData, Map.class));
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(ztData!=null) {
+			ObjectMapper mapper = new ObjectMapper();
+			Map<String, String> map = new HashMap<String, String>();
+			
+			try {
+				map = removeMapEmptyValue(mapper.readValue(ztData, Map.class));
+			} catch (JsonParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			equipment.setId(map.get("id"));
+			equipment=equipmentService.selectOneEquipment(equipment);
+			
+			String starttime = "";
+			String endtime = "";
+			if (map.get("starttime")!=null) {
+				Object start = map.get("starttime");
+				starttime = start.toString();
+				map.remove("starttime");
+			}
+			if (map.get("endtime")!=null) {
+				Object end = map.get("endtime");
+				endtime = end.toString();
+				map.remove("endtime");
+			}
+			
+			Object pageObject = map.get("page");
+			String page = pageObject.toString();
+			map.remove("page");
+			Object sizeObject = map.get("size");
+			String size = sizeObject.toString();
+			map.remove("size");
+			
+			String type = equipment.getLogType();
+			
+			/*int logType = equipment.getLogType();
+			if(EquipmentConstant.LOGTYPE_SYSLOG==logType){
+				type = EquipmentConstant.LOGTYPE_SYSLOG_EN;
+			}else if(EquipmentConstant.LOGTYPE_WMI==logType){
+				type = EquipmentConstant.LOGTYPE_WMI_EN;
+			}else if(EquipmentConstant.LOGTYPE_SNMP==logType){
+				type = EquipmentConstant.LOGTYPE_SNMP_EN;
+			}else if(EquipmentConstant.LOGTYPE_LOG4J==logType){
+				type = EquipmentConstant.LOGTYPE_LOG4J_EN;
+			}else if(EquipmentConstant.LOGTYPE_MYSQL==logType){
+				type = EquipmentConstant.LOGTYPE_MYSQL_EN;
+			}else if(EquipmentConstant.LOGTYPE_FIREWALL==logType){
+				type = EquipmentConstant.LOGTYPE_FIREWALL_EN;
+			}else{
+				type = null;
+			}*/
+			
+			String equipmentId = equipment.getId();
+			
+			map.put("equipmentid", equipmentId);
+			map.remove("id");
+			ArrayList<String> arrayList = new ArrayList<>();
+			
+			if (type.equals("netflow")) {
+				arrayList.add("defaultpacket");
+			}
+			String [] types = null;
+			if (type!=null) {
+				types = arrayList.toArray(new String[arrayList.size()]);
+			}
+			
+			List<Map<String, Object>> list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,page,size);
+			
+			Map<String, Object> allmap = new HashMap<>();
+			allmap = list.get(0);
+			list.remove(0);
+			allmap.put("list", list);
+			String result = JSONArray.fromObject(allmap).toString();
+			
+			String replace=result.replace("\\\\005", "<br/>");
+			System.out.println("---------------result----------------");
+			System.err.println(result);
+			return replace;
+		}else {
+			Map<String, Object> allmap = new HashMap<>();
+			allmap.put("state", false);
+			allmap.put("msg", "错误，参数为空");
+			String result = JSONArray.fromObject(allmap).toString();
+			return result;
 		}
-		equipment.setId(map.get("id"));
-		equipment=equipmentService.selectOneEquipment(equipment);
 		
-		String starttime = "";
-		String endtime = "";
-		if (map.get("starttime")!=null) {
-			Object start = map.get("starttime");
-			starttime = start.toString();
-			map.remove("starttime");
-		}
-		if (map.get("endtime")!=null) {
-			Object end = map.get("endtime");
-			endtime = end.toString();
-			map.remove("endtime");
-		}
 		
-		Object pageObject = map.get("page");
-		String page = pageObject.toString();
-		map.remove("page");
-		Object sizeObject = map.get("size");
-		String size = sizeObject.toString();
-		map.remove("size");
-		
-		String type = equipment.getLogType();
-		
-		/*int logType = equipment.getLogType();
-		if(EquipmentConstant.LOGTYPE_SYSLOG==logType){
-			type = EquipmentConstant.LOGTYPE_SYSLOG_EN;
-		}else if(EquipmentConstant.LOGTYPE_WMI==logType){
-			type = EquipmentConstant.LOGTYPE_WMI_EN;
-		}else if(EquipmentConstant.LOGTYPE_SNMP==logType){
-			type = EquipmentConstant.LOGTYPE_SNMP_EN;
-		}else if(EquipmentConstant.LOGTYPE_LOG4J==logType){
-			type = EquipmentConstant.LOGTYPE_LOG4J_EN;
-		}else if(EquipmentConstant.LOGTYPE_MYSQL==logType){
-			type = EquipmentConstant.LOGTYPE_MYSQL_EN;
-		}else if(EquipmentConstant.LOGTYPE_FIREWALL==logType){
-			type = EquipmentConstant.LOGTYPE_FIREWALL_EN;
-		}else{
-			type = null;
-		}*/
-		
-		String equipmentId = equipment.getId();
-		
-		map.put("equipmentid", equipmentId);
-		map.remove("id");
-		ArrayList<String> arrayList = new ArrayList<>();
-		
-		if (type.equals("netflow")) {
-			arrayList.add("defaultpacket");
-		}
-		String [] types = null;
-		if (type!=null) {
-			types = arrayList.toArray(new String[arrayList.size()]);
-		}
-		
-		List<Map<String, Object>> list = logService.getListByMap(configProperty.getEs_index(), types, starttime, endtime, map,page,size);
-		
-		Map<String, Object> allmap = new HashMap<>();
-		allmap = list.get(0);
-		list.remove(0);
-		allmap.put("list", list);
-		String result = JSONArray.fromObject(allmap).toString();
-		
-		String replace=result.replace("\\\\005", "<br/>");
-		System.out.println("---------------result----------------");
-		System.err.println(result);
-		return replace;
 	}
 	
 	/**
@@ -1056,7 +1066,9 @@ public class LogController extends BaseController{
 		        Object[] head = {"时间", "日志类型", "日志级别", "资产名称", "资产IP", "日志内容"};
 		        List<Object> headList = Arrays.asList(head);
 				Date date = new Date();
-		        CSVUtil.createCSVFile(headList, list, "D:\\Computer_Science\\exportfile\\"+username+"\\"+dateformat.format(date), "exportlog"+timeformat.format(date),null);
+				// 过滤第一条，第一条数据为总数统计
+		        list.remove(0);
+		        CSVUtil.createCSVFile(headList, list, "/home"+File.separator+"exportfile"+File.separator+username+File.separator+dateformat.format(date), "exportlog"+timeformat.format(date),null);
 		        
 		        if (i==forsize&&modsize==0) {
 		        	resultmap.put("state", "finished");
@@ -1102,7 +1114,10 @@ public class LogController extends BaseController{
 		        List<Object> headList = Arrays.asList(head);
 		        
 		        Date date = new Date();
-		        CSVUtil.createCSVFile(headList, list, "D:\\Computer_Science\\exportfile\\"+username+"\\"+dateformat.format(date), "exportlog"+timeformat.format(date),null);
+		        // 过滤第一条，第一条数据为总数统计
+		        list.remove(0);
+		        // 开始写入csv文件
+		        CSVUtil.createCSVFile(headList, list, "/home"+File.separator+"exportfile"+File.separator+username+File.separator+dateformat.format(date), "exportlog"+timeformat.format(date),null);
 		        if (forsize>0) {
 		        	resultmap.put("state", "finished");
 					resultmap.put("value", fileSize+"-"+fileSize);
@@ -1764,7 +1779,7 @@ public class LogController extends BaseController{
 		long endtime = new Date().getTime();
 		long ms = endtime-starttime;
 		long time = (endtime-starttime)/1000;
-		System.out.println("----------------------聚合消耗时间："+time+"s ==========="+ms+"ms");
+		//System.out.println("----------------------聚合消耗时间："+time+"s ==========="+ms+"ms");
 		
 		return JSONArray.fromObject(map).toString();
 	}
@@ -1787,6 +1802,15 @@ public class LogController extends BaseController{
 		String[] types = {"defaultpacket"};
 		
 		Map<String, String> searchmap = new HashMap<>();
+		// 设置时间段为一周
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String endtime = sdf.format(cal.getTime());
+		cal.add(Calendar.DATE, -7);
+		String starttime = sdf.format(cal.getTime());
+		searchmap.put("starttime", starttime);
+		searchmap.put("endtime", endtime);
 		
 		Map<String, List<Map<String, Object>>> map = new LinkedHashMap<String, List<Map<String, Object>>>();
 		

@@ -24,6 +24,7 @@ import com.jz.bigdata.common.equipment.entity.Equipment;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
 import com.jz.bigdata.common.manage.service.IManageService;
 import com.jz.bigdata.util.ConfigProperty;
+import com.jz.bigdata.util.Pattern_Matcher;
 import com.jz.bigdata.util.ResourceUsage;
 
 import net.sf.json.JSONArray;
@@ -189,7 +190,13 @@ public class ManageServiceImpl extends QuartzJobBean implements IManageService {
     
     
     public String createSnapshotByIndices() {
+    	
+    	Map<String, String> MessageResult=doshell("curl -X GET http://"+configProperty.getHost_ip()+":9200/_snapshot/EsBackup/snapshot", configProperty.getHost_user(), configProperty.getHost_passwd(), configProperty.getHost_ip());
+//		System.out.println(MessageResult.get("curl -X GET http://"+configProperty.getHost_ip()+":9200/_snapshot/EsBackup/snapshot"));
 		
+		String resultSuccess=Pattern_Matcher.getMatchedContentByParentheses(MessageResult.get("curl -X GET http://"+configProperty.getHost_ip()+":9200/_snapshot/EsBackup/snapshot"), "\"state\":\"(.*?)\"");
+		Map<String, Object> map= new HashMap<>();
+		if(resultSuccess.equals("SUCCESS")){
     	// 创建备份仓库
     	//String url = "curl -XPUT http://"+configProperty.getEs_path_snapshot()+"/_snapshot/EsBackup -d '{\"type\":\"fs\",\"settings\":{\"location\":\"/home/elsearch/es_backups/my_backup/\"}}'";
     	//String url = "curl -XPUT http://"+configProperty.getEs_path_snapshot()+"/_snapshot/EsBackup -d '{\"type\":\"fs\",\"settings\":{\"location\":\"/mnt/disk1/elsearch/es_backups/\"}}'";
@@ -202,11 +209,14 @@ public class ManageServiceImpl extends QuartzJobBean implements IManageService {
 		doshell(snapshotUrlByIndices,configProperty.getHost_user(), configProperty.getHost_passwd(), configProperty.getHost_ip());
 		
 		//System.out.println("自动备份成功！----时间----:"+format.format(new Date()));
-		
-		Map<String, Object> map= new HashMap<>();
 		map.put("state", true);
 		map.put("msg", "日志数据备份成功！");
 		return JSONArray.fromObject(map).toString();
+		}else{
+			map.put("state", true);
+			map.put("msg", "日志数据备份未结束！");
+			return JSONArray.fromObject(map).toString();
+		}
 	}
     
     public String updateRisk() {

@@ -1,6 +1,9 @@
 package com.jz.bigdata.common.manage.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,9 +13,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.jz.bigdata.common.manage.service.IManageService;
 import com.jz.bigdata.util.ConfigProperty;
 import com.jz.bigdata.util.DescribeLog;
+import com.jz.bigdata.util.Pattern_Matcher;
 
 import net.sf.json.JSONArray;
 
@@ -60,7 +65,14 @@ public class ManageController {
 	@DescribeLog(describe="创建快照")
 	public String createSnapshotByIndices() {
 		
+		Map<String, String> MessageResult= iManageService.doshell("curl -X GET http://"+configProperty.getHost_ip()+":9200/_snapshot/EsBackup/snapshot", configProperty.getHost_user(), configProperty.getHost_passwd(), configProperty.getHost_ip());
+//		System.out.println(MessageResult.get("curl -X GET http://"+configProperty.getHost_ip()+":9200/_snapshot/EsBackup/snapshot"));
+		
+		String resultSuccess=Pattern_Matcher.getMatchedContentByParentheses(MessageResult.get("curl -X GET http://"+configProperty.getHost_ip()+":9200/_snapshot/EsBackup/snapshot"), "\"state\":\"(.*?)\"");
+
+		Map<String, Object> map= new HashMap<>();
 		//createRepertory();
+		if(resultSuccess.equals("SUCCESS")){
 		// 删除快照
 		String deleteUrl = "curl -XDELETE http://"+configProperty.getEs_path_snapshot()+"/_snapshot/EsBackup/snapshot";
 		//iManageService.doCutl("-XDELETE ", deleteUrl);
@@ -69,11 +81,17 @@ public class ManageController {
 		String snapshotUrlByIndices = "curl -XPUT http://"+configProperty.getEs_path_snapshot()+"/_snapshot/EsBackup/snapshot -d \'{\"indices\":\""+configProperty.getEs_index()+"\",\"wait_for_completion\":true}\'";
 		//iManageService.doCutl("-XPUT", snapshotUrlByIndices);
 		Map<String, String> result = iManageService.doshell(snapshotUrlByIndices,configProperty.getHost_user(), configProperty.getHost_passwd(), configProperty.getHost_ip());
-		
-		Map<String, Object> map= new HashMap<>();
 		map.put("state", true);
 		map.put("msg", "日志数据备份成功！");
 		return JSONArray.fromObject(map).toString();
+		}else{
+			map.put("state", false);
+			map.put("msg", "日志数据备份未结束！");
+			return JSONArray.fromObject(map).toString();
+		}
+		
+		
+		
 	}
 	
 	@ResponseBody
