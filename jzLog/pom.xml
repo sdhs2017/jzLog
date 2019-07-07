@@ -78,6 +78,14 @@
     </pluginRepositories>
 
 	<dependencies>
+		
+		<dependency>
+		    <groupId>sqlline</groupId>
+		    <artifactId>sqlline</artifactId>
+		    <version>1.8.0</version>
+		    <scope>test</scope>
+		</dependency>
+	
 		<!-- spring boot test -->
 		<dependency>
             <groupId>org.springframework.boot</groupId>
@@ -818,7 +826,20 @@
 		    <artifactId>jna</artifactId>
 		    <version>5.2.0</version>
 		</dependency>
+		
+		<!-- baidu AI -->
+		<dependency>
+		    <groupId>com.baidu.aip</groupId>
+		    <artifactId>java-sdk</artifactId>
+		    <version>4.11.3</version>
+		</dependency>
 
+		<!-- zabbix -->
+		<dependency>
+			<groupId>io.github.hengyunabc</groupId>
+			<artifactId>zabbix-api</artifactId>
+			<version>0.0.2</version>
+		</dependency>
 		
 	</dependencies>
 	<build>
