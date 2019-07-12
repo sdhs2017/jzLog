@@ -30,22 +30,26 @@
 		<slf4j.version>1.7.14</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 	</properties>
-	
+
+
 	<!-- spring es 资源库 -->
 	<repositories>
 	    <repository>
 	        <id>spring-snapshot</id>
 	        <name>Spring Maven SNAPSHOT Repository</name>
 	        <url>http://repo.springsource.org/libs-snapshot</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 	    </repository>
 	    <!-- spring es 资源库 -->
 	    <repository>
             <id>spring-snapshots</id>
             <name>Spring Snapshots</name>
             <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
         </repository>
         <repository>
             <id>spring-milestones</id>
@@ -55,6 +59,17 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+
+		<!-- aliyun -->
+		<repository>
+			<id>alimaven</id>
+			<name>aliyun maven</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	
 	<!-- spring es 资源库 -->
@@ -152,8 +167,9 @@
 			<!-- spring test spring4.0对应junit4.12 -->
 			<!-- <version>4.12</version> -->
 			<version>4.12</version>
-			<!-- 表示开发的时候引入，发布的时候不会加载此包 -->
+			<!-- 表示开发的时候引入，发布的时候不会加载此包
 			<scope>test</scope>
+			 -->
 		</dependency>
 		<dependency>  
 		    <groupId>jdk.tools</groupId>  
@@ -383,30 +399,32 @@
 		</dependency>
 		<!-- truelicense包 -->
 		<!-- https://mvnrepository.com/artifact/de.schlichtherle.truelicense/truelicense-core -->
-		<!-- 
+
 		<dependency>
 		    <groupId>de.schlichtherle.truelicense</groupId>
 		    <artifactId>truelicense-core</artifactId>
 		    <version>1.33</version>
+			<!--
 		    <scope>provided</scope>
+		    -->
 		</dependency>
-		 -->
+
 		<!-- https://mvnrepository.com/artifact/de.schlichtherle.truelicense/truelicense-xml -->
-		<!-- 
+
 		<dependency>
 		    <groupId>de.schlichtherle.truelicense</groupId>
 		    <artifactId>truelicense-xml</artifactId>
 		    <version>1.33</version>
 		</dependency>
-		 -->
+
 		<!-- https://mvnrepository.com/artifact/de.schlichtherle.truelicense/truelicense-swing -->
-		<!-- 
+
 		<dependency>
 		    <groupId>de.schlichtherle.truelicense</groupId>
 		    <artifactId>truelicense-swing</artifactId>
 		    <version>1.33</version>
 		</dependency>
-		 -->
+
 		<!-- 
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
@@ -879,6 +897,22 @@
 	        <plugin>
 	            <groupId>org.springframework.boot</groupId>
 	            <artifactId>spring-boot-maven-plugin</artifactId>
+				<!-- 解决必须指定唯一main方法的报错 -->
+				<configuration>
+					<mainClass>package.Main</mainClass>
+				</configuration>
+				<!--
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<mainClass>${spring.boot.mainclass}</mainClass>
+						</configuration>
+					</execution>
+				</executions>
+				-->
 	        </plugin>
     	</plugins>
 	</build>
