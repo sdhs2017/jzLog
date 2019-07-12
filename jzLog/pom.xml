@@ -882,6 +882,18 @@
 	</dependencies>
 	<build>
 		<finalName>jzLog</finalName>
+
+		<!-- 强制将指定目录下xml文件打入war包 -->
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/**/**/**/**/**/**/*.xml</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+
 		<plugins>  
         	<!-- define the project compile level -->  
       		<plugin>  
