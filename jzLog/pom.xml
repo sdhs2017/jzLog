@@ -892,8 +892,27 @@
 				</includes>
 				<filtering>false</filtering>
 			</resource>
-		</resources>
 
+			<!--  intelliJ ide 需要如下配置,才能读取src目录-->
+			<resource>
+				<!--
+				<directory>${basedir}/src</directory>
+				-->
+				<directory>src/main/resources</directory>
+				<includes>
+					<!--
+					<include>**/**/*.properties</include>
+					<include>**/**/*.xml</include>
+					-->
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+					<include>*.properties</include>
+					<include>*.xml</include>
+					<include>*.keystore</include>
+					<include>*.yml</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>  
         	<!-- define the project compile level -->  
       		<plugin>  
@@ -926,6 +945,16 @@
 				</executions>
 				-->
 	        </plugin>
+			<!-- 测试出错不影响项目的编译 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<testFailureIgnore>true</testFailureIgnore>
+					<!-- 跳过test -->
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
     	</plugins>
 	</build>
 </project>
