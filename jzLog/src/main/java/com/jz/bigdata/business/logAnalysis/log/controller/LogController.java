@@ -1519,6 +1519,36 @@ public class LogController extends BaseController{
 		return result;
 	}
 	
+	
+	/**
+	 * 首页获取索引中流量数据的数量
+	 * @param request
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/getIndicesCountByType",produces = "application/json; charset=utf-8")
+	@DescribeLog(describe="首页获取索引中流量数据的数量")
+	public String getIndicesCountByType(HttpServletRequest request) {
+		
+		// index中type为defaultpacket的数据量统计
+		String[] types = {LogType.LOGTYPE_DEFAULTPACKET};
+		//String[] types = null;
+		Map<String, Object> map = new HashMap<>();
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		
+		try {
+			long count = 0;
+			count = logService.getCount(configProperty.getEs_index(), types,null);
+			map.put("indices_defaultpacket", count);
+		} catch (Exception e) {
+			map.put("indices_defaultpacket", "获取异常");
+		}
+		list.add(map);
+		String result = JSONArray.fromObject(list).toString();
+		
+		return result;
+	}
+	
 	/**
 	 * 获取事件数据的数量
 	 * @param requestt
