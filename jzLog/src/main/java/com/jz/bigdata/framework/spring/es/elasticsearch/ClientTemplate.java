@@ -35,6 +35,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.get.GetResult;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -57,7 +58,10 @@ import com.jz.bigdata.framework.spring.es.index.IndexSearchEngine;
 import net.sf.json.util.JSONBuilder;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -780,23 +784,36 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 			sBuilder.setTypes(types);
 		}
 		QueryBuilder queryBuilder = null;
-		String [] date = dates.split("-");
+		Date nowtime = new Date();
+		SimpleDateFormat yyyyMMdd_format = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		BoolQueryBuilder Querydate = null;
+		if (dates.equals(yyyyMMdd_format.format(nowtime))) {
+			String starttime = dates+" 00:00:00";
+			String endtime = format.format(nowtime);
+			Querydate = QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
+		}else {
+			String starttime = dates+" 00:00:00";
+			String endtime = dates+" 23:59:59";
+			Querydate = QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
+		}
+		
+		/*String [] date = dates.split("-");
 		QueryBuilder querytime = QueryBuilders.boolQuery()
 				.must(QueryBuilders.matchPhraseQuery("logtime_year", date[0]))
 				.must(QueryBuilders.matchPhraseQuery("logtime_month", date[1]))
-				.must(QueryBuilders.matchPhraseQuery("logtime_day", date[2]));
+				.must(QueryBuilders.matchPhraseQuery("logtime_day", date[2]));*/
 		
 		if(eid!=null&&!eid.equals("")) {
 			QueryBuilder queryequipmentid = QueryBuilders.boolQuery()
 					.must(QueryBuilders.matchPhraseQuery("equipmentid", eid));
 			queryBuilder = QueryBuilders.boolQuery()
-					.must(querytime)
+					.must(Querydate)
 					.must(queryequipmentid);
 		}else {
 			queryBuilder = QueryBuilders.boolQuery()
-					.must(querytime);
+					.must(Querydate);
 		}
-		
 		
 		sBuilder.setQuery(queryBuilder);
 		
