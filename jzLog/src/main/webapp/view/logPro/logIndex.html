@@ -162,18 +162,63 @@
 			/* .indexPropertyBoxLeft,.indexLogsBoxLeft{
 				float:left;
 			}*/
-			.indexPropertyBoxRight b,.indexLogsBoxRight b{
+			.item-val .errorLogsCount{
 				color:#e4956d;
 				cursor:pointer;
 			} 
-			.indexLogsBoxRight b:hover{
+			.errorLogsCount:hover{
 				text-decoration: underline;
 			}
 			.indexlologsBox{
-				background:#2f455c;
+				/* background:#2f455c; */
+				height:150px!important;
 				display: flex;
 			    justify-content: space-around;
 			    align-items: center;
+			    padding:0!important;
+			}
+			.indexlologsBox>div{
+				background:#2f455c;
+				height:100%;
+				border-radius: 5px;
+			}
+			.indexlologsBox .logsWapper{
+				width:50%;
+				margin-right:10px;
+			}
+			.logsWapper>div{
+				/* height:50%; */
+				padding-top:10px;
+			}
+			.logsWapper .logsTop{
+				height:70px;
+			}
+			.logsWapper .logsBottom{
+				height:75px;
+			}
+			.indexlologsBox .flowsWapper{
+				flex:1;
+			}
+			.indexlologsBox .item-tit{
+				margin: 0;
+				padding-left:14px;
+			}
+			.indexlologsBox .item-val{
+				height:45px;
+				display: flex;
+			    justify-content: space-around;
+			    align-items: center;
+				text-align:center;
+				margin:0;
+			}
+			.flowsWapper .item-tit{
+				margin-top:10px;
+			}
+			.flowsWapper .item-val{
+				height:120px;
+				display:flex;
+				justify-content: center;
+    			align-items: center;
 			}
 			.col_title>a{
 				float: right;
@@ -216,11 +261,17 @@
 			    .indexPropertyBox ul li {  
 					font-size:3em; 
 				} 
+				.indexlologsBox b{
+					font-size:1.3rem;
+				}
 			} 
 			@media only screen and (min-width: 1500px){  
 			    .indexPropertyBox ul li {  
 					font-size:5em; 
 				} 
+				.indexlologsBox b{
+					font-size:1.7rem;
+				}
 			} 
 			
 			#point { 
@@ -270,14 +321,28 @@
 								</ul>													
 							</div>
 							<div class="indexlologsBox">
-								<div class="indexLogsBoxLeft">
+								<!-- <div class="indexLogsBoxLeft">
 									<p>已收集日志条数 </p>
 									<p><b class="allLogsCount"> -</b></p>									
 								</div>		
 								<div class="indexLogsBoxRight">
 									<p>error日志条数</p>	
 									<p> <b class="errorLogsCount" title="点击检索error日志"> -</b></p>						
-								</div>																
+								</div>	 -->	
+								<div class="logsWapper">
+									<div class="logsTop">
+										<p class="item-tit">日志数 </p>
+										<p class="item-val"><b class="allLogsCount"> -</b></p>
+									</div>
+									<div class="logsBottom">
+										<p class="item-tit">error日志数</p>	
+										<p class="item-val"> <b class="errorLogsCount" title="点击检索error日志"> -</b></p>	
+									</div>
+								</div>	
+								<div class="flowsWapper">
+									<p class="item-tit">流量数</p>	
+									<p class="item-val"> <b class="flowCount"> -</b></p>	
+								</div>													
 							</div>
 						</div>
 					</div>
@@ -560,7 +625,7 @@
 			var myChart03 = echarts.init(document.getElementById('logChart03'))
 			myChart03.setOption({
         		title: {
-    				text:s1+" 日志数据量统计",
+    				text:s1+" 数据量统计",
 		        	x:'center',
 		        	textStyle:{
 		        		color:'#5bc0de'
@@ -830,12 +895,13 @@
 			})
 			
 		//统计模块实现方法
+		//日志数量
 			function getlogsCount(){
 				$.ajax({
 					url:'../../log/getIndicesCount.do',
 					cache: false ,//清除缓存
 					data:'',
-					type:"get",  //提交方式  
+					type:"post",  //提交方式  
 			        dataType:"json", //数据类型  
 					success:function(data){
 						//填充数据
@@ -847,6 +913,23 @@
 			getlogsCount();
 			//定时查询数据 1分钟查询一次	
 			setInterval(getlogsCount,60000);
+			//流量数据
+			function getFlowCount(){
+				$.ajax({
+					url:'../../log/getIndicesCountByType.do',
+					cache: false ,//清除缓存
+					data:'',
+					type:"post",  //提交方式  
+			        dataType:"json", //数据类型  
+					success:function(data){
+						//填充数据
+						$(".flowCount").html(parseInt(data[0].indices_defaultpacket).toLocaleString());//全部日志
+					}
+				});
+			}
+			getFlowCount();	
+			//定时查询数据 1分钟查询一次	
+			setInterval(getFlowCount,60000);	
 			var htmlNum3 = 0;
 			//error日志点击跳转到日志检索页面
 			$(".errorLogsCount").click(function(){
