@@ -194,10 +194,10 @@ public class LogServiceImpl implements IlogService {
 	 * @return
 	 * service层 
 	 */
-	public List<Map<String, Object>> getListGroupByTime(String index,String[] types,String param,String equipmentid) {
+	public List<Map<String, Object>> getListGroupByTime(String index,String[] types,String today,String equipmentid) {
 		
 		String groupby = "logtime_hour";
-		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, param,groupby,equipmentid);
+		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, today,groupby,equipmentid);
 		
 		return list;
 	}
@@ -302,11 +302,24 @@ public class LogServiceImpl implements IlogService {
 		int gte = 0;
 		int lte = 7;
 		QueryBuilder queryBuilder = null;
-		String [] date = dates.split("-");
+		Date nowtime = new Date();
+		SimpleDateFormat yyyyMMdd_format = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		BoolQueryBuilder Querydate = null;
+		if (dates.equals(yyyyMMdd_format.format(nowtime))) {
+			String starttime = dates+" 00:00:00";
+			String endtime = format.format(nowtime);
+			Querydate = QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
+		}else {
+			String starttime = dates+" 00:00:00";
+			String endtime = dates+" 23:59:59";
+			Querydate = QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
+		}
+		/*String [] date = dates.split("-");
 		QueryBuilder querytime = QueryBuilders.boolQuery()
 				.must(QueryBuilders.matchPhraseQuery("logtime_year", date[0]))
 				.must(QueryBuilders.matchPhraseQuery("logtime_month", date[1]))
-				.must(QueryBuilders.matchPhraseQuery("logtime_day", date[2]));
+				.must(QueryBuilders.matchPhraseQuery("logtime_day", date[2]));*/
 		QueryBuilder existquery = QueryBuilders.boolQuery()
 				.must(QueryBuilders.constantScoreQuery(QueryBuilders.existsQuery("event_type")));
 		if (i==1) {
@@ -326,7 +339,7 @@ public class LogServiceImpl implements IlogService {
 			QueryBuilder queryequipmentid = QueryBuilders.boolQuery()
 					.must(QueryBuilders.termQuery("equipmentid", equipmentid));
 			queryBuilder = QueryBuilders.boolQuery()
-					.must(querytime)
+					.must(Querydate)
 					.must(existquery)
 					.must(rangequery)
 					.must(queryequipmentid);
@@ -334,7 +347,7 @@ public class LogServiceImpl implements IlogService {
 			queryBuilder = QueryBuilders.boolQuery()
 					.must(existquery)
 					.must(rangequery)
-					.must(querytime);
+					.must(Querydate);
 		}
 		List<Map<String, Object>> list = clientTemplate.getListGroupByQueryBuilder(index, types, groupby, queryBuilder,24);
 		
@@ -483,6 +496,11 @@ public class LogServiceImpl implements IlogService {
 			sizeInt = Integer.parseInt(size);
 		}
 		
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
+		
 		// "多个匹配"  匹配的列进行归纳,包括设备id，设备ip，日志类型，日志内容
 		if(content!=null&&!content.equals("")) {
 			content = content.trim();
@@ -503,8 +521,10 @@ public class LogServiceImpl implements IlogService {
 				multiMatchQueryBuilder  = QueryBuilders.multiMatchQuery(content, "operation_level","operation_des","ip","hostname","process","operation_facility","userid");
 			}
 			//MultiMatchQueryBuilder multiMatchQueryBuilder  = QueryBuilders.multiMatchQuery(content, "operation_level","operation_des","ip","hostname","process","operation_facility","userid").fuzziness("AUTO");
-			count = clientTemplate.count(index, types, multiMatchQueryBuilder);
-			hits = clientTemplate.getHitsByQueryBuilder(index, types, multiMatchQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
+			boolQueryBuilder.must(multiMatchQueryBuilder);
+			
+			count = clientTemplate.count(index, types, boolQueryBuilder);
+			hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
 			// 在通过分词查询会后没有结果的情况下，在通过多字段模糊匹配查询，以达到查询效果的目的（该查询效率比较低）
 			if (hits.length<1) {
 				content = "*"+content.toLowerCase()+"*";
@@ -516,7 +536,6 @@ public class LogServiceImpl implements IlogService {
 				QueryBuilder wildcardqueryBuilder5 = QueryBuilders.wildcardQuery("process", content);
 				QueryBuilder wildcardqueryBuilder6 = QueryBuilders.wildcardQuery("operation_facility", content);
 				QueryBuilder wildcardqueryBuilder7 = QueryBuilders.wildcardQuery("userid", content);
-				BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 				boolQueryBuilder.should(wildcardqueryBuilder1);
 				boolQueryBuilder.should(wildcardqueryBuilder2);
 				boolQueryBuilder.should(wildcardqueryBuilder3);
@@ -528,8 +547,8 @@ public class LogServiceImpl implements IlogService {
 				hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
 			}
 		}else {
-			count = clientTemplate.count(index, types, null);
-			hits = clientTemplate.getHitsByQueryBuilder(index, types, null,"logdate",SortOrder.DESC,fromInt,sizeInt);
+			count = clientTemplate.count(index, types, boolQueryBuilder);
+			hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
 		}
 			
 		Map<String, Object> mapcount = new HashMap<String,Object>();
@@ -598,6 +617,10 @@ public class LogServiceImpl implements IlogService {
 		}
 		
 		QueryBuilder user = QueryBuilders.termQuery("userid", userid);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
 		// "多个匹配"  匹配的列进行归纳,包括设备id，设备ip，日志类型，日志内容
 		if(content!=null&&!content.equals("")) {
 			MultiMatchQueryBuilder multiMatchQueryBuilder  = QueryBuilders.multiMatchQuery(content, "operation_level","operation_des","ip","hostname","process","operation_facility","userid");
@@ -617,7 +640,6 @@ public class LogServiceImpl implements IlogService {
 				QueryBuilder wildcardqueryBuilder5 = QueryBuilders.wildcardQuery("process", content);
 				QueryBuilder wildcardqueryBuilder6 = QueryBuilders.wildcardQuery("operation_facility", content);
 				QueryBuilder wildcardqueryBuilder7 = QueryBuilders.wildcardQuery("userid", content);
-				BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 				boolQueryBuilder.should(wildcardqueryBuilder1);
 				boolQueryBuilder.should(wildcardqueryBuilder2);
 				boolQueryBuilder.should(wildcardqueryBuilder3);
@@ -631,10 +653,9 @@ public class LogServiceImpl implements IlogService {
 			}
 		}else {
 			//条件为空，全量提取，时间倒序排，只校验用户
-			BoolQueryBuilder QueryBuilder = QueryBuilders.boolQuery();
-			QueryBuilder.must(user);
-			count = clientTemplate.count(index, types, QueryBuilder);
-			hits = clientTemplate.getHitsByQueryBuilder(index, types, QueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
+			boolQueryBuilder.must(user);
+			count = clientTemplate.count(index, types, boolQueryBuilder);
+			hits = clientTemplate.getHitsByQueryBuilder(index, types, boolQueryBuilder,"logdate",SortOrder.DESC,fromInt,sizeInt);
 		}
 		
 		
@@ -698,6 +719,7 @@ public class LogServiceImpl implements IlogService {
 		
 		
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		// 针对特殊字段进行查询处理，如时间、多字段、分词字段等
 		// 时间段
 		if (pamap.get("starttime")!=null&&pamap.get("endtime")!=null) {
@@ -705,11 +727,13 @@ public class LogServiceImpl implements IlogService {
 			pamap.remove("starttime");
 			pamap.remove("endtime");
 		}else if (pamap.get("starttime")!=null) {
-			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(pamap.get("starttime")));
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(pamap.get("starttime")).lte(format.format(new Date())));
 			pamap.remove("starttime");
 		}else if (pamap.get("endtime")!=null) {
 			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(pamap.get("endtime")));
 			pamap.remove("endtime");
+		}else {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
 		}
 		// 判断是否是事件查询，如果是事件查询，es会判断event_type不为null
 		if (pamap.get("event")!=null) {
@@ -833,17 +857,20 @@ public class LogServiceImpl implements IlogService {
 			sizeInt = Integer.parseInt(size);
 		}
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		// 时间段
 		if (pamap.get("starttime")!=null&&pamap.get("endtime")!=null) {
 			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(pamap.get("starttime")).lte(pamap.get("endtime")));
 			pamap.remove("starttime");
 			pamap.remove("endtime");
 		}else if (pamap.get("starttime")!=null) {
-			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(pamap.get("starttime")));
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(pamap.get("starttime")).lte(format.format(new Date())));
 			pamap.remove("starttime");
 		}else if (pamap.get("endtime")!=null) {
 			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(pamap.get("endtime")));
 			pamap.remove("endtime");
+		}else {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
 		}
 		// 判断是否是事件查询，如果是事件查询，es会判断event_type不为null
 		if (pamap.get("event")!=null) {

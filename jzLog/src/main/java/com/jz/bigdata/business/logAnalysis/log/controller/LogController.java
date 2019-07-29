@@ -721,6 +721,9 @@ public class LogController extends BaseController{
 				Object end = map.get("endtime");
 				endtime = end.toString();
 				map.remove("endtime");
+			}else {
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				endtime = format.format(new Date());
 			}
 			
 			Object pageObject = map.get("page");
@@ -1476,8 +1479,8 @@ public class LogController extends BaseController{
 	public String getIndicesCount(HttpServletRequest request) {
 		
 		
-		//String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
-		String[] types = null;
+		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW};
+		//String[] types = null;
 		String equipmentid = request.getParameter("equipmentid");
 		Map<String, Object> map = new HashMap<>();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
