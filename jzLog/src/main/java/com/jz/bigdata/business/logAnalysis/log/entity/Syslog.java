@@ -94,6 +94,10 @@ public class Syslog {
 	 */
 	String hostname;
 	/**
+	 * syslog日志PRI值或者英文字符
+	 */
+	String pri;
+	/**
 	 * 日志模块
 	 * (facility)
 	 */
@@ -274,8 +278,12 @@ public class Syslog {
 	
 	public Syslog(String syslog) {
 		
+		// syslog PRI值正则截取
 		Pattern PRIpattern = Pattern.compile("<[0-9]{1,5}>");
 		Matcher PRImatcher = PRIpattern.matcher(syslog);
+		// syslog 非PRI值正则截取
+		Pattern NOPRIpattern = Pattern.compile("<[A-Za-z]{1,5}>");
+		Matcher NOPRImatcher = NOPRIpattern.matcher(syslog);
 		
 		Pattern datePattern1 = Pattern.compile("[0-9]{4}[-][0-9]{1,2}[-][0-9]{1,2}[ ][0-9]{1,2}[:][0-9]{1,2}[:][0-9]{1,2}");
 		Matcher datematcher1 = datePattern1.matcher(syslog);
@@ -337,6 +345,7 @@ public class Syslog {
 		if (PRImatcher.find()) {
 			String PRI = PRImatcher.group(0);
 			PRI = PRI.substring(1, PRI.length()-1);
+			this.pri = PRI;
 			Integer PRIint = Integer.valueOf(PRI);
 			this.event_level = PRIint%8;
 			String facility = getFacility(PRIint/8);
@@ -345,6 +354,10 @@ public class Syslog {
 			String level = getLevel(PRIint%8);
 			this.operation_level = level;
 			//System.out.print("日志级别:"+level+"\t");
+		} else if (NOPRImatcher.find()) {
+			String PRI = NOPRImatcher.group(0);
+			PRI = PRI.substring(1, PRI.length()-1);
+			this.pri = PRI;
 		}
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -494,7 +507,7 @@ public class Syslog {
 			this.event_des="ssh登录失败";
 		}
 		
-		// 针对烟台烟草的防火墙日志收集做定制化修改，烟台烟草防火墙日志无PRI值，范式化之后无法获得日志级别、日志模块内容，为保证日志数据收集，添加默认级别info
+		// 针对烟台烟草的防火墙日志收集、莱芜烟草的waf日志收集做定制化修改，syslog日志无PRI值，范式化之后无法获得日志级别、日志模块内容，为保证日志数据收集，添加默认级别info
 		if(this.operation_level==null||this.operation_level.equals("")){
 			this.operation_level = "info";
 		}
@@ -606,10 +619,11 @@ public class Syslog {
 				 .setDateFormat("yyyy-MM-dd HH:mm:ss")  
 				 .create(); 
 		String json;
-		String log = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 #015";
-		String ytyclog = "<invld> 2019-06-18 14:19:37 10.60.96.37 10.60.96.37 ????????-?? FLOW: SerialNum=0816101406139990 GenTime=\"2019-06-18 14:19:37\" SrcIP=10.60.108.94 DstIP=10.60.0.5 Protocol=UDP SrcPort=61650 DstPort=53 ProtoNum=17 AppProto=0 Starttime=\"2019-06-18 14:19:27\" Endtime=\"2019-06-18 14:19:37\" Packets=2 Bytes=584 VpnType=0 Content=\"\" EvtCount=1";
-		Syslog syslog = new Syslog(ytyclog);
+		//String ytyclog = "<invld> 2019-06-18 14:19:37 10.60.96.37 10.60.96.37 ????????-?? FLOW: SerialNum=0816101406139990 GenTime=\"2019-06-18 14:19:37\" SrcIP=10.60.108.94 DstIP=10.60.0.5 Protocol=UDP SrcPort=61650 DstPort=53 ProtoNum=17 AppProto=0 Starttime=\"2019-06-18 14:19:27\" Endtime=\"2019-06-18 14:19:37\" Packets=2 Bytes=584 VpnType=0 Content=\"\" EvtCount=1";
+		String lwyclog = "<invld> 2019-07-22 16:03:03 10.60.145.24 10.60.145.24 waf1: SerialNum=0312041408299998 GenTime=\"2019-07-22 16:03:03\" VsosCpuUsage=3 SECpuUsage=0 VSOSMemoryUsage=54.59 VSOSMEMTop3:1,guish -d  9916 2,guish -D  9092 3,vtysh -b  7716  SHMMemoryUsage=27.96 SessionNum=2 HalfSessionNum=0 ge0:RX_5_MIN=203TX_5_MIN=23 ge1:RX_5_MIN=23TX_5_MIN=203 Content=\"System running info.\"";
+		Syslog syslog = new Syslog(lwyclog);
 		json = gson.toJson(syslog);
 		System.out.println(json);
+		
 	}
 }
