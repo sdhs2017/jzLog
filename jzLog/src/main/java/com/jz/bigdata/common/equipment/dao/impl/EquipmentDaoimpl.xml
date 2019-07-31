@@ -28,7 +28,7 @@
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
-		<result column="state" jdbcType="INTEGER" property="state" />
+		<!-- <result column="state" jdbcType="INTEGER" property="state" /> -->
 		<association property="user" javaType="com.jz.bigdata.common.users.entity.User">
              <id property="userId" column="id"/>
              <result property="name" column="userName"/>
@@ -65,7 +65,7 @@
 		<result column="moderate_risk" jdbcType="INTEGER" property="moderate_risk" />
 		<result column="low_risk" jdbcType="INTEGER" property="low_risk" />
 		<result column="departmentNodeId" jdbcType="INTEGER" property="departmentNodeId" />
-		<result column="state" jdbcType="INTEGER" property="state" />
+		<!-- <result column="state" jdbcType="INTEGER" property="state" /> -->
 	</resultMap>
 	
 	
@@ -77,8 +77,8 @@
 	<sql id="Base_Column_List">
 		equipment.id, equipment.name, hostName, type, ip,createTime,equipment.upDateTime,endTime,
 		startUp,userId,equipment.departmentId,logType,macAdress,system,systemVersion,assetNum,
-		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId,
-		equipment.state
+		serialNum,equipment.describe,valuation,log_level,high_risk,moderate_risk,low_risk,equipment.departmentNodeId
+		
 	</sql>
 
 	<!-- 查询所有数据 -->
@@ -99,7 +99,6 @@
 		</if>
 		<if test='role=="2"'>
 			 and equipment.userId=#{userId,jdbcType=VARCHAR}
-			 and state=1
 		</if>
 	</select>
 <!-- 查询所有数据 -->
@@ -180,11 +179,9 @@
 				log_level,
 			</if>
 			<if test="departmentNodeId !=null and  departmentNodeId !=''">
-				departmentNodeId,
+				departmentNodeId
 			</if>
-			<if test="state !=null and  state !=''">
-				state
-			</if>
+		
 		</trim> 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null">
@@ -248,11 +245,9 @@
 				#{log_level,jdbcType=VARCHAR},
 			</if>
 			<if test="departmentNodeId != null and  departmentNodeId !='' and  departmentNodeId !=0">
-				#{departmentNodeId,jdbcType=INTEGER},
+				#{departmentNodeId,jdbcType=INTEGER}
 			</if>
-			<if test="state != null and  state !=''">
-				#{state,jdbcType=INTEGER}
-			</if>
+			
 		</trim>
 	</insert>
 	<!-- 删除数据 -->
@@ -338,7 +333,6 @@
 		</if>
 		<if test='role=="2"'>
 			 and equipment.userId=#{userId,jdbcType=VARCHAR}
-			 and state=1
 		</if>
 	    limit #{startRecord},#{pageSize}
 	</select>

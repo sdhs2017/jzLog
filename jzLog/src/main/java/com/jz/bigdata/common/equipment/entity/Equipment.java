@@ -34,8 +34,8 @@ public class Equipment {
 	private int moderate_risk;//中危
 	private int low_risk;//低危
 	private int departmentNodeId;//部门最上级id
-	private int state;//状态
-	
+	/*private int state;//状态
+*/	
 	
 	
 	public int getHigh_risk() {
@@ -196,12 +196,12 @@ public class Equipment {
 	public void setDepartmentNodeId(int departmentNodeId) {
 		this.departmentNodeId = departmentNodeId;
 	}
-	public int getState() {
+	/*public int getState() {
 		return state;
 	}
 	public void setState(int state) {
 		this.state = state;
-	}
+	}*/
 	
 
 }

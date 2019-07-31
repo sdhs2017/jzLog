@@ -76,7 +76,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
 				// 获取日期
 				equipment.setCreateTime(df.format(new Date()));
-				equipment.setState(1);
+//				equipment.setState(1);
 				equipmentDao.insert(equipment);
 				return 2;
 			}
