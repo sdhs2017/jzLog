@@ -8,6 +8,8 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.flush.FlushResponse;
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequest;
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -16,6 +18,7 @@ import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.bulk.byscroll.BulkByScrollResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -40,6 +43,7 @@ import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -550,43 +554,46 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 	 * @param index
 	 * @param type
 	 * @param param
-	 * @return
-	 * 实现sql group by
+	 * @return 删除文档量
+	 * 实现通过查询批量删除
 	 */
-	/*public List<Map<String, Object>> countGroupBy(String index, String type,String param,QueryBuilder queryBuilder) {
-		// 拼接查询条件
-		SearchRequestBuilder sBuilder = client.prepareSearch(index);
-		if (type!=null&&!type.equals("")) {
-			sBuilder.setTypes(type);
-		}
+	public long countDeleteByQuery(String [] indices,QueryBuilder queryBuilder) {
 		
-		String count = param+"_count";
-		// 聚合查询group by
-		TermsAggregationBuilder termsQueryBuilder = AggregationBuilders.terms(count).field(param);
+		BulkByScrollResponse response = DeleteByQueryAction.INSTANCE.newRequestBuilder(client).filter(queryBuilder).source(indices).get();
 		
-		sBuilder.addAggregation(termsQueryBuilder);
-		if (queryBuilder!=null) {
-			sBuilder.setQuery(queryBuilder);
-		}
+		long deletecount = response.getDeleted();
 		
-    	SearchResponse response = sBuilder.execute().actionGet();
 		
-    	Aggregations aggregations = response.getAggregations();
-    	
-    	Terms types  = aggregations.get(count);
-    	
-    	List<Map<String, Object>> list = new LinkedList<Map<String,Object>>();
-    	
-    	Map<String, Object> map = new HashMap<String, Object>();
-    	
-    	for(Bucket bucket:types.getBuckets()) {
-    		map.put(bucket.getKeyAsString(), bucket.getDocCount());
-    	}
-    	
-    	list.add(map);
 
-		return list;
-	}*/
+		return deletecount;
+	}
+	
+	
+	/**
+	 * 
+	 * @param indices 需要合并的索引
+	 * @param maxNumSegments 合并段数
+	 * @param onlyExpungeDeletes 是否仅合并删除段
+	 * @return
+	 */
+	public ForceMergeResponse indexForceMerge(String [] indices,int maxNumSegments,boolean onlyExpungeDeletes) {
+		
+		ForceMergeRequest request = new ForceMergeRequest(indices);
+		// 要合并的段数。 要完全合并索引，请将其设置为1.默认为只检查是否需要执行合并，如果需要，则执行它。
+		if (maxNumSegments!=-1) {
+			request.maxNumSegments(maxNumSegments);
+		}
+		// 合并进程是否只删除其中包含删除内容的段,此标志只允许合并已删除的段。默认为false。
+		if (onlyExpungeDeletes) {
+			request.onlyExpungeDeletes(true);
+		}
+		// 默认强制合并后执行刷新
+		request.flush(true);
+		
+		ForceMergeResponse response = client.admin().indices().forceMerge(request).actionGet();
+		
+		return response;
+	}
 
 
 	/**
@@ -819,9 +826,9 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 		
 		String count = param+"_count";
 		// 聚合查询group by
-		AggregationBuilder  termsQueryBuilder = AggregationBuilders.terms(count).field(param).size(24);
+		AggregationBuilder  aggregationBuilder = AggregationBuilders.terms(count).field(param).size(24);
 		
-		sBuilder.addAggregation(termsQueryBuilder);
+		sBuilder.addAggregation(aggregationBuilder);
 		
     	SearchResponse response = sBuilder.execute().actionGet();
 		
