@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeResponse;
+
 public interface IlogService {
 
 	public List<Map<String, Object>> index(String index,String type) ;
@@ -13,6 +15,13 @@ public interface IlogService {
 	 * @param index
 	 */
 	public void createIndex(String index);	
+	
+	/**
+	 * 判断index是否存在
+	 * @param index
+	 * @return
+	 */
+	public boolean indexExists(String index);
 	
 	/**
 	 * 创建elasticsearch的index和type，并配置mapping
@@ -235,8 +244,40 @@ public interface IlogService {
 	 * @return
 	 */
 	List<Map<String, Object>> getListByMultiField(String index, String[] types, Map<String, String[]> multifield, Map<String, String> param, String page, String size);
-
 	
+	/**
+	 * 
+	 * @param indices
+	 * @param type
+	 * @param map 查询条件
+	 * @return 删除数
+	 * 
+	 * 通过查询数据实现批量删除
+	 */
+	public long deleteByQuery(String[] indices,String type,Map<String, String> map) ;
+	
+	/**
+	 * 
+	 * @param indices
+	 * @return
+	 * 
+	 * 实现indices合并
+	 */
+	public ForceMergeResponse indexForceMerge(String[] indices);
+	
+	/**
+	 * 
+	 * @param indices
+	 * @return
+	 * 
+	 * 实现indices中对已删除segments的合并达到释放存储空间的作用
+	 */
+	public ForceMergeResponse indexForceMergeForDelete(String[] indices);
+	
+	/**
+	 * 实现删除数据后强制合并 删除段释放存储空间
+	 */
+	public void deleteAndForcemerge(String[] indices, String type, Map<String, String> map) ;
 
 	
 }

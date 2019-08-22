@@ -11,11 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.From;
 
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeResponse;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
@@ -28,13 +27,18 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
 import com.jz.bigdata.business.logAnalysis.log.service.IlogService;
+import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
 import com.jz.bigdata.common.safeStrategy.entity.SafeStrategy;
 import com.jz.bigdata.common.safeStrategy.service.ISafeStrategyService;
+import com.jz.bigdata.common.users.service.IUsersService;
 import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
+import com.jz.bigdata.util.ConfigProperty;
 
 import joptsimple.internal.Strings;
+import net.sf.json.JSONArray;
 
 @Service(value="logService")
 public class LogServiceImpl implements IlogService {
@@ -46,6 +50,19 @@ public class LogServiceImpl implements IlogService {
 	
 	@Resource(name = "EquipmentService")
 	private IEquipmentService equipmentService;
+	
+	@Resource(name = "CollectorService")
+	private ICollectorService collectorService;
+	
+	@Resource(name = "configProperty")
+	private ConfigProperty configProperty;
+
+	@Resource(name = "AlarmService")
+	private IAlarmService alarmService;
+
+	@Resource(name = "UsersService")
+	private IUsersService usersService;
+
 	
 	// es 排序方式
 	private SortOrder sortOrder;
@@ -400,7 +417,7 @@ public class LogServiceImpl implements IlogService {
 		
 		Integer fromInt = 0;
 		Integer sizeInt = 10;
-		long count = 0;
+		//long count = 0;
 
 		if (page!=null&&size!=null) {
 			fromInt = (Integer.parseInt(page)-1)*Integer.parseInt(size);
@@ -1320,6 +1337,115 @@ public class LogServiceImpl implements IlogService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public long deleteByQuery(String[] indices, String type, Map<String, String> map) {
+
+		long result = 0;
+		
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		
+		if (map!=null) {
+			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
+				map.remove("starttime");
+				map.remove("endtime");
+			}else if (map.get("starttime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")));
+				map.remove("starttime");
+			}else if (map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(map.get("endtime")));
+				map.remove("endtime");
+			}
+			for(Map.Entry<String, String> entry : map.entrySet()){
+				if (entry.getKey().equals("event")) {
+					// 字段不为null查询
+					queryBuilder.must(QueryBuilders.constantScoreQuery(QueryBuilders.existsQuery("event_type")));
+				}else if(entry.getKey().equals("event_level")){
+					// 范围查询
+					queryBuilder.must(QueryBuilders.rangeQuery("event_level").gte(0).lte(3));
+				}else if (entry.getKey().equals("domain_url")||entry.getKey().equals("complete_url")) {
+					// 短语匹配
+					queryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
+				}else {
+					// 不分词精确查询
+					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
+				}
+			}
+			try {
+				result = clientTemplate.countDeleteByQuery(indices, queryBuilder);
+			} catch (Exception e) {
+				result = 0;
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public ForceMergeResponse indexForceMerge(String[] indices) {
+		// TODO Auto-generated method stub
+		
+		// 针对以后架构实现的多indices可能会对indices进行合并操作
+		// 暂时不实现这个方法，该合并需要考虑单个索引的大小，默认的合并段设置是1
+		
+		return null;
+	}
+
+	@Override
+	public ForceMergeResponse indexForceMergeForDelete(String[] indices) {
+		
+		// 该强制合并操作不对index的segments做操作
+		int maxNumSegments = -1;
+		// 该合并操作针对删除数据后希望释放存储空间
+		boolean onlyExpungeDeletes = true;
+		
+		return clientTemplate.indexForceMerge(indices, maxNumSegments, onlyExpungeDeletes);
+		
+	}
+
+	@Override
+	public void deleteAndForcemerge(String[] indices, String type, Map<String, String> map) {
+		
+		if (type!=null&&!type.equals("")) {
+			map.put("_type", type);
+		}
+		
+		map.put("starttime", "");
+		map.put("endtime", "");
+		
+		try {
+			// 无论采集器是否开启都执行一次关闭操作
+			boolean stopresult = collectorService.stopKafkaCollector();
+			if (stopresult) {
+				System.out.println("数据采集器关闭成功");
+			} else {
+				System.out.println("数据采集器关闭失败，已关闭");
+			}
+			
+			long delete_count = deleteByQuery(indices,type,map);
+			
+			System.out.println("删除数据条数："+delete_count);
+			indexForceMergeForDelete(indices);
+		
+			boolean startresult = collectorService.startKafkaCollector(equipmentService, clientTemplate, configProperty,
+					alarmService, usersService);
+			
+			if (startresult) {
+				System.out.println("数据采集器开启成功");
+			} else {
+				System.out.println("数据采集器开启失败，请勿重复开启");
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public boolean indexExists(String index) {
+		
+		return clientTemplate.indexExists(index);
 	}
 	
 

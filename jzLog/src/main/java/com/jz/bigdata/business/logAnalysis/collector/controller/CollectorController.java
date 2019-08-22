@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jz.bigdata.business.logAnalysis.collector.service.ICollectorService;
+import com.jz.bigdata.business.logAnalysis.log.service.IlogService;
 import com.jz.bigdata.common.alarm.service.IAlarmService;
 import com.jz.bigdata.common.assets.service.IAssetsService;
 import com.jz.bigdata.common.equipment.service.IEquipmentService;
@@ -47,6 +48,9 @@ public class CollectorController {
 
 	@Resource(name = "UsersService")
 	private IUsersService usersService;
+	
+	@Resource(name="logService")
+	private IlogService logService;
 
 	@Autowired
 	protected ClientTemplate clientTemplate;
@@ -69,9 +73,18 @@ public class CollectorController {
 	@RequestMapping(value = "/startCollectorState", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启数据采集器")
 	public String startKafkaCollector() {
+		
+		Map<String, Object> map = new HashMap<>();
+		// 判断index是否存在，如果不存在提示执行初始化操作
+		boolean indexExists = logService.indexExists(configProperty.getEs_index());
+		if (!indexExists) {
+			map.put("state", false);
+			map.put("msg", "数据采集器开启失败，请先执行初始化操作");
+			return JSONArray.fromObject(map).toString();
+		}
 		boolean result = collectorService.startKafkaCollector(equipmentService, clientTemplate, configProperty,
 				alarmService, usersService);
-		Map<String, Object> map = new HashMap<>();
+		
 		if (result) {
 			map.put("state", result);
 			map.put("msg", "数据采集器开启成功");
@@ -166,6 +179,15 @@ public class CollectorController {
 	@RequestMapping(value = "/startPcap4jCollector", produces = "application/json; charset=utf-8")
 	@DescribeLog(describe = "开启pcap4j抓取数据包")
 	public String startPcap4jCollector(HttpServletRequest request) {
+		
+		Map<String, Object> map = new HashMap<>();
+		// 判断index是否存在，如果不存在提示执行初始化操作
+		boolean indexExists = logService.indexExists(configProperty.getEs_index());
+		if (!indexExists) {
+			map.put("state", false);
+			map.put("msg", "数据包采集器开启失败，请先执行初始化操作");
+			return JSONArray.fromObject(map).toString();
+		}
 		
 		String result = collectorService.startPcap4jCollector(clientTemplate,configProperty);
 		/*
