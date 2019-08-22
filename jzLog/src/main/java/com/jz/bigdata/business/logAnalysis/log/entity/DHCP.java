@@ -635,14 +635,14 @@ public class DHCP {
 	}
 
 	public static void main(String[] args) throws IOException {
-		// System.out.println(new Syslog().toMapping());
+		System.out.println(new DHCP().toMapping());
 
 //		String log ="<27> 2019-01-07 16:17:30 dev 123.232.103.226 dhcpd: DHCPDISCOVER from 00:0c:29:38:f8:f8 via eth0: network 192.168.0.0/24: no free leases";
 		String log = "<30> 2019-01-12 16:18:01 dev 123.232.103.226 dhcpd: DHCPDISCOVER from 04:a1:51:91:ef:e4 via 10.131.100.50: unknown network segment";
 //		String log="<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: ICMP Echo reply while lease 192.168.0.161 valid.";
 //		String log="<30> 2019-01-11 22:18:24 dev 123.232.103.226 dhcpd: Abandoning IP address 192.168.0.161: pinged before offer";
 
-		DHCP dh = new DHCP(log);
+		/*DHCP dh = new DHCP(log);
 //		System.out.println(dh.operation_des);
 		System.out.println(dh.client_hostname);
 		System.out.println(dh.dhcp_type);
@@ -650,7 +650,7 @@ public class DHCP {
 		System.out.println(dh.error_log);
 		System.out.println(dh.client_mac);
 		System.out.println(dh.network_error);
-		System.out.println(dh.client_ip);
+		System.out.println(dh.client_ip);*/
 		/*
 		 * String log1 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 #015";
 		 * String log2 =

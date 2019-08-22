@@ -615,15 +615,16 @@ public class Syslog {
 			json = gson.toJson(syslog);
 			System.out.println(json);
 		}*/
-		Gson gson = new GsonBuilder()
+		/*Gson gson = new GsonBuilder()
 				 .setDateFormat("yyyy-MM-dd HH:mm:ss")  
 				 .create(); 
 		String json;
 		//String ytyclog = "<invld> 2019-06-18 14:19:37 10.60.96.37 10.60.96.37 ????????-?? FLOW: SerialNum=0816101406139990 GenTime=\"2019-06-18 14:19:37\" SrcIP=10.60.108.94 DstIP=10.60.0.5 Protocol=UDP SrcPort=61650 DstPort=53 ProtoNum=17 AppProto=0 Starttime=\"2019-06-18 14:19:27\" Endtime=\"2019-06-18 14:19:37\" Packets=2 Bytes=584 VpnType=0 Content=\"\" EvtCount=1";
-		String lwyclog = "<invld> 2019-07-22 16:03:03 10.60.145.24 10.60.145.24 waf1: SerialNum=0312041408299998 GenTime=\"2019-07-22 16:03:03\" VsosCpuUsage=3 SECpuUsage=0 VSOSMemoryUsage=54.59 VSOSMEMTop3:1,guish -d  9916 2,guish -D  9092 3,vtysh -b  7716  SHMMemoryUsage=27.96 SessionNum=2 HalfSessionNum=0 ge0:RX_5_MIN=203TX_5_MIN=23 ge1:RX_5_MIN=23TX_5_MIN=203 Content=\"System running info.\"";
-		Syslog syslog = new Syslog(lwyclog);
+		String lwyclog = "<invld> 2019-07-22 16:03:03 10.60.145.24 10.60.145.24 waf1: DEVICE;loginip:;SerialNum=0312041408299998 GenTime=\"2019-07-22 16:03:03\" VsosCpuUsage=3 SECpuUsage=0 VSOSMemoryUsage=54.59 VSOSMEMTop3:1,guish -d  9916 2,guish -D  9092 3,vtysh -b  7716  SHMMemoryUsage=27.96 SessionNum=2 HalfSessionNum=0 ge0:RX_5_MIN=203TX_5_MIN=23 ge1:RX_5_MIN=23TX_5_MIN=203 Content=\"System running info.\"";
+		String wfyclog = "<5> 2019-07-22 16:03:03 10.60.145.24 10.60.145.24 time: 2019-08-09 09:51:43 waf1: DEVICE;loginip:;SerialNum=0312041408299998 GenTime=\"2019-07-22 16:03:03\" VsosCpuUsage=3 SECpuUsage=0 VSOSMemoryUsage=54.59 VSOSMEMTop3:1,guish -d  9916 2,guish -D  9092 3,vtysh -b  7716  SHMMemoryUsage=27.96 SessionNum=2 HalfSessionNum=0 ge0:RX_5_MIN=203TX_5_MIN=23 ge1:RX_5_MIN=23TX_5_MIN=203 Content=\"System running info.\"";
+		Syslog syslog = new Syslog(wfyclog);
 		json = gson.toJson(syslog);
-		System.out.println(json);
+		System.out.println(json);*/
 		
 	}
 }

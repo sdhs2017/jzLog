@@ -650,7 +650,7 @@ public class DNS {
 	
 	public static void main(String [] args) throws IOException {
 		
-		//System.out.println(new DNS().toMapping());
+		System.out.println(new DNS().toMapping());
 		
 		/*String log1 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 #015";
 		String log2 = "<30> 2018-02-09 16:26:09 ruin4 222.173.28.150 systemd: Started Delayed Shutdown Service.";
@@ -694,13 +694,13 @@ public class DNS {
 			e.printStackTrace();
 		}*/
 		
-		String log = "<30> 2019-01-07 16:18:01 dev 123.232.103.226 named[15850]: 07-Jan-2019 16:18:01.488 client 127.0.0.1#53260 (dev): view internal: query: dev IN AAAA + (127.0.0.1)";
+		/*String log = "<30> 2019-01-07 16:18:01 dev 123.232.103.226 named[15850]: 07-Jan-2019 16:18:01.488 client 127.0.0.1#53260 (dev): view internal: query: dev IN AAAA + (127.0.0.1)";
 		
 		System.out.println(getSubUtilSimple(log, "client (.*?)#"));
 		System.out.println(getSubUtilSimple(log, "view\\s+(.*?):"));
 		System.out.println(getSubUtilSimple(log, "query:\\s+(.*?)\\s+IN"));
 		System.out.println(getSubUtilSimple(log, "IN\\s+(.*?)\\s+[+]"));
-		System.out.println(getSubUtilSimple(log, "[+]\\s+\\((.*?)\\)"));
+		System.out.println(getSubUtilSimple(log, "[+]\\s+\\((.*?)\\)"));*/
 		
 		/*if (getSubUtil(log,"\\s+named")!=null) {
 			DNS dns = new DNS(log);

@@ -791,8 +791,8 @@ public final static Map<Integer, String> facility = new HashMap<>();
 		}*/
 		
 		
-		PacketFilteringFirewal firewall = new PacketFilteringFirewal(configlog);
-//		System.out.println(new PacketFilteringFirewal().toMapping());
+		//PacketFilteringFirewal firewall = new PacketFilteringFirewal(configlog);
+		System.out.println(new PacketFilteringFirewal().toMapping());
 		
 	}
 

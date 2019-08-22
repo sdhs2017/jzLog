@@ -379,7 +379,7 @@ public class App_file {
 
 	public String toMapping() {
 		String template = "{\n" + "\t\t\"properties\":{\n" + "\t\t{#}\n" + "\t\t\t\t}" + "}";
-		String fieldString = getClassMapping(new ZtsApp());
+		String fieldString = getClassMapping(new App_file());
 		template = template.replace("{#}", fieldString);
 		return template;
 	}
@@ -473,12 +473,13 @@ public class App_file {
 		}*/
 		/*String logtype = getSubUtilSimple(log,"\"logtype\":\"(.*?)\"");
 		System.out.println(logtype);*/
-		App_file app_file = new App_file(log);
+		/*App_file app_file = new App_file(log);
 		System.out.println(app_file.getIp());
 		System.out.println(app_file.getHost());
 		System.out.println(app_file.getHostname());
 		System.out.println(app_file.getSource());
 		System.out.println(app_file.getIp());
-		System.out.println(app_file.getOperation_des());
+		System.out.println(app_file.getOperation_des());*/
+		System.out.println(new App_file().toMapping());
 	}
 }
