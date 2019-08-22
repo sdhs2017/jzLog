@@ -179,6 +179,7 @@ public class HeartbeatCollector implements Runnable {
 			// 释放 信号量 许可
 			semaphore.release();
 			
+			// 通过使用Vector线程安全的字符串集合避免数据被覆盖
 			Vector<String> vector = result.get("masscan"+IPS);
 			
 			if (vector.isEmpty()) {
