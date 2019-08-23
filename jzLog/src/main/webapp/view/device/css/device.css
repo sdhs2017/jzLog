@@ -339,3 +339,16 @@ a:hover{
 .logType{
 	padding:6px;
 }
+.inNum{
+	position: relative;
+    display: inline-block;
+    /* background: #e4956d; */
+   /*  background:#FF8547; */
+    border: 1px solid #e4956d;
+    color: #e4956d;
+    padding: 0 5px;
+   /*  border-radius: 20%; */
+    font-size:10px;
+    left: 7px;
+   /*  top: -5px; */
+}

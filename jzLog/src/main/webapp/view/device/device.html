@@ -13,7 +13,7 @@
 				margin: 0 0 10px;
 				padding: 0;
 			}
-
+			
 			#wizard-ns-detail-servers, .wizard-additional-servers {
 				font-size: 12px;
 				margin-top: 10px;
@@ -54,37 +54,7 @@
 				资产列表
 			</div>
 			<div class="device_tools row">
-				<div class="btnTools">
-					<button  class="btn btn-info" id="add_device" title="添加新的资产"><i class="glyphicon glyphicon-plus"></i>&nbsp;添加资产</button>
-					<button  class="btn btn-info" id="remove_device" title="删除资产"><i class="glyphicon glyphicon-remove"></i>&nbsp;删除资产</button>
-					<button  class="btn btn-info" id="echart_device" title="查看资产报表"><i class="glyphicon glyphicon-stats"></i>&nbsp;报表</button>
-					<!-- <button  class="btn btn-info" id="snmp_device" title="查看资产信息"><i class="glyphicon glyphicon-cog"></i>&nbsp;资产信息</button> -->
-					<!-- <button  class="btn btn-info" id="initialize" title="初始化服务"><i class="glyphicon glyphicon-repeat"></i>&nbsp;初始化</button>
-					<button  class="btn btn-info" id="play_service" title="开启服务"><i class="glyphicon glyphicon-play"></i>&nbsp;开启</button>
-					<button  class="btn btn-info" id="pause_service" title="暂停服务"><i class="glyphicon glyphicon-pause"></i>&nbsp;暂停</button>
-					<button  class="btn btn-info" id="stop_service" title="停止服务"><i class="glyphicon glyphicon-stop"></i>&nbsp;停止</button> -->
-					<!-- <button  class="btn btn-primary" id="wizard_device">测试</button> -->
-				</div>
 				<form class="form-inline" onsubmit="return false;">					
-					<!-- <div class="form-group">
-				    	<label>资产名称:</label>
-				    	<input type="text" class="form-control search_deviceName" placeholder="资产名称(可为空)">
-				    	<label>日志类型 ：</label>
-    					<select class="form-control eLogType">
-    						<option disabled selected value=""></option>
- 							<option value="1">syslog</option>
- 							<option value="2">winlog</option>
- 							<option value="3">snmp</option>
- 							<option value="4">log4j</option>
- 							<option value="5">mysql</option>
- 							<option value="6">packetfilteringfirewall_log</option>
- 						</select>
-				    	<label>主机名:</label>
-				    	<input type="tel" class="form-control search_hostname" placeholder="主机名(可为空)">
-				    	<label>IP:</label>
-				    	<input type="tel" class="form-control search_deviceIp" placeholder="IP(可为空)">
-				    	<button class="btn btn-info search_device" ><i class="glyphicon glyphicon-search"></i>搜索</button>
-				  	</div> -->
 				  	<div class="searchConditions">
 				  		<div class="searchDeviceNameBox">
 							<div class="searchBoxTitle">资产名称</div>
@@ -111,9 +81,25 @@
 	 							<option value="packetfilteringfirewall_log">packetfilteringfirewall_log</option> -->
 	 						</select>
 						</div>
+						<!--  <div class="searchLogTypeBox">
+							<div class="searchBoxTitle">资产类型</div>
+							<select class="form-control eBigType" >
+	    						<option selected value=""></option>
+	 							<option value="0">网络</option>
+	 							<option value="1">安全</option>
+	 							<option value="2">主机</option>
+	 							<option value="3">应用</option>	 							
+	 						</select>
+	 						<select class="form-control eType"></select>
+						</div>-->
 						<button class="btn btn-primary search_device" ><i class="glyphicon glyphicon-search"></i>搜索</button>
 				  	</div>
 				</form>
+				<div class="btnTools">
+					<button  class="btn btn-info" id="add_device" title="添加新的资产"><i class="glyphicon glyphicon-plus"></i>&nbsp;添加资产</button>
+					<button  class="btn btn-info" id="remove_device" title="删除资产"><i class="glyphicon glyphicon-remove"></i>&nbsp;删除资产</button>
+					<button  class="btn btn-info" id="echart_device" title="查看资产报表"><i class="glyphicon glyphicon-stats"></i>&nbsp;报表</button>
+				</div>
 			</div>
 			<div class="row device_box">
 				<div class="col-sm-12">
@@ -139,8 +125,8 @@
 											          	<th>端口</th>
 											          	<th>是否启用</th>
 											          	<th>创建时间</th>
-											          	<th>更新时间</th>
-											          	<th>截止时间</th>
+											          <!-- 	<th>更新时间</th>
+											          	<th>截止时间</th> -->
 											          	<th>操作</th>
 											          	<th width="45px"></th>
 											        </tr>

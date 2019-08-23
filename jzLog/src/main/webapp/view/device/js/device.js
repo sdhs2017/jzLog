@@ -230,8 +230,8 @@ $(".list_con").on("click",".device_logs",function(){
 	obj.deviceType = $(this).parent().siblings(".device_type").html();
 	obj.deviceLogType = $(this).parent().siblings(".device_logType").html();
 	obj.deviceStarttime = $(this).parent().siblings(".device_starttime").html();
-	obj.deviceUpdateTime = $(this).parent().siblings(".device_updatetime").html();
-	obj.deviceEndtime = $(this).parent().siblings(".device_endtime").html();
+	obj.deviceUpdateTime = $(this).parent().attr("data-updatetime");
+	obj.deviceEndtime = $(this).parent().attr("data-endtime");
 	obj.deviceIsWorked = $(this).parent().siblings(".device_iswork").html();
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
@@ -263,7 +263,8 @@ $(".list_con").on("click",".device_echarts",function(){
 	obj.deviceHostname = $(this).parent().siblings(".device_hostname").html();
 	obj.deviceIp = $(this).parent().siblings(".device_ip").html();
 	obj.deviceStarttime = $(this).parent().siblings(".device_starttime").html();
-	obj.deviceEndtime = $(this).parent().siblings(".device_endtime").html();
+	obj.deviceUpdateTime = $(this).parent().attr("data-updatetime");
+	obj.deviceEndtime = $(this).parent().attr("data-endtime");
 	obj.logType = $(this).parent().siblings(".device_logType").html();
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
@@ -294,7 +295,8 @@ $(".list_con").on("click",".device_safe",function(){
 	obj.deviceHostname = $(this).parent().siblings(".device_hostname").html();
 	obj.deviceIp = $(this).parent().siblings(".device_ip").html();
 	obj.deviceStarttime = $(this).parent().siblings(".device_starttime").html();
-	obj.deviceEndtime = $(this).parent().siblings(".device_endtime").html();
+	obj.deviceUpdateTime = $(this).parent().attr("data-updatetime");
+	obj.deviceEndtime = $(this).parent().attr("data-endtime");
 	obj.logType = $(this).parent().siblings(".device_logType").html();
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
@@ -324,7 +326,8 @@ $(".list_con").on("click",".device_analyse",function(){
 	obj.deviceHostname = $(this).parent().siblings(".device_hostname").html();
 	obj.deviceIp = $(this).parent().siblings(".device_ip").html();
 	obj.deviceStarttime = $(this).parent().siblings(".device_starttime").html();
-	obj.deviceEndtime = $(this).parent().siblings(".device_endtime").html();
+	obj.deviceUpdateTime = $(this).parent().attr("data-updatetime");
+	obj.deviceEndtime = $(this).parent().attr("data-endtime");
 	obj.logType = $(this).parent().siblings(".device_logType").html();
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
@@ -355,8 +358,8 @@ $(".list_con").on("click",".device_eventlist",function(){
 	obj.deviceType = $(this).parent().siblings(".device_type").html();
 	obj.deviceLogType = $(this).parent().siblings(".device_logType").html();
 	obj.deviceStarttime = $(this).parent().siblings(".device_starttime").html();
-	obj.deviceUpdateTime = $(this).parent().siblings(".device_updatetime").html();
-	obj.deviceEndtime = $(this).parent().siblings(".device_endtime").html();
+	obj.deviceUpdateTime = $(this).parent().attr("data-updatetime");
+	obj.deviceEndtime = $(this).parent().attr("data-endtime");
 	obj.deviceIsWorked = $(this).parent().siblings(".device_iswork").html();
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
@@ -431,7 +434,8 @@ function jointDeviceList(data){
 	 	html = '<tr>'   
 			+		 '<td> <input type="checkbox" name="'+obj.id+'"></td>'
             +        '<td class="device_name">'
-            +        	'<span data-id="'+obj.id+'" data-userid="'+obj.userId+'" data-depid="'+obj.departmentId+'">'+obj.name+'</a>'
+            +        	'<span data-id="'+obj.id+'" data-userid="'+obj.userId+'" data-depid="'+obj.departmentId+'">'+obj.name+'</span>'
+            +			'<b title="今日入库条数：'+obj.log_count+'" class="inNum">'+obj.log_count+'</b>'
             +        '</td>'
             +        '<td class="device_hostname">'+obj.hostName+'</td>'
             +        '<td class="device_type" data-type="'+obj.type+'">'+bigType+'-'+type+'</td>'
@@ -441,9 +445,9 @@ function jointDeviceList(data){
             +        '<td class="device_port">'+obj.port+'</td>'
             +        '<td class="device_iswork">'+obj.startUp+'</td>' 
             +        '<td class="device_starttime">'+obj.createTime+'</td>'   
-            +        '<td class="device_updatetime">'+obj.upDateTime+'</td>' 
-            +        '<td class="device_endtime">'+obj.endTime+'</td>'
-            +       	'<td class="td_tools">'
+            /*+        '<td class="device_updatetime">'+obj.upDateTime+'</td>' 
+            +        '<td class="device_endtime">'+obj.endTime+'</td>'*/
+            +       	'<td class="td_tools" data-endtime="'+obj.endTime+'" data-updatetime="'+obj.upDateTime+'">'
             +       		'<i class="glyphicon glyphicon-edit device_revise" title="修改"> </i>'
             +       		'<i class="glyphicon glyphicon-list-alt device_logs" title="查询资产日志"> </i>'
             +       		'<i class="glyphicon glyphicon-stats device_echarts" title="查询资产图表"> </i>'
