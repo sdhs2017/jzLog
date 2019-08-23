@@ -36,6 +36,8 @@ public class Equipment {
 	private int departmentNodeId;//部门最上级id
 	private String domain;//根域名
 	private String port;//端口
+	// 资产当天的日志条数
+	private String log_count;
 	
 	
 	public int getHigh_risk() {
@@ -207,6 +209,12 @@ public class Equipment {
 	}
 	public void setPort(String port) {
 		this.port = port;
+	}
+	public String getLog_count() {
+		return log_count;
+	}
+	public void setLog_count(String log_count) {
+		this.log_count = log_count;
 	}
 	
 

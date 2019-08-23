@@ -1312,6 +1312,21 @@ public class LogServiceImpl implements IlogService {
 		long result = 0;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 		if (map!=null) {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			// 时间段
+			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
+				map.remove("starttime");
+				map.remove("endtime");
+			}else if (map.get("starttime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(format.format(new Date())));
+				map.remove("starttime");
+			}else if (map.get("endtime")!=null) {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(map.get("endtime")));
+				map.remove("endtime");
+			}else {
+				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
+			}
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if (entry.getKey().equals("event")) {
 					// 字段不为null查询

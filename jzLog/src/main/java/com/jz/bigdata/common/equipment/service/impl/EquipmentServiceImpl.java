@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 
+import com.jz.bigdata.business.logAnalysis.log.service.IlogService;
 import com.jz.bigdata.common.Constant;
 import com.jz.bigdata.common.equipment.dao.IEquipmentDao;
 import com.jz.bigdata.common.equipment.entity.Equipment;
@@ -42,6 +43,9 @@ public class EquipmentServiceImpl implements IEquipmentService {
 
 	@Resource(name = "configProperty")
 	private ConfigProperty configProperty;
+	
+	@Resource(name="logService")
+	private IlogService logService;
 
 	/**
 	 * @param equipment
@@ -165,6 +169,20 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		// 查询所有数据
 		List<Equipment> listEquipment = equipmentDao.selectAllByPage(hostName, name, ip, logType,session.getAttribute(Constant.SESSION_USERROLE).toString(),session.getAttribute(Constant.SESSION_USERID).toString(), startRecord,pageSize);
 		// System.err.println(listEquipment.get(0).getCreateTime());
+		
+		// 遍历资产，通过资产id查询该资产下当天的日志条数，时间范围当天的00:00:00到当天的查询时间
+		// 设置日期格式
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat startdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		String starttime = startdf.format(new Date());
+		String endtime = df.format(new Date());
+		for(Equipment equipment : listEquipment) {
+			Map<String, String> esMap = new HashMap<>();
+			esMap.put("equipmentid", equipment.getId());
+			esMap.put("starttime", starttime);
+			esMap.put("endtime", endtime);
+			equipment.setLog_count(logService.getCount(configProperty.getEs_index(), null, esMap)+"");;
+		}
 		// 数据添加到map
 		map.put("equipment", listEquipment);
 		return JSONArray.fromObject(map).toString();
