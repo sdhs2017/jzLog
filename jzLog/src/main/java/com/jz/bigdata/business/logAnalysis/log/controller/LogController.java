@@ -1485,30 +1485,31 @@ public class LogController extends BaseController{
 		Map<String, Object> map = new HashMap<>();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		
+		// error日志条数统计
 		try {
+			long count = 0;
 			Map<String, String> mappram = new HashMap<>();
 			mappram.put("operation_level", "error");
 			if (equipmentid!=null&&!equipmentid.equals("")) {
 				mappram.put("equipmentid", equipmentid);
 			}
-			long count = 0;
+			
 			count = logService.getCount(configProperty.getEs_index(), types, mappram);
 			map.put("indiceserror", count);
 		} catch (Exception e) {
 			map.put("indiceserror", "获取异常");
 		}
 		
+		// 正常数据统计
 		try {
 			long count = 0;
-			
+			Map<String, String> mappram = new HashMap<>();
 			if (equipmentid!=null&&!equipmentid.equals("")) {
-				Map<String, String> mappram = new HashMap<>();
 				mappram.put("equipmentid", equipmentid);
-				count = logService.getCount(configProperty.getEs_index(), types,mappram);
-			}else {
+			}/*else {
 				count = logService.getCount(configProperty.getEs_index(), types,null);
-			}
-			
+			}*/
+			count = logService.getCount(configProperty.getEs_index(), types,mappram);
 			map.put("indices", count);
 		} catch (Exception e) {
 			map.put("indices", "获取异常");

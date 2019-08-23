@@ -1311,7 +1311,7 @@ public class LogServiceImpl implements IlogService {
 		
 		long result = 0;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-		if (map!=null) {
+		if (map!=null&&!map.isEmpty()) {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			// 时间段
 			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
