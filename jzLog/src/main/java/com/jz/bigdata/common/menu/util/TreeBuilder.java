@@ -64,8 +64,16 @@ public class TreeBuilder {
 				rootNodes.add(menu);
 			}
 		}
+		List<Menu> rootNo = new ArrayList<Menu>();
+		for (Menu menu : rootNodes) {
+			// 判断是否是根节点是否删除了根节点
+			if (menu.getSuperiorId()==null) {
+				// 根节点添加到list中
+				rootNo.add(menu);
+			}
+		}
 		//对list进行排序
-		Collections.sort(rootNodes, new Comparator<Menu>() {
+		Collections.sort(rootNo, new Comparator<Menu>() {
 			@Override
 			public int compare(Menu arg0, Menu arg1) {
 				int diff = arg0.getChildId() - arg1.getChildId();
@@ -77,8 +85,8 @@ public class TreeBuilder {
 				return 0; // 相等为0
 			}
 		});
-		System.out.println(rootNodes.toString());
-		return rootNodes;
+		System.out.println(rootNo.toString());
+		return rootNo;
 	}
 
 	/**
@@ -97,6 +105,7 @@ public class TreeBuilder {
 			}
 
 		}
+		
 		return isRootNode;
 	}
 
