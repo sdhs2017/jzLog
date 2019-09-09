@@ -1141,6 +1141,22 @@ public class LogServiceImpl implements IlogService {
 		
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// 时间段
+		if (map.get("starttime")!=null&&map.get("endtime")!=null) {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
+			map.remove("starttime");
+			map.remove("endtime");
+		}else if (map.get("starttime")!=null) {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(format.format(new Date())));
+			map.remove("starttime");
+		}else if (map.get("endtime")!=null) {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(map.get("endtime")));
+			map.remove("endtime");
+		}else {
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
+		}
+		
 		for(Map.Entry<String, String> entry : map.entrySet()){
 			/*QueryBuilder matchqueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
 			boolQueryBuilder.must(matchqueryBuilder);*/
