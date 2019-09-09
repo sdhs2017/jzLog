@@ -15,7 +15,7 @@ public interface IEquipmentDao {
 	
 	int insert(Equipment equipment);
 	
-	List<Equipment> selectAll(Equipment equipment,@Param("role")String role,@Param("userId")String userId);
+	List<Equipment> selectAll(Equipment equipment, @Param("role") String role, @Param("userId") String userId);
 	
 	int updateById(Equipment equipment);
 	
@@ -23,15 +23,15 @@ public interface IEquipmentDao {
 	
 	List<Equipment> selectEquipment(Equipment equipment);
 	
-	List<Equipment> selectAllByPage(@Param("hostName")String hostName,@Param("name")String name,@Param("ip")String ip,@Param("logType")String logType,@Param("role")String role,@Param("userId")String userId,@Param("startRecord")int startRecord,@Param("pageSize")int pageSize);
+	List<Equipment> selectAllByPage(@Param("hostName") String hostName, @Param("name") String name, @Param("ip") String ip, @Param("logType") String logType, @Param("role") String role, @Param("userId") String userId, @Param("startRecord") int startRecord, @Param("pageSize") int pageSize);
 
-	List<String> count(@Param("hostName")String hostName,@Param("name")String name,@Param("ip")String ip,@Param("logType")String logType,@Param("role")String role,@Param("userId")String userId);
+	List<String> count(@Param("hostName") String hostName, @Param("name") String name, @Param("ip") String ip, @Param("logType") String logType, @Param("role") String role, @Param("userId") String userId);
 	
 	Equipment selectOneEquipment(Equipment equipment);
 	
 	List<Equipment> selectAllHostName();
 	
-	int upRiskById(@Param("id")String id,@Param("high_risk")int high_risk,@Param("moderate_risk")int moderate_risk,@Param("low_risk")int low_risk);
+	int upRiskById(@Param("id") String id, @Param("high_risk") int high_risk, @Param("moderate_risk") int moderate_risk, @Param("low_risk") int low_risk);
 	
 	List<Equipment> selectAllEquipmentByRisk();
 	

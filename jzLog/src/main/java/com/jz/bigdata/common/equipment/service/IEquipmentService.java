@@ -15,17 +15,17 @@ import com.jz.bigdata.common.equipment.entity.Equipment;
  */
 public interface IEquipmentService {
 
-	int insert(Equipment equipment,HttpSession session);
+	int insert(Equipment equipment, HttpSession session);
 	
-	String selectAll(Equipment equipment,HttpSession session);
+	String selectAll(Equipment equipment, HttpSession session);
 	
-	int updateById(Equipment equipment,HttpSession session);
+	int updateById(Equipment equipment, HttpSession session);
 	
 	int delete(String[] ids);
 	
 	List<Equipment> selectEquipment(Equipment equipment);
 	
-	String selectAllByPage(String hostName,String name,String ip,String logType,int pageIndex,int pageSize,HttpSession session);
+	String selectAllByPage(String hostName, String name, String ip, String logType, int pageIndex, int pageSize, HttpSession session);
 	
 	Equipment selectOneEquipment(Equipment equipment);
 	
@@ -37,7 +37,7 @@ public interface IEquipmentService {
 
 	Map<String, String> selectLog_level();
 	
-	int upRiskById(String id,int high_risk,int moderate_risk,int low_risk);
+	int upRiskById(String id, int high_risk, int moderate_risk, int low_risk);
 	
 	List<Equipment> selectAllEquipmentByRisk();
 	
