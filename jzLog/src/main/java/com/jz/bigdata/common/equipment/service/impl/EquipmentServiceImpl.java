@@ -124,7 +124,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 	}
 
 	/**
-	 * @param id
+	 * @param ids
 	 * @return 删除数据
 	 */
 	@Override
@@ -138,12 +138,13 @@ public class EquipmentServiceImpl implements IEquipmentService {
 	/**
 	 * @param equipment
 	 * @return
-	 * @description 根据id查询一个数据
+	 * @description 根据id查询单一资产
 	 */
 	@Override
 	public List<Equipment> selectEquipment(Equipment equipment) {
 		List<Equipment> list = equipmentDao.selectEquipment(equipment);
 		List<Equipment> listEquipment = (List<Equipment>) list.get(0);
+
 		// equipment=listEquipment.get(0);
 		// System.out.println(equipment.getConfidentiality());
 		
@@ -168,6 +169,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		//equipmentmap.put("log_count", "20");
 
 		equipment = JavaBeanUtil.convertMapToBean(Equipment.class, equipmentmap);
+//		equipment = JavaBeanUtil.convertMapToBean(new Equipment(), equipmentmap);
 		List<Equipment> myList = new ArrayList<>();
 		myList.add(equipment);
 		return myList;
@@ -175,11 +177,15 @@ public class EquipmentServiceImpl implements IEquipmentService {
 	}
 
 	/**
-	 * @param equipment
-	 * @param startRecord
+	 * 分页查询数据
+	 * @param hostName
+	 * @param name
+	 * @param ip
+	 * @param logType
+	 * @param pageIndex
 	 * @param pageSize
+	 * @param session
 	 * @return
-	 * @description 分页查询数据
 	 */
 	@Override
 	public String selectAllByPage(String hostName, String name, String ip, String logType, int pageIndex, int pageSize,HttpSession session) {

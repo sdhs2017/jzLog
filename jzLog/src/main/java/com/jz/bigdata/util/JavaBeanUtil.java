@@ -9,11 +9,21 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.beans.BeanMap;
 
 public class JavaBeanUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(JavaBeanUtil.class);
 
+	public static <T> T convertMapToBean(T bean,Map<String,Object> map){
+		try{
+			BeanMap beanMap = BeanMap.create(bean);
+			beanMap.putAll(map);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return bean;
+	}
 	/**
 	 * map 转实体类
 	 * 

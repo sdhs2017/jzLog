@@ -291,6 +291,7 @@ public class KafkaCollector implements Runnable {
 				//filebeat
 				Pattern filebeatpattern = Pattern.compile("\"logtype\":\"app_*");
 				Matcher filebeatmatcher = filebeatpattern.matcher(log);
+				//
 				if (facility_matcher.find()) {
 					logType = LogType.LOGTYPE_LOG4J;
 					synchronized (log) {
