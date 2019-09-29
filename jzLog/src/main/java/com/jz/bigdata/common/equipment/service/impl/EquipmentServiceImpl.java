@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -23,6 +24,7 @@ import com.jz.bigdata.common.users.dao.IUsersDao;
 import com.jz.bigdata.common.users.entity.User;
 import com.jz.bigdata.util.BASE64Util;
 import com.jz.bigdata.util.ConfigProperty;
+import com.jz.bigdata.util.JavaBeanUtil;
 import com.jz.bigdata.util.Uuid;
 
 import net.sf.json.JSONArray;
@@ -114,6 +116,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		// 获取日期
 		equipment.setUpDateTime(df.format(new Date()));
+		equipment.setDepartmentNodeId((int) session.getAttribute(Constant.SESSION_DEPARTMENTNODEID));
 		// equipment.setDepartmentId(Integer.valueOf(session.getAttribute(Constant.SESSION_DEPARTMENTID).toString()));
 		// equipment.setUserId(session.getAttribute(Constant.SESSION_USERID).toString());
 		// if(equipment)
@@ -143,7 +146,32 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		List<Equipment> listEquipment = (List<Equipment>) list.get(0);
 		// equipment=listEquipment.get(0);
 		// System.out.println(equipment.getConfidentiality());
-		return listEquipment;
+		
+		// 遍历资产，通过资产id查询该资产下当天的日志条数，时间范围当天的00:00:00到当天的查询时间
+		// 设置日期格式
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat startdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		String starttime = startdf.format(new Date());
+		String endtime = df.format(new Date());
+		Map<String, String> esMap = new HashMap<>();
+		Map<String, Object> equipmentmap = (Map<String, Object>) listEquipment.get(0);
+		
+		/*for (Entry<String,Object> ssSet : equipmentmap.entrySet()) {
+			System.out.println(ssSet.getKey()+":"+ssSet.getValue());
+		}*/
+		
+		String equipmentid = equipmentmap.get("id").toString();
+		esMap.put("equipmentid", equipmentid);
+		esMap.put("starttime", starttime);
+		esMap.put("endtime", endtime);
+		equipmentmap.put("log_count", logService.getCount(configProperty.getEs_index(), null, esMap)+"");
+		//equipmentmap.put("log_count", "20");
+
+		equipment = JavaBeanUtil.convertMapToBean(Equipment.class, equipmentmap);
+		List<Equipment> myList = new ArrayList<>();
+		myList.add(equipment);
+		return myList;
+		//return listEquipment;
 	}
 
 	/**
