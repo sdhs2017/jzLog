@@ -54,6 +54,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     	//如果是登陆请求，放行
     	if(handler.toString().indexOf(Constant.LOGINPATH)>=0||handler.toString().indexOf(Constant.REGISTERPATH)>=0||handler.toString().indexOf(Constant.uploadPATH)>=0){
     		//退出登录，注册，上传不拦截
+			/**
+			 * TODO
+			 * equals改为indexof(*)>0
+			 * 或者 只判断项目路径后面的相对路径
+			 */
     		if(request.getRequestURI().equals("/jzLog/users/logout.do")||request.getRequestURI().equals("/jzLog/users/registerUser.do")||request.getRequestURI().equals("/jzLog/upload/licenseUpload.do")){
     			return true;
     		}else{
@@ -69,13 +74,31 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     		GetfunctionMap getfunctionMap= new GetfunctionMap();
 //    		getfunctionMap.map;
     		//获取权限列表
+				/**
+				 * TODO
+				 * 后期修改
+				 * 1.多线程隐患：GetfunctionMap.map应声明为线程安全的Map
+				 * 2.不使用静态方式声明，不使用对象.成员变量形式引用
+ 				 */
     		Map<String,Map<String,String>> map=GetfunctionMap.map;
 //    		System.out.println(map.get(_userList.get(0).getRole()));
     		
     		if(_userList.size()<1){
+				/**
+				 * TODO
+				 * true为放行
+				 * 接口为boolean，无法设置返回内容，所以放行，在UserServiceImpl的login里处理返回
+				 * 也可以用以下方式返回
+				 * out.print("{\"success\":\"false\",\"message\":\"登录超时，请刷新页面重新登录\"}");
+				 */
     			return true;
     		}else{
     			//判断缓存中是否有数据
+				/**
+				 * TODO
+				 * 后期修改：
+				 * function的map加载改为初始全部加载
+				 */
     			if(map.get(String.valueOf(_userList.get(0).getRole()) )==null||map.get(String.valueOf(_userList.get(0).getRole())).equals("")){
     				getfunctionMap.getfunctionMap(_userList.get(0).getRole(),functionService);
     			}
@@ -110,6 +133,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //        		System.out.println(map.get(session.getAttribute(Constant.SESSION_USERROLE).toString()));
 //        		System.out.println(request.getRequestURI().toString());
         		//是否有权限
+				/**
+				 * TODO
+				 * request.getRequestURI().toString()为带项目名的路径，
+				 * 如果数据库function表中的resource字段后期删除项目名，则此处要截取掉项目名
+				 */
         		if(map!=null&&map.get(session.getAttribute(Constant.SESSION_USERROLE).toString()).get(request.getRequestURI().toString())!=null){
         			return true;
         		//无权限	
@@ -119,7 +147,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //        			JSONObject jsStr = JSONObject.parseObject("{msg:您没有权限}");
 //        			JSONArray array=JSONArray.fromObject("{msg:您没有权限}");
 //            		response.setCharacterEncoding("utf-8");
-                    out.print("您没有权限");  
+
+					/**
+					 * TODO
+					 * 规范返回信息，与前端回调匹配
+					 */
+					out.print("您没有权限");
                     
         			return false;
         		}
@@ -133,7 +166,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //    			JSONObject jsStr = JSONObject.parseObject("{msg:您没有权限}");
 //    			JSONArray array=JSONArray.fromObject("{msg:您没有权限}");
 //        		response.setCharacterEncoding("utf-8");
-                out.print("{\"success\":\"false\",\"message\":\"登录超时，请刷新页面重新登录\"}");  
+
+				/**
+				 * TODO
+				 * 验证返回信息是否规范
+				 */
+				out.print("{\"success\":\"false\",\"message\":\"登录超时，请刷新页面重新登录\"}");
                 return false;
             }     
     	}
