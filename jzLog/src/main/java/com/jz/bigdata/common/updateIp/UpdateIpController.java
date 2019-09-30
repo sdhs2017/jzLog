@@ -1,5 +1,6 @@
 package com.jz.bigdata.common.updateIp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.jz.bigdata.common.manage.service.IManageService;
 import com.jz.bigdata.util.ConfigProperty;
 import com.jz.bigdata.util.DescribeLog;
+
+import net.sf.json.JSONArray;
 
 @Controller  
 @RequestMapping("/ip") 
@@ -27,7 +30,17 @@ public class UpdateIpController {
 	
 	@DescribeLog(describe="获取本地ip地址")
 	public String updataIp(){
-		return configProperty.getHost_ip();
+		Map<String,Object> map = new HashMap<>();
+		try {
+			map.put("success",true);
+			map.put("message",configProperty.getHost_ip());
+			return JSONArray.fromObject(map).toString();
+		}catch (Exception e){
+			e.printStackTrace();
+			map.put("success",false);
+			map.put("message","获取IP失败！");
+			return JSONArray.fromObject(map).toString();
+		}
 		
 	}
 	
