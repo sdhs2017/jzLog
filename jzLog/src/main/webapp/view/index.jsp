@@ -389,16 +389,15 @@
     <script src="../js/formCheck.js"></script>
 </body>
 <script>
-/* //判断是否为手机端
-var ua = navigator.userAgent;
+//判断是否为手机端
+/* var ua = navigator.userAgent;
 var ipad = ua.match(/(iPad).*OS\s([\d_]+)/),
     isIphone = !ipad && ua.match(/(iPhone\sOS)\s([\d_]+)/),
     isAndroid = ua.match(/(Android)\s+([\d.]+)/),
     isMobile = isIphone || isAndroid;
 if(isMobile) {
-	//显示左边栏开关
-	$(".navbar-header").css({"display":"block"});
-}  */
+	window.location.href = 'mobile/index.html'
+}  */ 
 //刷新页面时调用，验证用户信息session
 $(function(){
 	$.ajax({
@@ -755,13 +754,13 @@ function getIp(){
 	  	async:true,
 	  	success:function(data){
 	  		//填充ip数据
-			$(".ipValue").html(data);
-	  		/* if(data.success == "true"){
+			//$(".ipValue").html(data);
+	  		if(data.success == "true"){
 				//填充ip数据
-				$(".ipValue").html('');
+				$(".ipValue").html(data.message);
 			}else if(data.success == "false"){
 				$(".ipValue").html(data.message);
-			}	 */
+			}
 	  	},
 	  	error:function(data){
 	  		$(".ipValue").html('获取失败');

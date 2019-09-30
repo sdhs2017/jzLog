@@ -1036,13 +1036,13 @@
 		/*if(logType == undefined){//logType ！= undefined 单个设备的日志
 			logType = $(this).parent().siblings('.logs_type').html();
 		}*/
-		if(logType == undefined){//精确查询与日志检索
-			logType = logDetailArr[logIndex].type;
-			if(logDetailArr[logIndex].application_layer_protocol !== undefined){
-				logType == "defaultpacket_http"
-			}
+		/*if(logType == undefined){//精确查询与日志检索
+			
+		}*/
+		var logType = logDetailArr[logIndex].type;
+		if(logDetailArr[logIndex].application_layer_protocol !== undefined){
+			logType == "defaultpacket_http"
 		}
-		
 		//获取日志Id
 		var id = $(this).parents("tr").attr("data-id");
 		//获取日志时间
@@ -1109,27 +1109,27 @@
 			var html = '<div class="layer_box">'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">时间:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsTime+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].logtime+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">事件ID:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsEventId+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].eventid+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">级别:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsLevel+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].operation_level+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">IP:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsIp+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].ip+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:50px">'
 					+			'<div class="col-xs-3">计算机名:</div>'
-					+			'<div class="col-xs-9 layCen">'+logsHostName+'</div>'
+					+			'<div class="col-xs-9 layCen">'+logDetailArr[logIndex].equipmentname+'</div>'
 					+		'</div>'
 					+		'<div class="row" style="line-height:24px">'
 					+			'<div class="col-xs-3">日志内容:</div>'
-					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logsCon+'</div>'
+					+			'<div class="col-xs-9 layCen logdes" data-index="'+logIndex+'">'+logDetailArr[logIndex].operation_des+'</div>'
 					+		'</div>'
 					+	'</div>'	
 		}else if(logType == "log4j" || logType == "syslog" || logType == "mysql"){
