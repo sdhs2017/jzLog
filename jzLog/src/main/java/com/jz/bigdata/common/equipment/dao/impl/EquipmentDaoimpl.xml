@@ -284,6 +284,7 @@
 		name=#{name},hostName=#{hostName},type=#{type},ip=#{ip},startUp=#{startUp},logType=#{logType},
 		macAdress=#{macAdress},system=#{system},systemVersion=#{systemVersion},assetNum=#{assetNum},serialNum=#{serialNum},
 		equipment.describe=#{describe},valuation=#{valuation},log_level=#{log_level},domain=#{domain},equipment.port=#{port},
+		equipment.departmentNodeId=#{departmentNodeId},
 		<!-- if判断语句 -->
 		<choose>
 			<when

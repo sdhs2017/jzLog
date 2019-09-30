@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.elasticsearch.action.index.IndexRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,6 +74,8 @@ import net.sf.json.JSONArray;
 @Controller
 @RequestMapping("/log")
 public class LogController extends BaseController{
+	
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Resource(name="logService")
 	private IlogService logService;
@@ -190,7 +194,7 @@ public class LogController extends BaseController{
 			return JSONArray.fromObject(map).toString();
 			
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 			map.put("state", false);
 			map.put("msg", "数据结构初始化失败！");
 			return JSONArray.fromObject(map).toString();
@@ -817,6 +821,7 @@ public class LogController extends BaseController{
 		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW,LogType.LOGTYPE_DNS,LogType
 				.LOGTYPE_DHCP};
 
+		Map<String, Object> map = new HashMap<>();
 		List<Map<String, Object>> list =null;
 		
 		try {
@@ -825,12 +830,14 @@ public class LogController extends BaseController{
 			}else {
 				list = logService.getListByContent(configProperty.getEs_index(), types, keyWords,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
 			}
-			
+			map.put("state", true);
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
+			map.put("state", false);
 		}
 
-		Map<String, Object> map = new HashMap<>();
+		
 		map = list.get(0);
 		list.remove(0);
 		map.put("list", list);
