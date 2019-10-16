@@ -189,8 +189,36 @@ public class LogController extends BaseController{
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_TCP, new Tcp().toMapping());*/
 			logService.createIndexAndmapping(configProperty.getEs_index(),LogType.LOGTYPE_DEFAULTPACKET, new DefaultPacket().toMapping());
 			
+			// 更新index的settings属性
+			Map<String, Object> settingmap = new HashMap<>();
+			settingmap.put("index.max_result_window", configProperty.getEs_max_result_window());
+			settingmap.put("index.number_of_replicas", configProperty.getEs_number_of_replicas());
+			logService.updateSettings(configProperty.getEs_index(), settingmap);
+			// 在初始化过程中增加备份仓库的建立，节省在安装过程中实施人员的curl命令操作
+			try {
+				// 当备份仓库没有建立的情况下，通过名称查询会报missing错误
+				List<Map<String, Object>> repositories = logService.getRepositoriesInfo(configProperty.getEs_repository_name());
+				
+				if(repositories.isEmpty()) {
+					Boolean result = logService.createRepositories(configProperty.getEs_repository_name(), configProperty.getEs_repository_path());
+					if (!result) {
+						map.put("state", true);
+						map.put("msg", "备份仓库初始化失败！");
+						return JSONArray.fromObject(map).toString();
+					}
+				}
+			} catch (Exception e) {
+				Boolean result = logService.createRepositories(configProperty.getEs_repository_name(), configProperty.getEs_repository_path());
+				if (!result) {
+					map.put("state", true);
+					map.put("msg", "备份仓库初始化失败！");
+					return JSONArray.fromObject(map).toString();
+				}
+			}
+			
+			
 			map.put("state", true);
-			map.put("msg", "数据结构初始化成功！");
+			map.put("msg", "初始化成功！");
 			return JSONArray.fromObject(map).toString();
 			
 		} catch (Exception e) {
@@ -239,6 +267,8 @@ public class LogController extends BaseController{
 		String param = request.getParameter("param");
 		String time = request.getParameter("time");
 		String equipmentid = request.getParameter("equipmentid");
+		String starttime = request.getParameter("starttime");
+		String endtime = request.getParameter("endtime");
 		
 		Map<String, String> map = new HashMap<>();
 		if (equipmentid!=null&&!equipmentid.equals("")) {
@@ -248,7 +278,7 @@ public class LogController extends BaseController{
 			map.put("logdate", time);
 		}
 		
-		List<Map<String, Object>> list = logService.groupBy(index, types, param, map);
+		List<Map<String, Object>> list = logService.groupBy(index, types, param, starttime, endtime, map);
 		
 		return list;
 	}

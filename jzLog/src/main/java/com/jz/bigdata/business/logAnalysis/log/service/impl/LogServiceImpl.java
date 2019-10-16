@@ -98,12 +98,52 @@ public class LogServiceImpl implements IlogService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> groupBy(String index, String[] types, String param,Map<String, String> termsmap) {
+	public List<Map<String, Object>> groupBy(String index, String[] types, String groupByField, String starttime,
+			String endtime, Map<String, String> termsmap) {
+		List<Map<String, Object>> list = null;
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		Map<String, String> map = new HashMap<>();
+		map.putAll(termsmap);
+		
+		// 时间段
+		if (!starttime.equals("")&&!endtime.equals("")) {
+			queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
+		}else if (!starttime.equals("")) {
+			queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime));
+		}else if (!endtime.equals("")) {
+			queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(endtime));
+		}
+		
+		if (map!=null&&!map.isEmpty()) {
+			
+			for(Map.Entry<String, String> entry : map.entrySet()){
+				if (entry.getKey().equals("logdate")) {
+					queryBuilder.must(QueryBuilders.rangeQuery(entry.getKey()).format("yyyy-MM-dd").gte(entry.getValue()));
+				}else if (entry.getKey().equals("domain_url")||entry.getKey().equals("complete_url")) {
+					// 短语匹配
+					queryBuilder.must(QueryBuilders.matchPhraseQuery(entry.getKey(), entry.getValue()));
+				}/*else if (entry.getKey().equals("application_layer_protocol")) {
+					queryBuilder.must(QueryBuilders.multiMatchQuery(entry.getKey(), "http"));
+				}*/else {
+					queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
+				}
+			}
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, groupByField,queryBuilder);
+		}else {
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, groupByField,null);
+		}
+		
+		return list;
+	}
+	
+	@Override
+	public List<Map<String, Object>> groupBy(String index, String[] types, String param, Map<String, String> termsmap) {
 
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 		Map<String, String> map = new HashMap<>();
 		map.putAll(termsmap);
+		
 		if (map!=null&&!map.isEmpty()) {
 			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
 				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
@@ -137,7 +177,7 @@ public class LogServiceImpl implements IlogService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> groupBy(String index, String[] types, String param,Map<String, String> termsmap,int size) {
+	public List<Map<String, Object>> groupBy(String index, String[] types, String param, Map<String, String> termsmap,int size) {
 
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
@@ -171,12 +211,13 @@ public class LogServiceImpl implements IlogService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> groupBy(String index, String[] types, String[] param,Map<String, String> termsmap,int size) {
+	public List<Map<String, Object>> groupBy(String index, String[] types, String[] param, Map<String, String> termsmap,int size) {
 
 		List<Map<String, Object>> list = null;
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 		Map<String, String> map = new HashMap<>();
 		map.putAll(termsmap);
+		
 		if (map!=null&&!map.isEmpty()) {
 			if (map.get("starttime")!=null&&map.get("endtime")!=null) {
 				queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(map.get("starttime")).lte(map.get("endtime")));
@@ -1478,6 +1519,32 @@ public class LogServiceImpl implements IlogService {
 		
 		return clientTemplate.indexExists(index);
 	}
+
+	@Override
+	public boolean createRepositories(String repositoryName, String repoPath) {
+		
+		return clientTemplate.createRepositories(repositoryName, repoPath);
+	}
+
+	@Override
+	public List<Map<String, Object>> getRepositoriesInfo(String... repositoryName) {
+		
+		return clientTemplate.getRepositoriesInfo(repositoryName);
+	}
+
+	@Override
+	public boolean deleteRepositories(String repositoryName) {
+		
+		return clientTemplate.deleteRepositories(repositoryName);
+	}
+
+	@Override
+	public boolean updateSettings(String index, Map<String, Object> map) {
+		
+		return clientTemplate.updateSettings(index, map);
+	}
+
+	
 	
 
 	

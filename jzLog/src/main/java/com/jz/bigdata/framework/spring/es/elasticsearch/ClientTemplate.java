@@ -3,6 +3,11 @@ package com.jz.bigdata.framework.spring.es.elasticsearch;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.cluster.repositories.delete.DeleteRepositoryRequest;
+import org.elasticsearch.action.admin.cluster.repositories.get.GetRepositoriesRequest;
+import org.elasticsearch.action.admin.cluster.repositories.get.GetRepositoriesResponse;
+import org.elasticsearch.action.admin.cluster.repositories.put.PutRepositoryRequest;
+import org.elasticsearch.action.admin.cluster.repositories.put.PutRepositoryResponse;
 import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -13,12 +18,17 @@ import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse;
 import org.elasticsearch.action.DocWriteResponse.Result;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.bulk.byscroll.BulkByScrollResponse;
+// 5.4.0版本
+//import org.elasticsearch.action.bulk.byscroll.BulkByScrollResponse;
+// 5.6.3版本
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -27,6 +37,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
@@ -34,7 +45,10 @@ import org.elasticsearch.client.ClusterAdminClient;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
+import org.elasticsearch.cluster.metadata.RepositoryMetaData;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.Settings.Builder;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.get.GetResult;
@@ -43,7 +57,9 @@ import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
+
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
+import org.elasticsearch.repositories.fs.FsRepository;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -64,6 +80,7 @@ import net.sf.json.util.JSONBuilder;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,6 +92,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperations{
+//public class ClientTemplate {
 	
 	private Client client;
 	
@@ -559,11 +577,11 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 	 */
 	public long countDeleteByQuery(String [] indices,QueryBuilder queryBuilder) {
 		
-		BulkByScrollResponse response = DeleteByQueryAction.INSTANCE.newRequestBuilder(client).filter(queryBuilder).source(indices).get();
+		//BulkByScrollResponse response = DeleteByQueryAction.INSTANCE.newRequestBuilder(client).filter(queryBuilder).source(indices).get();
 		
-		long deletecount = response.getDeleted();
+		//long deletecount = response.getDeleted();
 		
-		
+		long deletecount = 0;
 
 		return deletecount;
 	}
@@ -651,18 +669,44 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
 	 * @param mapping配置
 	 */
 	@SuppressWarnings("deprecation")
-	public Boolean addMapping(String index, String type,String template) {
+	public Boolean addMapping(String index, String type,String mappings) {
 		boolean result = false;
+		Builder settings = Settings.builder()
+				.put("index.max_result_window", 100000000)
+				.put("index.number_of_shards", 5)
+				.put("index.number_of_replicas",2);
+		
 		if (this.indexExists(index)) {
-			PutMappingRequest mapping = Requests.putMappingRequest(index).type(type).source(template);
+			// 更新index的setting属性
+			/*UpdateSettingsRequest request = new UpdateSettingsRequest(index);
+			request.settings(settings);
+			UpdateSettingsResponse response = this.client.admin().indices().updateSettings(request).actionGet();*/
+			
+			// 添加mapping信息
+			PutMappingRequest mapping = Requests.putMappingRequest(index).type(type).source(mappings);
 			PutMappingResponse mappingResponse =this.client.admin().indices().putMapping(mapping).actionGet();
 			result = mappingResponse.isAcknowledged();
 		}else {
-			CreateIndexResponse indexResponse = this.client.admin().indices().prepareCreate(index).addMapping(type, template).get();
+			CreateIndexResponse indexResponse = this.client.admin().indices().prepareCreate(index).setSettings(settings).addMapping(type, mappings).get();
 			result = indexResponse.isAcknowledged();
 		}
 		return result;
 		
+	}
+	
+	public boolean updateSettings(String index,Map<String, Object> map) {
+		boolean result = false;
+		/*Builder settings = Settings.builder()
+				.put("index.max_result_window", 100000000)
+				//.put("index.number_of_shards", 5)
+				.put("index.number_of_replicas",2);*/
+		// 更新index的setting属性
+		UpdateSettingsRequest request = new UpdateSettingsRequest(index);
+		request.settings(map);
+		UpdateSettingsResponse response = this.client.admin().indices().updateSettings(request).actionGet();
+		result = response.isAcknowledged();
+		
+		return result;
 	}
 	
 	/**
@@ -996,8 +1040,64 @@ public class ClientTemplate implements IndexSearchEngine<SearchHit>, NodeOperati
     		
     	}
     	
-    	
-		
 		return list;
+	}
+	
+	/**
+	 * 通过名称查询备份仓库
+	 * @param repositories 备份仓库名称
+	 * @return
+	 */
+	public List<Map<String, Object>> getRepositoriesInfo(String... repositories) {
+		GetRepositoriesRequest getRepositoriesRequest = new  GetRepositoriesRequest();
+    	getRepositoriesRequest.repositories(repositories);
+    	GetRepositoriesResponse respose = client.admin().cluster().getRepositories(getRepositoriesRequest).actionGet();
+    	List<RepositoryMetaData> list = respose.repositories();
+    	List<Map<String, Object>> repositorieslist = new ArrayList<Map<String,Object>>();
+    	for(RepositoryMetaData metadata:list) {
+    		Map<String, Object> map = new HashMap<>();
+    		map.put("name", metadata.name());
+    		map.putAll(metadata.settings().getAsMap());
+    		repositorieslist.add(map);
+    	}
+		return repositorieslist;
+	}
+	
+	/**
+	 * 创建备份仓库
+	 * @param repositoryName 备份仓库名称
+	 * @param repoPath 备份仓库路径
+	 * @return
+	 */
+	public Boolean createRepositories(String repositoryName,String repoPath) {
+		
+		PutRepositoryRequest request = new PutRepositoryRequest();
+		request.name(repositoryName);
+		request.type(FsRepository.TYPE);
+		
+		Map<String, Object> map = new HashMap<>();
+		//map.put("location", "/home/elsearch/es_backups/my_backup/");
+		map.put("location", repoPath);
+		map.put("compress", true);
+		request.settings(map);
+		
+		PutRepositoryResponse response = client.admin().cluster().putRepository(request).actionGet();
+		
+		return response.isAcknowledged();
+		
+	}
+	
+	/**
+	 * 删除备份仓库
+	 * @param repositoryName
+	 * @return
+	 */
+	public Boolean deleteRepositories(String repositoryName) {
+		DeleteRepositoryRequest request = new DeleteRepositoryRequest(repositoryName);
+		request.timeout(TimeValue.timeValueMinutes(1)); 
+		request.timeout("1m");
+		
+		AcknowledgedResponse response = client.admin().cluster().deleteRepository(request).actionGet();
+		return response.isAcknowledged();
 	}
 }

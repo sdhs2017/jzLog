@@ -49,14 +49,25 @@ public interface IlogService {
 	public long getCount(String index,String [] types,Map<String, String> map);
 	
 	/**
+	 * 实现类sql的group by功能,包含时间范围、条件等
+	 * @param index
+	 * @param type
+	 * @param groupByField
+	 * @param starttime
+	 * @param endtime
+	 * @param map
+	 * @return
+	 */
+	public List<Map<String, Object>> groupBy(String index,String[] types,String groupByField, String starttime, String endtime,Map<String, String> map);
+	/**
 	 * 实现类sql的group by功能
 	 * @param index
 	 * @param type
-	 * @param param groupby的key值
+	 * @param groupByField groupby的key值
 	 * @param map 条件参数
 	 * @return
 	 */
-	public List<Map<String, Object>> groupBy(String index,String[] type,String param,Map<String, String> map);
+	public List<Map<String, Object>> groupBy(String index,String[] types,String groupByField,Map<String, String> map);
 	
 	/**
 	 * 实现类sql的group by功能
@@ -278,6 +289,35 @@ public interface IlogService {
 	 * 实现删除数据后强制合并 删除段释放存储空间
 	 */
 	public void deleteAndForcemerge(String[] indices, String type, Map<String, String> map) ;
-
+	
+	/**
+	 * 创建备份仓库
+	 * @param repositoryName 备份仓库名称
+	 * @param repoPath 备份仓库路径
+	 * @return
+	 */
+	public boolean createRepositories(String repositoryName,String repoPath) ;
+	
+	/**
+	 * 获取备份仓库信息
+	 * @param repositoryName
+	 * @return
+	 */
+	public List<Map<String, Object>> getRepositoriesInfo(String ... repositoryName);
+	
+	/**
+	 * 删除备份仓库
+	 * @param repositoryName
+	 * @return
+	 */
+	public boolean deleteRepositories(String repositoryName) ;
+	
+	/**
+	 * 更新index的setting属性
+	 * @param idnex
+	 * @param map
+	 * @return
+	 */
+	public boolean updateSettings(String index,Map<String, Object> map) ;
 	
 }
