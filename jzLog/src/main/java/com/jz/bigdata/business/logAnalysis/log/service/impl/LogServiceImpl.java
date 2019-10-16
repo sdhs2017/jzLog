@@ -130,7 +130,7 @@ public class LogServiceImpl implements IlogService {
 			}
 			list = clientTemplate.getListGroupByQueryBuilder(index, types, groupByField,queryBuilder);
 		}else {
-			list = clientTemplate.getListGroupByQueryBuilder(index, types, groupByField,null);
+			list = clientTemplate.getListGroupByQueryBuilder(index, types, groupByField,queryBuilder);
 		}
 		
 		return list;

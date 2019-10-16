@@ -1878,14 +1878,25 @@ public class LogController extends BaseController{
 		String [] groupbys = {"ipv4_src_addr","ipv4_dst_addr"};
 		String[] types = {"defaultpacket"};
 		
+		String starttime = request.getParameter("starttime");
+		String endtime = request.getParameter("endtime");
 		Map<String, String> searchmap = new HashMap<>();
 		// 设置时间段为一周
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String endtime = sdf.format(cal.getTime());
-		cal.add(Calendar.DATE, -7);
-		String starttime = sdf.format(cal.getTime());
+		if (endtime!=null&&!endtime.equals("")) {
+			endtime = endtime+" 23:59:59";
+		}else {
+			endtime = sdf.format(cal.getTime());
+		}
+		if (starttime!=null&&starttime.equals("")) {
+			starttime = starttime+" 00:00:00";
+		}else {
+			cal.add(Calendar.DATE, -7);
+			starttime = sdf.format(cal.getTime());
+		}
+		
 		searchmap.put("starttime", starttime);
 		searchmap.put("endtime", endtime);
 		
@@ -1916,7 +1927,6 @@ public class LogController extends BaseController{
 		}
 		
 		linkslist = logService.groupBy(index, types, groupbys, searchmap,1000);
-		System.out.println("---------------------------"+linkslist.size()+"-------------------------------");
 		
 		// 遍历第一层数据结果
 		for(Entry<String, Object> key : tMap.entrySet()) {
