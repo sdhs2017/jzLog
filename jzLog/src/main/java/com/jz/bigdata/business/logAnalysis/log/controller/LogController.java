@@ -277,6 +277,12 @@ public class LogController extends BaseController{
 		if (time!=null&&!time.equals("")) {
 			map.put("logdate", time);
 		}
+		if (starttime!=null&&!starttime.equals("")) {
+			starttime = starttime+" 00:00:00";
+		}
+		if (endtime!=null&&!endtime.equals("")) {
+			endtime = endtime+" 23:59:59";
+		}
 		
 		List<Map<String, Object>> list = logService.groupBy(index, types, param, starttime, endtime, map);
 		
