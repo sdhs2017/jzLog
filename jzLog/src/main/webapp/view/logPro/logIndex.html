@@ -403,7 +403,7 @@
 				</div>
 				<div class="col-md-7">
 					<div class="col-box">
-						<div class="col_title"></div>
+						<div class="col_title line_title"></div>
 						<div id="logChart03" class="ecBox" style="height: 350px;">
 									
 						</div>
@@ -458,7 +458,8 @@
 	        var date2 = new Date(day1);
 	        date2.setDate(day1.getDate()-6);
 	        var day_7 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
-			
+			//更改折线图标题
+			$(".line_title").html(day_c+" 数据量统计");
 			
 			//柱状图
         	var myChart01 = echarts.init(document.getElementById('logChart01'));
@@ -717,7 +718,7 @@
 			var myChart03 = echarts.init(document.getElementById('logChart03'))
 			myChart03.setOption({
         		title: {
-    				text:day_c+" 数据量统计",
+    				//text:day_c+" 数据量统计",
 		        	x:'center',
 		        	textStyle:{
 		        		color:'#5bc0de'
