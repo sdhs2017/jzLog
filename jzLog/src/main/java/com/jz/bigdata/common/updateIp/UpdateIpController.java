@@ -32,12 +32,12 @@ public class UpdateIpController {
 	public String updataIp(){
 		Map<String,Object> map = new HashMap<>();
 		try {
-			map.put("success",true);
+			map.put("success","true");
 			map.put("message",configProperty.getHost_ip());
 			return JSONArray.fromObject(map).toString();
 		}catch (Exception e){
 			e.printStackTrace();
-			map.put("success",false);
+			map.put("success","false");
 			map.put("message","获取IP失败！");
 			return JSONArray.fromObject(map).toString();
 		}
