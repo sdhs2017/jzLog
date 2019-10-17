@@ -370,7 +370,7 @@
             <a class="threshold_setting">（阈值设置）</a>
             <div class="changeIpBox">
             	<span style="color:#ccc;font-weight: 600;">系统IP :</span>
-              	<span class="ipValue">192.168.2.2</span>
+              	<span class="ipValue"></span>
               	<a class="changeIp">（修改）</a>	
             </div>
          </div>
@@ -679,7 +679,7 @@ function getMenuData(){
   	data:{},
   	async:true,
   	success:function(data){
-  		console.log(data)
+  		//console.log(data)
   		//清空加载动画
  		$("#side-menu").html('');
   		//判断请求是否正确
@@ -751,15 +751,16 @@ function getIp(){
 	  	url:"../ip/getIp.do",
 	  	/* url:'menuData.json', */
 	  	data:{},
+	  	dataType:"json",
 	  	async:true,
 	  	success:function(data){
 	  		//填充ip数据
 			//$(".ipValue").html(data);
-	  		if(data.success == "true"){
+	  		if(data[0].success == "true"){
 				//填充ip数据
-				$(".ipValue").html(data.message);
-			}else if(data.success == "false"){
-				$(".ipValue").html(data.message);
+				$(".ipValue").html(data[0].message);
+			}else if(data[0].success == "false"){
+				$(".ipValue").html(data[0].message);
 			}
 	  	},
 	  	error:function(data){

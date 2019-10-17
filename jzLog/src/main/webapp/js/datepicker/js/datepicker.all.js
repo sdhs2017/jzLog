@@ -2,8 +2,9 @@
  * author:丘耀帆
  * github:https://github.com/qiuyaofan
  */
-$(function () {
+; (function ($) {
   /*==============BEGIN API============*/
+
   var defaultOptions = {
     min: false,
     max: false,
@@ -13,14 +14,22 @@ $(function () {
     shortcutOptions: [],
     // between:数字：30，string:month/year
     between: false,
-    hide:function(){},
-    show:function(){}
+    language: 'zh-CN',
+    hide: function () { },
+    show: function () { }
   };
 
   var API = {
+    onlytimeReg: function (format) {
+      return /^HH:mm(:ss)?$/.test(format);
+    },
+    // 获取时分秒格式
+    getFormatTime: function (_this) {
+      return _this.onlyTime ? _this.config.format : _this.config.format.split(' ')[1];
+    },
     // 时分秒格式正则
     timeReg: function (_this) {
-      var format = _this.config.format.split(' ')[1];
+      var format = API.getFormatTime(_this);
       var regText = format.replace(/HH/, '([0-9]{1,2})').replace(/:/g, '(:?)').replace(/(mm|ss)/g, '([0-9]{1,2})');
       return new RegExp('^' + regText + '$');
     },
@@ -91,16 +100,28 @@ $(function () {
         day: _moment.date()
       }
     },
-    newDateFixed: function (_this,temp){
-      var reg = new RegExp(_this.splitStr,'g');
-      return temp?new Date(temp.replace(reg,'/')):new Date();
+    // 获取时分秒
+    getOnlyTimeFormat: function (_moment) {
+      return [_moment.hour(), _moment.minute(), _moment.second()];
+    },
+    getConcatTime: function (hour, minute, second) {
+      return API.fillTime(hour) + ':' + API.fillTime(minute) + ':' + API.fillTime(second);
+    },
+    newDateFixed: function (_this, temp) {
+      var isIE = !!window.ActiveXObject || "ActiveXObject" in window;
+      var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      // Safari 年月模式只能用-,其他Safari、ie用/
+      var str = isIE || (isSafari && _this.config.format !== 'YYYY-MM') ? '/' : '-';
+      var reg = new RegExp(_this.splitStr, 'g');
+      var result = !temp ? new Date() : _this.splitStr ? new Date(temp.replace(reg, str)) : new Date(temp);
+      return result;
     },
     // 范围获取具体年月日
-    getRangeTimeFormat: function (_this,$input) {
+    getRangeTimeFormat: function (_this, $input) {
       var temp;
       var val = $input.val();
       temp = val;
-      var result = temp ? moment(API.newDateFixed(_this,temp)) : moment();
+      var result = temp ? moment(API.newDateFixed(_this, temp)) : moment();
       return API.getTimeFormat(result);
     },
     // 判断最大值最小值
@@ -118,15 +139,16 @@ $(function () {
         val += ' ' + _this.$container.find('.c-datePicker__input-time').eq(index).val();
       }
       if (!_this.config.min && !_this.config.max) {
+        val = val.split(' ')[0];
         return {
           val: val,
           result: result
         };
       }
       // 判断最大值最小值
-      var nowMoment = moment(API.newDateFixed(_this,val));
-      var minMoment = moment(API.newDateFixed(_this,_this.config.min));
-      var maxMoment = moment(API.newDateFixed(_this,_this.config.max));
+      var nowMoment = moment(API.newDateFixed(_this, val));
+      var minMoment = moment(API.newDateFixed(_this, _this.config.min));
+      var maxMoment = moment(API.newDateFixed(_this, _this.config.max));
       // 不在范围内
       var isBefore = nowMoment.isBefore(minMoment);
       var isAfter = nowMoment.isAfter(maxMoment);
@@ -172,9 +194,9 @@ $(function () {
         return;
       }
       var val = day + ' ' + time;
-      var _moment = moment(API.newDateFixed(_this,val));
-      var isBefore = _moment.isBefore((API.newDateFixed(_this,_this.config.min)));
-      var isAfter = _moment.isAfter((API.newDateFixed(_this,_this.config.max)));
+      var _moment = moment(API.newDateFixed(_this, val));
+      var isBefore = _this.config.min ? _moment.isBefore((API.newDateFixed(_this, _this.config.min))) : false;
+      var isAfter = _this.config.max ? _moment.isAfter((API.newDateFixed(_this, _this.config.max))) : false;
       if (!isBefore && !isAfter) {
         return;
       }
@@ -190,7 +212,7 @@ $(function () {
       }
     },
     timeVal: function (_this, type) {
-      var timeFormat = _this.config.format.split(' ')[1];
+      var timeFormat = _this.onlyTime ? _this.config.format : _this.config.format.split(' ')[1];
       return type === 'min' ? timeFormat.replace(/HH/, '00').replace(/mm/, '00').replace(/ss/, '00') : timeFormat.replace(/HH/, '23').replace(/mm/, '59').replace(/ss/, '59');
     },
     getScrollBarWidth: function () {
@@ -217,143 +239,327 @@ $(function () {
         barWidth = 15;
       }
       return barWidth;
+    },
+    getOnlyTimeMinMax: function (_this) {
+      var min = _this.config.min;
+      var max = _this.config.max;
+      var emptyVal = void (0);
+      var minJson = {
+        hour: emptyVal,
+        minute: emptyVal,
+        second: emptyVal
+      };
+      var maxJson = {
+        hour: emptyVal,
+        minute: emptyVal,
+        second: emptyVal
+      };
+      var hasMin = min && min.match(API.timeReg(_this));
+      var hasMax = max && max.match(API.timeReg(_this));
+      var hasMinMax = hasMax && hasMin ? true : hasMax ? 'max' : hasMin ? 'min' : false;
+      if (hasMin) {
+        var _min = min.split(':');
+        minJson.hour = Number(_min[0]);
+        minJson.minute = Number(_min[1]);
+        minJson.second = Number(_min[2]);
+      }
+      if (hasMax) {
+        var _max = max.split(':');
+        maxJson.hour = Number(_max[0]);
+        maxJson.minute = Number(_max[1]);
+        maxJson.second = Number(_max[2]);
+      }
+      var minSecond = hasMin ? API.countSecond(min.split(':')) : void (0);
+      var maxSecond = hasMax ? API.countSecond(max.split(':')) : void (0);
+      return {
+        min: minJson,
+        max: maxJson,
+        hasMin: hasMin,
+        hasMax: hasMax,
+        hasMinMax: hasMinMax,
+        minSecond: minSecond,
+        maxSecond: maxSecond,
+        minVal: min,
+        maxVal: max
+      }
+    },
+    countSecond: function (result) {
+      return result.length === 2 ? result = Number(result[0]) * 60 + Number(result[1]) : result.length === 3 ? result = Number(result[0]) * 3600 + Number(result[1]) * 60 + Number(result[2]) : false;
+
     }
   };
   var JQTABLESCROLLWIDTH = API.getScrollBarWidth();
-
-  var TEARTPL = '<table class="{{class}}" style="">' +
-    '<tbody>' +
-    '{{body}}' +
-    '</tbody>' +
-    '</table>';
-  var TDTPL = '<td class="{{today}}">' +
-    '<div>' +
-    '<a class="cell">{{value}}</a>' +
-    '</div>' +
-    '</td>';
-  var DAYHEADER = '<tr>' +
-    '<th>日</th>' +
-    '<th>一</th>' +
-    '<th>二</th>' +
-    '<th>三</th>' +
-    '<th>四</th>' +
-    '<th>五</th>' +
-    '<th>六</th>' +
-    '</tr>';
-  var TIMELITPL = '<li class="c-datepicker-time-spinner__item {{className}}">{{time}}</li>';
-  var TIMETPL = '<div class="c-datepicker-time-spinner__wrapper c-datepicker-scrollbar">' +
-    '<div class="c-datepicker-scrollbar__wrap {{className}}" style="max-height: inherit; margin-bottom: -' + JQTABLESCROLLWIDTH + 'px; margin-right: -' + JQTABLESCROLLWIDTH + 'px;">' +
-    '<ul class="c-datepicker-scrollbar__view c-datepicker-time-spinner__list">' +
-    '{{li}}' +
-    '</ul>' +
-    '</div>' +
-    '</div>';
-  var TIMEMAINTPL = '<div class="c-datepicker-time-panel c-datepicker-popper" style="">' +
-    '<div class="c-datepicker-time-panel__content has-seconds">' +
-    '<div class="c-datepicker-time-spinner has-seconds">' +
-    '{{time}}' +
-    '</div>' +
-    '</div>' +
-    '<div class="c-datepicker-time-panel__footer">' +
-    '<button type="button" class="c-datepicker-time-panel__btn min">0点</button>' +
-    '<button type="button" class="c-datepicker-time-panel__btn max">23:59</button>' +
-    '<button type="button" class="c-datepicker-time-panel__btn cancel">取消</button>' +
-    '<button type="button" class="c-datepicker-time-panel__btn confirm">确定</button>' +
-    '</div>' +
-    '</div>';
-  var SIDEBARBUTTON = '<button type="button" class="c-datepicker-picker__shortcut" data-value="{{day}}" data-time="{{time}}">{{name}}</button>';
-  var SIDEBARTPL = '<div class="c-datepicker-picker__sidebar">' +
-    '{{button}}' +
-    '</div>';
-  var PICKERFOOTERTPL = '<div class="c-datepicker-picker__footer" style="">' +
-    '<button type="button" class="c-datepicker-button c-datepicker-picker__link-btn c-datepicker-button--text c-datepicker-button--mini {{className}}">' +
-    '<span>' +
-    '{{text}}' +
-    '</span>' +
-    '</button>' +
-    '<button type="button" class="c-datepicker-button c-datepicker-picker__link-btn confirm c-datepicker-button--default c-datepicker-button--mini is-plain">' +
-    '<span>' +
-    '确定' +
-    '</span>' +
-    '</button>' +
-    '</div>';
-  var PICKERARROWTPL = '<div x-arrow="" class="popper__arrow" style="left: 35px;"></div>';
-  var PICKERHEADERTPL = '<div class="{{className}}__header">' +
-    '{{prev}}' +
-    '<span role="button" class="{{className}}__header-label {{className}}__header-year"><span>{{year}}</span> 年</span>' +
-    '<span role="button" class="{{className}}__header-label {{className}}__header-month"><span>{{month}}</span> 月</span>' +
-    '{{next}}' +
-    '</div>';
-  PICKERHEADERPREVTPL = '<i class="kxiconfont icon-first c-datepicker-picker__icon-btn {{className}}__prev-btn year" aria-label="前一年"></i>' +
-    '<i class="kxiconfont icon-left c-datepicker-picker__icon-btn {{className}}__prev-btn month" aria-label="上个月"></i>';
-  PICKERHEADERNEXTTPL = '<i class="kxiconfont icon-right c-datepicker-picker__icon-btn {{className}}__next-btn month" aria-label="下个月"></i>' +
-    '<i class="kxiconfont icon-last c-datepicker-picker__icon-btn {{className}}__next-btn year" aria-label="后一年"></i>';
-  PICKERHEADERNEXTSINGLETPL = '<i class="kxiconfont icon-last c-datepicker-picker__icon-btn {{className}}__next-btn year" aria-label="后一年"></i>' +
-    '<i class="kxiconfont icon-right c-datepicker-picker__icon-btn {{className}}__next-btn month" aria-label="下个月"></i>';
-  var PICKERTIMEHEADERTPL = '<span class="{{className}}__editor-wrap">' +
-    '<div class="c-datepicker-input c-datepicker-input--small">' +
-    '<input type="text" autocomplete="off" placeholder="选择日期" class="c-datepicker-input__inner c-datePicker__input-day">' +
-    '</div>' +
-    '</span>' +
-    '<span class="{{className}}__editor-wrap">' +
-    '<div class="c-datepicker-input c-datepicker-input--small">' +
-    '<input type="text" autocomplete="off" placeholder="选择时间" class="c-datepicker-input__inner c-datePicker__input-time">' +
-    '</div>' +
-    '</span>';
-  //  范围
-  var RANGEPICKERMAINTPL = '<div class="c-datepicker-picker c-datepicker-date-range-picker c-datepicker-popper {{hasTime}} {{hasSidebar}}" x-placement="top-start">' +
-    '<div class="c-datepicker-picker__body-wrapper">' +
-    '{{sidebar}}' +
-    '<div class="c-datepicker-picker__body">' +
-    '<div class="c-datepicker-date-range-picker__time-header">' +
-    '<div class="c-datepicker-date-range-picker__time-content">' +
-    PICKERTIMEHEADERTPL.replace(/{{className}}/g, 'c-datepicker-date-range-picker') +
-    '</div>' +
-    '<span class="kxiconfont icon-right"></span>' +
-    '<div class="c-datepicker-date-range-picker__time-content">' +
-    PICKERTIMEHEADERTPL.replace(/{{className}}/g, 'c-datepicker-date-range-picker') +
-    '</div>' +
-    '</div>' +
-    '<div class="c-datepicker-picker__body-content">' +
-    '<div class="c-datepicker-date-range-picker-panel__wrap is-left">' +
-    PICKERHEADERTPL.replace(/{{prev}}/g, PICKERHEADERPREVTPL).replace(/{{next}}/g, '').replace(/{{className}}/g, 'c-datepicker-date-range-picker') +
-    '<div class="c-datepicker-picker__content">' +
-    '{{table}}' +
-    '</div>' +
-    '</div>' +
-    '<div class="c-datepicker-date-range-picker-panel__wrap is-right">' +
-    PICKERHEADERTPL.replace(/{{prev}}/g, '').replace(/{{next}}/g, PICKERHEADERNEXTTPL).replace(/{{year}}/g, '{{yearEnd}}').replace(/{{month}}/g, '{{monthEnd}}').replace(/{{className}}/g, 'c-datepicker-date-range-picker') +
-    '<div class="c-datepicker-picker__content">' +
-    '{{table}}' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-    PICKERFOOTERTPL.replace(/{{className}}/g, 'c-datepicker-picker__btn-clear').replace(/{{text}}/g, '清空') +
-    PICKERARROWTPL +
-    '</div>';
-  var PICKERFOOTERNOWBUTTON = PICKERFOOTERTPL.replace(/{{className}}/g, 'c-datepicker-picker__btn-now').replace(/{{text}}/g, '此刻');
-  var PICKERFOOTERCLEARBUTTON = PICKERFOOTERTPL.replace(/{{className}}/g, 'c-datepicker-picker__btn-clear').replace(/{{text}}/g, '清空');
-  // 单个
-  var DATEPICKERMAINTPL = '<div class="c-datepicker-picker c-datepicker-date-picker c-datepicker-popper {{hasTime}} {{hasSidebar}}" x-placement="top-start">' +
-    '<div class="c-datepicker-picker__body-wrapper">' +
-    '{{sidebar}}' +
-    '<div class="c-datepicker-picker__body">' +
-    '<div class="c-datepicker-date-picker__time-header">' +
-    PICKERTIMEHEADERTPL.replace(/{{className}}/g, 'c-datepicker-date-picker') +
-    '</div>' +
-    PICKERHEADERTPL.replace(/{{prev}}/g, PICKERHEADERPREVTPL).replace(/{{next}}/g, PICKERHEADERNEXTSINGLETPL).replace(/{{className}}/g, 'c-datepicker-date-picker') +
-    ' <div class="c-datepicker-picker__content">' +
-    '{{table}}' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-    '{{footerButton}}' +
-    PICKERARROWTPL +
-    '</div>';
+  var RENDERAPI = {
+    tableTpl: function (className, content) {
+      var html = '<table class="' + className + '" style="">' +
+        '<tbody>' +
+        content +
+        '</tbody>' +
+        '</table>';
+      return html;
+    },
+    tdTpl: function (today, value) {
+      var html = '<td class="' + today + '">' +
+        '<div>' +
+        '<a class="cell">' + value + '</a>' +
+        '</div>' +
+        '</td>';
+      return html;
+    },
+    dayHeader: function (nameOptions) {
+      var days = nameOptions.days;
+      var thHtml = '';
+      for (var i = 0, len = days.length; i < len; i++) {
+        thHtml += '<th>' + days[i] + '</th>';
+      }
+      var html = '<tr>' +
+        thHtml +
+        '</tr>';
+      return html;
+    },
+    timeLiTpl: function (className, time) {
+      var html = '<li class="c-datepicker-time-spinner__item ' + className + '">' + time + '</li>';
+      return html;
+    },
+    timeTpl: function (className, li) {
+      var html = '<div class="c-datepicker-time-spinner__wrapper c-datepicker-scrollbar">' +
+        '<div class="c-datepicker-scrollbar__wrap ' + className + '" style="max-height: inherit; margin-bottom: -' + JQTABLESCROLLWIDTH + 'px; margin-right: -' + JQTABLESCROLLWIDTH + 'px;">' +
+        '<ul class="c-datepicker-scrollbar__view c-datepicker-time-spinner__list">' +
+        li +
+        '</ul>' +
+        '</div>' +
+        '</div>';
+      return html;
+    },
+    timeMainTpl: function (nameOptions, time) {
+      var html = '<div class="c-datepicker-time-panel c-datepicker-popper" style="">' +
+        '<div class="c-datepicker-time-panel__content has-seconds">' +
+        '<div class="c-datepicker-time-spinner has-seconds">' +
+        time +
+        '</div>' +
+        '</div>' +
+        '<div class="c-datepicker-time-panel__footer">' +
+        '<button type="button" class="c-datepicker-time-panel__btn min">' + nameOptions.zero + '</button>' +
+        '<button type="button" class="c-datepicker-time-panel__btn max">23:59</button>' +
+        '<button type="button" class="c-datepicker-time-panel__btn cancel">' + nameOptions.cancel + '</button>' +
+        '<button type="button" class="c-datepicker-time-panel__btn confirm">' + nameOptions.confirm + '</button>' +
+        '</div>' +
+        '</div>';
+      return html;
+    },
+    sideBarButton: function (day, time, name) {
+      var html = '<button type="button" class="c-datepicker-picker__shortcut" data-value="' + day + '" data-time="' + time + '">' + name + '</button>';
+      return html;
+    },
+    sideBarTpl: function (button) {
+      var html = '<div class="c-datepicker-picker__sidebar">' +
+        button +
+        '</div>';
+      return html;
+    },
+    pickerFooterTpl: function (nameOptions, className, text) {
+      var html = '<div class="c-datepicker-picker__footer" style="">' +
+        '<button type="button" class="c-datepicker-button c-datepicker-picker__link-btn c-datepicker-button--text c-datepicker-button--mini ' + className + '">' +
+        '<span>' +
+        text +
+        '</span>' +
+        '</button>' +
+        '<button type="button" class="c-datepicker-button c-datepicker-picker__link-btn confirm c-datepicker-button--default c-datepicker-button--mini is-plain">' +
+        '<span>' +
+        nameOptions.confirm +
+        '</span>' +
+        '</button>' +
+        '</div>';
+      return html;
+    },
+    pickerArrowTpl: function () {
+      return '<div x-arrow="" class="popper__arrow" style="left: 35px;"></div>';
+    },
+    pickerHeaderTpl: function (nameOptions, className, prev, next, year, month) {
+      var html = '<div class="' + className + '__header">' +
+        prev +
+        '<span role="button" class="' + className + '__header-label ' + className + '__header-year"><span>' + year + '</span> ' + nameOptions.headerYearLink + '</span>' +
+        '<span role="button" class="' + className + '__header-label ' + className + '__header-month"><span>' + month + '</span> ' + nameOptions.units[1] + '</span>' +
+        next +
+        '</div>';
+      return html;
+    },
+    pickerHeaderPrevTpl: function (nameOptions, className) {
+      var html = '<i class="kxiconfont icon-first c-datepicker-picker__icon-btn ' + className + '__prev-btn year" aria-label="' + nameOptions.prevYear + '"></i>' +
+        '<i class="kxiconfont icon-left c-datepicker-picker__icon-btn ' + className + '__prev-btn month" aria-label="' + nameOptions.nextMonth + '"></i>';
+      return html;
+    },
+    pickerHeaderNextTpl: function (nameOptions, className) {
+      var html = '<i class="kxiconfont icon-right c-datepicker-picker__icon-btn ' + className + '__next-btn month" aria-label="' + nameOptions.nextMonth + '"></i>' + '<i class="kxiconfont icon-last c-datepicker-picker__icon-btn ' + className + '__next-btn year" aria-label="' + nameOptions.nextYear + '"></i>';
+      return html;
+    },
+    pickerHeaderNextSingleTpl: function (nameOptions, className) {
+      var html = '<i class="kxiconfont icon-last c-datepicker-picker__icon-btn ' + className + '__next-btn year" aria-label="' + nameOptions.nextYear + '"></i>' +
+        '<i class="kxiconfont icon-right c-datepicker-picker__icon-btn ' + className + '__next-btn month" aria-label="' + nameOptions.nextMonth + '"></i>';
+      return html;
+    },
+    pickerTimeHeaderTpl: function (nameOptions, className) {
+      var html = '<span class="' + className + '__editor-wrap">' +
+        '<div class="c-datepicker-input c-datepicker-input--small">' +
+        '<input type="text" autocomplete="off" placeholder="' + nameOptions.chooseDay + '" class="c-datepicker-input__inner c-datePicker__input-day">' +
+        '</div>' +
+        '</span>' +
+        '<span class="' + className + '__editor-wrap">' +
+        '<div class="c-datepicker-input c-datepicker-input--small">' +
+        '<input type="text" autocomplete="off" placeholder="' + nameOptions.chooseTime + '" class="c-datepicker-input__inner c-datePicker__input-time">' +
+        '</div>' +
+        '</span>';
+      return html;
+    },
+    pickerOnlyTimeHeaderTpl: function (className, name) {
+      var html = '<span class="' + className + '__editor-wrap">' +
+        '<div class="c-datepicker-only-time-title">' + name + '</div>' +
+        '</span>';
+      return html;
+    },
+    rangePickerMainTpl: function (nameOptions, hasTime, hasSidebar, yearEnd, monthEnd, sidebar, table) {
+      var className = 'c-datepicker-date-range-picker';
+      var timeHeader = RENDERAPI.pickerTimeHeaderTpl(nameOptions, className);
+      var prev = RENDERAPI.pickerHeaderPrevTpl(nameOptions, className);
+      var next = RENDERAPI.pickerHeaderNextTpl(nameOptions, className);
+      var pickerHeader = RENDERAPI.pickerHeaderTpl(nameOptions, className, prev, '', '{{year}}', '{{month}}');
+      var pickerHeader2 = RENDERAPI.pickerHeaderTpl(nameOptions, className, '', next, yearEnd, monthEnd);
+      var footer = RENDERAPI.pickerFooterTpl(nameOptions, 'c-datepicker-picker__btn-clear', nameOptions.clear);
+      var arrow = RENDERAPI.pickerArrowTpl();
+      var html = '<div class="c-datepicker-picker c-datepicker-date-range-picker c-datepicker-popper ' + hasTime + ' ' + hasSidebar + '" x-placement="top-start">' +
+        '<div class="c-datepicker-picker__body-wrapper">' +
+        sidebar +
+        '<div class="c-datepicker-picker__body">' +
+        '<div class="c-datepicker-date-range-picker__time-header">' +
+        '<div class="c-datepicker-date-range-picker__time-content">' +
+        timeHeader +
+        '</div>' +
+        '<span class="kxiconfont icon-right"></span>' +
+        '<div class="c-datepicker-date-range-picker__time-content">' +
+        timeHeader +
+        '</div>' +
+        '</div>' +
+        '<div class="c-datepicker-picker__body-content">' +
+        '<div class="c-datepicker-date-range-picker-panel__wrap is-left">' +
+        pickerHeader +
+        '<div class="c-datepicker-picker__content">' +
+        table +
+        '</div>' +
+        '</div>' +
+        '<div class="c-datepicker-date-range-picker-panel__wrap is-right">' +
+        pickerHeader2 +
+        '<div class="c-datepicker-picker__content">' +
+        table +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        footer +
+        arrow +
+        '</div>';
+      return html;
+    },
+    pickerFooterOnlyTimeTpl: function (nameOptions) {
+      //  范围-只有时分秒
+      var html = '<div class="c-datepicker-picker__footer" style="">' +
+        '<button type="button" class="c-datepicker-button c-datepicker-picker__link-btn c-datepicker-button--text c-datepicker-button--mini  c-datepicker-picker__btn-clear">' +
+        '<span>' +
+        nameOptions.clear +
+        '</span>' +
+        '</button>' +
+        '<button type="button" class="c-datepicker-button c-datepicker-picker__link-btn c-datepicker-button--text c-datepicker-button--mini  c-datepicker-picker__btn-cancel">' +
+        '<span>' +
+        nameOptions.cancel +
+        '</span>' +
+        '</button>' +
+        '<button type="button" class="c-datepicker-button c-datepicker-picker__link-btn confirm c-datepicker-button--default c-datepicker-button--mini is-plain">' +
+        '<span>' +
+        nameOptions.confirm +
+        '</span>' +
+        '</button>' +
+        '</div>';
+      return html;
+    },
+    rangePickerMainOnlyTimeTpl: function (nameOptions, hasTime) {
+      var className = 'c-datepicker-date-range-picker';
+      var headerBegin = RENDERAPI.pickerOnlyTimeHeaderTpl(className, nameOptions.begin);
+      var headerEnd = RENDERAPI.pickerOnlyTimeHeaderTpl(className, nameOptions.end);
+      var footer = RENDERAPI.pickerFooterOnlyTimeTpl(nameOptions);
+      var arrow = RENDERAPI.pickerArrowTpl();
+      var html = '<div class="c-datepicker-picker c-datepicker-date-range-picker c-datepicker-popper ' + hasTime + '" x-placement="top-start">' +
+        '<div class="c-datepicker-picker__body-wrapper">' +
+        '<div class="c-datepicker-picker__body">' +
+        '<div class="c-datepicker-date-range-picker__time-header">' +
+        '<div class="c-datepicker-date-range-picker__time-content c-datepicker-date-picker__onlyTime-content">' +
+        headerBegin +
+        '</div>' +
+        '<div class="c-datepicker-date-range-picker__time-content c-datepicker-date-picker__onlyTime-content">' +
+        headerEnd +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        footer +
+        arrow +
+        '</div>';
+      return html;
+    },
+    pickerFooterNowButton: function (nameOptions) {
+      var html = RENDERAPI.pickerFooterTpl(nameOptions, 'c-datepicker-picker__btn-now', nameOptions.now);
+      return html;
+    },
+    pickerFooterClearButton: function (nameOptions) {
+      var html = RENDERAPI.pickerFooterTpl(nameOptions, 'c-datepicker-picker__btn-clear', nameOptions.clear);
+      return html;
+    },
+    datePickerMainTpl: function (nameOptions) {
+      var className = 'c-datepicker-date-picker';
+      var timeHeader = RENDERAPI.pickerTimeHeaderTpl(nameOptions, className);
+      var prev = RENDERAPI.pickerHeaderPrevTpl(nameOptions, className);
+      var next = RENDERAPI.pickerHeaderNextSingleTpl(nameOptions, className);
+      var pickerHeader = RENDERAPI.pickerHeaderTpl(nameOptions, className, prev, next, '{{year}}', '{{month}}');
+      var arrow = RENDERAPI.pickerArrowTpl();
+      // 单个
+      var html = '<div class="c-datepicker-picker c-datepicker-date-picker c-datepicker-popper {{hasTime}} {{hasSidebar}}" x-placement="top-start">' +
+        '<div class="c-datepicker-picker__body-wrapper">' +
+        '{{sidebar}}' +
+        '<div class="c-datepicker-picker__body">' +
+        '<div class="c-datepicker-date-picker__time-header">' +
+        timeHeader +
+        '</div>' +
+        pickerHeader +
+        ' <div class="c-datepicker-picker__content">' +
+        '{{table}}' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '{{footerButton}}' +
+        arrow +
+        '</div>';
+      return html;
+    },
+    datePickerMainOnlyTimeTpl: function (hasTime) {
+      var header = RENDERAPI.pickerOnlyTimeHeaderTpl('c-datepicker-date-picker', '');
+      var arrow = RENDERAPI.pickerArrowTpl();
+      // 单个-只有时分秒
+      var html = '<div class="c-datepicker-picker c-datepicker-date-picker c-datepicker-popper ' + hasTime + '" x-placement="top-start">' +
+        '<div class="c-datepicker-picker__body-wrapper">' +
+        '<div class="c-datepicker-picker__body">' +
+        '<div class="c-datepicker-date-picker__time-header c-datepicker-date-picker__onlyTime-content">' +
+        header +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        arrow +
+        '</div>';
+      return html;
+    },
+    monthWords: function (nameOptions) {
+      return nameOptions.months;
+    }
+  };
   var EVERYMONTHHASDAY = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  var MONTHWORDS = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
   /*==============END API============*/
 
   /*===============BEGIN 发布订阅==================*/
@@ -399,7 +605,7 @@ $(function () {
             _this.picker.$input.val(activeNum);
             _this.picker.$container.find('.c-datepicker-year-table td.current').removeClass('current');
             $(this).addClass('current');
-            _this.picker.datePickerObject.hide();
+            _this.picker.datePickerObject.hide('choose');
           } else {
             _this.picker.monthObject.render();
             _this.hide();
@@ -437,15 +643,16 @@ $(function () {
       var temp = '';
       var html = '';
       var val = this.picker.$input.val();
-      var activeYear = val ? API.getTimeFormat(moment(API.newDateFixed(this.picker,val))).year : false;
-      this.picker.$container.find('.c-datepicker-date-picker__header-year span').text(min + '年-' + (min + 9));
+      var activeYear = val ? API.getTimeFormat(moment(API.newDateFixed(this.picker, val))).year : false;
+      var nameOptions = $.fn.datePicker.dates[this.picker.language];
+      this.picker.$container.find('.c-datepicker-date-picker__header-year span').text(min + nameOptions.headerYearLink + '-' + (min + 9));
       for (var index = 0; index < 10; index++) {
         var _val = min + index;
         var className = _val == activeYear ? 'current available' : 'available';
         if (_val < this.picker.minJson.year || _val > this.picker.maxJson.year) {
           className += ' disabled';
         }
-        temp += TDTPL.replace('{{value}}', _val).replace('{{today}}', className);
+        temp += RENDERAPI.tdTpl(className, _val);
         if ((index + 1) % 4 === 0) {
           html += '<tr>' + temp + '</tr>';
           temp = '';
@@ -454,13 +661,11 @@ $(function () {
       if (temp) {
         html += '<tr>' + temp + '</tr>';
       }
-      html = TEARTPL.replace('{{body}}', html).replace('{{class}}', 'c-datepicker-year-table');
+      html = RENDERAPI.tableTpl('c-datepicker-year-table', html);
       return html;
     }
   });
-
-
-  /*==============END YEAR============*/
+/*==============END YEAR============*/
 
   /*==============BEGIN MONTH============*/
   // 月
@@ -490,7 +695,7 @@ $(function () {
             _this.picker.$input.val(val);
             _this.picker.$container.find('.c-datepicker-month-table td.current').removeClass('current');
             $(this).addClass('current');
-            _this.picker.datePickerObject.hide();
+            _this.picker.datePickerObject.hide('choose');
           } else {
             _this.picker.dayObject.renderSingle(year, month, false, true);
             _this.hide();
@@ -550,8 +755,10 @@ $(function () {
         }
       }
       var val = this.picker.$input.val();
-      var formatResult = API.getTimeFormat(moment(API.newDateFixed(this.picker,val)));
+      var formatResult = API.getTimeFormat(moment(API.newDateFixed(this.picker, val)));
       var activeMonth = val && (formatResult.year == nowYear) ? formatResult.month : false;
+      var nameOptions = $.fn.datePicker.dates[this.picker.language];
+      var words = RENDERAPI.monthWords(nameOptions);
       for (var index = 0; index < 12; index++) {
         var _val = min + index;
         // var className = 'available';
@@ -560,18 +767,18 @@ $(function () {
         if (isSame && (_val < minMonth || _val > maxMonth)) {
           className += ' disabled';
         }
-        temp += TDTPL.replace('{{value}}', MONTHWORDS[index]).replace('{{today}}', className);
+        temp += RENDERAPI.tdTpl(className, words[index]);
         if ((index + 1) % 4 === 0) {
           html += '<tr>' + temp + '</tr>';
           temp = '';
         }
       }
-      html = TEARTPL.replace('{{body}}', html).replace('{{class}}', 'c-datepicker-month-table');
+      html = RENDERAPI.tableTpl('c-datepicker-month-table', html);
       return html;
     }
   });
 
-  /*==============END MONTH============*/
+/*==============END MONTH============*/
 
   /*==============BEGIN DAY============*/
   // 日期
@@ -588,25 +795,25 @@ $(function () {
       // 点击选择日期
       this.picker.$container.on('click', '.c-datepicker-date-table td.available', function (event) {
         event.stopPropagation();
-        var $this=$(this);
+        var $this = $(this);
         var _this = API.getPicker($this, 'day');
         if ($this.hasClass('disabled')) {
           return;
         }
-        if (_this.picker.isBlur){
+        if (_this.picker.isBlur) {
           var $wrap = $this.parents('.c-datepicker-picker__content');
           var index = $wrap.find('.c-datepicker-date-table td').index($this);
-          $.sub('datapickerClick',function(e){
+          $.sub('datapickerClick', function (e) {
             $this = $wrap.find('.c-datepicker-date-table td').eq(index);
             clickDate(_this, $this);
             $.unsub('datapickerClick');
           });
           $.pub('datapickerRenderPicker');
-        }else{
+        } else {
           clickDate(_this, $this);
         }
       })
-      function clickDate(_this,$target){
+      function clickDate(_this, $target) {
         var activeNum = $target.text();
         _this.picker.$container.find('.c-datepicker-date-table td.current').removeClass('current');
         $target.addClass('current');
@@ -620,7 +827,7 @@ $(function () {
           setValue.call(_this, activeNum, moment(API.newDateFixed(_this.picker, val)), moment(API.newDateFixed(_this.picker, inputVal)));
         }
         if (!_this.picker.hasTime) {
-          _this.picker.datePickerObject.hide();
+          _this.picker.datePickerObject.hide('choose');
         } else {
           API.judgeTimeRange(_this.picker, _this.picker.$container.find('.c-datePicker__input-day'), _this.picker.$container.find('.c-datePicker__input-time'));
         }
@@ -660,7 +867,7 @@ $(function () {
         }
       })
 
-      function clickDateRange(_this,$target){
+      function clickDateRange(_this, $target) {
         // var _this = API.getPicker($(this), 'day');
         var $wrap = _this.picker.$container.find('.c-datepicker-date-range-picker-panel__wrap');
         $wrap.find('td.current.hover').removeClass('current hover');
@@ -704,7 +911,7 @@ $(function () {
             _this.current = 2;
             _this.picker.$inputBegin.val(existDate);
             _this.picker.$inputEnd.val(inputVal);
-            _this.picker.datePickerObject.hide();
+            _this.picker.datePickerObject.hide('choose');
           } else {
             // 有十分秒，则选添加选择范围样式
             if (b.diff(a) < 0) {
@@ -740,12 +947,12 @@ $(function () {
         var start = $start.val();
         var end = year + _this.picker.splitStr + month + _this.picker.splitStr + date;
         // 需要交换开始结束时间
-        if (moment(API.newDateFixed(_this.picker,start)).isAfter(API.newDateFixed(_this.picker,end))) {
+        if (moment(API.newDateFixed(_this.picker, start)).isAfter(API.newDateFixed(_this.picker, end))) {
           var temp = start;
           start = end;
           end = temp;
         }
-        _this.addRangeClass(moment(API.newDateFixed(_this.picker,start)), moment(API.newDateFixed(_this.picker,end)), true);
+        _this.addRangeClass(moment(API.newDateFixed(_this.picker, start)), moment(API.newDateFixed(_this.picker, end)), true);
       })
     },
     show: function () {
@@ -785,7 +992,7 @@ $(function () {
         }
         this.addCurrentSingle();
         this.show();
-        if (!reRender){
+        if (!reRender) {
           this.eventSingle();
         }
       }
@@ -798,7 +1005,7 @@ $(function () {
       if (!API.dayReg(this.picker).test(val.split(' ')[0])) {
         return;
       }
-      var result = API.getTimeFormat(moment(API.newDateFixed(this.picker,val)));
+      var result = API.getTimeFormat(moment(API.newDateFixed(this.picker, val)));
       var year = this.picker.$container.find('.c-datepicker-date-picker__header-year span').text();
       var month = this.picker.$container.find('.c-datepicker-date-picker__header-month span').text();
       if (result.year == year && result.month == month) {
@@ -809,34 +1016,35 @@ $(function () {
     },
     // 显示和选中值有联动关系，和输入框修改日期有关
     renderRange: function (year, month, today, baseEnd, reRender) {
-      var $year = this.picker.$container.find('.c-datepicker-date-table');
-      if ($year.length && !reRender) {
+      var $dateTable = this.picker.$container.find('.c-datepicker-date-table');
+      if ($dateTable.length && !reRender) {
         this.show();
       } else {
         var index = 0, distance = 1, countFn = API.maxMonth, initMonth = 1;
-        if (baseEnd) {
-          index = 1;
-          distance = -1;
-          countFn = API.minMonth;
-          initMonth = 12;
-        }
+        // 去掉 不需要
+        // if (baseEnd) {
+        //   index = 1;
+        //   distance = -1;
+        //   countFn = API.minMonth;
+        //   initMonth = 12;
+        // }
         // today[index]
         var html = this.renderHtml(year[index], month[index], false);
         // 选中间隔月份
         var monthEnd = month[index] + distance;
         var yearEnd = year[index];
-        if (countFn()) {
+        if (countFn(monthEnd)) {
           monthEnd = initMonth;
           yearEnd = yearEnd + distance;
         }
         var htmlEnd = this.renderHtml(yearEnd, monthEnd, false);
 
         // 日历头部
-        var $year = this.picker.$container.find('.c-datepicker-date-range-picker__header-year');
+        var $dateTable = this.picker.$container.find('.c-datepicker-date-range-picker__header-year');
         var $month = this.picker.$container.find('.c-datepicker-date-range-picker__header-month');
-        $year.eq(index).find('span').text(year[index]);
+        $dateTable.eq(index).find('span').text(year[index]);
         $month.eq(index).find('span').text(month[index]);
-        $year.eq(1 - index).find('span').text(yearEnd);
+        $dateTable.eq(1 - index).find('span').text(yearEnd);
         $month.eq(1 - index).find('span').text(monthEnd);
 
         this.picker.$container.find('.c-datepicker-picker__content').eq(index).html(html);
@@ -857,7 +1065,7 @@ $(function () {
       var year = Number($year.find('span').text());
       var month = Number($month.find('span').text());
       var day = this.picker.$container.find('.c-datePicker__input-day').val();
-      var dayFormat = API.getTimeFormat(moment(API.newDateFixed(this.picker,day)));
+      var dayFormat = API.getTimeFormat(moment(API.newDateFixed(this.picker, day)));
       var count = 1;
       if (moveType === 'prev') {
         count = -1;
@@ -870,8 +1078,8 @@ $(function () {
         month = result.month;
         year = result.year;
       }
-      var date=false;
-      if (dayFormat.year == year && dayFormat.month == month){
+      var date = false;
+      if (dayFormat.year == year && dayFormat.month == month) {
         date = dayFormat.day;
       }
       var html = this.renderHtml(year, month, date);
@@ -880,6 +1088,7 @@ $(function () {
       $month.find('span').text(month);
       var $content = this.picker.$container.find('.c-datepicker-picker__content');
       var $table = $content.find('.c-datepicker-date-table');
+      this.picker.$container.find('.c-datepicker-month-table,.c-datepicker-year-table').hide();
       if ($table.length) {
         $table.replaceWith(html);
       } else {
@@ -899,18 +1108,16 @@ $(function () {
       }
       if (type === 'year') {
         year = year + count;
-        endYear = year;
       } else if (type === 'month') {
         month = month + count;
-        var result = API.fillMonth(month, year);
-        month = result.month;
-        year = result.year;
-        endMonth = month + 1;
-        var endResult = API.fillMonth(endMonth, year);
-        endMonth = endResult.month;
-        endYear = endResult.year;
       }
-
+      var result = API.fillMonth(month, year);
+      month = result.month;
+      year = result.year;
+      endMonth = month + 1;
+      var endResult = API.fillMonth(endMonth, year);
+      endMonth = endResult.month;
+      endYear = endResult.year;
 
       var html = this.renderHtml(year, month, false);
       var htmlEnd = this.renderHtml(endYear, endMonth, false);
@@ -934,7 +1141,9 @@ $(function () {
       var day = API.getMonthDay(month, year);
       var weekday = moment().set({ 'year': year, 'month': month - 1, 'date': 1 }).weekday();
       var weekdayLast = moment().set({ 'year': year, 'month': month - 1, 'date': day }).weekday();
-      var html = DAYHEADER;
+      // var html = DAYHEADER;
+      var nameOptions = $.fn.datePicker.dates[this.picker.language];
+      var html = RENDERAPI.dayHeader(nameOptions);
       var min = 1;
       var temp = '';
       var row = 0;
@@ -942,7 +1151,7 @@ $(function () {
       if (weekday != 0) {
         for (var prev = weekday - 1; prev >= 0; prev--) {
           var className = 'prev-month';
-          temp += TDTPL.replace('{{value}}', prevMonthDay - prev).replace('{{today}}', className);
+          temp += RENDERAPI.tdTpl(className, prevMonthDay - prev);
           if ((weekday - prev) % 7 === 0) {
             html += '<tr>' + temp + '</tr>';
             temp = '';
@@ -954,11 +1163,11 @@ $(function () {
       // active day 
       var hasMin = this.picker.minJson ? true : false;
       var hasMax = this.picker.maxJson ? true : false;
-      var minMonth = moment(API.newDateFixed(this.picker,this.picker.minJson.year + this.picker.splitStr + this.picker.minJson.month));
-      var maxMonth = moment(API.newDateFixed(this.picker,this.picker.maxJson.year + this.picker.splitStr + this.picker.maxJson.month));
+      var minMonth = hasMin ? moment(API.newDateFixed(this.picker, this.picker.minJson.year + this.picker.splitStr + this.picker.minJson.month + this.picker.splitStr + 1)) : false;
+      var maxMonth = hasMax ? moment(API.newDateFixed(this.picker, this.picker.maxJson.year + this.picker.splitStr + this.picker.maxJson.month + this.picker.splitStr + 1)) : false;
       var disabledName = '';
       var isSame = false;
-      var nowDate = moment(API.newDateFixed(this.picker,year + this.picker.splitStr + month));
+      var nowDate = moment(API.newDateFixed(this.picker, year + this.picker.splitStr + month + this.picker.splitStr + 1));
       // 不在范围内
       if ((hasMin && nowDate.isBefore(minMonth)) || (hasMax && nowDate.isAfter(maxMonth))) {
         disabledName = ' disabled';
@@ -988,8 +1197,7 @@ $(function () {
         if (isSame && (_val < minDay || _val > maxDay)) {
           className += ' disabled';
         }
-        // var className = _val === today ? _val === selectedDate ? 'current today available' : 'available';
-        temp += TDTPL.replace('{{value}}', _val).replace('{{today}}', className);
+        temp += RENDERAPI.tdTpl(className, _val);
         if ((begin + index + 1) % 7 === 0) {
           html += '<tr>' + temp + '</tr>';
           temp = '';
@@ -1004,14 +1212,14 @@ $(function () {
       var nextMax = (6 - row - 1) * 7 + (6 - weekdayLast);
       for (var next = 0; next < nextMax; next++) {
         var className = 'next-month';
-        temp += TDTPL.replace('{{value}}', 1 + next).replace('{{today}}', className);
+        temp += RENDERAPI.tdTpl(className, 1 + next);
         if ((begin + next + 1) % 7 === 0) {
           html += '<tr>' + temp + '</tr>';
           temp = '';
         }
       }
 
-      html = TEARTPL.replace('{{body}}', html).replace('{{class}}', 'c-datepicker-date-table');
+      html = RENDERAPI.tableTpl('c-datepicker-date-table', html);
       return html;
     },
     // 添加时间范围类名
@@ -1031,20 +1239,20 @@ $(function () {
       if (!isHover) {
         this.current = 2;
       }
-      var startMoment = defaultStart || moment(API.newDateFixed(this.picker,$days.eq(0).val()));
-      var endMoment = defaultEnd || moment(API.newDateFixed(this.picker,$days.eq(1).val()));
+      var startMoment = defaultStart || moment(API.newDateFixed(this.picker, $days.eq(0).val()));
+      var endMoment = defaultEnd || moment(API.newDateFixed(this.picker, $days.eq(1).val()));
       var startYear = $years.eq(0).find('span').text();
       var endYear = $years.eq(1).find('span').text();
       var startMonth = $months.eq(0).find('span').text();
       var endMonth = $months.eq(1).find('span').text();
       var startRangeDate = startYear + this.picker.splitStr + startMonth + this.picker.splitStr + 1;
       var endRangeDate = endYear + this.picker.splitStr + endMonth + this.picker.splitStr + API.getMonthDay(endMonth, endYear);
-      var isStartBetween = !(startMoment.isBefore(API.newDateFixed(this.picker,startRangeDate)) || startMoment.isAfter(API.newDateFixed(this.picker,endRangeDate)));;
-      var isEndBetween = !(endMoment.isBefore(API.newDateFixed(this.picker,startRangeDate)) || endMoment.isAfter(API.newDateFixed(this.picker,endRangeDate)));
+      var isStartBetween = !(startMoment.isBefore(API.newDateFixed(this.picker, startRangeDate)) || startMoment.isAfter(API.newDateFixed(this.picker, endRangeDate)));;
+      var isEndBetween = !(endMoment.isBefore(API.newDateFixed(this.picker, startRangeDate)) || endMoment.isAfter(API.newDateFixed(this.picker, endRangeDate)));
       var index;
       // 所选值不在显示范围内
-      var isBefore = startMoment.isBefore(API.newDateFixed(this.picker,startRangeDate)) && startMoment.isBefore(API.newDateFixed(this.picker,endRangeDate)) && endMoment.isBefore(API.newDateFixed(this.picker,startRangeDate)) && endMoment.isBefore(API.newDateFixed(this.picker,endRangeDate));
-      var isAfter = startMoment.isAfter(API.newDateFixed(this.picker,startRangeDate)) && startMoment.isAfter(API.newDateFixed(this.picker,endRangeDate)) && endMoment.isAfter(API.newDateFixed(this.picker,startRangeDate)) && endMoment.isAfter(API.newDateFixed(this.picker,endRangeDate));
+      var isBefore = startMoment.isBefore(API.newDateFixed(this.picker, startRangeDate)) && startMoment.isBefore(API.newDateFixed(this.picker, endRangeDate)) && endMoment.isBefore(API.newDateFixed(this.picker, startRangeDate)) && endMoment.isBefore(API.newDateFixed(this.picker, endRangeDate));
+      var isAfter = startMoment.isAfter(API.newDateFixed(this.picker, startRangeDate)) && startMoment.isAfter(API.newDateFixed(this.picker, endRangeDate)) && endMoment.isAfter(API.newDateFixed(this.picker, startRangeDate)) && endMoment.isAfter(API.newDateFixed(this.picker, endRangeDate));
       // 当前显示范围在所选范围外
       if (isAfter || isBefore) {
         return;
@@ -1065,7 +1273,11 @@ $(function () {
       var $end = $wrap.find('.end-date');
       $current.addClass('in-range');
       // 选中的都在
-      if ($current.length === 2) {
+      // 同一个
+      if ($start.is($end)) {
+        $start.addClass('in-range');
+        return;
+      } else if ($current.length === 2) {
         var $startTr = $start.parents('tr');
         var $endTr = $end.parents('tr');
         // 同一页
@@ -1170,10 +1382,10 @@ $(function () {
         var _this = $(this).data('time');
         _this.hide();
       });
-      var timerArr={
-        timer0:'',
-        timer1:'',
-        timer2:''
+      var timerArr = {
+        timer0: '',
+        timer1: '',
+        timer2: ''
       };
       // 滚动选择时分秒
       this.picker.$container.find('.c-datepicker-scrollbar__wrap').scroll(function () {
@@ -1182,7 +1394,7 @@ $(function () {
         // 兼容滚动延时，导致下一个时间滚动清除掉上一个的timer,所以分开是三个
         clearTimeout(timerArr['timer' + index]);
         timerArr['timer' + index] = setTimeout(function () {
-          
+
           var top = $(this).scrollTop();
           var num = Math.round(top / 32);
           var len = $(this).find('li').length - 1;
@@ -1289,9 +1501,9 @@ $(function () {
       if (type[0]) {
         for (var i = 0; i < 24; i++) {
           var className = hour === i ? 'active' : '';
-          li += TIMELITPL.replace('{{time}}', API.fillTime(i)).replace('{{className}}', className);
+          li += RENDERAPI.timeLiTpl(className, API.fillTime(i));
         }
-        html += TIMETPL.replace('{{li}}', li).replace('{{className}}', 'hour');
+        html += RENDERAPI.timeTpl('hour', li);
         li = '';
       }
 
@@ -1299,26 +1511,378 @@ $(function () {
       if (type[1]) {
         for (var j = 0; j < 60; j++) {
           var className = minute === j ? 'active' : '';
-          li += TIMELITPL.replace('{{time}}', API.fillTime(j)).replace('{{className}}', className);
+          li += RENDERAPI.timeLiTpl(className, API.fillTime(j));
         }
-        html += TIMETPL.replace('{{li}}', li).replace('{{className}}', 'minute');
+        html += RENDERAPI.timeTpl('minute', li);
         li = '';
       }
       // 秒
       if (type[2]) {
         for (var k = 0; k < 60; k++) {
           var className = second === k ? 'active' : '';
-          li += TIMELITPL.replace('{{time}}', API.fillTime(k)).replace('{{className}}', className);
+          li += RENDERAPI.timeLiTpl(className, API.fillTime(k));
         }
-        html += TIMETPL.replace('{{li}}', li).replace('{{className}}', 'second');
+        html += RENDERAPI.timeTpl('second', li);
       }
-
-      html = TIMEMAINTPL.replace('{{time}}', html);
+      var nameOptions = $.fn.datePicker.dates[this.picker.language];
+      html = RENDERAPI.timeMainTpl(nameOptions, html);
       return html;
     }
   });
 
-  /*==============END TIME============*/
+/*==============END TIME============*/
+
+  /*==============BEGIN ONLY-TIME============= */
+  // 时分秒
+  var TIMEONLYAPI = {
+    getPanelVal: function ($parent, index) {
+      var $wrappers = $parent.find('.c-datepicker-time-spinner__wrapper');
+      var valArr = new Array(3);
+      $wrappers.each(function (i, _wrapper) {
+        if (i !== index) {
+          var top = $(_wrapper).find('.c-datepicker-scrollbar__wrap').scrollTop();
+          valArr[i] = API.fillTime(Math.round(top / 32));
+        }
+      })
+      return valArr;
+    },
+    getType: function (inputIndex) {
+      return inputIndex === 0 ? 'configBegin' : inputIndex === 1 ? 'configEnd' : 'configMinMax';
+    },
+    checkMinMaxGetVal: function (_this, valArr, inputIndex) {
+      var panelVal = valArr.join(':');
+      var type = TIMEONLYAPI.getType(inputIndex);
+      var valSecond = API.countSecond(valArr);
+      var minSecond = _this[type].minSecond;
+      var maxSecond = _this[type].maxSecond;
+      if (valSecond < minSecond) {
+        val = _this[type].minVal;
+      } else if (valSecond > maxSecond) {
+        val = _this[type].maxVal;
+      } else {
+        val = panelVal;
+      }
+      return val;
+    }
+  }
+  // 时分秒
+  function OnlyTime(picker) {
+    this.picker = picker;
+  }
+
+  $.extend(OnlyTime.prototype, {
+    event: function () {
+      // 时分秒取消
+      this.picker.$container.on('click', '.c-datepicker-time-panel__btn.cancel', function () {
+        var _this = API.getPicker($(this), 'time');
+        _this.picker.$input.val(_this.prevValue);
+        _this.picker.datePickerObject.hide('confirm');
+      });
+      // 时分秒确定
+      this.picker.$container.on('click', '.c-datepicker-time-panel__btn.confirm', function () {
+        var _this = API.getPicker($(this), 'time');
+        _this.picker.datePickerObject.hide('confirm');
+      });
+      // 0点
+      this.picker.$container.on('click', '.c-datepicker-time-panel__btn.min', function () {
+        var _this = API.getPicker($(this), 'time');
+        _this.updateTimeInput(_this.picker.timeMin, $(this));
+      });
+      // 23点
+      this.picker.$container.on('click', '.c-datepicker-time-panel__btn.max', function () {
+        var _this = API.getPicker($(this), 'time');
+        _this.updateTimeInput(_this.picker.timeMax, $(this));
+      });
+      var timerArr = {
+        timer0: '',
+        timer1: '',
+        timer2: ''
+      };
+      // 滚动选择时分秒
+      this.picker.$container.find('.c-datepicker-scrollbar__wrap').scroll(function () {
+        var _this = API.getPicker($(this), 'time');
+        var config = _this.picker.config;
+        var $parent = $(this).parents('.c-datepicker-date-picker__onlyTime-content');
+        var inputIndex = _this.picker.$container.find('.c-datepicker-date-picker__onlyTime-content').index($parent);
+        var index = $parent.find('.c-datepicker-scrollbar__wrap').index($(this));
+        // 当前选中的时分秒
+        var valArr = TIMEONLYAPI.getPanelVal($parent, index);
+        // 兼容滚动延时，导致下一个时间滚动清除掉上一个的timer,所以分开是三个
+        clearTimeout(timerArr['timer' + index]);
+        timerArr['timer' + index] = setTimeout(function () {
+          var top = $(this).scrollTop();
+          var num = Math.round(top / 32);
+          var len = $(this).find('li').length - 1;
+          if (num >= len) {
+            num = len;
+          }
+          top = num * 32;
+          $(this).scrollTop(top);
+          var $time = _this.picker.$input.eq(inputIndex);
+          valArr[index] = API.fillTime(num);
+          // var type = TIMEONLYAPI.getType(inputIndex);
+          var panelVal = valArr.join(':');
+          // 计算当前值与最大最小值的关系,panel显示值和input val 值不一定一样
+          var val = TIMEONLYAPI.checkMinMaxGetVal(_this.picker, valArr, inputIndex);
+          // 更新input val
+          $time.val(val);
+          // 设置当前不可选部分
+          _this.setMinMaxHour(inputIndex);
+          _this.setMinMaxDisabled(panelVal, inputIndex);
+          // 滚动修改对应的最大值最小值
+          if (config.isRange) {
+            var $otherParent = _this.picker.$container.find('.c-datepicker-date-picker__onlyTime-content').eq(1 - inputIndex);
+            var otherPanelValArr = TIMEONLYAPI.getPanelVal($otherParent).join(':');
+
+            // 根据当前滚动更新另一个的最大最小值
+            _this.updateRange(inputIndex, valArr);
+            _this.setMinMaxHour(1 - inputIndex);
+            // 根据最大最小值更新不可选部分
+            _this.setMinMaxDisabled(otherPanelValArr, 1 - inputIndex);
+          }
+        }.bind(this), 100);
+      })
+    },
+    // 更新对应的最大值最小值
+    updateRange: function (inputIndex, valArr) {
+      var _this = this.picker;
+      // 滚动修改对应的最大值最小值
+      var configMinMax = _this.configMinMax;
+      var valSecond = API.countSecond(valArr);
+      var getJson = function (valArr) {
+        return {
+          hour: valArr[0],
+          minute: valArr[1],
+          second: valArr[2]
+        }
+      };
+      if (inputIndex === 0 && valSecond > configMinMax.minSecond) {
+        // begin
+        _this.configEnd.min = getJson(valArr);
+        _this.configEnd.minVal = valArr.join(':');
+        _this.configEnd.minSecond = API.countSecond(valArr);
+      } else if (inputIndex === 1 && valSecond < configMinMax.maxSecond) {
+        // end
+        _this.configBegin.max = getJson(valArr);
+        _this.configBegin.maxVal = valArr.join(':');
+        _this.configBegin.maxSecond = API.countSecond(valArr);
+      }
+    },
+    // 设置0点，23点
+    updateTimeInput: function (val, $this) {
+      if (this.picker.config.isRange) {
+        var $parent = $this.parents('.c-datepicker-time-panel');
+        var index = this.picker.$container.find('.c-datepicker-time-panel').index($parent);
+        this.picker.$input.eq(index).val(val);
+        this.updateTimePanel();
+      } else {
+        this.picker.$input.val(val);
+        this.picker.datePickerObject.hide('confirm');
+      }
+
+    },
+    updateTimePanel: function (isShow) {
+      var _this = this;
+      var format = this.picker.config.format;
+      var regText = format.replace(/HH/, '[0-9]{2}').replace(/(mm|ss)/g, '[0-9]{2}');
+      var reg = new RegExp('^' + regText + '$');
+      var $parents = this.picker.$container.find('.c-datepicker-time-panel');
+      $parents.each(function (index, _parent) {
+        var $wrap = $(_parent).find('.c-datepicker-scrollbar__wrap');
+        var val = _this.picker.$input.eq(index).val();
+        var isMatch = reg.test(val);
+        // 判断符合时间格式
+        if (isMatch) {
+          val = val.split(':');
+          $.each($wrap, function (i, el) {
+            $(el).scrollTop(Number(val[i]) * 32).addClass('active');
+          });
+        }
+      })
+
+      // return isMatch;
+    },
+    show: function () {
+      this.picker.$container.find('.c-datepicker-time-panel').show();
+      this.updateTimePanel(true);
+    },
+    hide: function () {
+      this.picker.$container.find('.c-datepicker-time-panel').hide();
+    },
+    render: function (type, hour, minute, second) {
+      if (this.picker.config.isRange) {
+        this.renderRange(type, hour, minute, second);
+        this.picker.$container.find('.c-datepicker-time-panel__btn.cancel,.c-datepicker-time-panel__btn.confirm').remove();
+      } else {
+        this.renderSingle(type, hour, minute, second);
+      }
+    },
+    renderSingle: function (type) {
+      var valBegin = this.picker.$input.val();
+      this.prevValue = valBegin;
+      var time1 = valBegin ? valBegin.split(':') : API.getOnlyTimeFormat(moment());
+      this.picker.$input.val(API.getConcatTime(time1[0], time1[1], time1[2]));
+      var $time = this.picker.$container.find('.c-datepicker-time-panel');
+      // 初始化，添加html
+      if (!$time.length) {
+        var html = DATEPICKERAPI.renderTimePanelHtml(this.picker, type, time1[0], time1[1], time1[2]);
+        this.picker.$container.find('.c-datepicker-date-picker__editor-wrap').append(html);
+        this.picker.$container.data('time', this);
+        this.setMinMaxHour();
+        this.event();
+        this.show();
+      } else {
+        // 已添加，显示
+        this.show();
+      }
+    },
+    renderRange: function (type) {
+      var valBegin = this.picker.$inputBegin.val();
+      var valEnd = this.picker.$inputEnd.val();
+      this.prevValue = valBegin + ',' + valEnd;
+      var time1 = valBegin ? valBegin.split(':') : API.getOnlyTimeFormat(moment());
+      var time2 = valEnd ? valEnd.split(':') : API.getOnlyTimeFormat(moment());
+      this.picker.$inputBegin.val(API.getConcatTime(time1[0], time1[1], time1[2]));
+      this.picker.$inputEnd.val(API.getConcatTime(time2[0], time2[1], time2[2]));
+      var $time = this.picker.$container.find('.c-datepicker-time-panel');
+      // 初始化，添加html
+      if (!$time.length) {
+        var html1 = DATEPICKERAPI.renderTimePanelHtml(this.picker, type, time1[0], time1[1], time1[2]);
+        var html2 = DATEPICKERAPI.renderTimePanelHtml(this.picker, type, time2[0], time2[1], time2[2]);
+        var $content = this.picker.$container.find('.c-datepicker-date-range-picker__time-content');
+        $content.eq(0).find('.c-datepicker-date-range-picker__editor-wrap').append(html1);
+        $content.eq(1).find('.c-datepicker-date-range-picker__editor-wrap').append(html2);
+        // this.picker.$container.find('.c-datepicker-time-panel').hide();
+        this.picker.$container.data('time', this);
+        this.setMinMaxHour();
+        this.event();
+        this.show();
+      } else {
+        // 已添加，显示
+        this.show();
+      }
+    },
+    // 初始化设置小时最大最小
+    setMinMaxHour: function (inputIndex) {
+      var _this = this.picker;
+      if (!_this.configMinMax.hasMinMax) {
+        return;
+      }
+      ;
+      var $panel = _this.$container.find('.c-datepicker-time-panel');
+      if (inputIndex >= 0) {
+        $panel = $panel.eq(inputIndex);
+      }
+      // 获取对应的最大最小json
+      var type = TIMEONLYAPI.getType(inputIndex);
+      var hourMax = _this[type].max.hour;
+      var hourMin = _this[type].min.hour;
+      $panel.find('.c-datepicker-time-spinner__item').removeClass('disabled');
+      $panel.each(function (index, _panel) {
+        var $wrap = $(_panel).find('.c-datepicker-scrollbar__wrap').eq(0);
+        $wrap.find('.c-datepicker-time-spinner__item').each(function (k, _item) {
+          if ((hourMin && k < hourMin) || (hourMax && k > hourMax)) {
+            $(_item).addClass('disabled');
+          }
+        })
+      })
+    },
+    // panel最大值最小值变化设置
+    setMinMaxDisabled: function (panelVal, inputIndex) {
+      var _this = this.picker;
+      var hasMinMax = _this.configMinMax.hasMinMax;
+      if (!panelVal || !hasMinMax) {
+        return;
+      }
+      var addDisable = function ($el) {
+        $el.addClass('disabled');
+      }
+      var $panel = _this.$container.find('.c-datepicker-time-panel').eq(inputIndex);
+      var $wrap = $panel.find('.c-datepicker-scrollbar__wrap');
+      var $wrapMinute = $wrap.eq(1);
+      var $wrapSecond = $wrap.eq(2);
+      var $wrapMinuteItem = $wrapMinute.find('.c-datepicker-time-spinner__item');
+      var type = inputIndex === 0 ? 'configBegin' : 'configEnd';
+      var minJson = _this[type].min;
+      var maxJson = _this[type].max;
+      var val = panelVal.split(':');
+      val = [Number(val[0]), Number(val[1]), Number(val[2])]
+      // 重置disabled
+      $wrap.each(function (j, _wrap) {
+        if (j !== 0) {
+          $(_wrap).find('.c-datepicker-time-spinner__item').removeClass('disabled');
+        }
+      })
+      if ((!minJson.hour || val[0] > minJson.hour) && (!maxJson.hour || val[0] < maxJson.hour)) {
+        // 分秒在可选范围内
+        return;
+      }
+      if ((minJson.hour && val[0] < minJson.hour) || (maxJson.hour && val[0] > maxJson.hour)) {
+        // 分秒都在不可选范围内
+        $wrap.each(function (j, _wrap) {
+          if (j !== 0) {
+            addDisable($(_wrap).find('.c-datepicker-time-spinner__item'));
+          }
+        })
+      } else if (val[0] === minJson.hour) {
+        // 分等于最小值，秒变化
+        // 设置分钟的不可选
+        $wrapMinuteItem.each(function (j, _item) {
+          if (j < minJson.minute) {
+            addDisable($(_item));
+          }
+        })
+        var $wrapSecondItem = $wrapSecond.find('.c-datepicker-time-spinner__item');
+        // 秒都在不可选范围内
+        if (val[1] < minJson.minute) {
+          addDisable($wrapSecondItem);
+          return;
+        }
+        // 秒都在可选范围内
+        if (val[1] > minJson.minute) {
+          return;
+        }
+        // 秒部分在可选范围内
+        if (val[1] === minJson.minute) {
+          $wrapSecondItem.each(function (j, _item) {
+            if (j < minJson.second) {
+              addDisable($(_item));
+            }
+          })
+          return;
+        }
+      } else if (val[0] === maxJson.hour) {
+        // 分等于最大值，秒变化
+        // 设置分钟的不可选
+        $wrapMinuteItem.each(function (j, _item) {
+          if (j > maxJson.minute) {
+            addDisable($(_item));
+          }
+        })
+        // 秒都在不可选范围内
+        var $wrapSecondItem = $wrapSecond.find('.c-datepicker-time-spinner__item');
+        if (val[1] > maxJson.minute) {
+          addDisable($wrapSecondItem);
+          return;
+        }
+        // 秒都在可选范围内
+        if (val[1] < maxJson.minute) {
+          return;
+        }
+        // 秒部分在可选范围内
+        if (val[1] === maxJson.minute) {
+          $wrapSecondItem.each(function (j, _item) {
+            if (j > maxJson.second) {
+              addDisable($(_item));
+            }
+          })
+          return;
+        }
+      }
+    }
+  });
+
+  /*================END ONLY-TIME================ */
 
   /*==============BEGIN PICKER============*/
 
@@ -1333,17 +1897,34 @@ $(function () {
         if (_this.hasTime) {
           $(panel).find('.c-datepicker-time-panel').hide();
         }
-        _this.config.hide.call(_this);
+        if (_this.onlyTime) {
+          _this.datePickerObject.fixedInputValOnlyTime();
+        } else {
+          _this.datePickerObject.fixedInputVal();
+        }
+        _this.$container.data('isShow', false);
+        _this.config.hide.call(_this, 'clickBody');
         _this.datePickerObject.betweenHandle();
       }
 
     })
     $('.c-datepicker-picker').hide();
   });
-  
-  var DATEPICKERAPI={
+
+  // 父级div.c-datepicker-box滚动，日期选择框跟随input滚动
+  $('.c-datepicker-box').scroll(scrollSetContainerPos);
+  function scrollSetContainerPos() {
+    $('.c-datepicker-picker').each(function (i, panel) {
+      var _this = $(panel).data('picker');
+      if ($(panel).css('display') === 'block') {
+        setContainerPos(_this.datePickerObject);
+      }
+    })
+  }
+
+  var DATEPICKERAPI = {
     // 初始化年月日十分秒panel
-    initShowObject: function(_this, dataFormat){
+    initShowObject: function (_this, dataFormat) {
       var year, month, dayYear, dayMonth, dayDate;
       if (_this.config.isRange) {
         // 默认值回填时间插件选择框
@@ -1371,11 +1952,12 @@ $(function () {
         if (_this.params.format[1]) {
           _this.monthObject = new Month(_this);
           if (!_this.params.format[2]) {
+            _this.$container.find('.c-datepicker-date-picker__prev-btn.month,.c-datepicker-date-picker__next-btn.month').hide();
             _this.monthObject.render(month);
           }
         }
       }
-      
+
       // 日
       if (_this.params.format[2]) {
         _this.dayObject = new Day(_this);
@@ -1386,22 +1968,22 @@ $(function () {
       }
     },
     // 初始化splitStr，params.format，minJson，maxJson
-    initParams: function (_this){
+    initParams: function (_this) {
       _this.splitStr = _this.config.format.replace(/[YMDhms:\s]/g, '').split('')[0];
       _this.params.format = API.getFormat(_this.config.format);
       // 最大值最小值判断
       _this.minJson = _this.config.min ? API.getTimeFormat(moment(API.newDateFixed(_this, _this.config.min))) : false;
       _this.maxJson = _this.config.max ? API.getTimeFormat(moment(API.newDateFixed(_this, _this.config.max))) : false;
     },
-    renderPicker: function (target, isBlur){
+    renderPicker: function (target, isBlur) {
       var _this = API.getPicker($(target));
-      if (_this.config.isRange){
+      if (_this.config.isRange) {
         DATEPICKERAPI.renderPickerRange(target, isBlur);
-      }else{
+      } else {
         DATEPICKERAPI.renderPickerSingle(target, isBlur);
       }
-    }, 
-    renderPickerRange: function(target,isBlur){
+    },
+    renderPickerRange: function (target, isBlur) {
       var _this = API.getPicker($(target));
       var val = target.value;
       var format = _this.config.format.split(' ')[0];
@@ -1444,8 +2026,7 @@ $(function () {
         var resultJson = API.minMaxFill(_this, result, index);
         result = resultJson.result;
         // 填充值
-        target.value = resultJson.val.split(' ')[0];
-        // this.value = result.year + _this.splitStr + API.fillTime(month + 1) + _this.splitStr + API.fillTime(result.day);
+        target.value = resultJson.val;
         var rangeYears = [], rangeMonths = [], rangeDates = [];
         rangeYears[index] = result.year;
         rangeMonths[index] = result.month;
@@ -1456,7 +2037,7 @@ $(function () {
         _this.dayObject.renderRange(rangeYears, rangeMonths, rangeDates, isBaseEnd, true);
       }
     },
-    renderPickerSingle: function (target){
+    renderPickerSingle: function (target) {
       var _this = API.getPicker($(target));
       var val = target.value;
       var format = _this.config.format.split(' ')[0];
@@ -1483,15 +2064,58 @@ $(function () {
     cancelBlur: function (_this) {
       $.unsub('datapickerRenderPicker');
       _this.isBlur = false;
+    },
+    renderTimePanelHtml: function (_this, type, hour, minute, second) {
+      hour = hour || moment().hour();
+      minute = minute || moment().minute();
+      second = second || moment().second();
+      var li = '';
+      var html = '';
+      // 时
+      if (type[0]) {
+        for (var i = 0; i < 24; i++) {
+          var className = hour === i ? 'active' : '';
+          li += RENDERAPI.timeLiTpl(className, API.fillTime(i));
+        }
+        html += RENDERAPI.timeTpl('hour', li);
+        li = '';
+      }
+
+      // 分
+      if (type[1]) {
+        for (var j = 0; j < 60; j++) {
+          var className = minute === j ? 'active' : '';
+          li += RENDERAPI.timeLiTpl(className, API.fillTime(j));
+        }
+        html += RENDERAPI.timeTpl('minute', li);
+        li = '';
+      }
+      // 秒
+      if (type[2]) {
+        for (var k = 0; k < 60; k++) {
+          var className = second === k ? 'active' : '';
+          li += RENDERAPI.timeLiTpl(className, API.fillTime(k));
+        }
+        html += RENDERAPI.timeTpl('second', li);
+      }
+
+      var nameOptions = $.fn.datePicker.dates[_this.language];
+      html = RENDERAPI.timeMainTpl(nameOptions, html);
+      return html;
+    },
+    setInitVal: function (_this) {
+      _this.params.initBeginVal = _this.$inputBegin.val();
+      _this.params.initEndVal = _this.$inputEnd.val();
     }
   }
 
   function SingleDatePicker(datePickerObject) {
     this.datePickerObject = datePickerObject;
-    this.datePickerObject.pickerObject=null;
+    this.datePickerObject.pickerObject = null;
     this.$input = datePickerObject.$target.find('input');
     this.config = datePickerObject.config;
     this.params = {};
+    this.language = this.config.language || 'zh-CN';
     this.hasTime = this.config.format.split(' ').length > 1;
     if (this.hasTime) {
       this.timeMin = API.timeVal(this, 'min');
@@ -1513,7 +2137,7 @@ $(function () {
       this.params.isMonth = this.params.format[0] && this.params.format[1] && !this.params.format[2];
       var table = '';
       var inputVal = this.$input.val();
-      var result = inputVal ? moment(API.newDateFixed(this,inputVal)) : moment();
+      var result = inputVal ? moment(API.newDateFixed(this, inputVal)) : moment();
       var dataFormat = API.getTimeFormat(result);
       var sidebar = '';
       var hasSidebar = '';
@@ -1526,17 +2150,18 @@ $(function () {
         hasSidebar = 'has-sidebar';
         sidebar = rederSidebar(this);
       }
-      var renderTpl = DATEPICKERMAINTPL;
+      var nameOptions = $.fn.datePicker.dates[this.language];
+      var renderTpl = RENDERAPI.datePickerMainTpl(nameOptions);
       if (this.params.isYear || this.params.isMonth) {
-        renderTpl = renderTpl.replace(/{{footerButton}}/g, PICKERFOOTERCLEARBUTTON);
+        renderTpl = renderTpl.replace(/{{footerButton}}/g, RENDERAPI.pickerFooterClearButton(nameOptions));
       } else {
-        renderTpl = renderTpl.replace(/{{footerButton}}/g, PICKERFOOTERNOWBUTTON);
+        renderTpl = renderTpl.replace(/{{footerButton}}/g, RENDERAPI.pickerFooterNowButton(nameOptions));
       }
-
       var $datePickerHtml = $(renderTpl.replace(/{{table}}/g, table).replace(/{{year}}/g, dataFormat.year).replace(/{{month}}/g, dataFormat.month).replace('{{sidebar}}', sidebar).replace('{{hasTime}}', hasTime).replace('{{hasSidebar}}', hasSidebar));
       $('body').append($datePickerHtml);
       this.$container = $datePickerHtml;
       this.$container.data('picker', this);
+      this.$container.addClass('is-' + this.language);
       // 没有十分秒
       if (!this.hasTime) {
         this.$container.find('.c-datepicker-date-picker__time-header').hide();
@@ -1547,7 +2172,9 @@ $(function () {
       var val = this.$input.val().split(' ');
       this.$container.find('.c-datePicker__input-day').val(val[0]);
       this.$container.find('.c-datePicker__input-time').val(val[1]);
-
+      if (getMomentWhenEmpty(this).type !== 'active') {
+        this.$container.find('.c-datepicker-picker__btn-now').remove();
+      }
 
     },
     event: function () {
@@ -1565,18 +2192,18 @@ $(function () {
       this.$container.on('click', '.c-datepicker-date-picker__header-year', function (event) {
         event.stopPropagation();
         var _this = API.getPicker($(this));
-        if (_this.isBlur){
+        if (_this.isBlur) {
           DATEPICKERAPI.cancelBlur(_this);
         }
         if ($(this).hasClass('disabled')) {
           return;
         }
-        
+
         var val = _this.$input.val();
         if (!val) {
           val = moment();
         } else {
-          val = moment(API.newDateFixed(_this,val));
+          val = moment(API.newDateFixed(_this, val));
         }
         _this.yearObject.render(val.year());
       })
@@ -1594,7 +2221,7 @@ $(function () {
         if (!val) {
           val = moment();
         } else {
-          val = moment(API.newDateFixed(_this,val));
+          val = moment(API.newDateFixed(_this, val));
         }
         _this.monthObject.render(val.month() + 1);
       })
@@ -1602,14 +2229,14 @@ $(function () {
       this.$container.on('click', '.c-datepicker-date-picker__next-btn.month', function (event) {
         event.stopPropagation();
         var _this = API.getPicker($(this));
-        renderYearMonth(_this,'next', 'month');
+        renderYearMonth(_this, 'next', 'month');
       })
       // 上一月
       this.$container.on('click', '.c-datepicker-date-picker__prev-btn.month', function (event) {
         event.stopPropagation();
         var _this = API.getPicker($(this));
         // 操作选择年的翻页
-        renderYearMonth(_this,'prev', 'month');
+        renderYearMonth(_this, 'prev', 'month');
       })
       // 下一年
       this.$container.on('click', '.c-datepicker-date-picker__next-btn.year', function (event) {
@@ -1624,7 +2251,7 @@ $(function () {
           $year.text(Number($year.text()) + 1);
           _this.monthObject.render();
         } else {
-          renderYearMonth(_this,'next', 'year');
+          renderYearMonth(_this, 'next', 'year');
         }
 
       })
@@ -1641,7 +2268,7 @@ $(function () {
           $year.text(Number($year.text()) - 1);
           _this.monthObject.render();
         } else {
-          renderYearMonth(_this,'prev', 'year');
+          renderYearMonth(_this, 'prev', 'year');
         }
       })
       // 兼容blur点击切换年时，blur需要重新渲染data，
@@ -1649,7 +2276,7 @@ $(function () {
         if (_this.isBlur) {
           _this.dayObject.prevNextSingle(dire, type);
           $.unsub('datapickerRenderPicker');
-          _this.isBlur=false;
+          _this.isBlur = false;
           // $.sub('datapickerClick', function (e) {
           //   _this.dayObject.prevNextSingle(dire, type);
           //   $.unsub('datapickerClick');
@@ -1662,7 +2289,7 @@ $(function () {
       this.$container.on('click', '.c-datepicker-picker__btn-now', function () {
         var _this = API.getPicker($(this));
         setValue(_this, moment().format(_this.config.format));
-        _this.datePickerObject.hide();
+        _this.datePickerObject.hide('shortcut');
       });
 
       // 点击清空
@@ -1683,16 +2310,18 @@ $(function () {
           }
         }
         setValue(_this, result);
-        _this.datePickerObject.hide();
+        _this.datePickerObject.hide('shortcut');
       });
+
 
       // 点击确定
       this.$container.on('click', '.c-datepicker-picker__link-btn.confirm', function () {
         var _this = API.getPicker($(this));
         if (!_this.$input.val()) {
-          setValue(_this, moment().format(_this.config.format));
+          var _moment = getMomentWhenEmpty(_this).value;
+          setValue(_this, _moment);
         }
-        _this.datePickerObject.hide();
+        _this.datePickerObject.hide('confirm');
       });
     },
     eventHasTime: function () {
@@ -1764,7 +2393,7 @@ $(function () {
     show: function () {
       // 日
       if (this.params.format[2]) {
-        var val = API.getRangeTimeFormat(this,this.$input);
+        var val = API.getRangeTimeFormat(this, this.$input);
         this.dayObject.render(val.year, val.month, val.day, true);
       }
       this.$container.show();
@@ -1772,7 +2401,7 @@ $(function () {
     reRenderDay: function () {
       // 日
       if (this.params.format[2]) {
-        var result = API.getRangeTimeFormat(this,this.$input);
+        var result = API.getRangeTimeFormat(this, this.$input);
         // 判断是否选中
         var _val = this.$input.val() ? result.day : false;
         this.dayObject.render(result.year, result.month, _val, true);
@@ -1789,7 +2418,7 @@ $(function () {
         this.timeObject.render(this.params.format.slice(3), year, month, day);
       }
     }
-    
+
   });
 
   // 时间范围
@@ -1801,6 +2430,7 @@ $(function () {
     this.$inputEnd = this.$input.eq(1);
     this.config = datePickerObject.config;
     this.params = {};
+    this.language = this.config.language || 'zh-CN';
     this.hasTime = this.config.format.split(' ').length > 1;
     if (this.hasTime) {
       this.timeMin = API.timeVal(this, 'min');
@@ -1820,8 +2450,8 @@ $(function () {
       DATEPICKERAPI.initParams(this);
       var table = '';
       var dataFormat = [];
-      dataFormat[0] = API.getRangeTimeFormat(this,this.$input.eq(0));
-      dataFormat[1] = API.getRangeTimeFormat(this,this.$input.eq(1));
+      dataFormat[0] = API.getRangeTimeFormat(this, this.$input.eq(0));
+      dataFormat[1] = API.getRangeTimeFormat(this, this.$input.eq(1));
       var sidebar = '';
       var hasSidebar = '';
       var hasTime = '';
@@ -1833,10 +2463,12 @@ $(function () {
         hasSidebar = 'has-sidebar';
         sidebar = rederSidebar(this);
       }
-      var $datePickerHtml = $(RANGEPICKERMAINTPL.replace(/{{table}}/g, table).replace(/{{year}}/g, dataFormat[0].year).replace(/{{month}}/g, dataFormat[0].month).replace(/{{yearEnd}}/g, dataFormat[1].year).replace(/{{monthEnd}}/g, dataFormat[1].month).replace('{{sidebar}}', sidebar).replace('{{hasTime}}', hasTime).replace('{{hasSidebar}}', hasSidebar));
+      var nameOptions = $.fn.datePicker.dates[this.language];
+      var $datePickerHtml = $(RENDERAPI.rangePickerMainTpl(nameOptions, hasTime, hasSidebar, dataFormat[1].year, dataFormat[1].month, sidebar, table));
       $('body').append($datePickerHtml);
       this.$container = $datePickerHtml;
       this.$container.data('picker', this);
+      this.$container.addClass('is-' + this.language);
       // 没有十分秒
       if (!this.hasTime) {
         this.$container.find('.c-datepicker-date-range-picker__time-header').hide();
@@ -1874,41 +2506,32 @@ $(function () {
       this.$container.on('click', '.c-datepicker-date-range-picker__next-btn.month', function () {
         var _this = API.getPicker($(this));
         renderYearMonth(_this, 'next', 'month');
-        // if (_this.picker.isBlur) {
-        //   $.sub('datapickerClick', function (e) {
-        //    _this.dayObject.prevNextRender('next', 'month');
-        //     $.unsub('datapickerClick');
-        //   });
-        //   $.pub('datapickerRenderPicker');
-        // } else {
-        //  _this.dayObject.prevNextRender('next', 'month');
-        // }
       })
       // 上一月
       this.$container.on('click', '.c-datepicker-date-range-picker__prev-btn.month', function () {
         var _this = API.getPicker($(this));
-        renderYearMonth(_this,'prev', 'month');
+        renderYearMonth(_this, 'prev', 'month');
       })
       // 下一年
       this.$container.on('click', '.c-datepicker-date-range-picker__next-btn.year', function () {
         var _this = API.getPicker($(this));
-        renderYearMonth(_this,'next', 'year');
+        renderYearMonth(_this, 'next', 'year');
       })
       // 上一年
       this.$container.on('click', '.c-datepicker-date-range-picker__prev-btn.year', function () {
         var _this = API.getPicker($(this));
-        renderYearMonth(_this,'prev', 'year');
+        renderYearMonth(_this, 'prev', 'year');
       })
 
-      function renderYearMonth(_this,dire,type){
+      function renderYearMonth(_this, dire, type) {
         if (_this.isBlur) {
           $.sub('datapickerClick', function (e) {
-            _this.dayObject.prevNextRender(dire,type);
+            _this.dayObject.prevNextRender(dire, type);
             $.unsub('datapickerClick');
           });
           $.pub('datapickerRenderPicker');
         } else {
-          _this.dayObject.prevNextRender(dire,type);
+          _this.dayObject.prevNextRender(dire, type);
         }
       }
       // 点击清空
@@ -1933,8 +2556,11 @@ $(function () {
           }
         }
         _this.$inputBegin.val(begin);
+        if(days[0] == '-'){
+        	 _this.$inputBegin.val('');
+        }
         _this.$inputEnd.val(end);
-        _this.datePickerObject.hide();
+        _this.datePickerObject.hide('shortcut');
         // setValue(_this, result);
       });
 
@@ -1945,8 +2571,8 @@ $(function () {
         var $times = _this.$container.find('.c-datePicker__input-time');
         var start = $days.eq(0).val();
         var end = $days.eq(1).val();
-        if (!start||!end){
-          _this.datePickerObject.hide();
+        if (!start || !end) {
+          _this.datePickerObject.hide('confirm');
           return;
         }
         if (_this.hasTime) {
@@ -1955,7 +2581,7 @@ $(function () {
         }
         _this.$inputBegin.val(start);
         _this.$inputEnd.val(end);
-        _this.datePickerObject.hide();
+        _this.datePickerObject.hide('confirm');
       });
     },
     eventHasTime: function () {
@@ -1968,7 +2594,7 @@ $(function () {
       this.$container.on('keyup', '.c-datePicker__input-day', function () {
         DATEPICKERAPI.renderPicker(this);
       });
-      
+
       this.$container.on('click', '.c-datePicker__input-time', function (event) {
         event.stopPropagation();
       });
@@ -2019,8 +2645,8 @@ $(function () {
     show: function () {
       this.fillDefault();
       var dataFormat = [];
-      dataFormat[0] = API.getRangeTimeFormat(this,this.$input.eq(0));
-      dataFormat[1] = API.getRangeTimeFormat(this,this.$input.eq(1));
+      dataFormat[0] = API.getRangeTimeFormat(this, this.$input.eq(0));
+      dataFormat[1] = API.getRangeTimeFormat(this, this.$input.eq(1));
       var yearArr = [dataFormat[0].year, dataFormat[1].year];
       var monthArr = [dataFormat[0].month, dataFormat[1].month];
       var dayArr = [dataFormat[0].day, dataFormat[1].day];
@@ -2028,8 +2654,10 @@ $(function () {
       if (this.params.format[2]) {
         this.dayObject.render(yearArr, monthArr, dayArr, false, true);
       }
+      DATEPICKERAPI.setInitVal(this);
       this.$container.show();
     },
+
     clear: function () {
       this.$inputBegin.val('');
       this.$inputEnd.val('');
@@ -2049,20 +2677,107 @@ $(function () {
     }
   });
 
+  /**===================BEGIN PICKER-ONLY-TIME ======================= */
+  // 时间范围
+  function RangeDatePickerTime(datePickerObject) {
+    this.datePickerObject = datePickerObject;
+    this.datePickerObject.pickerObject = null;
+    this.$input = datePickerObject.$target.find('input');
+    this.$inputBegin = this.$input.eq(0);
+    this.$inputEnd = this.$input.eq(1);
+    this.config = datePickerObject.config;
+    this.hasTime = true;
+    this.onlyTime = true;
+    this.params = {};
+    this.language = this.config.language || 'zh-CN';
+    this.timeMin = API.timeVal(this, 'min');
+    this.timeMax = API.timeVal(this, 'max');
+    this.configMinMax = API.getOnlyTimeMinMax(this);
+    this.configBegin = $.extend({}, this.configMinMax);
+    this.configEnd = $.extend({}, this.configMinMax);
+    this.init();
+  }
+
+  $.extend(RangeDatePickerTime.prototype, {
+    init: function () {
+      this.initShow();
+      this.event();
+    },
+
+    initShow: function () {
+      // 初始化splitStr，params.format，minJson，maxJson
+      DATEPICKERAPI.initParams(this);
+      var hasTime = 'has-time only-time';
+      var nameOptions = $.fn.datePicker.dates[this.language];
+      var TPL = this.config.isRange ? RENDERAPI.rangePickerMainOnlyTimeTpl(nameOptions, hasTime) : RENDERAPI.datePickerMainOnlyTimeTpl(hasTime);
+      // var TPL = this.config.isRange ? RANGEPICKERMAINONLYTIMETPL : DATEPICKERMAINOLNLYTIMETPL;
+      var $datePickerHtml = $(TPL.replace(/{{table}}/g, ''));
+      $('body').append($datePickerHtml);
+      this.$container = $datePickerHtml;
+      this.$container.data('picker', this);
+      this.$container.addClass('is-' + this.language);
+      // 初始化年月日十分秒panel
+      this.timeObject = new OnlyTime(this);
+    },
+    event: function () {
+      this.$container.on('click', function (event) {
+        event.stopPropagation();
+      });
+      this.datePickerObject.$target.on('click', function (event) {
+        event.stopPropagation();
+      });
+      // 点击清空
+      this.$container.on('click', '.c-datepicker-picker__btn-clear', function () {
+        var _this = API.getPicker($(this));
+        _this.clear();
+        _this.datePickerObject.hide('confirm');
+      })
+      // 点击清空
+      this.$container.on('click', '.c-datepicker-picker__btn-cancel', function () {
+        var _this = API.getPicker($(this));
+        if (_this.config.isRange) {
+          var valArr = _this.timeObject.prevValue.split(',');
+          _this.$inputBegin.val(valArr[0]);
+          _this.$inputEnd.val(valArr[1]);
+        }
+
+        _this.datePickerObject.hide('confirm');
+      })
+
+      // 点击确定
+      this.$container.on('click', '.c-datepicker-picker__link-btn.confirm', function () {
+        var _this = API.getPicker($(this));
+        _this.datePickerObject.hide('confirm');
+      });
+    },
+    show: function () {
+      this.$container.show();
+      DATEPICKERAPI.setInitVal(this);
+      this.timeObject.render(this.params.format.slice(3));
+    },
+    clear: function () {
+      this.$inputBegin.val('');
+      this.$inputEnd.val('');
+    }
+  });
+  /**=================END PICKER-ONLY-TIME======================== */
+
   function DatePicker(options, ele) {
     // this.$container = $('.c-datepicker-picker');
     this.$target = ele;
     this.config = $.extend({}, defaultOptions, options);
     this.params = {};
+    // 只有时分秒，没有日期
+    this.onlyTime = API.onlytimeReg(this.config.format);
     this.init();
   }
 
   $.extend(DatePicker.prototype, {
     init: function () {
       if (!this.config.isRange) {
-        this.pickerObject = new SingleDatePicker(this);
+        this.pickerObject = this.onlyTime ? new RangeDatePickerTime(this) : new SingleDatePicker(this);
       } else {
-        this.pickerObject = new RangeDatePicker(this);
+        this.pickerObject = this.onlyTime ? new RangeDatePickerTime(this) : new RangeDatePicker(this);
       }
       this.pickerObject.$input.data('datepicker', this);
       this.event();
@@ -2070,7 +2785,12 @@ $(function () {
     event: function () {
       this.pickerObject.$input.on('click', function () {
         var _this = $(this).data('datepicker');
-        _this.show();
+        if (!_this.pickerObject.$container.data('isShow')) {
+          // 重置状态
+          $('.c-datepicker-picker').data('isShow', false);
+          _this.pickerObject.$container.data('isShow', true);
+          _this.show();
+        }
       });
 
       this.pickerObject.$input.on('focus', function () {
@@ -2078,12 +2798,12 @@ $(function () {
         _this.initInputVal = this.value;
       });
       // 兼容输入框失去焦点
-      this.pickerObject.$container.on('click',function(){
-        var _this=$(this).data('picker');
-        if (_this.isBlur){
+      this.pickerObject.$container.on('click', function () {
+        var _this = $(this).data('picker');
+        if (_this.isBlur) {
           $.unsub('datapickerClick');
           $.pub('datapickerRenderPicker');
-          _this.isBlur=false;
+          _this.isBlur = false;
         }
       })
       // 输入框失去焦点
@@ -2097,46 +2817,60 @@ $(function () {
         var day = valArr[0];
         var $container = _this.pickerObject.$container;
         // 有十分秒
-
         if (_this.pickerObject.hasTime) {
-          var dayReg = API.dayReg(_this.pickerObject);
-          var time = valArr[1] ? API.timeCheck(valArr[1]) : false;
+          var time = _this.onlyTime ? API.timeCheck(valArr[0]) : valArr[1] ? API.timeCheck(valArr[1]) : false;
           var $time = $container.find('.c-datePicker__input-time');
-          var $day = $container.find('.c-datePicker__input-day');
           var timeResult = time && time.match(API.timeReg(_this));
-          var dayResult = day.match(dayReg);
-          if (!time || !timeResult || !dayResult) {
-            day = _this.initInputVal.split(' ')[0];
-            time = _this.initInputVal.split(' ')[1];
-            this.value = _this.initInputVal;
+          if (_this.onlyTime) {
+            // 无日期只有时分秒
+            if (!time || !timeResult) {
+              time = _this.initInputVal;
+              this.value = _this.initInputVal;
+            } else {
+              if (timeResult) {
+                time = timeResult[5] ? timeResult[1] + ':' + API.fillTime(timeResult[3]) + ':' + API.fillTime(timeResult[5]) : timeResult[1] + ':' + API.fillTime(timeResult[3]);
+              }
+              this.value = time;
+            }
           } else {
-            if (dayResult) {
-              // 兼容201808变为2018-00-08的情况
-              dayResult = API.fixedFill(dayResult);
-              day = dayResult[1] + _this.pickerObject.splitStr + API.fillTime(dayResult[3]) + _this.pickerObject.splitStr + API.fillTime(dayResult[5])
+            var dayReg = API.dayReg(_this.pickerObject);
+            var $day = $container.find('.c-datePicker__input-day');
+            var dayResult = day.match(dayReg);
+            if (!time || !timeResult || !dayResult) {
+              day = _this.initInputVal.split(' ')[0];
+              time = _this.initInputVal.split(' ')[1];
+              this.value = _this.initInputVal;
+            } else {
+              if (dayResult) {
+                // 兼容201808变为2018-00-08的情况
+                dayResult = API.fixedFill(dayResult);
+                day = dayResult[1] + _this.pickerObject.splitStr + API.fillTime(dayResult[3]) + _this.pickerObject.splitStr + API.fillTime(dayResult[5])
+              }
+              if (timeResult) {
+                time = timeResult[5] ? timeResult[1] + ':' + API.fillTime(timeResult[3]) + ':' + API.fillTime(timeResult[5]) : timeResult[1] + ':' + API.fillTime(timeResult[3]);
+              }
+              this.value = day + ' ' + time;
             }
-            if (timeResult) {
-              time = timeResult[5] ? timeResult[1] + ':' + API.fillTime(timeResult[3]) + ':' + API.fillTime(timeResult[5]) : timeResult[1] + ':' + API.fillTime(timeResult[3]);
-            }
-            this.value = day + ' ' + time;
+            $time.eq(index).val(time);
+            $day.eq(index).val(day);
+            // 兼容失去焦点，点击选择日期
+            _this.pickerObject.isBlur = true;
+            // 逻辑：先blur-绑定重新渲染date panel事件-触发选择日期或年月切换等事件-发布重新渲染事件|取消发布事件
+            // 处理的类型有，点击切换上下一年月，点击年月选择，选择日期，点击piker其他
+            $.sub('datapickerRenderPicker', function () {
+              if (!_this.onlyTime) {
+                DATEPICKERAPI.renderPicker($day.eq(index)[0], true);
+              }
+              _this.pickerObject.isBlur = false;
+              $.pub('datapickerClick');
+              $.unsub('datapickerRenderPicker');
+            });
           }
-          $time.eq(index).val(time);
-          $day.eq(index).val(day);
-          // 兼容失去焦点，点击选择日期
-          _this.pickerObject.isBlur = true;
-          // 逻辑：先blur-绑定重新渲染date panel事件-触发选择日期或年月切换等事件-发布重新渲染事件|取消发布事件
-          // 处理的类型有，点击切换上下一年月，点击年月选择，选择日期，点击piker其他
-          $.sub('datapickerRenderPicker',function(){
-            DATEPICKERAPI.renderPicker($day.eq(index)[0], true);
-            _this.pickerObject.isBlur = false;
-            $.pub('datapickerClick');
-            $.unsub('datapickerRenderPicker');
-          });
         } else {
           // 没有十分秒
           // 年月格式
           if (_this.pickerObject.params.isMonth) {
-            var _moment = moment(API.newDateFixed(_this.pickerObject, day + _this.pickerObject.splitStr+'01'));
+            var _moment = moment(API.newDateFixed(_this.pickerObject, day + _this.pickerObject.splitStr + '01'));
             var result = API.getTimeFormat(_moment);
             var resultJson = API.minMaxFill(_this.pickerObject, result, 0, 'month');
             val = resultJson.val;
@@ -2169,23 +2903,114 @@ $(function () {
       });
     },
     show: function () {
-      var offset = this.$target.offset();
-      var height = this.$target.outerHeight();
-      this.pickerObject.$container.css({
-        top: offset.top + height,
-        left: offset.left
-      });
+      setContainerPos(this);
       $('.c-datepicker-picker').hide();
       this.pickerObject.show();
       this.config.show.call(this.pickerObject);
     },
-    hide: function () {
+    hide: function (type) {
       // 判断输入框没有值
       this.pickerObject.$container.find('.td.available').removeClass('current in-range');
       this.pickerObject.$container.find('.c-datepicker-time-panel').hide();
       this.pickerObject.$container.hide();
       this.betweenHandle();
-      this.config.hide.call(this.pickerObject);
+      // 判断范围，最大值最小值
+      if (this.onlyTime) {
+        this.fixedInputValOnlyTime();
+      } else {
+        this.fixedInputVal();
+      }
+      this.pickerObject.$container.data('isShow', false);
+      this.config.hide.call(this.pickerObject, type);
+    },
+    fixedInputVal: function () {
+      var _config = this.config;
+      var _this = this.pickerObject;
+      // 最大值最小值
+      var hasMin = _this.minJson ? true : false;
+      var hasMax = _this.maxJson ? true : false;
+      var getMoment = function (_this, val) {
+        return moment(API.newDateFixed(_this, val));
+      }
+      var minMoment = hasMin ? getMoment(_this, _config.min) : false;
+      var maxMoment = hasMax ? getMoment(_this, _config.max) : false;
+      if (_config.isRange) {
+        var valBegin = _this.$inputBegin.val();
+        var valEnd = _this.$inputEnd.val();
+        if (!valBegin && !valEnd) {
+          return;
+        }
+
+        var momentBegin = valBegin ? getMoment(_this, valBegin) : false;
+        var momentEnd = valEnd ? getMoment(_this, valEnd) : false;
+        // 开始>结束=>设置为没改变时的值
+        if (valBegin && valEnd && momentBegin.isAfter(momentEnd)) {
+          _this.$inputBegin.val(_this.params.initBeginVal);
+          _this.$inputEnd.val(_this.params.initEndVal);
+          return;
+        }
+        // 开始>结束不在范围内
+        if (hasMin && valBegin && momentBegin.isBefore(minMoment)) {
+          _this.$inputBegin.val(_config.min);
+        }
+        if (hasMax && valEnd && momentEnd.isAfter(maxMoment)) {
+          _this.$inputEnd.val(_config.max);
+        }
+      } else {
+        var val = _this.$input.val();
+        if (!val) {
+          return;
+        }
+        var momentBegin = val ? getMoment(_this, val) : false;
+        // 开始>结束不在范围内
+        if (hasMin && momentBegin.isBefore(minMoment)) {
+          _this.$input.val(_config.min);
+        }
+        if (hasMax && momentBegin.isAfter(maxMoment)) {
+          _this.$input.val(_config.max);
+        }
+      }
+    },
+    fixedInputValOnlyTime: function () {
+      var _config = this.config;
+      var _this = this.pickerObject;
+      // 最大值最小值
+      if (_config.isRange) {
+        var valBegin = _this.$inputBegin.val();
+        var valEnd = _this.$inputEnd.val();
+        if ((!valBegin && !valEnd)) {
+          return;
+        }
+        var valBeginArr = valBegin.split(':');
+        var valEndArr = valEnd.split(':');
+        var valSecondBegin = API.countSecond(valBeginArr);
+        var valSecondEnd = API.countSecond(valEndArr);
+        if (valSecondBegin > valSecondEnd) {
+          _this.$inputBegin.val(_this.params.initBeginVal);
+          _this.$inputEnd.val(_this.params.initEndVal);
+          return;
+        }
+        // var val1 = TIMEONLYAPI.checkMinMaxGetVal(_this, valBeginArr);
+        // var val2 = TIMEONLYAPI.checkMinMaxGetVal(_this, valEndArr);
+
+        var minSecond = _this.configMinMax.minSecond;
+        var maxSecond = _this.configMinMax.maxSecond;
+        if (valSecondBegin < minSecond) {
+          _this.$inputBegin.val(_this.configMinMax.minVal);
+        }
+        if (valSecondEnd > maxSecond) {
+          _this.$inputEnd.val(_this.configMinMax.maxVal);
+        }
+      } else {
+        var val = _this.$input.val();
+        if (!_this.configMinMax || !val) {
+          return;
+        }
+        var valArr = val.split(':');
+        // 检查最大最小对比当前值，获取值
+        val = TIMEONLYAPI.checkMinMaxGetVal(_this, valArr);
+        _this.$input.val(val);
+      }
     },
     betweenHandle: function () {
       var _config = this.config;
@@ -2198,8 +3023,8 @@ $(function () {
       if (!start || !end) {
         return false;
       }
-      var beginMoment = moment(API.newDateFixed(this.pickerObject,start));
-      var endMoment = moment(API.newDateFixed(this.pickerObject,end));
+      var beginMoment = moment(API.newDateFixed(this.pickerObject, start));
+      var endMoment = moment(API.newDateFixed(this.pickerObject, end));
       var beginFormat = API.getTimeFormat(beginMoment);
       var endFormat = API.getTimeFormat(endMoment);
       // 同一个月内
@@ -2228,6 +3053,24 @@ $(function () {
       }
     }
   });
+  // 设置日期选择框位置
+  function setContainerPos(_this) {
+	  var w = document.documentElement.clientWidth;
+	  var new_w = _this.$target.offset().left + _this.$target.width() + 260;
+	  var offset = _this.$target.offset();
+	  var height = _this.$target.outerHeight();
+	  if (w > new_w) {
+		  _this.pickerObject.$container.css({
+			  top: offset.top + height,
+			  left: offset.left
+		  });
+	  } else {
+		  _this.pickerObject.$container.css({
+			  top: offset.top + height,
+			  right: 60
+		  });
+	  }
+  }
   function fillTime(_this, $time) {
     // 修复满足格式但不完全符合的time格式修正
     var time = $time.val();
@@ -2245,6 +3088,7 @@ $(function () {
       }
     }
   }
+
   function fillDay(_this, $day) {
     // 修复满足格式但不完全符合的day格式修正
     var day = $day.val();
@@ -2271,9 +3115,9 @@ $(function () {
     var options = _this.config.shortcutOptions;
     for (var i = 0; i < options.length; i++) {
       var time = options[i].time || '';
-      html += SIDEBARBUTTON.replace('{{name}}', options[i].name).replace('{{day}}', options[i].day).replace('{{time}}', time);
+      html += RENDERAPI.sideBarButton(options[i].day, time, options[i].name);
     }
-    return SIDEBARTPL.replace('{{button}}', html);
+    return RENDERAPI.sideBarTpl(html);
   }
 
   // 设置选中值
@@ -2288,14 +3132,56 @@ $(function () {
     }
   }
 
+  // 单个：填充表单时当选的值为空时，自动填充的值
+  function getMomentWhenEmpty(_this) {
+    var _moment, type;
+    var momentMin = moment(_this.config.min, _this.config.format);
+    var momentMax = moment(_this.config.max, _this.config.format);
+    if (_this.config.min && moment().isBefore(momentMin)) {
+      _moment = momentMin.format(_this.config.format);
+      type = 'min';
+    } else if (_this.config.max && moment().isAfter(momentMax)) {
+      _moment = momentMax.format(_this.config.format);
+      type = 'max';
+    } else {
+      _moment = moment().format(_this.config.format);
+      type = 'active';
+    }
+    return {
+      value: _moment,
+      type: type
+    };
+  }
   /*========END 渲染表格===========*/
   $.fn.datePicker = function (options) {
     return this.each(function () {
       new DatePicker(options, $(this));
     });
   };
+  $.fn.datePicker.dates = {};
+  $.fn.datePicker.dates = {
+    'zh-CN': {
+      days: ["日", "一", "二", "三", "四", "五", "六"],
+      months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+      now: "此刻",
+      clear: '清空',
+      headerYearLink: '年',
+      units: ['年', '月'],
+      confirm: '确定',
+      cancel: '取消',
+      chooseDay: '选择日期',
+      chooseTime: '选择时间',
+      begin: '开始时间',
+      end: '结束时间',
+      prevYear: '前一年',
+      prevMonth: '上个月',
+      nextYear: '后一年',
+      nextMonth: '下个月',
+      zero: '0点'
+    }
+  };
   /*==============END PICKER============*/
-})
+}(jQuery));
 
 // var DATAPICKERAPI = {
 //   // 快捷选项option:当前月

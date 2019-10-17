@@ -4,6 +4,7 @@
 		<meta charset="UTF-8">
 		<title></title>
 		<link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../../js/datepicker/css/datepicker.css"/>
 		<style type="text/css">
 			html, body, div{
 			    margin:0;
@@ -172,7 +173,7 @@
 			</div>
 			<div class="content">			
 				<h3 style="text-align:center;font-weight:600;">日志级别数量统计</h3>
-				<div style="margin-bottom:10px;">
+				<div style="margin-bottom:10px; display:flex;align-items: center;">
 					<label>日志类型 ：</label>
 					<select class="form-control eLogType">
 						<option value="">All</option>
@@ -181,7 +182,15 @@
 						<option value="log4j">log4j</option>
 						<option value="mysql">mysql</option>				
 					</select>
-					
+					<div class="datepickerBox" style="width:365px;display:flex; height: 35px;line-height: 35px;padding-left:20px;">
+						<span style="font-weight:600;">日期范围：</span>
+				        <div class="c-datepicker-date-editor  J-datepicker-range-day dateWapper" style="border:0;box-shadow: 0px 0px 7px 1px #4781bb;color:#56a4ef;">
+				        	<i class="c-datepicker-range__icon kxiconfont icon-clock"></i>
+				            <input placeholder="开始日期" name="" class="c-datepicker-data-input only-date startTime" style="color:#56a4ef;" value="">
+				            <span class="c-datepicker-range-separator">-</span>
+				            <input placeholder="结束日期" name="" class="c-datepicker-data-input only-date endTime" style="color:#56a4ef;" value="">
+				        </div>				
+					</div>
 				</div>
 				<div class="echartsBox">
 					<div id="barBox"></div>
@@ -190,18 +199,39 @@
 			</div>
 		</div>
 		<script src="../../js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/datepicker/js/plugins/moment.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/datepicker/js/datepicker.all.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/jspdf.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/imgDownToPDF.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
+			//获取当前日期
+			var day1 = new Date();
+			//拼接昨天日期格式 yy-mm-dd
+			var mon = day1.getMonth()+1;
+			var da = day1.getDate();
+			if( mon < 10){
+				mon = "0"+(day1.getMonth()+1);
+			}
+			if(da < 10){
+				da = "0"+ (day1.getDate());
+			}
+			var day_c = day1.getFullYear()+"-" + mon + "-" + da;
+			//定义七天前时间
+	        var date2 = new Date(day1);
+	        date2.setDate(day1.getDate()-6);
+	        var day_7 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
+		
 			var myChart01;
 			var myChart02;
 			var sendObj = {};
 			sendObj.type = "";
 			sendObj.index = "estest";
 			sendObj.param = "operation_level";
+			sendObj.starttime = day_7;
+			sendObj.endtime = day_c;
 			function getEchartData(sendObj){
 				$.ajax({
 					type:"post",
@@ -388,11 +418,43 @@
 				});
 	 			 				
 	 		}
+			$(function(){
+				$(".startTime").val(day_7);
+				$(".endTime").val(day_c);
+				//年月日范围
+			    $('.dateWapper').datePicker({
+			      hasShortcut: true,
+			      format: 'YYYY-MM-DD',
+			      isRange: true,
+			      shortcutOptions: [{
+			            name: '最近7天',
+			            day: '-7,0'
+			          }, {
+			            name: '最近30天',
+			            day: '-30,0'
+			          }, {
+			            name: '最近90天',
+			            day: '-90, 0'
+			          }, {
+			            name: '全部',
+			            day: '-, 0'
+			          }],
+			      	hide:function(){
+			      		sendObj.starttime = $(".startTime").val();
+			      		sendObj.endtime = $(".endTime").val();
+			      		sendObj.type = $(".eLogType").val();
+			      		getEchartData(sendObj);
+			      	}
+			    }) 
+			})
+			
 			//下拉框改变时 触发查询图表数据函数
 			$(".eLogType").change(function(){
 				//获取下拉框中的值
 			    var val=$(".eLogType").val();
 			   	sendObj.type = val;
+			   	sendObj.starttime = $(".startTime").val();
+	      		sendObj.endtime = $(".endTime").val();
 			    //发送 请求数据
 			   	getEchartData(sendObj);
 			});

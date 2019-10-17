@@ -45,7 +45,7 @@ $.extend(Day.prototype, {
         setValue.call(_this, activeNum, moment(API.newDateFixed(_this.picker, val)), moment(API.newDateFixed(_this.picker, inputVal)));
       }
       if (!_this.picker.hasTime) {
-        _this.picker.datePickerObject.hide();
+        _this.picker.datePickerObject.hide('choose');
       } else {
         API.judgeTimeRange(_this.picker, _this.picker.$container.find('.c-datePicker__input-day'), _this.picker.$container.find('.c-datePicker__input-time'));
       }
@@ -129,7 +129,7 @@ $.extend(Day.prototype, {
           _this.current = 2;
           _this.picker.$inputBegin.val(existDate);
           _this.picker.$inputEnd.val(inputVal);
-          _this.picker.datePickerObject.hide();
+          _this.picker.datePickerObject.hide('choose');
         } else {
           // 有十分秒，则选添加选择范围样式
           if (b.diff(a) < 0) {
@@ -234,34 +234,35 @@ $.extend(Day.prototype, {
   },
   // 显示和选中值有联动关系，和输入框修改日期有关
   renderRange: function (year, month, today, baseEnd, reRender) {
-    var $year = this.picker.$container.find('.c-datepicker-date-table');
-    if ($year.length && !reRender) {
+    var $dateTable = this.picker.$container.find('.c-datepicker-date-table');
+    if ($dateTable.length && !reRender) {
       this.show();
     } else {
       var index = 0, distance = 1, countFn = API.maxMonth, initMonth = 1;
-      if (baseEnd) {
-        index = 1;
-        distance = -1;
-        countFn = API.minMonth;
-        initMonth = 12;
-      }
+      // 去掉 不需要
+      // if (baseEnd) {
+      //   index = 1;
+      //   distance = -1;
+      //   countFn = API.minMonth;
+      //   initMonth = 12;
+      // }
       // today[index]
       var html = this.renderHtml(year[index], month[index], false);
       // 选中间隔月份
       var monthEnd = month[index] + distance;
       var yearEnd = year[index];
-      if (countFn()) {
+      if (countFn(monthEnd)) {
         monthEnd = initMonth;
         yearEnd = yearEnd + distance;
       }
       var htmlEnd = this.renderHtml(yearEnd, monthEnd, false);
 
       // 日历头部
-      var $year = this.picker.$container.find('.c-datepicker-date-range-picker__header-year');
+      var $dateTable = this.picker.$container.find('.c-datepicker-date-range-picker__header-year');
       var $month = this.picker.$container.find('.c-datepicker-date-range-picker__header-month');
-      $year.eq(index).find('span').text(year[index]);
+      $dateTable.eq(index).find('span').text(year[index]);
       $month.eq(index).find('span').text(month[index]);
-      $year.eq(1 - index).find('span').text(yearEnd);
+      $dateTable.eq(1 - index).find('span').text(yearEnd);
       $month.eq(1 - index).find('span').text(monthEnd);
 
       this.picker.$container.find('.c-datepicker-picker__content').eq(index).html(html);
@@ -305,6 +306,7 @@ $.extend(Day.prototype, {
     $month.find('span').text(month);
     var $content = this.picker.$container.find('.c-datepicker-picker__content');
     var $table = $content.find('.c-datepicker-date-table');
+    this.picker.$container.find('.c-datepicker-month-table,.c-datepicker-year-table').hide();
     if ($table.length) {
       $table.replaceWith(html);
     } else {
@@ -324,18 +326,16 @@ $.extend(Day.prototype, {
     }
     if (type === 'year') {
       year = year + count;
-      endYear = year;
     } else if (type === 'month') {
       month = month + count;
-      var result = API.fillMonth(month, year);
-      month = result.month;
-      year = result.year;
-      endMonth = month + 1;
-      var endResult = API.fillMonth(endMonth, year);
-      endMonth = endResult.month;
-      endYear = endResult.year;
     }
-
+    var result = API.fillMonth(month, year);
+    month = result.month;
+    year = result.year;
+    endMonth = month + 1;
+    var endResult = API.fillMonth(endMonth, year);
+    endMonth = endResult.month;
+    endYear = endResult.year;
 
     var html = this.renderHtml(year, month, false);
     var htmlEnd = this.renderHtml(endYear, endMonth, false);
@@ -359,7 +359,9 @@ $.extend(Day.prototype, {
     var day = API.getMonthDay(month, year);
     var weekday = moment().set({ 'year': year, 'month': month - 1, 'date': 1 }).weekday();
     var weekdayLast = moment().set({ 'year': year, 'month': month - 1, 'date': day }).weekday();
-    var html = DAYHEADER;
+    // var html = DAYHEADER;
+    var nameOptions = $.fn.datePicker.dates[this.picker.language];
+    var html = RENDERAPI.dayHeader(nameOptions);
     var min = 1;
     var temp = '';
     var row = 0;
@@ -367,7 +369,7 @@ $.extend(Day.prototype, {
     if (weekday != 0) {
       for (var prev = weekday - 1; prev >= 0; prev--) {
         var className = 'prev-month';
-        temp += TDTPL.replace('{{value}}', prevMonthDay - prev).replace('{{today}}', className);
+        temp += RENDERAPI.tdTpl(className, prevMonthDay - prev);
         if ((weekday - prev) % 7 === 0) {
           html += '<tr>' + temp + '</tr>';
           temp = '';
@@ -379,11 +381,11 @@ $.extend(Day.prototype, {
     // active day 
     var hasMin = this.picker.minJson ? true : false;
     var hasMax = this.picker.maxJson ? true : false;
-    var minMonth = moment(API.newDateFixed(this.picker, this.picker.minJson.year + this.picker.splitStr + this.picker.minJson.month));
-    var maxMonth = moment(API.newDateFixed(this.picker, this.picker.maxJson.year + this.picker.splitStr + this.picker.maxJson.month));
+    var minMonth = hasMin ? moment(API.newDateFixed(this.picker, this.picker.minJson.year + this.picker.splitStr + this.picker.minJson.month+ this.picker.splitStr+1)):false;
+    var maxMonth = hasMax ? moment(API.newDateFixed(this.picker, this.picker.maxJson.year + this.picker.splitStr + this.picker.maxJson.month + this.picker.splitStr + 1)):false;
     var disabledName = '';
     var isSame = false;
-    var nowDate = moment(API.newDateFixed(this.picker, year + this.picker.splitStr + month));
+    var nowDate = moment(API.newDateFixed(this.picker, year + this.picker.splitStr + month + this.picker.splitStr + 1));
     // 不在范围内
     if ((hasMin && nowDate.isBefore(minMonth)) || (hasMax && nowDate.isAfter(maxMonth))) {
       disabledName = ' disabled';
@@ -413,8 +415,7 @@ $.extend(Day.prototype, {
       if (isSame && (_val < minDay || _val > maxDay)) {
         className += ' disabled';
       }
-      // var className = _val === today ? _val === selectedDate ? 'current today available' : 'available';
-      temp += TDTPL.replace('{{value}}', _val).replace('{{today}}', className);
+      temp += RENDERAPI.tdTpl(className, _val);
       if ((begin + index + 1) % 7 === 0) {
         html += '<tr>' + temp + '</tr>';
         temp = '';
@@ -429,14 +430,14 @@ $.extend(Day.prototype, {
     var nextMax = (6 - row - 1) * 7 + (6 - weekdayLast);
     for (var next = 0; next < nextMax; next++) {
       var className = 'next-month';
-      temp += TDTPL.replace('{{value}}', 1 + next).replace('{{today}}', className);
+      temp += RENDERAPI.tdTpl(className, 1 + next);
       if ((begin + next + 1) % 7 === 0) {
         html += '<tr>' + temp + '</tr>';
         temp = '';
       }
     }
 
-    html = TEARTPL.replace('{{body}}', html).replace('{{class}}', 'c-datepicker-date-table');
+    html = RENDERAPI.tableTpl('c-datepicker-date-table', html);
     return html;
   },
   // 添加时间范围类名
@@ -490,7 +491,11 @@ $.extend(Day.prototype, {
     var $end = $wrap.find('.end-date');
     $current.addClass('in-range');
     // 选中的都在
-    if ($current.length === 2) {
+    // 同一个
+    if ($start.is($end)) {
+      $start.addClass('in-range');
+      return;
+    }else if ($current.length === 2) {
       var $startTr = $start.parents('tr');
       var $endTr = $end.parents('tr');
       // 同一页

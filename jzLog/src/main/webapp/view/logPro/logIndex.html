@@ -352,7 +352,7 @@
 						<div class="col-sm-7">
 							<div class="col-box">
 								<div class="col_title">
-									<div class="datepickerBox" style="width:265px;display:flex; height: 35px;line-height: 35px;padding-left:10px;">
+									<div class="datepickerBox" style="width:265px;display:flex; height: 35px;line-height: 35px;padding-top:5px;">
 								        <div class="c-datepicker-date-editor  J-datepicker-range-day barDate" style="border:0;border-bottom: 1px solid #e4956d;">
 								        	<i class="c-datepicker-range__icon kxiconfont icon-clock"></i>
 								            <input placeholder="开始日期" name="" class="c-datepicker-data-input only-date startTime barStart" value="">
@@ -367,7 +367,7 @@
 						<div class="col-sm-5">
 							<div class="col-box">
 								<div class="col_title">
-									<div class="datepickerBox" style="width:265px;display:flex; height: 35px;line-height: 35px;padding-left:10px;">
+									<div class="datepickerBox" style="width:265px;display:flex; height: 35px;line-height: 35px;padding-top:5px;">
 								        <div class="c-datepicker-date-editor  J-datepicker-range-day pieDate" style="border:0;border-bottom: 1px solid #e4956d;">
 								        	<i class="c-datepicker-range__icon kxiconfont icon-clock"></i>
 								            <input placeholder="开始日期" name="" class="c-datepicker-data-input only-date startTime pieStart" value="">
@@ -403,9 +403,7 @@
 				</div>
 				<div class="col-md-7">
 					<div class="col-box">
-						<div class="col_title">
-							折线图
-						</div>
+						<div class="col_title"></div>
 						<div id="logChart03" class="ecBox" style="height: 350px;">
 									
 						</div>
@@ -458,7 +456,7 @@
 			var day_c = day1.getFullYear()+"-" + mon + "-" + da;
 			//定义七天前时间
 	        var date2 = new Date(day1);
-	        date2.setDate(day1.getDate()-7);
+	        date2.setDate(day1.getDate()-6);
 	        var day_7 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate();
 			
 			
@@ -631,7 +629,7 @@
 			            day: '-90, 0'
 			          }, {
 			            name: '全部',
-			            day: '-110, 0'
+			            day: '-, 0'
 			          }],
 			      	hide:function(){
 			      		var startTime = $(".barStart").val();
@@ -657,7 +655,7 @@
 			            day: '-90, 0'
 			          }, {
 			            name: '全部',
-			            day: '-110, 0'
+			            day:'-,0'
 			          }],
 			      	hide:function(){
 			      		var startTime = $(".pieStart").val();
