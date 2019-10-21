@@ -1890,7 +1890,7 @@ public class LogController extends BaseController{
 		}else {
 			endtime = sdf.format(cal.getTime());
 		}
-		if (starttime!=null&&starttime.equals("")) {
+		if (starttime!=null&&!starttime.equals("")) {
 			starttime = starttime+" 00:00:00";
 		}else {
 			cal.add(Calendar.DATE, -7);
