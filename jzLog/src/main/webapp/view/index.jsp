@@ -646,7 +646,7 @@ $(".changePW").click(function(){
 					var obj = {};
 					//获取用户id
 					var userObj = JSON.parse(localStorage.getItem("LoginUser"));
-					obj.id = userObj[0].id;
+					obj.id = userObj.id;
 					obj.oldPassword = oldPw;
 					obj.password = newPw;
 					//成功函数
