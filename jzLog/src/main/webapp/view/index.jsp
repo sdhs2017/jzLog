@@ -169,6 +169,25 @@
 		.rangeValue{
 			margin:10px;
 			font-size:12px;
+			margin-left:0;
+		}
+		.diskBox{
+		    margin:0;
+		    padding:10px;
+		    background:#324556;
+		    font-size:12px;
+		}
+		.diskBox span{
+			display:inline-block;
+			width:60px;
+			text-align:end;
+			margin-right:5px;
+		}
+		.diskBox .allDisk,.diskBox .sysAllDisk,.diskBox .dataAllDisk{
+			color:rgb(26, 179, 148);
+		}
+		.diskBox .usedDisk,.diskBox .sysUsedDisk,.diskBox .dataUsedDisk{
+			color:#e4956d;
 		}
 		.version{
 			color:#888;
@@ -227,6 +246,7 @@
 		.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{
 			background-color: #2d3d4c;
 		}
+		
     </style>
     <link rel="stylesheet" type="text/css" href="../css/indexDeepColor.css" >
 </head>
@@ -435,6 +455,14 @@ function loginOut(){
 }
 //定义阈值
 var thresholdValue = 92;
+var diskObj={
+	sizeNum	: '',//总容量
+	usedNum	: '',//已用容量
+	sysAllDisk	: '',//系统盘总容量
+	sysUsedDisk	: '',//系统盘已用容量
+	dataAllDisk	: '',//数据盘总容量
+	dataUsedDisk: ''//数据盘已用容量
+};
 //系统平台阈值检测
 function thresholdWarning(){
 	//清除显示的数据
@@ -450,24 +478,7 @@ function thresholdWarning(){
 		type:"get",  //提交方式  
         dataType:"json", //数据类型  
 		success:function(data){
-			/* if(data.error!=undefined){
-				$(".threshold").html(data.error);
-				$(".threshold").css("color","#d9534f");
-			}else{
-				var sizeNum = Number(data.size);
-				var usedNum = Number(data.used);
-				var percentage = usedNum/sizeNum;
-				if(percentage <= 0.8 ){
-					$(".threshold").html("存储空间充足");
-					$(".threshold").css("color","#1ab394");
-				}else if(0.8 < percentage && percentage < 0.92){
-					$(".threshold").html("存储空间即将饱和  剩余"+(sizeNum-usedNum)+"G");
-					$(".threshold").css("color","#f0ad4e");
-				}else if( 0.92 < percentage && percentage <= 1){
-					$(".threshold").html("存储空间告警");
-					$(".threshold").css("color","#d9534f");
-				}
-			} */
+			//判断是否成功
 			if(data.error!=undefined){
 				$(".threshold").html(data.error);
 				$(".threshold").css("color","#d9534f");
@@ -475,6 +486,14 @@ function thresholdWarning(){
 				var sizeNum = Number(data.size);
 				var usedNum = Number(data.used);
 				var percentage = (usedNum/sizeNum)*100;
+				 diskObj = {
+					sizeNum	: sizeNum,//总容量
+					usedNum	: usedNum,//已用容量
+					sysAllDisk	: data.sys_size,//系统盘总容量
+					sysUsedDisk	: data.sys_used,//系统盘已用容量
+					dataAllDisk	: data.data_size,,//数据盘总容量
+					dataUsedDisk: data.data_used,//数据盘已用容量
+				};
 				if(percentage < thresholdValue){
 					$(".threshold").html("存储空间充足");
 					$(".threshold").css("color","#1ab394");
@@ -493,12 +512,14 @@ $(".threshold_setting").click(function(){
 	var layerHtml = '<div class="rangeBox">'
 				  + 	'<p class="rangeValue">当前阈值大小：'+thresholdValue+'%</p>'
 				  +  	'<input type = "range" value="'+thresholdValue+'" class="range_control" min = "0" step=1" max = "100" oninput="rangeChange()" onchange="rangeChange()"></input>'				  
+				  +		'<p class="diskBox" style="margin-top:30px;"><span>总空间：</span><b class="allDisk">'+diskObj.sizeNum+'G</b> (系统盘：<b class="sysAllDisk">'+diskObj.sysAllDisk+'</b> + 数据盘：<b class="dataAllDisk">'+diskObj.dataAllDisk+'</b>)</p>'
+				  +		'<p class="diskBox" style="margin-bottom:15px;"><span>已用空间：</span><b class="usedDisk">'+diskObj.usedNum+'G</b> (系统盘：<b class="sysUsedDisk">'+diskObj.sysUsedDisk+'</b> + 数据盘：<b class="dataUsedDisk">'+diskObj.dataUsedDisk+'</b>)</p>'
 				  + '</div>'
 	//弹窗
 	layer.open({ 
  		type: 1,
  		title:"阈值告警数值大小选择",//标题
-			area: ['300px', '200px'], //宽高
+			area: ['390px', '300px'], //宽高
 			btn: ['确定','取消'], //按钮
 			btn1:function(index){
 				//重新获得数据
