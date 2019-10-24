@@ -171,22 +171,23 @@
 			font-size:12px;
 			margin-left:0;
 		}
+		.rangeBox>div{
+			margin-top:20px;
+		}
+		.allDiskBox{
+			display: flex;
+    		justify-content: space-between;
+		}
 		.diskBox{
-		    margin:0;
-		    padding:10px;
+		    padding:10px 15px;
 		    background:#324556;
 		    font-size:12px;
+		    margin:0;
 		}
-		.diskBox span{
-			display:inline-block;
-			width:60px;
-			text-align:end;
-			margin-right:5px;
-		}
-		.diskBox .allDisk,.diskBox .sysAllDisk,.diskBox .dataAllDisk{
+		.rangeBox>div .allDisk,.diskBox .sysAllDisk,.diskBox .dataAllDisk{
 			color:rgb(26, 179, 148);
 		}
-		.diskBox .usedDisk,.diskBox .sysUsedDisk,.diskBox .dataUsedDisk{
+		.rangeBox>div .usedDisk,.diskBox .sysUsedDisk,.diskBox .dataUsedDisk{
 			color:#e4956d;
 		}
 		.version{
@@ -491,7 +492,7 @@ function thresholdWarning(){
 					usedNum	: usedNum,//已用容量
 					sysAllDisk	: data.sys_size,//系统盘总容量
 					sysUsedDisk	: data.sys_used,//系统盘已用容量
-					dataAllDisk	: data.data_size,,//数据盘总容量
+					dataAllDisk	: data.data_size,//数据盘总容量
 					dataUsedDisk: data.data_used,//数据盘已用容量
 				};
 				if(percentage < thresholdValue){
@@ -511,15 +512,18 @@ $(".threshold_setting").click(function(){
 	//弹窗html代码
 	var layerHtml = '<div class="rangeBox">'
 				  + 	'<p class="rangeValue">当前阈值大小：'+thresholdValue+'%</p>'
-				  +  	'<input type = "range" value="'+thresholdValue+'" class="range_control" min = "0" step=1" max = "100" oninput="rangeChange()" onchange="rangeChange()"></input>'				  
-				  +		'<p class="diskBox" style="margin-top:30px;"><span>总空间：</span><b class="allDisk">'+diskObj.sizeNum+'G</b> (系统盘：<b class="sysAllDisk">'+diskObj.sysAllDisk+'</b> + 数据盘：<b class="dataAllDisk">'+diskObj.dataAllDisk+'</b>)</p>'
-				  +		'<p class="diskBox" style="margin-bottom:15px;"><span>已用空间：</span><b class="usedDisk">'+diskObj.usedNum+'G</b> (系统盘：<b class="sysUsedDisk">'+diskObj.sysUsedDisk+'</b> + 数据盘：<b class="dataUsedDisk">'+diskObj.dataUsedDisk+'</b>)</p>'
+				  +  	'<input type = "range" value="'+thresholdValue+'" class="range_control" min = "0" step=1" max = "100" oninput="rangeChange()" onchange="rangeChange()"></input>'	
+				  +		'<div>'
+				  +			'<p class="allDiskBox"><span>总空间：<b class="allDisk">'+diskObj.sizeNum+'G</b></span><span>已用空间：<b class="usedDisk">'+diskObj.usedNum+'G</b></span></p>'
+				  +			'<p class="diskBox">系统盘：<b class="sysAllDisk">'+diskObj.sysAllDisk+'</b>(总) &nbsp;&nbsp;&nbsp;&nbsp;<b class="sysUsedDisk">'+diskObj.sysUsedDisk+'</b>(已用)</p>'
+				  +			'<p class="diskBox">数据盘：<b class="dataAllDisk">'+diskObj.dataAllDisk+'</b>(总)&nbsp;&nbsp;&nbsp;&nbsp; <b class="dataUsedDisk">'+diskObj.dataUsedDisk+'</b>(已用)</p>'
+				  +		'</div>'
 				  + '</div>'
 	//弹窗
 	layer.open({ 
  		type: 1,
  		title:"阈值告警数值大小选择",//标题
-			area: ['390px', '300px'], //宽高
+			area: ['350px', '300px'], //宽高
 			btn: ['确定','取消'], //按钮
 			btn1:function(index){
 				//重新获得数据
