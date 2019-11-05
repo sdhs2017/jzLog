@@ -1040,8 +1040,9 @@
 			
 		}*/
 		var logType = logDetailArr[logIndex].type;
-		if(logDetailArr[logIndex].application_layer_protocol !== undefined){
-			logType == "defaultpacket_http"
+		//判断是否是http日志类型
+		if(logDetailArr[logIndex].application_layer_protocol == "http" ){
+			logType = "defaultpacket_http"
 		}
 		//获取日志Id
 		var id = $(this).parents("tr").attr("data-id");
