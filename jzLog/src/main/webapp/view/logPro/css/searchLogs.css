@@ -287,6 +287,18 @@ a:hover{
 	-webkit-line-clamp:1;   /*显示行数*/
 	margin:0;
 }
+.logs_Mes>p>script{	
+	/* display: -webkit-box; 
+	display: -moz-box;  */ 
+	white-space: nowrap; 
+	/* word-wrap: break-word; */
+	overflow: hidden; 
+	text-overflow: ellipsis; 
+	-webkit-box-orient: vertical; 
+	-moz-binding:url('ellipsis.xml#ellipsis');
+	-webkit-line-clamp:1;   /*显示行数*/
+	margin:0;
+}
 /* .logs_Mes>p:after{
 	content:"...";
 } */

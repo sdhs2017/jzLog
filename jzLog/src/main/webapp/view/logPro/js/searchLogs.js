@@ -594,7 +594,17 @@
 					}
 					if(obj.application_layer_protocol == undefined){
 						obj.application_layer_protocol = "-"
+					}  
+					if(obj.request_type == undefined){
+						obj.request_type = "-"
 					}
+					if(obj.request_url == undefined){
+						obj.request_url = "-"
+					}
+					if(obj.response_state == undefined){
+						obj.response_state = "-"
+					}
+					
 					//删除日志内容的<br/>标签
 					logDesArr.push(obj.operation_des);				
 					var reg = new RegExp("<br/>","g");

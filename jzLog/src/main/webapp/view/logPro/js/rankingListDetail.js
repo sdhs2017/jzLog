@@ -664,7 +664,7 @@ var htmlNum = 0;
 var sendObj = {};
 //查看日志
 $(".btnBox").click(function(){
-	sendObj.type = "netflow";
+	sendObj.type = "defaultpacket";
 	sendObj.ipv4_src_addr = "";
 	sendObj.ipv4_dst_addr = "";
 	sendObj.l4_src_port = "";
@@ -683,7 +683,6 @@ $(".btnBox").click(function(){
 	var tit3 = $(".cond3_title").html(); 
 	var val3 = $(".cond3_text").find(".val").html();
 	differentiateType(tit3,val3)
-
 	//跳转页面
 	// 储存在本地
 	//sessionStorage.setItem("netflowSearchObj",JSON.stringify(sendObj));
