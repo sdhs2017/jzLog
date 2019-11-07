@@ -174,7 +174,7 @@
 		        </div>				
 			</div>
 			<div class="urlRankingCon">
-				<div class="listBox">
+				<div class="listBox" id="listBox">
 					<div class="title"></div>
 					<div class="listContent">
 						<ul></ul>
@@ -188,8 +188,10 @@
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/datepicker/js/plugins/moment.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/datepicker/js/datepicker.all.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			$(function(){
+				 $("#listBox").gresizeW();
 				//年月日范围
 			    $('.J-datepicker-range-day').datePicker({
 			      hasShortcut: true,

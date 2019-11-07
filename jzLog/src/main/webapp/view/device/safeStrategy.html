@@ -121,20 +121,20 @@
 		<script src="../../js/layer.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
-			var getDeviceId = sessionStorage.getItem("deviceObj2");//获取本地存储的设备值 对象
+			var getDeviceId = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
 			//存储资产id 变量
 			var propertyId = '';
 			//存储日志类型
 			var logType = '';
 			if(getDeviceId != null){
-				var str = JSON.parse(getDeviceId);
+				var str = JSON.parse(getDeviceId.replace(/'/g,"\""));	
 				var title = str.deviceName;
 				$(".top_title").html(title+' 安全策略')
 				//获取资产id
 				propertyId = str.deviceId;
 				logType = str.logType;
 				//删除本地session
-				sessionStorage.removeItem("deviceObj2");
+				//sessionStorage.removeItem("deviceObj2");
 				//获取数据
 				getSafeDate();
 			}	

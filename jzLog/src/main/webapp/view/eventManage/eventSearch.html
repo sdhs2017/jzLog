@@ -150,6 +150,9 @@
 		    padding: 0px;
 		    margin: 0px 5px;
 		}
+		table th:focus{
+			outline:none!important;
+		}
 	</style>
 	<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 </head>
@@ -232,6 +235,7 @@
 	<script src="../../js/bootstrap-table/js/bootstrap-table.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../js/bootstrap-table/js/bootstrap-table-zh-CN.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../js/projectCommonJs.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript"  charset="utf-8">
 		$(function(){
 			var pageSize = 15;//每页显示的条数
@@ -274,6 +278,8 @@
 					$("#eventTable").bootstrapTable('removeAll');
 					//添加数据
 					$("#eventTable").bootstrapTable("load",data[0].list);
+					//表格拖动列宽
+					$("#eventTable").dragTableCol();
 					//判断是否是第一次请求
 					if(firstGet == true){
 						//获得总条数

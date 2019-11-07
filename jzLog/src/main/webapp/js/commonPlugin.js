@@ -112,6 +112,125 @@
 		})
 	}
 	
+	/*
+	* 表格添加拖拽列宽方法
+	* $(tableID).dragTablecol()
+	* */
+	$.fn.dragTableCol = function() {
+		var tTD;
+		//获取表格
+		var table = $(this)[0];
+		//循环给表头每一列添加鼠标事件
+		for (let j = 0; j < table.rows[0].cells.length; j++) {
+			//添加左右边框
+			const $th = $(table.rows[0].cells[j])
+			//console.log($th.children().length);
+			if($th.children().length === 1 || $th.children().html() === '' || j === table.rows[0].cells.length-1){
+				continue;
+			}else{
+				//添加右边框 内阴影
+				//$th.css('boxShadow','2px 0 4px -1px #4781bb')
+				$th.css('boxShadow','inset -15px 0px 10px -15px #4781bb')
+			}
+			//添加鼠标按下事件
+			table.rows[0].cells[j].onmousedown = function () {
+				//关闭拖选功能 避免文字选中
+				$("body").css("-webkit-user-select","none");
+				//记录单元格
+				tTD = this;
+				if (event.offsetX > tTD.offsetWidth - 10) {
+					tTD.mouseDown = true;
+					tTD.oldX = event.x;
+					tTD.oldWidth = tTD.offsetWidth;
+				}
+				//记录Table宽度
+				//table = tTD; while (table.tagName != ‘TABLE') table = table.parentElement;
+				//tTD.tableWidth = table.offsetWidth;
+			};
+			//鼠标抬起事件
+			table.rows[0].cells[j].onmouseup = function () {
+				//开启拖选功能
+				$("body").css("-webkit-user-select","inherit");
+				//结束宽度调整
+				if (tTD == undefined) tTD = this;
+				tTD.mouseDown = false;
+				tTD.style.cursor = 'default';
+			};
+
+			//鼠标移动事件
+			table.rows[0].cells[j].onmousemove = function () {
+				//更改鼠标样式
+				if (event.offsetX > this.offsetWidth - 10)
+					this.style.cursor = 'col-resize';
+				else
+					this.style.cursor = 'default';
+				//取出暂存的Table Cell
+				if (tTD == undefined) tTD = this;
+				//调整宽度
+				if (tTD.mouseDown != null && tTD.mouseDown == true) {
+					tTD.style.cursor = 'default';
+					if (tTD.oldWidth + (event.x - tTD.oldX)>0)
+						tTD.width = tTD.oldWidth + (event.x - tTD.oldX);
+					//调整列宽
+					tTD.style.width = tTD.width;
+					tTD.style.cursor = 'col-resize';
+					//调整该列中的每个Cell
+					table = tTD; while (table.tagName != 'TABLE') table = table.parentElement;
+					for (let j = 0; j < table.rows.length; j++) {
+						table.rows[j].cells[tTD.cellIndex].width = tTD.width;
+					}
+					//调整整个表
+					//table.width = tTD.tableWidth + (tTD.offsetWidth – tTD.oldWidth);
+					//table.style.width = table.width;
+				}
+			};
+		}
+		//鼠标移出表头 关闭鼠标移动事件
+		$(this).children('thead').hover(()=>{},
+			()=>{
+				$("body").css("-webkit-user-select","inherit");
+				//结束宽度调整
+				if (tTD == undefined) tTD = this;
+				tTD.mouseDown = false;
+				tTD.style.cursor = 'default';
+			}
+		)
+	}
+	/*
+	* 鼠标拖拽改变宽高
+	* $(ID).gresizeW()
+	* */
+	 $.fn.gresizeW = function () {
+        return this.each(function () {
+            var jq = $(this);
+            jq.wrapInner(' <div> </div>');//把内容用div括起来，在旁边加一div,用来触发Resize
+            jq.children().eq(0).css({ height: '100%', overflow: 'auto' });
+            jq.css({ position: 'relative', paddingRight: parseInt(jq.css('padding-right')) + 1 ,width:jq.width()});//留触发Resize的div宽度
+            $(' <div style="width:2px; height:100%;cursor:e-resize;position:absolute;top:0;right:0;"> </div>')
+            .on('mousedown', function (e) {
+                document.onselectstart = function (e) { return false };//拖动鼠标时不显示选择效果
+                var jqResize = $(this).parent();
+                $(document).on('mousemove.gym', function (e) {
+                	jq.css("maxWidth","none");
+                    var w = jqResize.offset().left;
+                    if (e.pageX - w > 600){//最小留600px
+                    	jqResize.width(e.pageX - w); 
+                    } 
+                    e.stopPropagation();
+                    return false;
+                })
+                .on('mouseup.gym', function (e) {
+                    $(document).off('.gym');
+                    document.onselectstart = function (e) { return true };
+                })
+            })
+        .on('mouseup', function (e) {
+            $(document).off('.gym');
+            document.onselectstart = function (e) { return true };
+        }).appendTo(jq);
+      });
+    }
+
 })( jQuery );
 /*
  *功能： 页面跳转方法
@@ -145,4 +264,16 @@ function jumpHtml(src,titleVal,des,objStr){
 		$('#content-main', parent.document).click().append(iframe);
 		htmlNum++;
 		sessionStorage.setItem("htmlNum",htmlNum);
-}	
+}
+
+/*
+* 表格列拖拽宽度
+* */
+/*
+(function ($) {
+	$.fn.extend({
+		"dragTableCol": function (tableId) {
+			console.log(tableId)
+		}
+	});
+})(jQuery);*/

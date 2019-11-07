@@ -228,6 +228,7 @@
 		<script src="../../js/laypage.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			var currentPage;//当前显示的页码
 			var pageSize = 15;//每页显示的条数
@@ -315,6 +316,9 @@
 				}
 				//添加到页面中
 				$("#service_list tbody").html(htmlStr);
+				//用来存储当前更改宽度的Table Cell,避免快速移动鼠标的问题
+				$("#service_list").dragTableCol();
+
 			}
 			//创建分页函数 elem-分页容器(id)  allcount-总条数  limit-每一页显示的条数
 			function createPage(elem,allCount,limit){

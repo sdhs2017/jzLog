@@ -1013,7 +1013,8 @@
     			ajaxPost('../../action/insert.do',sendObj,sfunc);
     		}
     	});*/
-	    
+		//表格拖动列宽
+		$("#logs_list").dragTableCol();
 	}
 	var htmlNum2 = 0;
 	//点击查看设备详情

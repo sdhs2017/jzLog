@@ -37,6 +37,9 @@ $(function(){
 	    }
 	    
 	});
+	//表格拖动列宽
+	$("#device_list").dragTableCol();
+	
 });
 
 var pageIndex = 1;//页码
@@ -71,6 +74,7 @@ function getDeviceData(pageIndex,obj,url){
 	sendObj.hostName = '';
 	sendObj.ip = '';
 	sendObj.logType = '';
+	sendObj.type = '';
 	searchStutus = false;//用于表明是否是搜索发起的请求
 	var obj = obj;
 	//判断是否传obj参数  是则说明是搜索查询  不是则是默认加载
@@ -80,6 +84,7 @@ function getDeviceData(pageIndex,obj,url){
 		sendObj.hostName = obj.hostName;
 		sendObj.ip = obj.ip;
 		sendObj.logType = obj.logType;
+		sendObj.type = obj.type;
 	}
 	
 	sendObj.pageIndex = pageIndex;//
@@ -301,9 +306,11 @@ $(".list_con").on("click",".device_safe",function(){
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
 	// 储存在本地
-	sessionStorage.setItem("deviceObj2", objstr);
+	//sessionStorage.setItem("deviceObj2", objstr);
+	//将  " 替换成 '
+	objstr = objstr.replace(/"/g,"'");
 	//拼接导航
-	var html ='<a href="javascript:;" class="active J_menuTab" data-id="safeStrategy'+htmlNum2+'">'+obj.deviceName+'安全策略<i class="fa fa-times-circle"></i></a>'
+	var html ='<a href="javascript:;" class="active J_menuTab"  data-obj="'+objstr+'" data-id="safeStrategy'+htmlNum2+'">'+obj.deviceName+'安全策略<i class="fa fa-times-circle"></i></a>'
 	//移除导航菜单选中属性
 	$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
 	//添加导航菜单
@@ -332,9 +339,11 @@ $(".list_con").on("click",".device_analyse",function(){
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
 	// 储存在本地
-	sessionStorage.setItem("deviceObj3", objstr);
+	//sessionStorage.setItem("deviceObj3", objstr);
+	//将  " 替换成 '
+	objstr = objstr.replace(/"/g,"'");
 	//拼接导航
-	var html ='<a href="javascript:;" class="active J_menuTab" data-id="threatAnalysis'+htmlNum3+'">'+obj.deviceName+'潜在威胁分析<i class="fa fa-times-circle"></i></a>'
+	var html ='<a href="javascript:;" class="active J_menuTab"  data-obj="'+objstr+'" data-id="threatAnalysis'+htmlNum3+'">'+obj.deviceName+'潜在威胁分析<i class="fa fa-times-circle"></i></a>'
 	//移除导航菜单选中属性
 	$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
 	//添加导航菜单
@@ -364,9 +373,11 @@ $(".list_con").on("click",".device_eventlist",function(){
 	//将对象转换为字符串
 	var objstr = JSON.stringify(obj);
 	// 储存在本地
-	sessionStorage.setItem("deviceObj4", objstr);
+	//sessionStorage.setItem("deviceObj4", objstr);
+	//将  " 替换成 '
+	objstr = objstr.replace(/"/g,"'");
 	//拼接导航
-	var html ='<a href="javascript:;" class="active J_menuTab" data-id="oneDeviceEvents'+htmlNum4+'">'+obj.deviceName+'事件列表 <i class="fa fa-times-circle"></i></a>'
+	var html ='<a href="javascript:;" class="active J_menuTab" data-obj="'+objstr+'" data-id="oneDeviceEvents'+htmlNum4+'">'+obj.deviceName+'事件列表 <i class="fa fa-times-circle"></i></a>'
 	//移除导航菜单选中属性
 	$('.page-tabs-content', parent.document).click().children("a").removeClass("active");
 	//添加导航菜单
@@ -572,51 +583,10 @@ function searchDevice(pageIndex){
 	obj.hostName = search_hostname;
 	obj.ip = search_deviceIp;
 	obj.logType = search_logType;
-	if(search_type == null){
-		search_type = "";
-	}
 	obj.type = search_type;
 	//调用函数 获取数据
 	getDeviceData(pageIndex,obj);
 }
-
-//向导模式 选项卡
-$.fn.wizard.logging = true;
-var wizard = $('#satellite-wizard').wizard({
-	keyboard : false,
-	contentHeight : 400,
-	contentWidth : 700,
-	backdrop: 'static'
-});
-//提交按钮 函数
-wizard.on("submit", function(wizard) {
-
-	setTimeout(function() {
-		wizard.trigger("success");
-		wizard.hideButtons();
-		wizard._submitting = false;
-		wizard.showSubmitCard("success");
-		wizard.updateProgressBar(0);
-	}, 2000);
-});
-//注册成功  关闭按钮事件函数
-wizard.el.find(".wizard-success .im-done").click(function() {
-	wizard.hide();
-	setTimeout(function() {
-		wizard.reset();	
-	}, 250);
-	
-});
-//注册成功  重新注册按钮事件函数
-wizard.el.find(".wizard-success .create-another-server").click(function() {
-	wizard.reset();
-});
-//点击测试按钮 出现向导模式
-$("#wizard_device").click(function(e){
-	e.preventDefault();
-	wizard.show();
-})
-
 //数据对象过滤  null/undefined  转为'-';
 function filterObj(obj){
 	for(var i in obj){

@@ -171,6 +171,7 @@
 		<script src="../../js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../hplus/js/contabs.min.js"></script>
 		<script src="js/prettify.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<!-- <script src="js/device.js" type="text/javascript" charset="utf-8"></script> -->
 		<script  type="text/javascript">		
 			var pageIndex = 1;//页码
@@ -179,6 +180,8 @@
 			var getScanStateInterval;//定时器 获取扫描状态
 			var scanState = false;//扫描状态
 			
+			//表格拖动列宽
+			$("#device_list").dragTableCol();
 			//获取是否有扫描任务正在进行
 			if(localStorage.getItem('scanState')){//true 为有任务
 				scanState = true;

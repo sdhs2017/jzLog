@@ -266,10 +266,10 @@
 	<script src="../../js/projectCommonJs.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript"  charset="utf-8">
 		$(function(){
-			var getDeviceObj = sessionStorage.getItem("deviceObj4");//获取本地存储的设备值 对象
+			var getDeviceObj = $('.page-tabs-content', parent.document).click().children("a.active").attr("data-obj");
 			logStatus = true;//ture表明是搜索操作 false表示是过滤操作
 			//将获取的本地sessionstorage字符串转换为obj对象格式
-			var obj = JSON.parse(getDeviceObj);	
+			var obj = JSON.parse(getDeviceObj.replace(/'/g,"\""));	
 			//取出设备id
 			var id = obj.deviceId;
 			$(".top_title>span").html(obj.deviceName+" 事件列表");

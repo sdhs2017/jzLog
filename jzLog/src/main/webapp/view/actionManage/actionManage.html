@@ -25,7 +25,9 @@
 		.actionLayer_box{
 			padding:20px 10px;
 		}
-		
+		table th:focus{
+			outline:none!important;
+		}
 	</style>
 </head>
 <body>
@@ -90,6 +92,7 @@
 	<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../js/bootstrap-table/js/bootstrap-table.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../js/bootstrap-table/js/bootstrap-table-zh-CN.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		//定义数组存放获取来的数据
 		var actionArr = [];
@@ -131,6 +134,8 @@
 				}
 				//添加到页面中
 				$("#actionTable tbody").html(html);
+				//表格拖动列宽
+				$("#actionTable").dragTableCol();
 			}
 			ajaxPost('../../action/selectAll.do','',sFunc)
 		}
