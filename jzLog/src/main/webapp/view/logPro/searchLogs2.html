@@ -819,6 +819,7 @@
 			})
 			//获取数据函数
 			function getData(){	
+				sendSearchObj = {};
 				currentPage = 1;
 				//定义第一次请求
 				firstGet = true;
@@ -1169,7 +1170,7 @@
 								//url:'',
 								data:hsObj,
 								success:function(data){
-									var obj = JSON.parse(data)[0];
+									var obj = data[0];
 									if(obj.state == "false"){
 										closeProgress()
 										layer.msg(obj.state,{icon: 5});
