@@ -106,11 +106,11 @@ public class LogServiceImpl implements IlogService {
 		map.putAll(termsmap);
 		
 		// 时间段
-		if (!starttime.equals("")&&!endtime.equals("")) {
+		if (starttime!=null&&!starttime.equals("")&&endtime!=null&&!endtime.equals("")) {
 			queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
-		}else if (!starttime.equals("")) {
+		}else if (starttime!=null&&!starttime.equals("")) {
 			queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime));
-		}else if (!endtime.equals("")) {
+		}else if (endtime!=null&&!endtime.equals("")) {
 			queryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(endtime));
 		}
 		

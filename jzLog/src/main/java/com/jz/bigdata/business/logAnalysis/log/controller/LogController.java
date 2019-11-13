@@ -132,8 +132,6 @@ public class LogController extends BaseController{
 //		String result = JSONArray.fromObject(list).toString();
 //		String result = logService.searchById("estest", "Log4j", "AV6FBY7KXlvRoY9aku1N");
 		String result = logService.searchById(index, type, id);
-		System.out.println("-----------------result:----------------------");
-		System.out.println(result);
 		return result;
 	}
 	
