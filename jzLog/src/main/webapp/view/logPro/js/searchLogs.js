@@ -3,7 +3,7 @@
 	var logDetailArr = [];//用于查看日志详情存放json日志
 	var logType = "";//日志类型
 	var pageCount = 0;//总页数
-	var pageTotle = 13;//每一页显示的条数
+	var pageTotle = 12;//每一页显示的条数
 	var historyArr = [];//用于存放检索历史数组
 	var logStatus ;//用于区别是查询操作还是过滤操作
 	var filterArr = [];//过滤日志存放数组	
@@ -88,7 +88,7 @@
 				}*/
 				
 			}else{
-				//显示数据
+				allCount = data[0].count;
 			}
     	};
     	//将object对象转换成字符串
