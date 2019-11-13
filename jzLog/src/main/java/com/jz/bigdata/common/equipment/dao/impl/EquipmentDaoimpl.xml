@@ -353,6 +353,9 @@
 		<if test="logType != null and logType !='' ">
 			and logType = #{logType,jdbcType=VARCHAR}
 		</if>
+		<if test="type != null and type !='' ">
+			and type = #{type,jdbcType=VARCHAR}
+		</if>
 		<if test='role=="2"'>
 			and equipment.userId=#{userId,jdbcType=VARCHAR}
 		</if>
@@ -376,6 +379,9 @@
 		</if>
 		<if test="logType != null and logType !='' ">
 			and logType = #{logType,jdbcType=VARCHAR}
+		</if>
+		<if test="type != null and type !='' ">
+			and type = #{type,jdbcType=VARCHAR}
 		</if>
 		<if test='role=="2"'>
 			and equipment.userId=#{userId,jdbcType=VARCHAR}
