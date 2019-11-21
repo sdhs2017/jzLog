@@ -250,36 +250,41 @@ $(function(){
 	$("#removeLogs").click(function(){
 		//获取被选择的复选框
 		var checkboxs = $("#logs_list>tbody input[type=checkbox]:checked");
-		var logsId = '';
-		var logsType = $(".device_logType").html();
+		let arr = [];
 		//判断是否又被选中的  没有则提示 有则继续执行删除操作
 		if(checkboxs.length == 0){
 			layer.msg('未选中任何日志',{icon: 5});
 		}else{
 			//循环拼接id值
 			for(var i = 0; i< checkboxs.length;i++){
-				//拼接日志Id
-				logsId += $(checkboxs[i]).parents("tr").attr("data-logid")+',';
+				let logIndex = $(checkboxs[i]).parent().siblings('.logs_tools').attr("data-index");
+				let obj = {}
+				obj.index = logDetailArr[logIndex].index;
+				obj.type = logDetailArr[logIndex].type;
+				obj.id = logDetailArr[logIndex].id;
+				arr.push(obj)
 			}	
 			//调用删除函数
-			removeLogs(logsId,logsType)
+			removeLogs(arr)
 		}
 	})
 	//单个日志删除
 	$("#logs_list").on("click",".removeLog",function(){
-		var logId = $(this).parents("tr").attr("data-logid");
-		var logtype = $(".device_logType").html();
-		removeLogs(logId,logtype)
+		let logIndex = $(this).parent().attr("data-index");
+		let arr = [];
+		let obj = {}
+		obj.index = logDetailArr[logIndex].index;
+		obj.type = logDetailArr[logIndex].type;
+		obj.id = logDetailArr[logIndex].id;
+		arr.push(obj)
+		removeLogs(arr)
 	})
 
 	//删除日志
-	function removeLogs(logsId,logsType){
+	function removeLogs(arr){
 		currentPage = 1;
-		//参数
-		var obj = {};
-		obj.index = "estest";
-		obj.type = logsType;
-		obj.id = logsId;
+		let obj = {};
+		obj.hsData = JSON.stringify(arr);
 		//询问框
 		layer.confirm('您确定删除日志信息么？', {
 		  btn: ['确定','取消'] //按钮
