@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,9 +67,12 @@ import com.jz.bigdata.framework.spring.es.elasticsearch.ClientTemplate;
 import com.jz.bigdata.util.BaseController;
 import com.jz.bigdata.util.CSVUtil;
 import com.jz.bigdata.util.ConfigProperty;
+import com.jz.bigdata.util.ContextFront;
 import com.jz.bigdata.util.DescribeLog;
+import com.jz.bigdata.util.MapUtil;
 import com.jz.bigdata.util.Sendmail;
 
+import backtype.storm.command.list;
 import net.sf.json.JSONArray;
 
 @Controller
@@ -143,6 +147,14 @@ public class LogController extends BaseController{
 	@RequestMapping("/deleteById")
 	@DescribeLog(describe="通过日志ID删除日志信息")
 	public String deleteById(HttpServletRequest request) {
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
+		List<Map<String, Object>> list = MapUtil.json2ListMap(hsData);
+		String result ="false";
+		for (Map<String, Object> map : list) {
+			result = logService.deleteById(map.get("index").toString(), map.get("type").toString(), map.get("id").toString());
+		}
+		
+		/*String index = request.getParameter("index");
 		String type = request.getParameter("type");
 		String id = request.getParameter("id");
 		String [] types = type.split(",");
@@ -157,7 +169,7 @@ public class LogController extends BaseController{
 				result = logService.deleteById(configProperty.getEs_index(), types[i], ids[i]);
 			}
 			
-		}
+		}*/
 		
 		
 		return result;
@@ -1389,8 +1401,43 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="组合查询日志事件")
 	public String getEventListByBlend(HttpServletRequest request,HttpSession session) {
 		// receive parameter
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
+        //System.out.println(hsData);
+        //hsData的参数说明{日志类型：type=dns, starttime=, endtime=, dns客户端ip：dns_clientip=, dns_view=, dns域名：dns_domain_name=, dns解析数据类型：dns_ana_type=, dns服务器：dns_server=, page=1, size=12}
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map = new ConcurrentHashMap<>();
+
+        try {
+            map = MapUtil.removeMapEmptyValue(mapper.readValue(hsData, Map.class));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(map);
+        Object pageo = map.get("page");
+        Object sizeo = map.get("size");
+
+        map.remove("page");
+        map.remove("size");
+
+        String page = pageo.toString();
+        String size = sizeo.toString();
+
+        // 提出参数的时间查询条件
+        /*String starttime = "";
+        String endtime = "";
+        if (map.get("starttime")!=null) {
+            Object start = map.get("starttime");
+            starttime = start.toString();
+            map.remove("starttime");
+        }
+        if (map.get("endtime")!=null) {
+            Object end = map.get("endtime");
+            endtime = end.toString();
+            map.remove("endtime");
+        }*/
 		
-		String type = request.getParameter("type");
+		/*String type = request.getParameter("type");
 		String starttime = request.getParameter("startTime");
 		String endtime = request.getParameter("endTime");
 		String ip = request.getParameter("ip");
@@ -1400,12 +1447,12 @@ public class LogController extends BaseController{
 		String event_levels = request.getParameter("event_levels");
 		String event_type = request.getParameter("event_type");
 		String page = request.getParameter("page");
-		String size = request.getParameter("size");
+		String size = request.getParameter("size");*/
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
 		
-		Map<String, String> map = new HashMap<String, String>();
+		//Map<String, String> map = new HashMap<String, String>();
 		map.put("event", "event");
-		if (starttime!=null&&!starttime.equals("")) {
+		/*if (starttime!=null&&!starttime.equals("")) {
 			map.put("starttime", starttime);
 		}
 		if (endtime!=null&&!endtime.equals("")) {
@@ -1428,7 +1475,7 @@ public class LogController extends BaseController{
 		}
 		if (equipmentid!=null&&!equipmentid.equals("")) {
 			map.put("equipmentid", equipmentid);
-		}
+		}*/
 		
 		List<Map<String, Object>> list =null;
 		
@@ -1908,7 +1955,8 @@ public class LogController extends BaseController{
 		for(String param:groupbys) {
 
 			// 第一层数据结果
-			List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap,100);
+			List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap,300);
+			// 判断是否是第一次返回，是第一次返回，则tMap为空，直接加载数据，如果不为空，需要将不同的IP地址加入tMap中
 			if (tMap.isEmpty()) {
 				tMap = list.get(0);
 			}else {
@@ -1923,7 +1971,7 @@ public class LogController extends BaseController{
 			}
 			
 		}
-		
+		// 返回连线数据，即group by 两个值：源IP地址和目的IP地址，两个IP保证一条线
 		linkslist = logService.groupBy(index, types, groupbys, searchmap,1000);
 		
 		// 遍历第一层数据结果
