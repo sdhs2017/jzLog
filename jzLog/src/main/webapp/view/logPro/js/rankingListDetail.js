@@ -631,15 +631,18 @@ function drop(event){
 	e.stopPropagation();
 	var text = e.dataTransfer.getData("text/plain");
 	if($(e.target).attr("class") == "cond1_text" && text.split("-")[0] == "list01"){
-		if($(".cond1_text").children('div').length == 0){
+		$(".cond1_text").html('')
+		if($(".cond1_text").find('span').length == 0){
 			$(".cond1_text").html('<div><span class="val">'+text.split("-")[1]+'</span><i class=" fa fa-times"></i></div>')
 		}
 	}else if($(e.target).attr("class") == "cond2_text" && text.split("-")[0] == "list02"){
-		if($(".cond2_text").children('div').length == 0){
+		$(".cond2_text").html('')
+		if($(".cond2_text").find('span').length == 0){
 			$(".cond2_text").html('<div><span class="val">'+text.split("-")[1]+'</span><i class=" fa fa-times"></i></div>')
 		}
 	}else if($(e.target).attr("class") == "cond3_text" && text.split("-")[0] == "list03"){
-		if($(".cond3_text").children('div').length == 0){
+		$(".cond3_text").html('')
+		if($(".cond3_text").find('span').length == 0){
 			$(".cond3_text").html('<div><span class="val">'+text.split("-")[1]+'</span><i class=" fa fa-times"></i></div>')
 		}
 	}
@@ -658,7 +661,8 @@ $(".cond1_text,.cond2_text,.cond3_text").hover(function(){
 })
 //删除所选的查询条件
 $(".cond1_text,.cond2_text,.cond3_text").on("click","i",function(){
-	$(this).parent().remove();
+	//$(this).parent().remove();
+	$(this).parent().parent().html('<div style="color:#65819e;font-size:12px;">(拖入或点击对应列取值)</div>')
 })
 var htmlNum = 0;
 var sendObj = {};
