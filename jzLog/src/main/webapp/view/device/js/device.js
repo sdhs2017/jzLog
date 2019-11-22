@@ -441,12 +441,13 @@ function jointDeviceList(data){
 	 	obj.createTime = obj.createTime.split(".")[0];
 	 	obj.upDateTime = obj.upDateTime.split(".")[0];
 	 	obj.endTime = obj.endTime.split(".")[0];
+	 	let logCount = parseInt(obj.log_count).toLocaleString();
 	 	
 	 	html = '<tr>'   
 			+		 '<td> <input type="checkbox" name="'+obj.id+'"></td>'
             +        '<td class="device_name">'
             +        	'<span data-id="'+obj.id+'" data-userid="'+obj.userId+'" data-depid="'+obj.departmentId+'">'+obj.name+'</span>'
-            +			'<b title="今日入库条数：'+obj.log_count+'" class="inNum">'+obj.log_count+'</b>'
+            +			'<b title="今日入库条数：'+logCount+'" class="inNum">'+logCount+'</b>'
             +        '</td>'
             +        '<td class="device_hostname">'+obj.hostName+'</td>'
             +        '<td class="device_type" data-type="'+obj.type+'">'+bigType+'-'+type+'</td>'
