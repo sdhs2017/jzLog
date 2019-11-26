@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -740,13 +741,13 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="条件获取设备日志数据")
 	public String getLogListByEquipment(HttpServletRequest request,Equipment equipment) {
 		
-		String ztData = request.getParameter("hsData");
-		if(ztData!=null) {
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
+		if(hsData!=null) {
 			ObjectMapper mapper = new ObjectMapper();
 			Map<String, String> map = new HashMap<String, String>();
 			
 			try {
-				map = removeMapEmptyValue(mapper.readValue(ztData, Map.class));
+				map = removeMapEmptyValue(mapper.readValue(hsData, Map.class));
 			} catch (JsonParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -849,10 +850,10 @@ public class LogController extends BaseController{
 	@DescribeLog(describe="查询日志数据")
 	public String getLogListByContent(HttpServletRequest request,HttpSession session) {
 		
-		String ztData = request.getParameter("hsData");
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
 		
-		Map<String, String> mapper = toMap(ztData);
+		Map<String, String> mapper = toMap(hsData);
 		Object wordso = mapper.get("words");
 		Object pageo = mapper.get("page");
 		Object sizeo = mapper.get("size");
@@ -912,13 +913,12 @@ public class LogController extends BaseController{
 	public String getLogListByBlend(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
 		// receive parameter
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
-		String ztData = request.getParameter("hsData");
-		System.out.println(ztData);
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> map = new HashMap<String, String>();
 		
-		map = removeMapEmptyValue(mapper.readValue(ztData, Map.class));
+		map = removeMapEmptyValue(mapper.readValue(hsData, Map.class));
 		System.out.println(map);
 		Object pageo = map.get("page");
 		Object sizeo = map.get("size");
@@ -975,12 +975,12 @@ public class LogController extends BaseController{
 	public String getLogListByFlow(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
 		// receive parameter
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
-		String ztData = request.getParameter("hsData");
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> map = new HashMap<String, String>();
 		
-		map = removeMapEmptyValue(mapper.readValue(ztData, Map.class));
+		map = removeMapEmptyValue(mapper.readValue(hsData, Map.class));
 		System.out.println(map);
 		Object pageo = map.get("page");
 		Object sizeo = map.get("size");
@@ -1044,7 +1044,7 @@ public class LogController extends BaseController{
 		SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat timeformat = new SimpleDateFormat("yyyy-MM-dd'T'HHmmss");
 		
-		String hsData = request.getParameter("hsData");
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
 		Map<String, Object> allmap= new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> map = new HashMap<String, String>();
@@ -1237,8 +1237,7 @@ public class LogController extends BaseController{
 	public String getDNSLogListByBlend(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
 		// receive parameter
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
-		String hsData = request.getParameter("hsData");
-		System.out.println(hsData);
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> map = new HashMap<String, String>();
@@ -1314,7 +1313,7 @@ public class LogController extends BaseController{
 	public String getHttpLogListByBlend(HttpServletRequest request,HttpSession session) throws JsonParseException, JsonMappingException, IOException {
 		// receive parameter
 		Object userrole = session.getAttribute(Constant.SESSION_USERROLE);
-		String hsData = request.getParameter("hsData");
+		String hsData = request.getParameter(ContextFront.DATA_CONDITIONS);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, String> map = new HashMap<String, String>();
@@ -1953,10 +1952,10 @@ public class LogController extends BaseController{
 		Map<String,Object> tMap = new HashMap<>();
 		
 		for(String param:groupbys) {
-
-			// 第一层数据结果
-			List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap,300);
-			// 判断是否是第一次返回，是第一次返回，则tMap为空，直接加载数据，如果不为空，需要将不同的IP地址加入tMap中
+			
+			// 第一层数据结果，聚合源IP、目的IP字段，得到源IP及对其应的访问量和目的IP及其对应的访问量
+			List<Map<String, Object>> list = logService.groupBy(index, types, param, searchmap,5000);
+			// 判断tMap是否是第一次返回，是第一次返回，则tMap为空，直接加载数据，如果不为空，需要将不同的IP地址加入tMap中
 			if (tMap.isEmpty()) {
 				tMap = list.get(0);
 			}else {
@@ -1972,7 +1971,7 @@ public class LogController extends BaseController{
 			
 		}
 		// 返回连线数据，即group by 两个值：源IP地址和目的IP地址，两个IP保证一条线
-		linkslist = logService.groupBy(index, types, groupbys, searchmap,1000);
+		linkslist = logService.groupBy(index, types, groupbys, searchmap,10000);
 		
 		// 遍历第一层数据结果
 		for(Entry<String, Object> key : tMap.entrySet()) {
@@ -1981,7 +1980,19 @@ public class LogController extends BaseController{
 			dataMap.put("name", key.getKey());
 			dataMap.put("count", key.getValue());
 			datalist.add(dataMap);
+		
 		}
+		//遍历删除,通过遍历连线的list判断source和target两个值是否在tMap的key中，如果不在则删除该连线map
+        Iterator<Map<String, Object>> iterator = linkslist.iterator();  
+        while (iterator.hasNext()) {
+        	Map<String, Object> linkmap = iterator.next();  
+            if (!(tMap.containsKey(linkmap.get("source"))&&tMap.containsKey(linkmap.get("target")))) {  
+                iterator.remove();//使用迭代器的删除方法删除  
+            }/*else {
+				System.out.println("包含："+linkmap);
+			}*/
+        }
+		
 		map.put("data", datalist);
 		map.put("links", linkslist);
 		
