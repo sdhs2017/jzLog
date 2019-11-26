@@ -1067,15 +1067,7 @@
 								layer.msg('删除成功',{icon: 1});
 								firstGet = true;//第一次请求标识
 								//加载日志数据列表
-								if(searchType == "0"){//0-默认加载  1-精细加载
-									//查询日志
-									getLogs(url,id,'',1,pageSize)
-								}else if(searchType == "1"){
-									//查询日志
-									getLogs("../../log/getLogListByEquipment.do","",sendObj,1,pageSize)
-								}else{
-									layer.msg('加载数据错误',{icon: 5});
-								}
+								getLogs(url,"",sendSearchObj,1,pageSize);
 							}else{
 								layer.msg('删除失败',{icon: 5});
 							}	
