@@ -69,6 +69,36 @@ public class CreateLicense {
 		info = prop.getProperty("info");
 		
 	}
+	
+	public void setParam(InputStream in) {
+		
+		// 获取参数
+		Properties prop = new Properties();
+		//InputStream in = CreateLicense.class.getClassLoader().getResourceAsStream(propertiesPath);
+		InputStream keystores = getClass().getResourceAsStream("/privateKeys.keystore");
+		final InputStream keystore = CreateLicense.class.getClassLoader().getResourceAsStream("privateKeys.keystore");
+		try {
+			prop.load(in);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		PRIVATEALIAS = prop.getProperty("PRIVATEALIAS");
+		KEYPWD = prop.getProperty("KEYPWD");
+		STOREPWD = prop.getProperty("STOREPWD");
+		SUBJECT = prop.getProperty("SUBJECT");
+		KEYPWD = prop.getProperty("KEYPWD");
+		licPath = prop.getProperty("licPath");
+		priPath = prop.getProperty("priPath");
+		//license content
+		issuedTime = prop.getProperty("issuedTime");
+		notBefore = prop.getProperty("notBefore");
+		notAfter = prop.getProperty("notAfter");
+		consumerType = prop.getProperty("consumerType");
+		consumerAmount = Integer.valueOf(prop.getProperty("consumerAmount"));
+		info = prop.getProperty("info");
+		
+	}
 
 	public boolean create() {		
 		try {
