@@ -441,7 +441,7 @@ function jointDeviceList(data){
 	 	obj.createTime = obj.createTime.split(".")[0];
 	 	obj.upDateTime = obj.upDateTime.split(".")[0];
 	 	obj.endTime = obj.endTime.split(".")[0];
-	 	let logCount = parseInt(obj.log_count).toLocaleString();
+	 	var logCount = parseInt(obj.log_count).toLocaleString();
 	 	
 	 	html = '<tr>'   
 			+		 '<td> <input type="checkbox" name="'+obj.id+'"></td>'

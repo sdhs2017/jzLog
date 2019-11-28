@@ -121,7 +121,7 @@
 		//获取表格
 		var table = $(this)[0];
 		//循环给表头每一列添加鼠标事件
-		for (let j = 0; j < table.rows[0].cells.length; j++) {
+		for (var j = 0; j < table.rows[0].cells.length; j++) {
 			//添加左右边框
 			const $th = $(table.rows[0].cells[j])
 			//console.log($th.children().length);
@@ -176,7 +176,7 @@
 					tTD.style.cursor = 'col-resize';
 					//调整该列中的每个Cell
 					table = tTD; while (table.tagName != 'TABLE') table = table.parentElement;
-					for (let j = 0; j < table.rows.length; j++) {
+					for (var j = 0; j < table.rows.length; j++) {
 						table.rows[j].cells[tTD.cellIndex].width = tTD.width;
 					}
 					//调整整个表
@@ -186,7 +186,7 @@
 			};
 		}
 		//鼠标移出表头 关闭鼠标移动事件
-		$(this).children('thead').hover(()=>{},
+		/*$(this).children('thead').hover(()=>{},
 			()=>{
 				$("body").css("-webkit-user-select","inherit");
 				//结束宽度调整
@@ -194,7 +194,7 @@
 				tTD.mouseDown = false;
 				tTD.style.cursor = 'default';
 			}
-		)
+		)*/
 	}
 	/*
 	* 鼠标拖拽改变宽高

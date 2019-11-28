@@ -517,7 +517,7 @@ function thresholdWarning(){
 				 //打开修改按钮
 				$('.threshold_setting').removeAttr('disabled');
 				//定义文本
-				let thresholdStr = "";
+				var thresholdStr = "";
 				//判断阈值与实际使用大小
 				if(sysThresholdValue <= Number(data.sys_per.split('%')[0])){
 					thresholdStr += '系统盘空间不足，剩余' +data.sys_avail

@@ -340,7 +340,7 @@
 		            // cy.collection("edge").removeClass("edgeShow");
 		            cy.collection("edge").removeClass("edgeActive");
 		            c.neighborhood("edge").addClass("edgeActive"); */
-		            let c = a.target;
+		            var c = a.target;
 		            cy.collection("edge").addClass('dull');
 		            cy.collection("node").addClass('dull');
 		            c.removeClass("dull");
@@ -351,10 +351,10 @@
 		        })
 		        cy.on("mouseout", "node", function (a) {
 		           /*  $('#cy').css('cursor', 'default');
-		            let c = a.target;
+		            var c = a.target;
 		            c.removeClass("nodeHover");
 		            cy.collection("edge").removeClass("edgeActive"); */
-		        	let c = a.target;
+		        	var c = a.target;
 		            cy.collection("edge").removeClass('dull');
 		            cy.collection("node").removeClass('dull');
 		            c.neighborhood("edge").removeClass("edgeActive");
@@ -432,12 +432,12 @@
 		
 		        //线
 		        cy.on("mouseover", "edge", function (a) {
-		            let c = a.target;
+		            var c = a.target;
 		            cy.collection("edge").removeClass("edgeActive");
 		            c.addClass("edgeActive")
 		        })
 		        cy.on("mouseout", "edge", function (a) {
-		            let c = a.target;
+		            var c = a.target;
 		            c.removeClass("edgeActive")
 		        })
 			}
