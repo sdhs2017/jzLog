@@ -541,7 +541,7 @@ public class LogServiceImpl implements IlogService {
 	 * service层 混合查询 列+正文内容
 	 */
 	@Override
-	public List<Map<String, Object>> getListByContent(String index,String[] types,String content,String page,String size) {
+	public List<Map<String, Object>> getListByContent(String index,String starttime,String endtime,String[] types,String content,String page,String size) {
 		
 		List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
 		SearchHit[] hits = null;
@@ -557,7 +557,18 @@ public class LogServiceImpl implements IlogService {
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
+		//如果有时间范围参数
+        if (starttime != null && !starttime.equals("") && endtime != null && !endtime.equals("")) {
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
+        }else if (starttime != null && !starttime.equals("")) {
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime));
+        } else if (endtime != null && !endtime.equals("")) {
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(endtime));
+        }else{
+            //默认的时间范围
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
+        }
+		//boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
 		
 		// "多个匹配"  匹配的列进行归纳,包括设备id，设备ip，日志类型，日志内容
 		if(content!=null&&!content.equals("")) {
@@ -654,7 +665,7 @@ public class LogServiceImpl implements IlogService {
 	 * service层 混合查询 列+正文内容
 	 */
 	@Override
-	public List<Map<String, Object>> getListByContent(String index,String[] types,String content,String userid,String page,String size) {
+	public List<Map<String, Object>> getListByContent(String index,String starttime,String endtime,String[] types,String content,String userid,String page,String size) {
 		/**
 		 * 1.功能菜单点击日志检索，弹出页面
 		 * 2.日志检索页面点击检索按钮
@@ -678,7 +689,18 @@ public class LogServiceImpl implements IlogService {
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
+		//如果有时间范围参数
+        if (starttime != null && !starttime.equals("") && endtime != null && !endtime.equals("")) {
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime).lte(endtime));
+        }else if (starttime != null && !starttime.equals("")) {
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").gte(starttime));
+        } else if (endtime != null && !endtime.equals("")) {
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(endtime));
+        }else{
+            //默认的时间范围
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
+        }
+		//boolQueryBuilder.must(QueryBuilders.rangeQuery("logdate").format("yyyy-MM-dd HH:mm:ss").lte(format.format(new Date())));
 		// "多个匹配"  匹配的列进行归纳,包括设备id，设备ip，日志类型，日志内容
 		if(content!=null&&!content.equals("")) {
 			MultiMatchQueryBuilder multiMatchQueryBuilder  = QueryBuilders.multiMatchQuery(content, "operation_level","operation_des","ip","hostname","process","operation_facility","userid");

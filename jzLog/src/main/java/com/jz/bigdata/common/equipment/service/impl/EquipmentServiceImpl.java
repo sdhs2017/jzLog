@@ -155,24 +155,30 @@ public class EquipmentServiceImpl implements IEquipmentService {
 		String starttime = startdf.format(new Date());
 		String endtime = df.format(new Date());
 		Map<String, String> esMap = new HashMap<>();
-		Map<String, Object> equipmentmap = (Map<String, Object>) listEquipment.get(0);
-		
-		/*for (Entry<String,Object> ssSet : equipmentmap.entrySet()) {
-			System.out.println(ssSet.getKey()+":"+ssSet.getValue());
-		}*/
-		
-		String equipmentid = equipmentmap.get("id").toString();
-		esMap.put("equipmentid", equipmentid);
-		esMap.put("starttime", starttime);
-		esMap.put("endtime", endtime);
-		equipmentmap.put("log_count", logService.getCount(configProperty.getEs_index(), null, esMap)+"");
-		//equipmentmap.put("log_count", "20");
+		// 判断查询资产是否存在，存在继续查询日志数，不存在直接返回空的list
+		if (listEquipment.size()>0) {
+			Map<String, Object> equipmentmap = (Map<String, Object>) listEquipment.get(0);
+			
+			/*for (Entry<String,Object> ssSet : equipmentmap.entrySet()) {
+				System.out.println(ssSet.getKey()+":"+ssSet.getValue());
+			}*/
+			
+			String equipmentid = equipmentmap.get("id").toString();
+			esMap.put("equipmentid", equipmentid);
+			esMap.put("starttime", starttime);
+			esMap.put("endtime", endtime);
+			equipmentmap.put("log_count", logService.getCount(configProperty.getEs_index(), null, esMap)+"");
+			//equipmentmap.put("log_count", "20");
 
-		equipment = JavaBeanUtil.convertMapToBean(Equipment.class, equipmentmap);
-//		equipment = JavaBeanUtil.convertMapToBean(new Equipment(), equipmentmap);
-		List<Equipment> myList = new ArrayList<>();
-		myList.add(equipment);
-		return myList;
+			equipment = JavaBeanUtil.convertMapToBean(Equipment.class, equipmentmap);
+//			equipment = JavaBeanUtil.convertMapToBean(new Equipment(), equipmentmap);
+			List<Equipment> myList = new ArrayList<>();
+			myList.add(equipment);
+			return myList;
+		}else {
+			return listEquipment;
+		}
+		
 		//return listEquipment;
 	}
 

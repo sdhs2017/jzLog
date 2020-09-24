@@ -136,7 +136,7 @@ public interface IlogService {
 	 * @param size
 	 * @return
 	 */
-	public List<Map<String, Object>> getListByContent(String index,String[] types,String content,String page,String size);
+	public List<Map<String, Object>> getListByContent(String index,String starttime,String endtime,String[] types,String content,String page,String size);
 	
 	/**
 	 * 
@@ -148,7 +148,7 @@ public interface IlogService {
 	 * @param size
 	 * @return
 	 */
-	public List<Map<String, Object>> getListByContent(String index,String[] types,String content,String userid,String page,String size);
+	public List<Map<String, Object>> getListByContent(String index,String starttime,String endtime,String[] types,String content,String userid,String page,String size);
 	
 	/**
 	 * @param index

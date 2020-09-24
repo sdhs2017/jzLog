@@ -432,7 +432,7 @@ public class DefaultPacket {
 			this.l4_dst_port = tcppacket.getHeader().getDstPort().valueAsInt()+"";
 			this.l4_src_port = tcppacket.getHeader().getSrcPort().valueAsInt()+"";
 			
-			this.acknum = tcppacket.getHeader().getAcknowledgmentNumber()+"";
+			this.acknum = tcppacket.getHeader().getAcknowledgmentNumberAsLong()+"";
 			this.seqnum = tcppacket.getHeader().getSequenceNumberAsLong()+"";
 			
 			this.protocol="6";

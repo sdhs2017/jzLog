@@ -362,7 +362,7 @@ public class Http {
 		//httpResponse
 		String httpResponse = "^HTTP/1.[0,1] [0-9]{0,3} *";
 		
-		this.acknum = tcpPacket.getHeader().getAcknowledgmentNumber()+"";
+		this.acknum = tcpPacket.getHeader().getAcknowledgmentNumberAsLong()+"";
 		this.seqnum = tcpPacket.getHeader().getSequenceNumberAsLong()+"";
 		
 		//获取数据是否为空

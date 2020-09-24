@@ -8,6 +8,7 @@
 		<link rel="stylesheet" type="text/css" href="css/searchLogs.css"/>
 		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
 		<link rel="stylesheet" type="text/css" href="../../css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../js/datepicker/css/datepicker.css"/>
 		<style>
 			.serviceStatus{
 				font-weight: 600;
@@ -34,6 +35,15 @@
 			.btnBox button:hover{
 				color:#2c76bd;
 			}
+			.searchTimeBox{
+				float:right;
+				margin-right:10px;
+				display:flex;
+				height:34px;
+			}
+			.searchBoxTitle{
+				width:150px;
+			}
 		</style>
 		<link rel="stylesheet" id="deepColour" type="text/css" href="../../css/deepColor.css"/>
 	</head>
@@ -45,6 +55,14 @@
 					<span>服务状态：</span>
 					<span class="serviceStatus">未开启</span>
 				</p>	 -->	
+				<div class="datepickerBox" style="width:440px;display:flex; height: 35px;line-height: 35px;padding-top:5px;float:right;">
+			        <div class="c-datepicker-date-editor  J-datepicker-range-day barDate" style="border:0;border-bottom: 1px solid #e4956d;">
+			        	<i class="c-datepicker-range__icon kxiconfont icon-clock"></i>
+			            <input placeholder="开始日期" name="" class="c-datepicker-data-input startTime" value="">
+			            <span class="c-datepicker-range-separator">-</span>
+			            <input placeholder="结束日期" name="" class="c-datepicker-data-input endTime" value="">
+			        </div>				
+				</div>
 			</div>
 			
 			<div class="search_input">
@@ -157,27 +175,83 @@
 		<script src="../../js/laypage.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/ajax.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/highLightText.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/datepicker/js/plugins/moment.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/datepicker/js/datepicker.all.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/searchLogs.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			var pageSize = 12;
 			var url = "../../log/getLogListByContent.do";
+			var searchWords = ''
+			var startTime = '';
+			var endTime = '';
+			//获取当前日期
+		    var date = new Date();
+		    var year = date.getFullYear();
+		    var month = date.getMonth()+1;
+		    var day = date.getDate();
+		    var hour = date.getHours();
+		    var minute = date.getMinutes();
+		    var second = date.getSeconds();
+		    endTime = year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day)+" "+
+		    (hour < 10 ? "0" + hour : hour)+":"+(minute < 10 ? "0" + minute : minute)+":"+(second < 10 ? "0" + second : second);
+		  	//获取7天前得日期
+		    var lastDate = new Date(date - 1000 * 60 * 60 * 24 * 7);//最后30可以更改为任意天数N，意义：获取N天前的时间
+		    var lastYear = lastDate.getFullYear();
+		    var lastMonth = lastDate.getMonth()+1;
+		    var lastDay = lastDate.getDate();
+		    var lastHour = lastDate.getHours();
+		    var lastMinute = lastDate.getMinutes();
+		    var lastSecond = lastDate.getSeconds();
+		    startTime = lastYear + "-" + (lastMonth < 10 ? "0" + lastMonth : lastMonth) + "-"+(lastDay < 10 ? "0" + lastDay : lastDay)+" "+
+		    (lastHour < 10 ? "0" + lastHour : lastHour)+":"+(lastMinute < 10 ? "0" + lastMinute : lastMinute)+":"+(lastSecond < 10 ? "0" + lastSecond : lastSecond);
+	        
+			//年月日范围
+		    $('.barDate').datePicker({
+		      hasShortcut: true,
+		      format: 'YYYY-MM-DD HH:mm:ss',
+		      isRange: true,
+		      shortcutOptions: [{
+		            name: '最近7天',
+		            day: '-7,0'
+		          }, {
+		            name: '最近30天',
+		            day: '-30,0'
+		          }, {
+		            name: '最近90天',
+		            day: '-90, 0'
+		          }, {
+		            name: '全部',
+		            day: '-, 0'
+		          }],
+		      	hide:function(){
+		      		startTime = $(".startTime").val();
+		      		endTime = $(".endTime").val();
+		      		//初始化默认显示的页码为1
+					currentPage = 1;
+		      		//定义第一次请求
+					firstGet = true;
+		      		//获取数据
+		      		getLogs(url,"",searchWords,1,pageSize,{starttime:startTime,endtime:endTime})
+		      	}
+		    })
+		    $(".startTime").val(startTime);
+			$(".endTime").val(endTime);
 			$("#searchLogs").click(function(){
-				currentPage = 1;
 				//初始化默认显示的页码为1
 				currentPage = 1;
 				//logStatus = true;
 				//定义第一次请求
 				firstGet = true;
 				//获得搜索关键词
-				var searchWords = $(".searchWords").val();	
+				searchWords = $(".searchWords").val();	
 				
 				//获取数据
 				/* getLogs(url,'',searchWords); */
-				getLogs(url,"",searchWords,1,pageSize)
+				getLogs(url,"",searchWords,1,pageSize,{starttime:startTime,endtime:endTime})
 			})
 			//页面加载完成  获取数据
-			getLogs(url,'','',1,pageSize);
+			getLogs(url,'','',1,pageSize,{starttime:startTime,endtime:endTime});
  /************************************新增代码******************************************/	
  			var words =  localStorage.getItem("allDeviceSearchWord");
 			if(words != null){

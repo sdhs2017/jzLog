@@ -3,9 +3,14 @@ package com.jz.bigdata.common.license;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
@@ -29,6 +34,7 @@ public class VerifyLicense {
 		private static String SUBJECT = "";
 		private static String licPath = "";
 		private static String pubPath = "";
+		/*private static String mac = "";*/
 		
 		
 		public void setParam(String propertiesPath) {
@@ -46,6 +52,7 @@ public class VerifyLicense {
 			SUBJECT = prop.getProperty("SUBJECT");
 			licPath = prop.getProperty("licPath");
 			pubPath = prop.getProperty("pubPath");
+			//mac = prop.getProperty("mac");
 		}
 
 		public boolean verify() {		
@@ -68,6 +75,15 @@ public class VerifyLicense {
 			// 验证证书
 			try {
 				LicenseContent ss = licenseManager.verify();
+				/*
+				Object object =  ss.getExtra();
+				
+				//String stringArray[] = Arrays.asList(object).toArray(new String[0]);
+				String [] ssss = (String[]) object;
+				System.out.println(ssss[1]);
+				if (validateMacAddress(ssss[0])) {
+					System.out.println(ssss[0]);
+				}*/
 				DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				Date date = ss.getIssued();
 				ss.getNotAfter();
@@ -94,6 +110,34 @@ public class VerifyLicense {
 					preference, privateStoreParam, cipherParam);
 			return licenseParams;
 		}
+		
+		/**
+		 * 验证mac地址
+		 * @param macAddress
+		 * @return
+		 * @throws SocketException
+		 */
+		/*public static boolean validateMacAddress(String macAddress) throws SocketException {
+	        boolean returnFlag = false;
+	        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+	        
+	        for (NetworkInterface netint : Collections.list(nets)) {
+	            byte[] mac = netint.getHardwareAddress();
+	            StringBuilder sb = new StringBuilder();
+	            if (mac != null) {
+	                for (int i = 0; i < mac.length; i++) {
+	                    sb.append(String.format("%02X%s", mac[i],
+	                            (i < mac.length - 1) ? "-" : ""));
+	                }
+	                System.out.println("mac=" + sb.toString());
+	            }
+	            if (sb.toString().equals(macAddress)) {
+	                returnFlag = true;
+	            }
+	        }
+	        return returnFlag;
+
+	    }*/
 		
 		public static void main(String [] args) {
 			File file = new File(new VerifyLicense().getClass().getClassLoader().getResource("").getFile());

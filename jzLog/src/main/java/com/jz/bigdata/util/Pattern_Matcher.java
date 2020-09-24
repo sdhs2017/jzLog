@@ -1,5 +1,8 @@
 package com.jz.bigdata.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +40,7 @@ public class Pattern_Matcher {
    	
    	public static void main(String [] args) {
    		
-   		String log ="{\"snapshots\":[{\"snapshot\":\"snapshot\",\"uuid\":\"6gOQWizJQWWrl-KuCwAysQ\",\"version_id\":5040099,\"version\":\"5.4.0\",\"indices\":[\"packet-analysis3\"],\"state\":\"SUCCESS\",\"start_time\":\"2019-05-21T03:05:52.123Z\",\"start_time_in_millis\":1558407952123,\"end_time\":\"2019-05-21T03:07:30.410Z\",\"end_time_in_millis\":1558408050410,\"duration_in_millis\":98287,\"failures\":[],\"shards\":{\"total\":5,\"failed\":0,\"successful\":5}}]}\r\n" + 
+   		/*String log ="{\"snapshots\":[{\"snapshot\":\"snapshot\",\"uuid\":\"6gOQWizJQWWrl-KuCwAysQ\",\"version_id\":5040099,\"version\":\"5.4.0\",\"indices\":[\"packet-analysis3\"],\"state\":\"SUCCESS\",\"start_time\":\"2019-05-21T03:05:52.123Z\",\"start_time_in_millis\":1558407952123,\"end_time\":\"2019-05-21T03:07:30.410Z\",\"end_time_in_millis\":1558408050410,\"duration_in_millis\":98287,\"failures\":[],\"shards\":{\"total\":5,\"failed\":0,\"successful\":5}}]}\r\n" + 
    				"";
    		String success = "{\"snapshots\":[{\"snapshot\":\"snapshot\",\"uuid\":\"lUXYw4lxToeTxYC3VX9skg\",\"version_id\":5040099,\"version\":\"5.4.0\",\"indices\":[\"eslog-analysis\"],\"state\":\"SUCCESS\",\"start_time\":\"2019-07-25T06:33:43.993Z\",\"start_time_in_millis\":1564036423993,\"end_time\":\"2019-07-25T07:03:30.988Z\",\"end_time_in_millis\":1564038210988,\"duration_in_millis\":1786995,\"failures\":[],\"shards\":{\"total\":5,\"failed\":0,\"successful\":5}}]}";
    		String failed = "{\"snapshots\":[{\"snapshot\":\"snapshot\",\"uuid\":\"lUXYw4lxToeTxYC3VX9skg\",\"version_id\":5040099,\"version\":\"5.4.0\",\"indices\":[\"eslog-analysis\"],\"state\":\"FAILED\",\"start_time\":\"2019-07-25T06:33:43.993Z\",\"start_time_in_millis\":1564036423993,\"end_time\":\"2019-07-25T07:03:30.988Z\",\"end_time_in_millis\":1564038210988,\"duration_in_millis\":1786995,\"failures\":[],\"shards\":{\"total\":5,\"failed\":0,\"successful\":5}}]}";
@@ -85,6 +88,20 @@ public class Pattern_Matcher {
 			System.out.println("删除快照");
 			System.out.println("创建快照");
 		}
-
+*/
+   		/*String  ssss = "/dev/sda1";
+   		String ss = "/";
+   		System.out.println(getMatchedContent(ssss, "/$"));
+   		System.out.println(getMatchedContent(ss, "/$"));*/
+   		
+   		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String index = "packet-analysis*".replace("*",format.format(new Date()));
+		System.out.println(index);
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		c.add(Calendar.DAY_OF_MONTH, 100);
+		index = "packet-analysis*".replace("*",format.format(c.getTime()));
+		System.out.println(index);
+   		
 	}
 }

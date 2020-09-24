@@ -12,8 +12,12 @@
 	var sendObj = {};//传参对象合集
 	var allCount ;//检索的结果总总数
 	var currentPage = 1;//当前显示的页码
+	var timeObj = {
+			starttime:'',
+			endtime:''
+	}
 	//获取数据函数  url-请求链接  id-用于区分单个设备日志 searchWord-查询条件 page-当前页码 size-每页条数
-	function getLogs(url,id,searchWords,page,pageTotle){
+	function getLogs(url,id,searchWords,page,pageTotle,otherObj){
 		//定义传的参数
 		var param = {};
 		if(id != ''){//单个设备日志
@@ -37,7 +41,12 @@
 			}
 			
 		}else if (typeof searchWords == 'string'){//模糊查询
+			if(otherObj){
+				timeObj = otherObj
+			}
 			param.words = searchWords;
+			param.starttime = timeObj.starttime
+			param.endtime = timeObj.endtime
 			//判断关键字是否为空  不为空添加到历史列表 并且是第一次请求
 			if(searchWords != '' && firstGet == true){
 				prependHistory(searchWords);

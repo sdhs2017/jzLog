@@ -36,6 +36,8 @@ public class CreateLicense {
 	private static String consumerType = "";
 	private static int consumerAmount = 0;
 	private static String info = "";
+	private static String mac = "";
+	private static String channel_merchants = "";
 	// 为了方便直接用的API里的例子
 	// X500Princal是一个证书文件的固有格式，详见API
 	//private final static X500Principal DEFAULTHOLDERANDISSUER = new X500Principal("CN=Duke、OU=JavaSoft、O=Sun Microsystems、C=US");
@@ -67,6 +69,8 @@ public class CreateLicense {
 		consumerType = prop.getProperty("consumerType");
 		consumerAmount = Integer.valueOf(prop.getProperty("consumerAmount"));
 		info = prop.getProperty("info");
+		mac = prop.getProperty("mac");
+		channel_merchants = prop.getProperty("channel_merchants");
 		
 	}
 	
@@ -149,7 +153,9 @@ public class CreateLicense {
 		content.setConsumerAmount(consumerAmount);
 		content.setInfo(info);
 		// 扩展
-		content.setExtra(new Object());
+		//content.setExtra(new Object());
+		String [] extra = {mac,channel_merchants};
+		content.setExtra(extra);
 		return content;
 	}
 	

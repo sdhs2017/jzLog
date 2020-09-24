@@ -121,6 +121,8 @@ public class CollectorServiceImpl implements ICollectorService{
 				flag = true;
 //			}
 			result = true;
+		}catch (Exception e) {
+			e.printStackTrace();
 		}finally{
 			return result;
 		}

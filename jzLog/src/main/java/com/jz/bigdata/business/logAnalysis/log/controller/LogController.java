@@ -857,6 +857,18 @@ public class LogController extends BaseController{
 		Object wordso = mapper.get("words");
 		Object pageo = mapper.get("page");
 		Object sizeo = mapper.get("size");
+		String starttime = null;
+		if (mapper.get("starttime")!=null) {
+			Object starttimeo = mapper.get("starttime");
+			starttime = starttimeo.toString();
+			
+		}
+		String endtime =null;
+		if (mapper.get("endtime")!=null) {
+			Object endtimeo = mapper.get("endtime");
+			endtime = endtimeo.toString();
+		}
+		
 		String keyWords = null;
 		if (wordso!=null) {
 			keyWords = wordso.toString();
@@ -864,6 +876,7 @@ public class LogController extends BaseController{
 		
 		String page = pageo.toString();
 		String size = sizeo.toString();
+		
 		
 		String[] types = {LogType.LOGTYPE_LOG4J,LogType.LOGTYPE_WINLOG,LogType.LOGTYPE_SYSLOG,LogType.LOGTYPE_PACKETFILTERINGFIREWALL_LOG,LogType.LOGTYPE_UNKNOWN,LogType.LOGTYPE_MYSQLLOG,LogType.LOGTYPE_NETFLOW,LogType.LOGTYPE_DNS,LogType
 				.LOGTYPE_DHCP};
@@ -873,9 +886,9 @@ public class LogController extends BaseController{
 		
 		try {
 			if (userrole.equals("1")) {
-				list = logService.getListByContent(configProperty.getEs_index(), types, keyWords,page,size);
+				list = logService.getListByContent(configProperty.getEs_index(), starttime, endtime, types, keyWords,page,size);
 			}else {
-				list = logService.getListByContent(configProperty.getEs_index(), types, keyWords,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
+				list = logService.getListByContent(configProperty.getEs_index(), starttime, endtime, types, keyWords,session.getAttribute(Constant.SESSION_USERID).toString(),page,size);
 			}
 			map.put("state", true);
 		} catch (Exception e) {

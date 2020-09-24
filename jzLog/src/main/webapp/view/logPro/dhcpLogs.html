@@ -272,6 +272,28 @@
 		<script src="../../js/commonPlugin.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/searchLogs.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
+			//获取当前日期
+		    var date = new Date();
+		    var year = date.getFullYear();
+		    var month = date.getMonth()+1;
+		    var day = date.getDate();
+		    var hour = date.getHours();
+		    var minute = date.getMinutes();
+		    var second = date.getSeconds();
+		    var nowDate = year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day)+" "+
+		    (hour < 10 ? "0" + hour : hour)+":"+(minute < 10 ? "0" + minute : minute)+":"+(second < 10 ? "0" + second : second);
+		  	//获取7天前得日期
+		    var lastDate = new Date(date - 1000 * 60 * 60 * 24 * 7);//最后30可以更改为任意天数N，意义：获取N天前的时间
+		    var lastYear = lastDate.getFullYear();
+		    var lastMonth = lastDate.getMonth()+1;
+		    var lastDay = lastDate.getDate();
+		    var lastHour = lastDate.getHours();
+		    var lastMinute = lastDate.getMinutes();
+		    var lastSecond = lastDate.getSeconds();
+		    var LDate = lastYear + "-" + (lastMonth < 10 ? "0" + lastMonth : lastMonth) + "-"+(lastDay < 10 ? "0" + lastDay : lastDay)+" "+
+		    (lastHour < 10 ? "0" + lastHour : lastHour)+":"+(lastMinute < 10 ? "0" + lastMinute : lastMinute)+":"+(lastSecond < 10 ? "0" + lastSecond : lastSecond);
+	        $("#startTime").val(LDate);
+			$("#endTime").val(nowDate);
 			var pageSize = 12;
 			var url = "../../log/getDNSLogListByBlend.do";
 			var sendSearchObj = {};//查询日志 参数集合
